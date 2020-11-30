@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
-from PiXiu.PhononCalc.Hdf5Mesh import Hdf5Mesh
+from PiXiu.PhononCalc import Hdf5Mesh
 from PiXiu.Common.Units import *
 
 #['lattice', 'mass', 'scl', 'pos']
