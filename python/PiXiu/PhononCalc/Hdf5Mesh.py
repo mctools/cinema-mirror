@@ -1,4 +1,6 @@
 import h5py
+import numpy as np
+from PiXiu.PhononCalc.CalcBase import CalcBase
 from PiXiu.Common.Units import *
 
 class Hdf5Mesh(CalcBase):

@@ -1,7 +1,7 @@
 import numpy as np
 import math #isclose
 import time
-from Common.Units import *
+from PiXiu.Common.Units import *
 
 # lattice (Aa), mass (atomic mass), pos (fractional coordinate), bc (sqrt(barn))
 # qpoints(reduced coordinate), energy(eV ), eigv (unity magnitude), qweight (dimensionless), kt(eV)
