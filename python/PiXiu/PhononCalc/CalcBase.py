@@ -1,7 +1,7 @@
 import numpy as np
 import math #isclose
 import time
-from PiXiu.Utils.Histogram import Hist2D
+from  PiXiu.Utils.cHist import NumpyHist2D
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from PiXiu.Common.Units import *
 
@@ -102,7 +102,7 @@ class CalcBase:
         qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
         maxhkl = np.int(maxQ/np.ceil(qmin1d))
 
-        hist=Hist2D(QSize, enSize, [[0,maxQ + extraHistQranage], [0, self.en.max()+extraHistEnrange]])
+        hist=NumpyHist2D(QSize, 0, maxQ + extraHistQranage, enSize, 0, self.en.max()+extraHistEnrange)
 
         for h in range(0,maxhkl+1,jump):  # half a space
                 for k in range(-maxhkl,maxhkl+1,jump):
@@ -134,8 +134,8 @@ class CalcBase:
         for i in range(self.numQpoint):
             Q=self.qpoint[i]+tau
             Qmag=np.linalg.norm(Q)
-            if Qmag > hist.xmax:
-                continue
+            # if Qmag > hist.xmax:
+            #     continue
             F=(self.bc/self.sqMass*np.exp(-0.5*(self.md.dot(Q))**2 )*self.eigv[i].dot(Q)).sum(axis=1)
             Smag=np.abs(F*F)*self.bose[i]*self.qweight[i]*hbar*modeWeight/self.en[i]
             # print( Smag.flatten()*hklweight)

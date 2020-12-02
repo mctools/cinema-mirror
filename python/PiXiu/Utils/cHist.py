@@ -77,4 +77,4 @@ class NumpyHist2D(object):
         else:
             if weight.size!=x.size:
                 raise IOError('weight has wrong size')
-            pxlib.NumpyHist2D_fill(self.self, x.size, x, y, weight)
+            pxlib.NumpyHist2D_fillWeighted(self.self, x.size, x, y, weight)
