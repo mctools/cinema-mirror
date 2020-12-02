@@ -40,8 +40,8 @@ class NumpyHist2D(object):
     pxlib.NumpyHist2D_getNBinY.restype = ctypes.c_uint
     pxlib.NumpyHist2D_getNBinY.argtypes = [ctypes.c_void_p]
 
-    def __init__(self, xbin, xmin, xma, ybin, ymin, ymax):
-        self.self = pxlib.NumpyHist2D_new(xbin, xmin, xma, ybin, ymin, ymax)
+    def __init__(self, xbin, ybin, range):
+        self.self = pxlib.NumpyHist2D_new(xbin, range[0][0], range[0][1], ybin, range[1][0], range[1][1])
 
     def __del__(self):  # when reference count hits 0 in Python,
         pxlib.NumpyHist2D_delete(self.self)  # call C++ vector destructor

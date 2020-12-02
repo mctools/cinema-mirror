@@ -102,7 +102,7 @@ class CalcBase:
         qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
         maxhkl = np.int(maxQ/np.ceil(qmin1d))
 
-        hist=NumpyHist2D(QSize, 0, maxQ + extraHistQranage, enSize, 0, self.en.max()+extraHistEnrange)
+        hist=NumpyHist2D(QSize, enSize, [ [0, maxQ + extraHistQranage], [0, self.en.max()+extraHistEnrange]] )
 
         for h in range(0,maxhkl+1,jump):  # half a space
                 for k in range(-maxhkl,maxhkl+1,jump):
