@@ -50,31 +50,5 @@ void NumpyHist2D::fill(double xval, double yval, double w)
     m_overflow+=w;
     return;
   }
-  m_data[iy*m_xnbins + ix]+=w;
-}
-
-void NumpyHist2D::getXSum(std::vector<double> &x) const
-{
-  x.clear();
-  x.reserve(m_xnbins);
-  for(unsigned ix=0;ix<m_xnbins;ix++)
-  {
-    double sum(0.);
-    for(unsigned iy=0;iy<m_ynbins;iy++)
-      sum += m_data[iy*m_xnbins + ix];
-    x.push_back(sum);
-  }
-}
-
-void NumpyHist2D::getYSum(std::vector<double> &y) const
-{
-  y.clear();
-  y.reserve(m_ynbins);
-  for(unsigned iy=0;iy<m_ynbins;iy++)
-  {
-    double sum(0.);
-    for(unsigned ix=0;ix<m_ynbins;ix++)
-      sum += m_data[iy*m_xnbins + ix];
-    y.push_back(sum);
-  }
+  m_data[ix*m_ynbins + iy]+=w;
 }

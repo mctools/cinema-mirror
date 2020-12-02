@@ -14,11 +14,12 @@ public:
   unsigned dimension() const override { return 2; }  ;
   void serialise(std::string &serialised) const override;
 
+  uint32_t getNBinX() const {return m_xnbins;}
+  uint32_t getNBinY() const {return m_ynbins;}
+
   void fill(double xval, double yval);
   void fill(double xval, double yval, double weight);
 
-  void getXSum(std::vector<double> &x) const;
-  void getYSum(std::vector<double> &y) const ;
 
 private:
   //there is no function to modify private mambers, so they are not const

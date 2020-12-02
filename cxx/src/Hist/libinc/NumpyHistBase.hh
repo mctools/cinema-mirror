@@ -17,7 +17,7 @@ public:
   double getIntegral() const {return m_sumW;};
   double getOverflow() const {return m_overflow;};
   double getUnderflow() const {return m_underflow;};
-  double getNBins() const {return m_nbins;};
+  uint32_t getNBin() const {return m_nbins;};
 
   void scale(double scalefact);
   void reset();
