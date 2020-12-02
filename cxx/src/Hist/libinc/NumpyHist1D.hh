@@ -31,7 +31,6 @@ inline void NumpyHist1D::fill_unguard(double val)
     m_data[i]+=1;
   }
 }
-#endif
 
 
 #endif
