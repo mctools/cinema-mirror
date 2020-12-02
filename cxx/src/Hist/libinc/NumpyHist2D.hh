@@ -1,0 +1,36 @@
+#ifndef NumpyHist2D_hh
+#define NumpyHist2D_hh
+
+#include "NumpyHistBase.hh"
+
+
+class NumpyHist2D : public NumpyHistBase {
+public:
+
+  explicit NumpyHist2D(unsigned nxbins, double xmin, double xmax,
+              unsigned nybins, double ymin, double ymax);
+  virtual ~NumpyHist2D();
+
+  unsigned dimension() const override { return 2; }  ;
+  void serialise(std::string &serialised) const override;
+
+  void fill(double xval, double yval);
+  void fill(double xval, double yval, double weight);
+
+  void getXSum(std::vector<double> &x) const;
+  void getYSum(std::vector<double> &y) const ;
+
+private:
+  //there is no function to modify private mambers, so they are not const
+  double m_xbinfactor, m_ybinfactor;
+  double m_ymin;
+  double m_ymax;
+  uint32_t m_xnbins, m_ynbins;
+
+
+};
+
+
+
+
+#endif
