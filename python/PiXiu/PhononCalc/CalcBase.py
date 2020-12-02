@@ -134,8 +134,8 @@ class CalcBase:
         for i in range(self.numQpoint):
             Q=self.qpoint[i]+tau
             Qmag=np.linalg.norm(Q)
-            # if Qmag > hist.xmax:
-            #     continue
+            if Qmag > hist.xmax:
+                continue
             F=(self.bc/self.sqMass*np.exp(-0.5*(self.md.dot(Q))**2 )*self.eigv[i].dot(Q)).sum(axis=1)
             Smag=np.abs(F*F)*self.bose[i]*self.qweight[i]*hbar*modeWeight/self.en[i]
             # print( Smag.flatten()*hklweight)

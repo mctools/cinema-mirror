@@ -41,6 +41,12 @@ class NumpyHist2D(object):
     pxlib.NumpyHist2D_getNBinY.argtypes = [ctypes.c_void_p]
 
     def __init__(self, xbin, ybin, range):
+        self.xmin=range[0][0]
+        self.xmax=range[0][1]
+        self.ymin=range[1][0]
+        self.ymax=range[1][0]
+        self.xbin=xbin
+        self.ybin=ybin
         self.self = pxlib.NumpyHist2D_new(xbin, range[0][0], range[0][1], ybin, range[1][0], range[1][1])
 
     def __del__(self):  # when reference count hits 0 in Python,
