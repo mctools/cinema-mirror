@@ -1,6 +1,7 @@
 import numpy as np
 import math #isclose
 import time
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from PiXiu.Common.Units import *
 
 # lattice (Aa), mass (atomic mass), pos (fractional coordinate), bc (sqrt(barn))
@@ -96,7 +97,7 @@ class CalcBase:
         invkt = 1./self.kt
         return 1/np.tanh(0.5*en*invkt)
 
-    def calcPowder(self, maxQ, enSize, QSize, jump=1):
+    def calcPowder(self, maxQ, enSize, QSize, extraHistQranage=1., jump=1):
         qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
         maxhkl = np.int(np.ceil(qmin1d))
         S=np.zeros([QSize, enSize])
@@ -119,13 +120,12 @@ class CalcBase:
                             continue
 
                         print('processing hkl', (h,k,l))
-                        Spart, Q, en = self.calcHKL(hkl, maxQ, enSize, QSize)
+                        Spart, Q, en = self.calcHKL(hkl, maxQ + extraHistQranage, enSize, QSize)
                         if not(h==0 and k==0 and l==0):
                             Spart *= 2
                         S += Spart #space group 1
 
         return S, Q, en
-
 
     def calcHKL(self, hkl, maxQ, enSize, QSize):
         #S=np.array([self.nAtom*3*self.numQpoint, 3])
