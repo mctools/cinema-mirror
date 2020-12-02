@@ -1,6 +1,7 @@
 import numpy as np
 import math #isclose
 import time
+from PiXiu.Utils.Histogram import Hist2D
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from PiXiu.Common.Units import *
 
@@ -97,12 +98,11 @@ class CalcBase:
         invkt = 1./self.kt
         return 1/np.tanh(0.5*en*invkt)
 
-    def calcPowder(self, maxQ, enSize, QSize, extraHistQranage=1., jump=1):
+    def calcPowder(self, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001, jump=1):
         qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
-        maxhkl = np.int(np.ceil(qmin1d))
-        S=np.zeros([QSize, enSize])
-        Q=np.zeros(QSize)
-        en=np.zeros(enSize)
+        maxhkl = np.int(maxQ/np.ceil(qmin1d))
+
+        hist=Hist2D(QSize, enSize, [[0,maxQ + extraHistQranage], [0, self.en.max()+extraHistEnrange]])
 
         for h in range(0,maxhkl+1,jump):  # half a space
                 for k in range(-maxhkl,maxhkl+1,jump):
@@ -120,34 +120,26 @@ class CalcBase:
                             continue
 
                         print('processing hkl', (h,k,l))
-                        Spart, Q, en = self.calcHKL(hkl, maxQ + extraHistQranage, enSize, QSize)
+
                         if not(h==0 and k==0 and l==0):
-                            Spart *= 2
-                        S += Spart #space group 1
+                            self.calcHKL(hkl, hist)
+                        else:
+                            self.calcHKL(hkl, hist, 2)
+        return hist
 
-        return S, Q, en
-
-    def calcHKL(self, hkl, maxQ, enSize, QSize):
+    def calcHKL(self, hkl, hist, hklweight=1.):
         #S=np.array([self.nAtom*3*self.numQpoint, 3])
-        S=[]
         tau=np.dot(hkl,self.lattice_reci)
         modeWeight = 1./(self.nAtom) #fixme: So the xs is in the unit of per atom? but the  eigv is already weighted
         for i in range(self.numQpoint):
             Q=self.qpoint[i]+tau
             Qmag=np.linalg.norm(Q)
+            if Qmag > hist.xmax:
+                continue
             F=(self.bc/self.sqMass*np.exp(-0.5*(self.md.dot(Q))**2 )*self.eigv[i].dot(Q)).sum(axis=1)
             Smag=np.abs(F*F)*self.bose[i]*self.qweight[i]*hbar*modeWeight/self.en[i]
-            for n in range(self.nAtom*3):
-               S.append([Smag[n], Qmag, self.en[i][n]])
-
-            # S[(i*self.nAtom*3):((i+1)*self.nAtom*3), 0] = Smag
-            # S[(i*self.nAtom*3):((i+1)*self.nAtom*3), 1] = Qmag
-            # S[(i*self.nAtom*3):((i+1)*self.nAtom*3), 2] = en[i]
-
-        S=np.array(S)
-
-        H, xedges, yedges = np.histogram2d(S[:,1], S[:,2], range= [[0, maxQ], [0,self.maxEn]], bins=[QSize, enSize], weights=S[:,0])
-        return H, xedges, yedges
+            # print( Smag.flatten()*hklweight)
+            hist.fill(np.repeat(Qmag,self.nAtom*3), self.en[i].flatten(), Smag.flatten()*hklweight)
 
     def show(self, H, xedges, yedges):
         import matplotlib.pyplot as plt
