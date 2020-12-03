@@ -8,7 +8,7 @@ calc = MeshCell('./data/Al/mesh.hdf5', './data/Al/cell.json', kt)
 
 enSize=100
 QSize=300
-maxQ=10.
+maxQ=3.
 
 hist = calc.calcPowder(maxQ, enSize, QSize)
 print('integral ', hist.hist.sum())

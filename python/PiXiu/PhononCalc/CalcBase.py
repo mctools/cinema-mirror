@@ -1,7 +1,9 @@
 import numpy as np
 import math #isclose
 import time
-from  PiXiu.Utils.cHist import NumpyHist2D
+#from  PiXiu.Utils.cHist import NumpyHist2D
+from  PiXiu.Utils.Histogram import Hist2D as NumpyHist2D
+
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from PiXiu.Common.Units import *
 
