@@ -47,9 +47,13 @@ class CalcBase:
         self.eigv=eigv
         self.qweight=qweight
         self.kt=kt
-        self.md=np.sqrt(self.calmsd()) #mean displacement in Aa
         self.bose=self.nplus1(self.en)
+        self.msd=self.isoMsd() #fixme: calmsd method returns unequal msd even for cubic lattice, bug to be fixed use isotropic model for now.
 
+        # print('isotropic', self.isoMsd())
+        # print('method 1', self.calmsd())
+        # print('method 2', self.calmsd2())
+        # raise ValueError('stop')
         if not math.isclose(self.qweight.sum(), 1.0, rel_tol=1e-10):
             raise ValueError('phonon total qweight is not unity {}'.format( self.qweight.sum() ) )
 
@@ -138,8 +142,9 @@ class CalcBase:
             Qmag=np.linalg.norm(Q)
             if Qmag > hist.xmax:
                 continue
-            F=(self.bc/self.sqMass*np.exp(-0.5*(self.md.dot(Q))**2 )*self.eigv[i].dot(Q)).sum(axis=1)
-            Smag=np.abs(F*F)*self.bose[i]*self.qweight[i]*hbar*modeWeight/self.en[i]
+            F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
+            #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
+            Smag=(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar*modeWeight/self.en[i]
             # print( Smag.flatten()*hklweight)
             hist.fill(np.repeat(Qmag,self.nAtom*3), self.en[i].flatten(), Smag.flatten()*hklweight)
 
