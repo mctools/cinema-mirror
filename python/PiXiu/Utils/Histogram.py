@@ -19,19 +19,8 @@ class Hist2D():
         self.hist =np.zeros([xbin, ybin])
 
     def fill(self, x, y, weights=None):
-        if (x.max()>= self.xmax) or (y.max()>= self.ymax) or (x.min()<=self.xmin) or  (y.min()<=self.ymin):
-            return False
-        if x.size != y.size:
-            return False
-
-        xi = ((x-self.xmin)*self.xbinfactor).astype(np.int)
-        yi = ((y-self.ymin)*self.ybinfactor).astype(np.int)
-        if weights is not None:
-            self.hist[xi, yi] += weights
-        else:
-            self.hist[xi, yi] += 1
-        return True
-
-    def slowfill(self, x, y, weights=None):
         h, xedge, yedge = np.histogram2d(x, y, bins=[self.xedge, self.yedge], weights=weights)
         self.hist += h
+
+    def getHistVal(self):
+        return self.hist
