@@ -1,0 +1,40 @@
+#include <cmath>
+
+inline void NumpyHist2D::fill(double xval, double yval)
+{
+  fill(xval, yval, 1.);
+}
+
+inline void NumpyHist2D::fill(double xval, double yval, double w)
+{
+  const unsigned ix = floor((xval-m_xmin)*m_xbinfactor);
+  const unsigned iy = floor((yval-m_ymin)*m_ybinfactor);
+
+  std::lock_guard<std::mutex> guard(m_hist_mutex);
+  m_sumW += w;
+  if(xval<m_xmin ||  yval<m_ymin) {
+    m_underflow+=w;
+    return;
+  }
+  else if(xval>m_xmax || yval>m_ymax) {
+    m_overflow+=w;
+    return;
+  }
+  m_data[ix*m_ynbins + iy]+=w;
+}
+
+inline void NumpyHist2D::filln(unsigned n, double *xval, double *yval)
+{
+  for(unsigned i=0;i<n;i++)
+  {
+    fill(xval[i], yval[i], 1.0);
+  }
+}
+
+inline void NumpyHist2D::filln(unsigned n, double *xval, double *yval, double *weight)
+{
+  for(unsigned i=0;i<n;i++)
+  {
+    fill(xval[i], yval[i], weight[i]);
+  }
+}

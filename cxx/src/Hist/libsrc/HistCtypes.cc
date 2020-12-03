@@ -30,16 +30,12 @@ void NumpyHist2D_delete(void* obj)
 
 void NumpyHist2D_fill(void* obj, unsigned n, double* xval, double* yval)
 {
-  auto hist=static_cast<NumpyHist2D*>(obj);
-  for(unsigned i=0;i<n;i++)
-    hist->fill(xval[i], yval[i]);
+  static_cast<NumpyHist2D*>(obj)->filln(n, xval, yval);
 }
 
 void NumpyHist2D_fillWeighted(void* obj, unsigned n, double* xval, double* yval, double* w)
 {
-  auto hist = static_cast<NumpyHist2D*>(obj);
-  for(unsigned i=0;i<n;i++)
-    hist->fill(xval[i], yval[i], w[i]);
+  static_cast<NumpyHist2D*>(obj)->filln(n, xval, yval, w);
 }
 
 void NumpyHistBase_save(void* obj, char *fn)

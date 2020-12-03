@@ -19,7 +19,8 @@ public:
 
   void fill(double xval, double yval);
   void fill(double xval, double yval, double weight);
-
+  void filln(unsigned n, double *xval, double *yval);
+  void filln(unsigned n, double *xval, double *yval, double *weight);
 
 private:
   //there is no function to modify private mambers, so they are not const
@@ -31,7 +32,5 @@ private:
 
 };
 
-
-
-
+#include "NumpyHist2D.icc"
 #endif
