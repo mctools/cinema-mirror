@@ -15,7 +15,7 @@ ymax=1.
 
 
 for i in range(1000):
-    hist=NumpyHist2D(xbin, xmin, xmax, ybin, ymin, ymax)
+    hist=NumpyHist2D(xbin, ybin, [[xmin, xmax], [ymin, ymax]])
     input = np.random.random([2,1])
     x=input[0]
     y=input[1]
