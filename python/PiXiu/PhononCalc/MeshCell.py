@@ -13,12 +13,14 @@ class MeshCell(Hdf5Mesh):
         mass=[]
         bc=[] #bound coherent scattering length
         pos=[]
-        for k, v in cell['atom'].items():
-            m, b =getAtomMassBC(k)
-            mass.append(m)
-            bc.append(b)
-            pos.append(np.array(v))
+        for id, data in cell['atom'].items():
+            for k, v in data.items():
+                m, b =getAtomMassBC(k)
+                mass.append(m)
+                bc.append(b)
+                pos.append(np.array(v))
         pos=np.array(pos)
         mass=np.array(mass)
         bc=np.array(bc)
+
         super().__init__(lattice, mass, pos, bc, kt, h5FileName )

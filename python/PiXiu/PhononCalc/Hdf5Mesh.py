@@ -9,7 +9,7 @@ class Hdf5Mesh(CalcBase):
         en=hf['frequency'][()]*THz*2*np.pi*hbar
         eigv=hf['eigenvector'][()]
         eigvShape=eigv.shape
-        nAtom = len(mass)
+        nAtom = mass.size
         eigv=eigv.reshape([eigvShape[0], nAtom*3, nAtom, 3]) #fixme: magnitude of each eigv is slight different
         # for aQpoint in eigv:
         #     for aMode in aQpoint:
