@@ -44,7 +44,7 @@ class NumpyHist2D(object):
         self.xmin=range[0][0]
         self.xmax=range[0][1]
         self.ymin=range[1][0]
-        self.ymax=range[1][0]
+        self.ymax=range[1][1]
         self.xbin=xbin
         self.ybin=ybin
         self.self = pxlib.NumpyHist2D_new(xbin, range[0][0], range[0][1], ybin, range[1][0], range[1][1])
@@ -54,6 +54,13 @@ class NumpyHist2D(object):
 
     def save(self, fn):
         pxlib.NumpyHistBase_save(self.self, bytes(fn, encoding='utf8') )
+
+    def getXedges(self):
+        return np.linspace(self.xmin, self.xmax, self.xbin+1)
+
+    def getYedges(self):
+        print(self.ymin, self.ymax, self.ybin+1)
+        return np.linspace(self.ymin, self.ymax, self.ybin+1)
 
     def getNBinX(self):
         return pxlib.NumpyHist2D_getNBinX(self.self)

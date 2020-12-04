@@ -8,40 +8,10 @@ calc = MeshCell('./data/Al/mesh.hdf5', './data/Al/cell.json', kt)
 
 enSize=100
 QSize=300
-maxQ=3.
+maxQ=5.
 
-hist = calc.calcPowder(maxQ, enSize, QSize)
-print('integral ', hist.hist.sum())
-calc.show(hist.hist, hist.xedge, hist.yedge)
+# import profile
+# profile.run('calc.calcPowder(maxQ, enSize, QSize, jump=1)')
+hist = calc.calcPowder(maxQ, enSize, QSize, jump=1)
 
-#
-# import multiprocessing as mp
-# from itertools import product
-#
-# for h in range(0,maxNum+1,jump):  # half a space
-#         for k in range(-maxNum,maxNum+1,jump):
-#             hkllist=[]
-#             for l in range(-maxNum,maxNum+1,jump):
-#                 if h==0:
-#                     if k<0:
-#                         continue #half a plane
-#                     elif k==0 and l<0: #half an axis, keeping 0,0,0
-#                         continue
-#                 print('processing', (h,k,l))
-#                 hkl=np.array([h,k,l])
-#                 if np.linalg.norm(np.dot(hkl,calc.lattice_reci)) > maxQ:
-#                     print('skiping hkl')
-#                     continue
-#                 Spart, Q, en = calc.calcSqw(hkl, maxQ, enSize, qSize)
-#                 if not(h==0 and k==0 and l==0):
-#                     Spart *= 2
-#                 S += Spart #space group 1
-#
-#             #     hkllist.append((hkl,maxQ, enSize, qSize))
-#             # with mp.Pool(processes=8) as pool:
-#             #     results = pool.starmap(calc.calcSqw, hkllist )
-#
-# # np.savetxt('S.dat',S)
-# # np.savetxt('Q.dat',Q)
-# # np.savetxt('en.dat',en)
-# calc.show(S, Q, en)
+calc.show(hist.getHistVal(), hist.getXedges(), hist.getYedges())

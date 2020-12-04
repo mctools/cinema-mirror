@@ -24,3 +24,9 @@ class Hist2D():
 
     def getHistVal(self):
         return self.hist
+
+    def getXedges(self):
+        return self.xedge
+
+    def getYedges(self):
+        return self.yedge
