@@ -43,6 +43,9 @@ class CalcBase:
         self.sqMass=np.sqrt(self.mass)
         self.pos=lattice.dot(pos.T).T
         self.bc=bc
+        self.fullMess=False
+        if np.all(qweight==1.):
+            self.fullMess=True
         self.qpoint=np.dot(qpoint, self.lattice_reci)
         self.en=energy
         self.maxEn = self.en.max()
