@@ -62,6 +62,22 @@ class NumpyHist2D(object):
         print(self.ymin, self.ymax, self.ybin+1)
         return np.linspace(self.ymin, self.ymax, self.ybin+1)
 
+    @property
+    def hist(self):
+        return self.getHistVal()
+
+    @property
+    def xedge(self):
+        return self.getXedges()
+
+    @property
+    def yedge(self):
+        return self.getYedges()
+
+    @property
+    def hist(self):
+        return self.getHistVal()
+
     def getNBinX(self):
         return pxlib.NumpyHist2D_getNBinX(self.self)
 
