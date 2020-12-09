@@ -21,6 +21,7 @@ public:
   void fill(double xval, double yval, double weight);
   void filln(unsigned n, double *xval, double *yval);
   void filln(unsigned n, double *xval, double *yval, double *weight);
+  void fill_unguard(double xval, double yval, double w);
 
 private:
   //there is no function to modify private mambers, so they are not const
