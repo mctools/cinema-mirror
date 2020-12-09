@@ -24,6 +24,6 @@ for i in range(100):
     histSlow.fill(data[0], data[1])
 
 
-np.testing.assert_array_equal(hist.getHistVal(), histSlow.hist)
+np.testing.assert_array_equal(hist.hist, histSlow.hist)
 
 print('passed')
