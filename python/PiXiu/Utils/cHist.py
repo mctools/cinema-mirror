@@ -99,8 +99,18 @@ class NumpyHist2D(object):
     #     return '[{}]'.format(', '.join(str(self[i]) for i in range(len(self))))
 
     def fill(self, x, y, weight=None):  # push calls vector's push_back
+        if (type(x) != np.ndarray) or (type(y) != np.ndarray):
+            raise IOError('hist input should be numpy array')
+
         if x.size!=y.size:
             raise IOError('histgraom input vector x and y are in different size')
+
+        if x.dtype!=np.float64:
+            x=x.astype(np.float64)
+
+        if y.dtype!=np.float64:
+            y=x.astype(np.float64)
+
         if weight is None:
             pxlib.NumpyHist2D_fill(self.self, x.size, x, y)
         else:
