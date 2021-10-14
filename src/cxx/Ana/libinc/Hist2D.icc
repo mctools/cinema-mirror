@@ -1,0 +1,37 @@
+inline void Prompt::Hist2D::fill_unguard(const std::vector<double>& xval, const std::vector<double>& yval, const std::vector<double>& weight)
+{
+  if(xval.size()!=yval.size() || xval.size()!=weight.size())
+    PROMPT_THROW(BadInput, "fill_unguard");
+
+  for(unsigned i=0;i<xval.size();++i)
+  {
+    fill_unguard(xval[i], yval[i], weight[i]);
+  }
+}
+
+inline void Prompt::Hist2D::fill_unguard(double xval, const std::vector<double>& yval, const std::vector<double>& weight)
+{
+  if(yval.size()!=weight.size())
+    PROMPT_THROW(BadInput, "fill_unguard");
+
+  for(unsigned i=0;i<yval.size();++i)
+    fill_unguard(xval, yval[i], weight[i]);
+}
+
+
+inline void Prompt::Hist2D::fill_unguard(double xval, double yval, double w)
+{
+  m_sumW += w;
+  if(xval<m_xmin ||  yval<m_ymin) {
+    m_underflow+=w;
+    return;
+  }
+  else if(xval>m_xmax || yval>m_ymax) {
+    m_overflow+=w;
+    return;
+  }
+  const unsigned ix = floor((xval-m_xmin)*m_xbinfactor);
+  const unsigned iy = floor((yval-m_ymin)*m_ybinfactor);
+  m_data[ix*m_ynbins + iy] += w;
+  m_hit[ix*m_ynbins + iy] += 1;
+}

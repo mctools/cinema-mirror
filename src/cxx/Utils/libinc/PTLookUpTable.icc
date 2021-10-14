@@ -1,0 +1,57 @@
+inline double Prompt::LookUpTable::extrapZero(double )
+{
+  return 0.;
+}
+
+inline double Prompt::LookUpTable::extrapConstUpper(double )
+{
+  return m_f.back();
+}
+
+inline double Prompt::LookUpTable::extrapConstLower(double)
+{
+  return m_f.front();
+}
+
+inline double Prompt::LookUpTable::extrapOverSqrtXLower(double x)
+{
+  if(x<=0. || m_x.front()<0. )
+    PROMPT_THROW(CalcError, "LookUpTable::extrapOverSqrtXLower parameter error ");
+  return m_f.front()*sqrt(m_x.front()/x);
+}
+
+inline double Prompt::LookUpTable::extrapOverSqrtXUpper(double x)
+{
+  if(x<=0. || m_x.back()<0. )
+    PROMPT_THROW(CalcError, "LookUpTable::extrapOverSqrtXUpper parameter error ");
+  return m_f.back()*sqrt(m_x.back()/x);
+}
+
+inline double Prompt::LookUpTable::extrapOverXLower(double x)
+{
+  if(x==0.)
+    PROMPT_THROW(CalcError, "LookUpTable::extrapOverXLower x should be non-zero ");
+  return m_f.front()*(m_x.front()/x);
+}
+
+inline double Prompt::LookUpTable::extrapOverXUpper(double x)
+{
+  if(x==0.)
+    PROMPT_THROW(CalcError, "LookUpTable::extrapOverXUpper x should be non-zero ");
+  return m_f.back()*(m_x.back()/x);
+}
+
+inline double Prompt::LookUpTable::get(double x) const
+{
+  // nc_assert(!NC::ncisnan(x));
+
+  auto it = std::lower_bound(m_x.begin(),m_x.end(),x);
+  if (it == m_x.begin())
+    return m_func_extrapLower(x);
+  else if( it == m_x.end())
+    return m_func_extrapUpper(x);
+
+  size_t idx = it-m_x.begin()-1;
+  double result = m_f[idx] + (x-m_x[idx])*(m_f[idx+1]-m_f[idx])/(m_x[idx+1]-m_x[idx]);
+  return result;
+}

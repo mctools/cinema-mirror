@@ -1,0 +1,4 @@
+inline bool Prompt::floateq(double a, double b, double rtol, double atol)
+{
+  return std::abs(a-b) <= 0.5 * rtol * (std::abs(a) + std::abs(b)) + atol;
+}
