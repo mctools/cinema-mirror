@@ -224,7 +224,7 @@ inline Prompt::Vector Prompt::Vector::unit() const
   if (themag2==1.0)
     return *this;
   if (!themag2)
-    PROMPT_THROW(CalcError,"NCVector::unit(): Can't scale null-vector.");
+    PROMPT_THROW(CalcError,"PTVector::unit(): Can't scale null-vector.");
   double factor = 1.0/std::sqrt(themag2);
   return Prompt::Vector(m_x*factor, m_y*factor, m_z*factor);
 }
@@ -235,7 +235,7 @@ inline void Prompt::Vector::normalise()
   if (themag2==1.0)
     return;
   if (!themag2)
-    PROMPT_THROW(CalcError,"NCVector::normalise(): Can't scale null-vector.");
+    PROMPT_THROW(CalcError,"PTVector::normalise(): Can't scale null-vector.");
   double f = 1.0/std::sqrt(themag2);
   m_x *= f;
   m_y *= f;
@@ -267,7 +267,7 @@ inline double Prompt::Vector::angle(const Prompt::Vector& vec2) const
 {
   double norm = std::sqrt( mag2()*vec2.mag2() );
   if (!norm)
-    PROMPT_THROW(CalcError,"NCVector::angle(): Can't find angle to/from null-vector.");
+    PROMPT_THROW(CalcError,"PTVector::angle(): Can't find angle to/from null-vector.");
   double result = dot(vec2) / norm;
   return std::acos( std::min(1.,std::max(-1.,result)) );
 }
@@ -284,7 +284,7 @@ inline double Prompt::Vector::angle_highres(const Prompt::Vector& vec2) const
   double mag2_a = a.mag2();
   double mag2_b = b.mag2();
   if (!mag2_a||!mag2_b)
-    PROMPT_THROW(CalcError,"NCVector::angle_highres(): Can't find angle to/from null-vector.");
+    PROMPT_THROW(CalcError,"PTVector::angle_highres(): Can't find angle to/from null-vector.");
   a *= 1.0/std::sqrt(mag2_a);
   b *= 1.0/std::sqrt(mag2_b);
   return 2*std::atan2((a-b).mag(),(a+b).mag());
