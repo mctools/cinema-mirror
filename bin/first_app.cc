@@ -92,20 +92,19 @@ int main(int argc, char** argv)
 
   std::string gdml_name=(argv[1]);
 
-  // //access material
-  // vgdml::Parser p;
-  // auto const loadedMiddleware = p.Load(gdml_name.c_str(), false, 1); // mm unit is 1
-  // std::cout << "Geometry loaded with result: \"" << (loadedMiddleware ? "true" : "false") << "\"" << std::endl;
-  // if (!loadedMiddleware) return 1;
-  //
-  // auto const &aMiddleware = *loadedMiddleware;
-  // auto volumeMatMap   = aMiddleware.GetVolumeMatMap();
+  //access material
+  vgdml::Parser p;
+  auto const loadedMiddleware = p.Load(gdml_name.c_str(), false, 1); // mm unit is 1
+  std::cout << "Geometry loaded with result: \"" << (loadedMiddleware ? "true" : "false") << "\"" << std::endl;
+  if (!loadedMiddleware) return 1;
 
+  auto const &aMiddleware = *loadedMiddleware;
+  auto volumeMatMap   = aMiddleware.GetVolumeMatMap();
 
-  // create geometry
-  bool load = vgdml::Frontend::Load(gdml_name.c_str(), true, 0.1, false);
-  if (!load) return 3;
-
+  // // create geometry
+  // bool load = vgdml::Frontend::Load(gdml_name.c_str(), true, 0.1, false);
+  // if (!load) return 3;
+  
   //navigation
   auto &geoManager = vecgeom::GeoManager::Instance();
   auto navigator = vecgeom::BVHNavigator<>::Instance();
@@ -116,20 +115,19 @@ int main(int argc, char** argv)
     auto nchildren = volume.GetDaughters().size();
     volume.SetNavigator(nchildren > 0 ? navigator : NewSimpleNavigator<>::Instance());
 
-    // const vgdml::Material& mat = volumeMatMap[volume.id()];
-    //
-    // std::cout << "volume name " << volume.GetName() << " (id = " << volume.id() << "): material name " << mat.name << std::endl;
-    // if (mat.attributes.size()) std::cout << "  attributes:\n";
-    // for (const auto &attv : mat.attributes)
-    //   std::cout << "    " << attv.first << ": " << attv.second << std::endl;
-    // if (mat.fractions.size()) std::cout << "  fractions:\n";
-    // for (const auto &attv : mat.fractions)
-    //   std::cout << "    " << attv.first << ": " << attv.second << std::endl;
-    // if (mat.components.size()) std::cout << "  components:\n";
-    // for (const auto &attv : mat.components)
-    //   std::cout << "    " << attv.first << ": " << attv.second << std::endl;
-  }
+    const vgdml::Material& mat = volumeMatMap[volume.id()];
 
+    std::cout << "volume name " << volume.GetName() << " (id = " << volume.id() << "): material name " << mat.name << std::endl;
+    if (mat.attributes.size()) std::cout << "  attributes:\n";
+    for (const auto &attv : mat.attributes)
+      std::cout << "    " << attv.first << ": " << attv.second << std::endl;
+    if (mat.fractions.size()) std::cout << "  fractions:\n";
+    for (const auto &attv : mat.fractions)
+      std::cout << "    " << attv.first << ": " << attv.second << std::endl;
+    if (mat.components.size()) std::cout << "  components:\n";
+    for (const auto &attv : mat.components)
+      std::cout << "    " << attv.first << ": " << attv.second << std::endl;
+  }
 
   vecgeom::BVHManager::Init();
   size_t seed=10101;
