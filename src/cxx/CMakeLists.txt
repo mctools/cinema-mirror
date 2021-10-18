@@ -7,6 +7,7 @@ file(GLOB RND_SRC "${PROJECT_SOURCE_DIR}/Rand/libsrc/*.cc")
 file(GLOB UTL_SRC "${PROJECT_SOURCE_DIR}/Utils/libsrc/*.cc")
 file(GLOB ANA_SRC "${PROJECT_SOURCE_DIR}/Ana/libsrc/*.cc")
 file(GLOB PAR_SRC "${PROJECT_SOURCE_DIR}/Particle/libsrc/*.cc")
+file(GLOB PAR_SRC "${PROJECT_SOURCE_DIR}/Geometry/libsrc/*.cc")
 
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${COR_SRC} ${RND_SRC} ${UTL_SRC} ${ANA_SRC} ${PAR_SRC})
@@ -21,5 +22,6 @@ target_include_directories( ${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/Utils/libinc
     ${PROJECT_SOURCE_DIR}/Ana/libinc
     ${PROJECT_SOURCE_DIR}/Particle/libinc
+    ${PROJECT_SOURCE_DIR}/Geometry/libinc
     ${VECGEOM_INCLUDE_DIRS}
 )
