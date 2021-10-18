@@ -22,7 +22,6 @@ inline Prompt::Neutron::Neutron()
    m_rest_mass = const_neutron_mass_evc2;
 }
 
-
 inline Prompt::Neutron::Neutron(double ekin, const Vector& dir, const Vector& pos)
 :Particle(ekin, dir, pos)
 {
