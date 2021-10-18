@@ -3,9 +3,9 @@
 
 #include "PTVector.hh"
 #include "PTMath.hh"
+#include "PTUnitSystem.hh"
 
 //! Particle is neutron with pgd code of 2112 by defult. Proton (2212) is also supported.
-//! m_erest is in the unit of eV*c^2
 //! fixme: support Gamma (22) as well.
 namespace Prompt {
   class Particle {
@@ -22,10 +22,10 @@ namespace Prompt {
 
     virtual double calcSpeed() const;
   protected:
-    double m_ekin; /// mass is in the unit of MeV/const_c^2
+    double m_ekin; 
     Vector m_dir, m_pos;
     unsigned m_pgd;
-    double m_rest_mass; /// Relativistic mass = (E_tot + E_rest) / E_rest * rest_mass
+    double m_rest_mass;
   };
 }
 
@@ -70,20 +70,7 @@ inline void Prompt::Particle::changeDirectionTo(const Vector& dir)
 //! for time-dependent system simulation
 inline double Prompt::Particle::calcSpeed() const
 {
-  //fixme: tune a better threshold
-  if(m_ekin>0.11*const_neutron_rest_mass)
-  {
-    double gamma = 1 + m_ekin/m_rest_mass;
-    double temp = 1/gamma;
-    double beta = std::sqrt(1-temp*temp);
-    //printf("Relativistic %.16g \n", const_c*beta);
-    return const_c*beta;
-  }
-  else
-  {
-    // printf("normal %.16g\n", std::sqrt(2*m_ekin/m_rest_mass*const_c*const_c));
-    return std::sqrt(2*m_ekin/m_rest_mass*const_cc);
-  }
+    return std::sqrt(2*m_ekin/m_rest_mass);
 }
 
 #endif

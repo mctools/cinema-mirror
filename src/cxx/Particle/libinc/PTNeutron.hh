@@ -19,7 +19,7 @@ inline Prompt::Neutron::Neutron()
 :Particle()
 {
    m_pgd = 2112;
-   m_rest_mass = const_neutron_rest_mass;
+   m_rest_mass = const_neutron_mass_evc2;
 }
 
 
@@ -27,7 +27,7 @@ inline Prompt::Neutron::Neutron(double ekin, const Vector& dir, const Vector& po
 :Particle(ekin, dir, pos)
 {
   m_pgd = 2112;
-  m_rest_mass = const_neutron_rest_mass;
+  m_rest_mass = const_neutron_mass_evc2;
 }
 
 #endif
