@@ -13,7 +13,7 @@ file(GLOB PAR_SRC "${PROJECT_SOURCE_DIR}/Geometry/libsrc/*.cc")
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${COR_SRC} ${RND_SRC} ${UTL_SRC} ${ANA_SRC} ${PAR_SRC})
 
 
-target_link_libraries(${PROJECT_NAME} PUBLIC Threads::Threads VecGeom::vecgeom VecGeom::vgdml OpenMP::OpenMP_CXX)
+target_link_libraries(${PROJECT_NAME} PUBLIC Threads::Threads NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml OpenMP::OpenMP_CXX)
 
 target_include_directories( ${PROJECT_NAME}
     PUBLIC
@@ -24,4 +24,5 @@ target_include_directories( ${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/Particle/libinc
     ${PROJECT_SOURCE_DIR}/Geometry/libinc
     ${VECGEOM_INCLUDE_DIRS}
+    ${NCrystal_INCDIR}
 )

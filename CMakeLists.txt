@@ -14,7 +14,7 @@ add_compile_options ("-fopenmp")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-# Find VecGeom geometry headers library
+# VecGeom
 set(CMAKE_PREFIX_PATH "/home/caixx/git/VecGeom/install") #fixme: use env instead
 set(VecGeom_VERSION 1.1.17)
 find_package(VecGeom ${VecGeom_VERSION} REQUIRED)
@@ -23,8 +23,12 @@ message(STATUS "Using VecGeom version ${VecGeom_VERSION}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${VECGEOM_CXX_FLAGS}")
 # Make sure VecGeom::vgdml is enabled
 if(NOT TARGET VecGeom::vgdml)
-  message(FATAL_ERROR "AdePT requires VecGeom compiled with GDML support")
+  message(FATAL_ERROR "Prompt requires VecGeom compiled with GDML support")
 endif()
+
+# NCrystal
+find_package(NCrystal 2.7.0 REQUIRED)
+
 
 # Find Geant4, optional for now
 find_package(Geant4 QUIET)
