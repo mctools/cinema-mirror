@@ -16,7 +16,7 @@ namespace Prompt {
 inline Prompt::Proton::Proton()
 :Particle()
 {
-   m_pgd = 2212;
+   m_pgd = const_proton_pgd;
    m_rest_mass = const_proton_mass_evc2;
 }
 
@@ -24,7 +24,7 @@ inline Prompt::Proton::Proton()
 inline Prompt::Proton::Proton(double ekin, const Vector& dir, const Vector& pos)
 :Particle(ekin, dir, pos)
 {
-  m_pgd = 2212;
+  m_pgd = const_proton_pgd;
   m_rest_mass = const_proton_mass_evc2;
 }
 

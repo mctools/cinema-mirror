@@ -27,6 +27,9 @@ namespace Prompt {
     constexpr double kelvin = 1.;
   }
 
+  const unsigned const_neutron_pgd = 2112;
+  const unsigned const_proton_pgd = 2212;
+
   ///！ constants are directly obtained from NCrystal's source code
   constexpr double const_c  = 299792458*Unit::m/Unit::s ;// speed of light in Aa/s
   constexpr double const_dalton2kg =  1.660539040e-27*Unit::kg; // amu to kg (source: NIST/CODATA 2018)
@@ -39,14 +42,13 @@ namespace Prompt {
   constexpr double const_neutron_mass_amu = 1.00866491588; // [amu]
   constexpr double const_proton_mass_amu = 1.007276466621; // [amu]
   constexpr double const_planck = 4.135667662e-15*Unit::eV*Unit::s ;//[eV*s]
-  // constexpr double const_neutron_rest_mass = 939.56542052*Unit::MeV; // MeV (source: NIST/CODATA 2018)
-  // constexpr double const_proton_rest_mass = 938.27208816*Unit::MeV; // MeV (source: NIST/CODATA 2018)
 
   //Derived values:
   constexpr double const_cc  = const_c*const_c;
   constexpr double const_neutron_mass_evc2 = const_neutron_mass_amu * const_dalton2eVc2 / (const_c*const_c);// [ eV/(Aa/s)^2 ]
   constexpr double const_proton_mass_evc2 = const_proton_mass_amu * const_dalton2eVc2 / (const_c*const_c);// [ eV/(Aa/s)^2 ]
 
+  //used in unittest
   constexpr double const_ekin_2200m_s = 0.5 * const_neutron_mass_evc2 * 2200.0*Unit::m * 2200.0*Unit::m ; //neutron kinetic energy at 2200m/s [eV]
 }
 #endif

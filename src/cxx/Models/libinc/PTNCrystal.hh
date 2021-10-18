@@ -2,14 +2,24 @@
 #define Prompt_PTNCrystal_hh
 
 #include <string>
+
 #include "PromptCore.hh"
 #include "PTModelManager.hh"
+#include <memory>
+
+#include "NCrystal/NCrystal.hh"
+
+namespace NCrystal {
+    class Scatter;
+}
 
 namespace Prompt {
 
+  //PTNCrystal is in fact a scatterer of NCrystal
+
   class PTNCrystal  : public PhysicsModel {
   public:
-    PTNCrystal();
+    PTNCrystal(const std::string &cfgstring);
     ~PTNCrystal();
 
     virtual bool applicable(unsigned pgd, double ekin) const override;
@@ -18,6 +28,7 @@ namespace Prompt {
     virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
 
   private:
+    NCrystal::Scatter m_scat; //fixme
   };
 
 }

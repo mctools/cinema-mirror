@@ -1,7 +1,18 @@
-#include "PTNCrystal.hh"
+#include <limits>
 
-Prompt::PTNCrystal::PTNCrystal()
+#include "PTNCrystal.hh"
+#include "PTUnitSystem.hh"
+
+Prompt::PTNCrystal::PTNCrystal(const std::string &cfgstring)
+:Prompt::PhysicsModel("NCrystal"), m_scat(NCrystal::createScatter(cfgstring))
 {
+  m_supportPGD = const_neutron_pgd;
+  m_minEkin = std::numeric_limits<double>::min();
+  m_maxEkin = 10*Prompt::Unit::eV;
+
+  //This checks that the included NCrystal headers and the linked NCrystal
+  //library are from the same release of NCrystal:
+  NCrystal::libClashDetect();
 
 }
 
