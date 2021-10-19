@@ -16,19 +16,21 @@ namespace NCrystal {
 namespace Prompt {
 
   //PTNCrystal is in fact a scatterer of NCrystal
+  //Physics model should be initialised from material
 
   class PTNCrystal  : public PhysicsModel {
   public:
     PTNCrystal(const std::string &cfgstring);
     ~PTNCrystal();
 
-    virtual bool applicable(unsigned pgd, double ekin) const override;
     virtual double getCrossSection(double ekin) const override;
+    virtual double getCrossSection(double ekin, const Vector &dir) const override;
     virtual void generate(double &ekin, Vector &dir) const override;
     virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
 
   private:
-    NCrystal::Scatter m_scat; //fixme
+    mutable  NCrystal::Scatter m_scat;
+    // NCrystal::ProcImpl::ProcPtr == NCrystal::ProcImpl::Process*
   };
 
 }

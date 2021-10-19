@@ -7,9 +7,12 @@
 #include <VecGeom/navigation/NewSimpleNavigator.h>
 #include <VecGeom/gdml/Frontend.h>
 
+#include "PTNCrystal.hh"
+
 
 Prompt::GeoManager::GeoManager(const std::string &gdml_file)
 {
+  // PTNCrystal();
   //access material
   vgdml::Parser p;
   double mm_unit = 0.1;
@@ -19,6 +22,15 @@ Prompt::GeoManager::GeoManager(const std::string &gdml_file)
 
   const auto &aMiddleware = *loadedMiddleware;
   auto volumeMatMap   = aMiddleware.GetVolumeMatMap();
+  auto materialMap = aMiddleware.GetMaterialMap();
+
+  for(const auto &item : materialMap)
+  {
+    // item->first name
+    // item->second material
+
+  }
+
 
   // //initialise material
   // using MaterialMap_t         = std::map<std::string, vgdml::Material>;
@@ -28,8 +40,9 @@ Prompt::GeoManager::GeoManager(const std::string &gdml_file)
   auto &geoManager = vecgeom::GeoManager::Instance();
   auto navigator = vecgeom::BVHNavigator<>::Instance();
 
-  for (auto &item : geoManager.GetLogicalVolumesMap())
+  for (const auto &item : geoManager.GetLogicalVolumesMap())
   {
+    //fill volume into nativator
     auto &volume   = *item.second;
     auto nchildren = volume.GetDaughters().size();
     volume.SetNavigator(nchildren > 0 ? navigator : vecgeom::NewSimpleNavigator<>::Instance());
