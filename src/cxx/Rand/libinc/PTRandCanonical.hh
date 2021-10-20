@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "PromptCore.hh"
+#include "PTSingleton.hh"
 
 //fixme: use ncrystal internal random generator
 namespace Prompt {
@@ -30,6 +31,8 @@ namespace Prompt {
     PTRand(): RandCanonical<std::mt19937_64>(std::make_shared<std::mt19937_64>(6402)) {}
     ~PTRand() {};
   };
+
+  using SingletonPTRand =  Singleton<PTRand> ;
 
 }
 #include "PTRandCanonical.tpp"

@@ -1,10 +1,9 @@
 #include "PTModelCollection.hh"
 #include "PTNCrystal.hh"
 #include "PTPhysicsModel.hh"
-#include "PTSingleton.hh"
 
 Prompt::ModelCollection::ModelCollection()
-:m_cache({}), m_oriented(false), m_rng(Singleton<PTRand>::getInstance() )
+:m_cache({}), m_oriented(false), m_rng( SingletonPTRand::getInstance() )
 {}
 
 Prompt::ModelCollection::~ModelCollection() {}

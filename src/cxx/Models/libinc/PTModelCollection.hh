@@ -36,7 +36,8 @@ namespace Prompt {
     std::vector<std::shared_ptr<PhysicsModel> > m_models;
     mutable XSCache m_cache;
     bool m_oriented;
-    PTRand m_rng;
+    // SingletonRNG &m_rng;
+    PTRand &m_rng;
 
     //fixme: cache
   };

@@ -4,12 +4,11 @@
 #include <cmath>
 namespace Prompt {
   namespace Unit {
-    constexpr double MeV = 1.e6;
-    constexpr double TeV = 1.e6*MeV;
-    constexpr double GeV = 1.e3*MeV;
-    constexpr double keV = 1.e-3*MeV;
-    constexpr double eV = 1.e-6*MeV;
-    constexpr double meV = 1.e-9*MeV;
+    constexpr double eV = 1.;
+    constexpr double MeV = 1.e6*eV;
+    constexpr double GeV = 1.e9*eV;
+    constexpr double keV = 1.e3*eV;
+    constexpr double meV = 1.e-3*eV;
 
     constexpr double s = 1.;
     constexpr double ms = 1.e-3*s;
@@ -18,12 +17,12 @@ namespace Prompt {
     constexpr double fs = 1.e-15*s;
 
     constexpr double mm = 1.;
-    constexpr double cm = 0.1*mm;
+    constexpr double cm = 10*mm;
     constexpr double m = 1e3*mm;
     constexpr double Aa = 1e-10*m;
 
     constexpr double Aa3 = Aa*Aa*Aa;
-    constexpr double barn = 1e-24*cm*cm;
+    constexpr double barn = 1e-28*m*m;
 
 
     constexpr double g = 1.;

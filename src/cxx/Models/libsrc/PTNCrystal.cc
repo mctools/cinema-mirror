@@ -1,4 +1,5 @@
 #include <limits>
+
 #include "PTNCrystal.hh"
 #include "PTUnitSystem.hh"
 
@@ -35,7 +36,7 @@ double Prompt::PTNCrystal::getCrossSection(double ekin) const
   else
   {
     auto xsect = m_scat.crossSectionIsotropic( NCrystal::NeutronEnergy(ekin) );
-    return xsect.get();
+    return xsect.get()*Unit::barn;
   }
 }
 
@@ -49,7 +50,7 @@ double Prompt::PTNCrystal::getCrossSection(double ekin, const Prompt::Vector &di
   {
     xsect = m_scat.crossSectionIsotropic( NCrystal::NeutronEnergy(ekin) );
   }
-  return xsect.get();
+  return xsect.get()*Unit::barn;
 }
 
 
