@@ -39,6 +39,8 @@ double Prompt::ModelCollection::totalCrossSection(double ekin, const Vector &dir
       xs += channelxs;
     }
     m_cache.tot = xs;
+    m_cache.ekin = ekin;
+    m_cache.dir = dir;
     return xs;
   }
 }
@@ -46,7 +48,7 @@ double Prompt::ModelCollection::totalCrossSection(double ekin, const Vector &dir
 void Prompt::ModelCollection::sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const
 {
   if(!sameInquiryAsLastTime(ekin, dir))
-    printf("WARNING, sampling event with different incident energy and/or direction");
+    printf("WARNING, sampling event with different incident energy and/or direction\n");
 
   if(!m_cache.tot)
   {
