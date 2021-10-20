@@ -10,11 +10,13 @@ namespace Prompt {
 
   class PhysicsModel {
   public:
-    PhysicsModel(const std::string &name) :m_modelName(name) {};
+    PhysicsModel(const std::string &name) :m_modelName(name), m_oriented(false) {};
 
     virtual ~PhysicsModel() {};
 
     bool applicable(unsigned pgd) const { return m_supportPGD==pgd; };
+
+    bool isOriented() {return m_oriented;};
 
     void getEnergyRange(double &ekinMin, double &ekinMax) {
       m_minEkin = ekinMin;
@@ -37,6 +39,8 @@ namespace Prompt {
 
   protected:
     std::string m_modelName;
+    bool m_oriented;
+
     unsigned m_supportPGD;
     double m_minEkin, m_maxEkin;
   };

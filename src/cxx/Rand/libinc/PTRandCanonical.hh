@@ -23,6 +23,16 @@ namespace Prompt {
     uint64_t m_seed;
     std::shared_ptr<T> m_generator;
   };
+
+
+  class PTRand : public RandCanonical<std::mt19937_64>  {
+  public:
+    PTRand(): RandCanonical<std::mt19937_64>(std::make_shared<std::mt19937_64>(6402)) {}
+    ~PTRand() {};
+  };
+
 }
 #include "PTRandCanonical.tpp"
+
+
 #endif

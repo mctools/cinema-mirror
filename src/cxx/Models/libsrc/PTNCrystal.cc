@@ -12,6 +12,8 @@ Prompt::PTNCrystal::PTNCrystal(const std::string &cfgstring)
   m_minEkin = std::numeric_limits<double>::min();
   m_maxEkin = 10*Prompt::Unit::eV;
 
+  m_oriented = m_scat.isOriented();
+
   //This checks that the included NCrystal headers and the linked NCrystal
   //library are from the same release of NCrystal:
   NCrystal::libClashDetect();
