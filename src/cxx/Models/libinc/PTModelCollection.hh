@@ -37,7 +37,7 @@ namespace Prompt {
     mutable XSCache m_cache;
     bool m_oriented;
     // SingletonRNG &m_rng;
-    PTRand &m_rng;
+    SingletonPTRand &m_rng;
 
     //fixme: cache
   };

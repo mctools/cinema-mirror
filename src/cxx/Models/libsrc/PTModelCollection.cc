@@ -3,7 +3,7 @@
 #include "PTPhysicsModel.hh"
 
 Prompt::ModelCollection::ModelCollection()
-:m_cache({}), m_oriented(false), m_rng( SingletonPTRand::getInstance() )
+:m_cache({}), m_oriented(false), m_rng( Singleton<SingletonPTRand>::getInstance() )
 {}
 
 Prompt::ModelCollection::~ModelCollection() {}

@@ -18,7 +18,7 @@ namespace Prompt {
 
   private:
     double calNumDensity(const std::string &cfg);
-    PTRand &m_rng;
+    SingletonPTRand &m_rng;
     std::unique_ptr<ModelCollection> m_model;
     double m_numdensity;
   };

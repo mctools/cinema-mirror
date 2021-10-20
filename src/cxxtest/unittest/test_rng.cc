@@ -8,10 +8,10 @@ namespace pt = Prompt;
 #include "../doctest.h"
 TEST_CASE("SingletonRNG")
 {
-  auto &ref1 = pt::SingletonPTRand::getInstance();
+  auto &ref1 = pt::Singleton<pt::SingletonPTRand>::getInstance();
   printf("ref poniter %p\n", &ref1);
 
-  auto &ref2 = pt::SingletonPTRand::getInstance();
+  auto &ref2 = pt::Singleton<pt::SingletonPTRand>::getInstance();
   printf("ref poniter %p\n", &ref2);
 
   CHECK(&ref1==&ref2);

@@ -26,13 +26,12 @@ namespace Prompt {
   };
 
 
-  class PTRand : public RandCanonical<std::mt19937_64>  {
-  public:
-    PTRand(): RandCanonical<std::mt19937_64>(std::make_shared<std::mt19937_64>(6402)) {}
-    ~PTRand() {};
+  class SingletonPTRand : public RandCanonical<std::mt19937_64>  {
+    friend class Singleton<SingletonPTRand>;
+  private:
+    SingletonPTRand(): RandCanonical<std::mt19937_64>(std::make_shared<std::mt19937_64>(6402)) {}
+    ~SingletonPTRand() {};
   };
-
-  using SingletonPTRand =  Singleton<PTRand> ;
 
 }
 #include "PTRandCanonical.tpp"
