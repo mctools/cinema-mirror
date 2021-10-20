@@ -4,7 +4,7 @@
 #include "PromptCore.hh"
 
 namespace Prompt {
-  //This is the RandXRSR class of NCrystal
+  //This is the RandXRSR class of NCrystal to be removed
 
   class RandEngine final {
   public:
@@ -15,7 +15,7 @@ namespace Prompt {
     ~RandEngine();
   private:
     void seed(uint64_t seed);
-    
+
     uint64_t genUInt64();
     static uint64_t splitmix64(uint64_t& state);
     uint64_t m_s[2];

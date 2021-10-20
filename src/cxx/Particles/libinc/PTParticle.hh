@@ -14,10 +14,15 @@ namespace Prompt {
     Particle(double ekin, const Vector& dir, const Vector& pos);
     virtual ~Particle(){};
 
-    void moveForward(double length);
+    virtual void moveForward(double length);
+    virtual void changeDirectionTo(const Vector& dir);
+
     void changeEKinTo(double ekin);
-    void changeDirectionTo(const Vector& dir);
     void changePositionTo(const Vector& pos);
+    const Vector &getDirection() {return m_dir; }
+    const Vector &getPosition() {return m_pos; }
+    double getTime() {return m_time;}
+    double getEKin() {return m_ekin;}
 
     virtual double calcSpeed() const;
   protected:

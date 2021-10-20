@@ -27,8 +27,8 @@ namespace Prompt {
 
 
   class SingletonPTRand : public RandCanonical<std::mt19937_64>  {
-    friend class Singleton<SingletonPTRand>;
   private:
+    friend class Singleton<SingletonPTRand>;
     SingletonPTRand(): RandCanonical<std::mt19937_64>(std::make_shared<std::mt19937_64>(6402)) {}
     ~SingletonPTRand() {};
   };
