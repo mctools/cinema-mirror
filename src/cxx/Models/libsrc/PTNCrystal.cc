@@ -5,6 +5,9 @@
 Prompt::PTNCrystal::PTNCrystal(const std::string &cfgstring)
 :Prompt::PhysicsModel("NCrystal"), m_scat(NCrystal::createScatter(cfgstring))
 {
+  //fixme:
+  // NC::setDefaultRNG(rng);
+
   m_supportPGD = const_neutron_pgd;
   m_minEkin = std::numeric_limits<double>::min();
   m_maxEkin = 10*Prompt::Unit::eV;
@@ -50,11 +53,7 @@ double Prompt::PTNCrystal::getCrossSection(double ekin, const Prompt::Vector &di
 
 void Prompt::PTNCrystal::generate(double &ekin, Prompt::Vector &dir) const
 {
-  // auto outcome = pc.sampleScatterIsotropic( wl );
-  // std::cout <<"Powder Al random angle/delta-e at "<<wl<<" Aa is mu="<<outcome.mu
-  //           <<" ("<<std::acos(outcome.mu.get())*NC::kToDeg<<" degrees) and new energy state is "
-  //           << outcome.ekin << " ("<<outcome.ekin.wavelength()<<")" <<std::endl;
-
+  PROMPT_THROW(CalcError, "not yet implemented");
 }
 
 void Prompt::PTNCrystal::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const

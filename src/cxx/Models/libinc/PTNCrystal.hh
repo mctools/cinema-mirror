@@ -4,7 +4,7 @@
 #include <string>
 
 #include "PromptCore.hh"
-#include "PTModelManager.hh"
+#include "PTPhysicsModel.hh"
 #include <memory>
 
 #include "NCrystal/NCrystal.hh"
