@@ -15,7 +15,6 @@ Prompt::Material::~Material()
 
 double Prompt::Material::macroCrossSection(double ekin, const Prompt::Vector &dir)
 {
-  // printf("number density is %g, xs is %g\n", m_numdensity, m_model->totalCrossSection(ekin, dir));
   return m_numdensity*m_model->totalCrossSection(ekin, dir);
 }
 

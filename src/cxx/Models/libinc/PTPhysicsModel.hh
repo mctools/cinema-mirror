@@ -11,6 +11,8 @@ namespace Prompt {
   class PhysicsModel {
   public:
     PhysicsModel(const std::string &name) :m_modelName(name), m_oriented(false) {};
+    PhysicsModel(const std::string &name, unsigned gdp, double emin, double emax)
+     :m_modelName(name), m_supportPGD(gdp), m_minEkin(emin), m_maxEkin(emax), m_oriented(false) {};
 
     virtual ~PhysicsModel() {};
 

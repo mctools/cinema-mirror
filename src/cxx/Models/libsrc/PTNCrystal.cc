@@ -4,15 +4,12 @@
 #include "PTUnitSystem.hh"
 
 Prompt::PTNCrystal::PTNCrystal(const std::string &cfgstring)
-:Prompt::PhysicsModel("NCrystal"), m_scat(NCrystal::createScatter(cfgstring))
+:Prompt::PhysicsModel("NCrystal", const_neutron_pgd,
+                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV),
+                      m_scat(NCrystal::createScatter(cfgstring))
 {
   //fixme:
   // NC::setDefaultRNG(rng);
-
-  m_supportPGD = const_neutron_pgd;
-  m_minEkin = std::numeric_limits<double>::min();
-  m_maxEkin = 10*Prompt::Unit::eV;
-
   m_oriented = m_scat.isOriented();
 
   //This checks that the included NCrystal headers and the linked NCrystal
