@@ -16,7 +16,7 @@ TEST_CASE("ModelCollection")
   std::cout << xs << std::endl;
   printf("%.15f\n", xs);
 
-  CHECK(Prompt::floateq(1.378536096609809, xs ));
+  CHECK(Prompt::floateq(1.378536096609809*Prompt::Unit::barn, xs ));
 
   collection.sample(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;

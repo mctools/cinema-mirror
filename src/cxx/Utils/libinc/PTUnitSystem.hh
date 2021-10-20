@@ -17,10 +17,14 @@ namespace Prompt {
     constexpr double ps = 1.e-12*s;
     constexpr double fs = 1.e-15*s;
 
-    constexpr double mm = 1.e-3;
+    constexpr double mm = 1.;
     constexpr double cm = 0.1*mm;
     constexpr double m = 1e3*mm;
     constexpr double Aa = 1e-10*m;
+
+    constexpr double Aa3 = Aa*Aa*Aa;
+    constexpr double barn = 1e-24*cm*cm;
+
 
     constexpr double g = 1.;
     constexpr double kg = 1.e3*g;
