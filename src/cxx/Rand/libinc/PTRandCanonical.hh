@@ -25,11 +25,11 @@ namespace Prompt {
     std::shared_ptr<T> m_generator;
   };
 
-
+  //fixme: can't set SEED !!!
   class SingletonPTRand : public RandCanonical<std::mt19937_64>  {
   private:
     friend class Singleton<SingletonPTRand>;
-    SingletonPTRand(): RandCanonical<std::mt19937_64>(std::make_shared<std::mt19937_64>(6402)) {}
+    SingletonPTRand(): RandCanonical<std::mt19937_64>(std::make_shared<std::mt19937_64>()) {}
     ~SingletonPTRand() {};
   };
 

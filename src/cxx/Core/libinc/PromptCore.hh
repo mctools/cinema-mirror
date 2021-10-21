@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <limits>
+#include <memory>
 
 #include "PTException.hh"
 #include "PTUnitSystem.hh"

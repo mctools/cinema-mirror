@@ -18,6 +18,10 @@ double Prompt::Material::macroCrossSection(double ekin, const Prompt::Vector &di
   return m_numdensity*m_model->totalCrossSection(ekin, dir);
 }
 
+void Prompt::Material::sampleFinalState(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir)
+{
+  m_model->sample(ekin, dir, final_ekin, final_dir);
+}
 
 double Prompt::Material::sampleStepLength(double ekin, const Prompt::Vector &dir)
 {

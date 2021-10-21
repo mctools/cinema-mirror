@@ -19,8 +19,8 @@ namespace Prompt {
 
     void changeEKinTo(double ekin);
     void changePositionTo(const Vector& pos);
-    const Vector &getDirection() {return m_dir; }
-    const Vector &getPosition() {return m_pos; }
+    Vector &getDirection() {return m_dir; }
+    Vector &getPosition() {return m_pos; }
     double getTime() {return m_time;}
     double getEKin() {return m_ekin;}
 

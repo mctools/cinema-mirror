@@ -10,13 +10,23 @@
 #include "PTNCrystal.hh"
 
 
-Prompt::GeoManager::GeoManager(const std::string &gdml_file)
+Prompt::GeoManager::GeoManager()
 {
-  // PTNCrystal();
-  //access material
+}
+
+Prompt::GeoManager::~GeoManager(){}
+
+
+void setLogicalVolumePhysics(vecgeom::LogicalVolume &lv, std::unique_ptr<Prompt::Material> &model)
+{
+  lv.SetUserExtensionPtr((void *)(model.get()));
+}
+
+
+void Prompt::GeoManager::loadFile(const std::string &gdml_file)
+{
   vgdml::Parser p;
-  double mm_unit = 0.1;
-  const auto loadedMiddleware = p.Load(gdml_file.c_str(), false, mm_unit);
+  const auto loadedMiddleware = p.Load(gdml_file.c_str(), false, 1.);
 
   if (!loadedMiddleware) PROMPT_THROW(DataLoadError, "failed to load the gdml file ");
 
@@ -30,6 +40,9 @@ Prompt::GeoManager::GeoManager(const std::string &gdml_file)
     // item->second material
 
   }
+
+  // NCrystal::MatCfg cfg(cfgstring);
+  // NCrystal::Info info = NCrystal::createInfo(cfg);
 
 
   // //initialise material
@@ -47,11 +60,21 @@ Prompt::GeoManager::GeoManager(const std::string &gdml_file)
     auto nchildren = volume.GetDaughters().size();
     volume.SetNavigator(nchildren > 0 ? navigator : vecgeom::NewSimpleNavigator<>::Instance());
     auto mat_iter = volumeMatMap.find( volume.id());
-    if(mat_iter==volumeMatMap.end())
+    if(mat_iter==volumeMatMap.end()) //union creates empty virtual volume
       continue;
       // PROMPT_THROW2(DataLoadError, "the material of "<< volume.GetName() << " has invalid id " << volume.id());
 
     const vgdml::Material& mat = mat_iter->second;
+    auto volmat_iter = m_volmodelmap.find( mat.name);
+    if(volmat_iter==m_volmodelmap.end())
+    {
+      std::unique_ptr<Material> model = std::make_unique<Material>();
+      const std::string &cfg = mat.attributes.find("atomValue")->second;
+      model->addComposition(cfg);
+      m_volmodelmap.insert( std::pair<std::string, std::unique_ptr<Material> > (mat.name, std::move(model)) );
+    }
+
+    setLogicalVolumePhysics(volume, m_volmodelmap[mat.name]);
 
     std::cout << "volume name " << volume.GetName() << " (id = " << volume.id() << "): material name " << mat.name << std::endl;
     if (mat.attributes.size()) std::cout << "  attributes:\n";
@@ -65,6 +88,6 @@ Prompt::GeoManager::GeoManager(const std::string &gdml_file)
       std::cout << "    " << attv.first << ": " << attv.second << std::endl;
   }
   vecgeom::BVHManager::Init();
-}
 
-Prompt::GeoManager::~GeoManager(){}
+
+}

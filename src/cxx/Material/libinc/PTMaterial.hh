@@ -14,6 +14,7 @@ namespace Prompt {
 
     double macroCrossSection(double ekin, const Prompt::Vector &dir);
     double sampleStepLength(double ekin, const Prompt::Vector &dir);
+    void sampleFinalState(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir);
     void addComposition(const std::string &cfg);
 
   private:
