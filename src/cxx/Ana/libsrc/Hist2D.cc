@@ -31,9 +31,23 @@ void Prompt::Hist2D::operator+=(const Hist2D& hist)
     m_data[i]+=data[i];
 }
 
+#include<iostream>
+#include<fstream>
 void Prompt::Hist2D::save(const std::string &filename) const
 {
-  PROMPT_THROW(BadInput, "not yet implemented");
+  std::ofstream ofs;
+  ofs.open(filename, std::ios::out);
+
+  for(uint32_t i=0;i<m_xnbins;i++)
+  {
+    for(uint32_t j=0;j<m_ynbins;j++)
+    {
+      ofs << m_data[i*m_ynbins + j] << " ";
+    }
+    ofs << "\n";
+  }
+  ofs.close();
+
 }
 
 //Normal filling:

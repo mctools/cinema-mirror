@@ -5,12 +5,16 @@
 
 Prompt::NavManager::NavManager()
 :m_geo(vecgeom::GeoManager::Instance()), m_currVolume(nullptr),
-m_matphys(nullptr), m_currState(nullptr), m_nextState(nullptr)
-{
-}
+m_matphys(nullptr), m_currState(nullptr), m_nextState(nullptr),
+m_hist2d(new Hist2D(-500,500,100,-500,500,100))
+{}
 
 Prompt::NavManager::~NavManager()
-{}
+{
+  m_hist2d->save("promt_first_hist.dat");
+  std::cout << "hist integral " << m_hist2d->getIntegral();
+  delete m_hist2d;
+}
 
 Prompt::Material *getLogicalVolumePhysics(const vecgeom::LogicalVolume &lv)
 {
@@ -40,8 +44,13 @@ bool Prompt::NavManager::proprogate(Particle &particle, bool verbose )
     m_matphys = getLogicalVolumePhysics(*m_currVolume);
 
     if (verbose) {
-      std::cout << m_currVolume->GetName() << std::endl;
+      std::cout << m_currVolume->GetName() << ", id " << m_currVolume->id() << std::endl;
       std::cout << "initial conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << std::endl;
+    }
+
+    if(m_currVolume->id()==1)
+    {
+      m_hist2d->fill(p.x(), p.y());
     }
 
     double stepLength = m_matphys->sampleStepLength(particle.getEKin(), dir);

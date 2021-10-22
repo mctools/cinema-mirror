@@ -9,6 +9,8 @@
 #include "PTParticle.hh"
 #include "PTMaterial.hh"
 
+#include "Hist2D.hh"
+
 
 #include <VecGeom/management/GeoManager.h>
 
@@ -30,6 +32,8 @@ namespace Prompt {
     // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
     // It is NavStatePath otherwise
     vecgeom::NavigationState *m_currState, *m_nextState;
+    Hist2D *m_hist2d;
+
   };
 
 }
