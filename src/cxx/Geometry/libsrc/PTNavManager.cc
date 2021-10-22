@@ -73,10 +73,7 @@ bool Prompt::NavManager::proprogate(Particle &particle, bool verbose )
       particle.changeEKinTo(final_ekin);
       particle.changeDirectionTo(final_dir);
     }
-
     std::swap(m_currState, m_nextState);
-    // m_nextState->Clear();
-
 
     if (verbose) {
       std::cout << "scattered conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << " step " << step << std::endl << std::endl;
