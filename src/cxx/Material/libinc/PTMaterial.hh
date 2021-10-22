@@ -6,7 +6,6 @@
 #include "PTModelCollection.hh"
 
 namespace Prompt {
-
   class Material  {
   public:
     Material();

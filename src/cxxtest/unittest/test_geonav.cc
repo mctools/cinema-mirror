@@ -16,7 +16,12 @@ TEST_CASE("GeoManager")
 
   auto &navman = pt::Singleton<pt::NavManager>::getInstance();
 
-  pt::Neutron neutron(1 , {1,0,0}, {0,0,0});
-  while(navman.proprogate(neutron))
-    continue;
+  for(unsigned i=0;i<10;i++)
+  {
+    pt::Neutron neutron( 0.0253 , {0,0,1}, /*pos*/ {0,0,-400.});
+
+    std::cout << "new run \n";
+    while(navman.proprogate(neutron, 1))
+      continue;
+  }
 }
