@@ -24,6 +24,7 @@ namespace Prompt {
     bool exitWorld();
     void setupVolumePhysics();
     size_t getVolumeID();
+    std::string getVolumeName();
 
   private:
     friend class Singleton<NavManager>;

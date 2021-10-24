@@ -49,6 +49,11 @@ size_t Prompt::NavManager::getVolumeID()
   return m_currVolume->id();
 }
 
+std::string Prompt::NavManager::getVolumeName()
+{
+  return m_currVolume->GetName();
+}
+
 bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
 {
   Vector &p = particle.getPosition();
@@ -78,6 +83,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   std::swap(m_currState, m_nextState);
 
   bool sameVolume = step == stepLength;
+  assert(stepLength >= step);
   if (verbose && !sameVolume) { std::cout << "hitDaugherBoundary\n";}
 
   //Move next step
