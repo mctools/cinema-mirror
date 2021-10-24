@@ -16,10 +16,12 @@ TEST_CASE("GeoManager")
 
   auto &navman = pt::Singleton<pt::NavManager>::getInstance();
 
-  for(unsigned i=0;i<1000000;i++)
+  for(unsigned i=0;i<10000;i++)
   {
+    // printf("loop %d\n", i);
     pt::Neutron neutron( 0.0253 , {0,0,1}, /*pos*/ {0,0,-400.});
-    while(navman.proprogate(neutron, 0))
+    navman.locateLogicalVolume(neutron.getPosition());
+    while(navman.proprogateInAVolume(neutron, 0))
       continue;
   }
 }

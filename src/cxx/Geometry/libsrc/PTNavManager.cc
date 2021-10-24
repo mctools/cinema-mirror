@@ -91,10 +91,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     m_matphys->sampleFinalState(particle.getEKin(), dir, final_ekin, final_dir);
     particle.changeEKinTo(final_ekin);
     particle.changeDirectionTo(final_dir);
-    return true;
   }
-  else
-    return false;
 
   if (verbose) {
     std::cout << "scattered conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << " step " << step << std::endl << std::endl;
