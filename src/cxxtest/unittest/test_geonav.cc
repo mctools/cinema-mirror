@@ -18,10 +18,13 @@ TEST_CASE("GeoManager")
 
   for(unsigned i=0;i<10000;i++)
   {
-    // printf("loop %d\n", i);
     pt::Neutron neutron( 0.0253 , {0,0,1}, /*pos*/ {0,0,-400.});
     navman.locateLogicalVolume(neutron.getPosition());
-    while(navman.proprogateInAVolume(neutron, 0))
-      continue;
+    while(!navman.exitWorld())
+    {
+      navman.setupVolumePhysics();
+      while(navman.proprogateInAVolume(neutron, 0))
+        continue;
+    }
   }
 }

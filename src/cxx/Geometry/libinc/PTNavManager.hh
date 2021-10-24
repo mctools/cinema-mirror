@@ -22,6 +22,8 @@ namespace Prompt {
     bool proprogateInAVolume(Particle &particle, bool verbose = true);
     void locateLogicalVolume(const Vector &p);
     bool exitWorld();
+    void setupVolumePhysics();
+    size_t getVolumeID();
 
   private:
     friend class Singleton<NavManager>;
