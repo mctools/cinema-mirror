@@ -24,8 +24,7 @@ namespace Prompt {
   class AnaManager  {
   public:
     //used in GeoManager::loadFile
-    void bookScorer(std::string volumeName, AnalysisType type);
-    void initScorer(size_t id, AnalysisType type);
+    void addScorer(size_t id, const std::string &definition);
 
     void scorer();
 
@@ -33,7 +32,6 @@ namespace Prompt {
     friend class Singleton<AnaManager>;
     AnaManager();
     ~AnaManager();
-    std::multimap<std::string, size_t> m_volNameID;
 
     std::multimap<size_t, AnalysisType> m_volType;
     std::multimap<size_t, Hist1D> m_vol1D;

@@ -8,7 +8,7 @@
 #include <VecGeom/gdml/Frontend.h>
 
 #include "PTNCrystal.hh"
-
+#include "PTAnaManager.hh"
 
 Prompt::GeoManager::GeoManager()
 {
@@ -33,21 +33,50 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
   const auto &aMiddleware = *loadedMiddleware;
   auto volumeMatMap   = aMiddleware.GetVolumeMatMap();
 
+  // Get the volume auxiliary info
+  AnaManager *anaManager(nullptr);
+  const auto& volAuxInfo = aMiddleware.GetVolumeAuxiliaryInfo();
+  if(volAuxInfo.size())
+  {
+    anaManager = std::addressof(Singleton<AnaManager>::getInstance());//create Singleton<AnaManager> object
+  }
+  std::cout << "Geometry contains "
+            << volAuxInfo.size() << " entries of volum auxiliary info\n";
+
   //initialise navigator
   auto &geoManager = vecgeom::GeoManager::Instance();
   auto navigator = vecgeom::BVHNavigator<>::Instance();
 
   for (const auto &item : geoManager.GetLogicalVolumesMap())
   {
-    //fill volume into nativator
+    // 1. fill volume into nativator
     auto &volume   = *item.second;
+    const size_t volID = volume.id();
     auto nchildren = volume.GetDaughters().size();
     volume.SetNavigator(nchildren > 0 ? navigator : vecgeom::NewSimpleNavigator<>::Instance());
-    auto mat_iter = volumeMatMap.find( volume.id());
+    auto mat_iter = volumeMatMap.find(volID);
     if(mat_iter==volumeMatMap.end()) //union creates empty virtual volume
       continue;
-      // PROMPT_THROW2(DataLoadError, "the material of "<< volume.GetName() << " has invalid id " << volume.id());
 
+    // 2. setup analyser
+    if(anaManager)
+    {
+      auto iter = volAuxInfo.find(volID);
+      if(iter != volAuxInfo.end())
+      {
+        const auto &volAuxInfoVec = (*iter).second;
+        auto volAuxInfoSize = volAuxInfoVec.size();
+        std::cout << "volAuxInfoSize " << volume.GetName()  << " " << volAuxInfoSize << std::endl;
+
+        for(const auto& info : volAuxInfoVec)
+        {
+          std::cout <<"type "<< info.GetType() << " value " << info.GetValue() << std::endl;
+          anaManager->addScorer(volID, info.GetValue());
+        }
+      }
+    }
+
+    // 3. setup physics model
     const vgdml::Material& mat = mat_iter->second;
     auto volmat_iter = m_volmodelmap.find( mat.name);
     if(volmat_iter==m_volmodelmap.end())
@@ -57,7 +86,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
       model->addComposition(cfg);
       m_volmodelmap.insert( std::pair<std::string, std::unique_ptr<Material> > (mat.name, std::move(model)) );
     }
-
+    // 3.1 link volum with physics using the void pointer in the volume
     setLogicalVolumePhysics(volume, m_volmodelmap[mat.name]);
 
     std::cout << "volume name " << volume.GetName() << " (id = " << volume.id() << "): material name " << mat.name << std::endl;
@@ -72,6 +101,5 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
       std::cout << "    " << attv.first << ": " << attv.second << std::endl;
   }
   vecgeom::BVHManager::Init();
-
 
 }
