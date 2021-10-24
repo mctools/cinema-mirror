@@ -1,18 +1,18 @@
 #!/bin/bash
 
-USAGE="Usage: $0 -i input_excutable -o output_file "
+USAGE="Usage: $0 -x input_excutable -a args"
 
-while getopts hi:o: option
+while getopts hx:a: option
 do
 case "${option}"
 in
 h) echo "$USAGE"
    exit 0;;
-i) INPUT=${OPTARG};;
-o) OUTPUT=${OPTARG};;
+x) INPUT=${OPTARG};;
+o) ARGS=${OPTARG};;
 esac
 
 
-valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes  ${INPUT}
+valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes  ${INPUT} ${ARGS}
 
 done

@@ -4,7 +4,7 @@
 #include <VecGeom/navigation/NewSimpleNavigator.h>
 
 Prompt::NavManager::NavManager()
-:m_geo(vecgeom::GeoManager::Instance()), m_currVolume(nullptr),
+:m_geo(vecgeom::GeoManager::Instance()), m_currLV(nullptr),
 m_matphys(nullptr), m_currState(nullptr), m_nextState(nullptr),
 m_hist2d(new Hist2D(-500,500,100,-500,500,100))
 {
@@ -40,18 +40,18 @@ bool Prompt::NavManager::exitWorld()
 void Prompt::NavManager::setupVolumePhysics()
 {
   //Find next step
-  m_currVolume = m_currState->Top()->GetLogicalVolume();
-  m_matphys = getLogicalVolumePhysics(*m_currVolume);
+  m_currLV = m_currState->Top()->GetLogicalVolume();
+  m_matphys = getLogicalVolumePhysics(*m_currLV);
 }
 
 size_t Prompt::NavManager::getVolumeID()
 {
-  return m_currVolume->id();
+  return m_currLV->id();
 }
 
 std::string Prompt::NavManager::getVolumeName()
 {
-  return m_currVolume->GetName();
+  return m_currLV->GetName();
 }
 
 bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
@@ -60,13 +60,14 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   Vector &dir = particle.getDirection();
 
   if (verbose) {
-    std::cout << m_currVolume->GetName() << ", id " << m_currVolume->id() << std::endl;
+    std::cout << m_currLV->GetName() << ", id " << m_currLV->id() << std::endl;
     std::cout << "initial conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << std::endl;
   }
 
-  if(m_currVolume->id()==1)
+  if(m_currLV->id()==1)
   {
-    m_hist2d->fill(p.x(), p.y());
+    auto loc = m_currState->GlobalToLocal({p.x(), p.y(), p.z()});
+    m_hist2d->fill(loc[0], loc[1]);
   }
 
   double stepLength = m_matphys->sampleStepLength(particle.getEKin(), dir);
@@ -79,7 +80,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   //!   - if ray leaves volume: m_nextState.Top() will point to current volume
   //!   - if step limit > step: m_nextState == in_state
   //!   ComputeStep is essentialy equal to ComputeStepAndPropagatedState without the relaction part
-  double step = m_currVolume->GetNavigator()->ComputeStepAndPropagatedState(pos, direction, stepLength, *m_currState, *m_nextState);
+  double step = m_currLV->GetNavigator()->ComputeStepAndPropagatedState(pos, direction, stepLength, *m_currState, *m_nextState);
   std::swap(m_currState, m_nextState);
 
   bool sameVolume = step == stepLength;

@@ -32,7 +32,7 @@ namespace Prompt {
     ~NavManager();
 
     vecgeom::GeoManager &m_geo;
-    const vecgeom::LogicalVolume *m_currVolume;
+    const vecgeom::LogicalVolume *m_currLV;
     Prompt::Material *m_matphys;
     // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
     // It is NavStatePath otherwise
