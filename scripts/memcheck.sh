@@ -1,14 +1,15 @@
 #!/bin/bash
 
-USAGE="Usage: $0 -i input_excutable "
+USAGE="Usage: $0 -x input_excutable -i args"
 
-while getopts hi: option
+while getopts hi:x: option
 do
 case "${option}"
 in
 h) echo "$USAGE"
    exit 0;;
-i) INPUT=${OPTARG};;
+x) INPUT=${OPTARG};;
+i) ARGS=${OPTARG};;
 esac
 done
-valgrind --leak-check=full  ${INPUT}
+valgrind --leak-check=full  ${INPUT} ${ARGS}
