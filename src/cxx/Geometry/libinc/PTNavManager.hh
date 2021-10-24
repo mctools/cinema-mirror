@@ -18,8 +18,10 @@ namespace Prompt {
 
   class NavManager  {
   public:
-    bool proprogate(Particle &particle, bool verbose = true);
+    //return false if the track is terminated, i.e. exist world
+    bool proprogateInAVolume(Particle &particle, bool verbose = true);
     void locateLogicalVolume(const Vector &p);
+    bool exitWorld();
 
   private:
     friend class Singleton<NavManager>;

@@ -32,24 +32,8 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
   const auto &aMiddleware = *loadedMiddleware;
   auto volumeMatMap   = aMiddleware.GetVolumeMatMap();
-  auto materialMap = aMiddleware.GetMaterialMap();
 
-  for(const auto &item : materialMap)
-  {
-    // item->first name
-    // item->second material
-
-  }
-
-  // NCrystal::MatCfg cfg(cfgstring);
-  // NCrystal::Info info = NCrystal::createInfo(cfg);
-
-
-  // //initialise material
-  // using MaterialMap_t         = std::map<std::string, vgdml::Material>;
-  // MaterialMap_t const &GetMaterialMap() const { return materialMap; }
-
-  //initialise navigation
+  //initialise navigator
   auto &geoManager = vecgeom::GeoManager::Instance();
   auto navigator = vecgeom::BVHNavigator<>::Instance();
 
