@@ -11,6 +11,8 @@ namespace pt = Prompt;
 
 TEST_CASE("GeoManager")
 {
+  pt::Singleton<pt::SingletonPTRand>::getInstance().setSeed(0);
+
   auto &geoman = pt::Singleton<pt::GeoManager>::getInstance();
   geoman.loadFile("../gdml/first_geo.gdml");
 
@@ -22,6 +24,7 @@ TEST_CASE("GeoManager")
     navman.locateLogicalVolume(neutron.getPosition());
     while(!navman.exitWorld())
     {
+      //first step of a particle in a volume
       navman.setupVolumePhysics();
       while(navman.proprogateInAVolume(neutron, 0))
         continue;

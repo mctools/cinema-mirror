@@ -19,10 +19,12 @@ namespace Prompt {
     RandCanonical(std::shared_ptr<T> gen);
     ~RandCanonical();
     double generate() const;
+    void setSeed(uint64_t seed);
 
   private:
-    uint64_t m_seed;
     std::shared_ptr<T> m_generator;
+    uint64_t m_seed;
+    bool m_seedIsSet;
   };
 
   //fixme: can't set SEED !!!
