@@ -23,6 +23,7 @@ namespace Prompt {
     void setupVolumePhysics();
     size_t getVolumeID();
     std::string getVolumeName();
+    const vecgeom::VPlacedVolume *getVolume();
 
   private:
     friend class Singleton<NavManager>;
@@ -30,13 +31,12 @@ namespace Prompt {
     ~NavManager();
 
     vecgeom::GeoManager &m_geo;
-    const vecgeom::LogicalVolume *m_currLV;
+    const vecgeom::VPlacedVolume *m_currPV;
     Prompt::Material *m_matphys;
     // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
     // It is NavStatePath otherwise
     vecgeom::NavigationState *m_currState, *m_nextState;
     Hist2D *m_hist2d;
-
   };
 
 }

@@ -4,7 +4,7 @@
 #include <VecGeom/navigation/NewSimpleNavigator.h>
 
 Prompt::NavManager::NavManager()
-:m_geo(vecgeom::GeoManager::Instance()), m_currLV(nullptr),
+:m_geo(vecgeom::GeoManager::Instance()), m_currPV(nullptr),
 m_matphys(nullptr), m_currState(nullptr), m_nextState(nullptr),
 m_hist2d(new Hist2D(-500,500,100,-500,500,100))
 {
@@ -18,7 +18,6 @@ Prompt::NavManager::~NavManager()
   delete m_hist2d;
   delete m_currState;
   delete m_nextState;
-
 }
 
 Prompt::Material *getLogicalVolumePhysics(const vecgeom::LogicalVolume &lv)
@@ -41,18 +40,23 @@ void Prompt::NavManager::setupVolumePhysics()
 {
   // Find next step
   // m_currState->Top() gets the placed volume
-  m_currLV = m_currState->Top()->GetLogicalVolume();
-  m_matphys = getLogicalVolumePhysics(*m_currLV);
+  m_currPV = m_currState->Top();
+  m_matphys = getLogicalVolumePhysics(*m_currPV->GetLogicalVolume());
 }
 
 size_t Prompt::NavManager::getVolumeID()
 {
-  return m_currLV->id();
+  return m_currPV->GetLogicalVolume()->id();
 }
 
 std::string Prompt::NavManager::getVolumeName()
 {
-  return m_currLV->GetName();
+  return m_currPV->GetLogicalVolume()->GetName();
+}
+
+const vecgeom::VPlacedVolume *Prompt::NavManager::getVolume()
+{
+  return m_currPV;
 }
 
 bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
@@ -61,11 +65,11 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   Vector &dir = particle.getDirection();
 
   if (verbose) {
-    std::cout << m_currLV->GetName() << ", id " << m_currLV->id() << std::endl;
+    std::cout << m_currPV->GetLogicalVolume()->GetName() << ", id " << m_currPV->GetLogicalVolume()->id() << std::endl;
     std::cout << "initial conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << std::endl;
   }
 
-  if(m_currLV->id()==1)
+  if(m_currPV->GetLogicalVolume()->id()==1)
   {
     auto loc = m_currState->GlobalToLocal({p.x(), p.y(), p.z()});
     m_hist2d->fill(loc[0], loc[1]);
@@ -81,7 +85,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   //!   - if ray leaves volume: m_nextState.Top() will point to current volume
   //!   - if step limit > step: m_nextState == in_state
   //!   ComputeStep is essentialy equal to ComputeStepAndPropagatedState without the relaction part
-  double step = m_currLV->GetNavigator()->ComputeStepAndPropagatedState(pos, direction, stepLength, *m_currState, *m_nextState);
+  double step = m_currPV->GetLogicalVolume()->GetNavigator()->ComputeStepAndPropagatedState(pos, direction, stepLength, *m_currState, *m_nextState);
   std::swap(m_currState, m_nextState);
 
   bool sameVolume = step == stepLength;
