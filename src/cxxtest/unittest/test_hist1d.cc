@@ -3,7 +3,7 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
-#include "Hist1D.hh"
+#include "PTHist1D.hh"
 #include "PTRandEngine.hh"
 #include "PTRandCanonical.hh"
 #include "PTMath.hh"

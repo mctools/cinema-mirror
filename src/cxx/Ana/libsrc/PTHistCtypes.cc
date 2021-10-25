@@ -1,9 +1,9 @@
 #include <string>
 
-#include "HistCtypes.hh"
-#include "Hist2D.hh"
-#include "Hist1D.hh"
-#include "HistBase.hh"
+#include "PTHistCtypes.hh"
+#include "PTHist2D.hh"
+#include "PTHist1D.hh"
+#include "PTHistBase.hh"
 
 //Hist1D
 void* Hist1D_new(double xmin, double xmax, unsigned nxbins, bool log)

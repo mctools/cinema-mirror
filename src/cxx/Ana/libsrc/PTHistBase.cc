@@ -1,4 +1,4 @@
-#include "HistBase.hh"
+#include "PTHistBase.hh"
 #include <stdexcept>
 #include <fstream>
 //fixme:

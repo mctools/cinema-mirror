@@ -1,4 +1,4 @@
-#include "Hist2D.hh"
+#include "PTHist2D.hh"
 
 Prompt::Hist2D::Hist2D(double xmin, double xmax, unsigned xnbins,
                        double ymin, double ymax, unsigned ynbins)

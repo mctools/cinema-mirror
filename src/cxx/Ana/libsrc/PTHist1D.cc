@@ -1,4 +1,4 @@
-#include "Hist1D.hh"
+#include "PTHist1D.hh"
 #include "PTMath.hh"
 
 Prompt::Hist1D::Hist1D(double xmin, double xmax, unsigned nbins, bool linear)
