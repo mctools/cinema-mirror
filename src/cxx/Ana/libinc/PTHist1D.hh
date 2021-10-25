@@ -1,7 +1,7 @@
 #ifndef Hist1D_hh
 #define Hist1D_hh
 
-#include "HistBase.hh"
+#include "PTHistBase.hh"
 #include <cmath>
 
 namespace Prompt {

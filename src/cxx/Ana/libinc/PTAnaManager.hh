@@ -1,12 +1,10 @@
 #ifndef Prompt_AnaManager_hh
 #define Prompt_AnaManager_hh
 
-#include <string>
-#include <map>
 #include "PromptCore.hh"
 #include "PTSingleton.hh"
-#include "Hist1D.hh"
-#include "Hist2D.hh"
+#include "PTHist1D.hh"
+#include "PTHist2D.hh"
 
 namespace Prompt {
 
@@ -25,7 +23,6 @@ namespace Prompt {
   public:
     //used in GeoManager::loadFile
     void addScorer(size_t id, const std::string &definition);
-
     void scorer();
 
   private:

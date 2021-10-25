@@ -39,7 +39,8 @@ bool Prompt::NavManager::exitWorld()
 
 void Prompt::NavManager::setupVolumePhysics()
 {
-  //Find next step
+  // Find next step
+  // m_currState->Top() gets the placed volume
   m_currLV = m_currState->Top()->GetLogicalVolume();
   m_matphys = getLogicalVolumePhysics(*m_currLV);
 }
@@ -88,7 +89,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   if (verbose && !sameVolume) { std::cout << "hitDaugherBoundary\n";}
 
   //Move next step
-  const double resolution = 1e-13;
+  const double resolution = 1e-13; //fixme: this value should be in sync with the geometry tolerance
   pos += (step + sameVolume ? 0 : resolution) * direction;
   particle.moveForward(step);
 

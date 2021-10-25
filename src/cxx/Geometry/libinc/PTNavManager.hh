@@ -9,9 +9,7 @@
 #include "PTParticle.hh"
 #include "PTMaterial.hh"
 
-#include "Hist2D.hh"
-
-
+#include "PTHist2D.hh"
 #include <VecGeom/management/GeoManager.h>
 
 namespace Prompt {

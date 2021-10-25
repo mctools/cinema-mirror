@@ -1,7 +1,7 @@
 #ifndef Hist2D_hh
 #define Hist2D_hh
 
-#include "HistBase.hh"
+#include "PTHistBase.hh"
 #include <cmath>
 
 namespace Prompt {
@@ -35,7 +35,7 @@ namespace Prompt {
     double m_ymax;
     uint32_t m_xnbins, m_ynbins;
   };
-  #include "Hist2D.icc"
+  #include "PTHist2D.icc"
 }
 
 
