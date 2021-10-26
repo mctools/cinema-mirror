@@ -77,15 +77,12 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
 
   double stepLength = m_matphys->sampleStepLength(particle.getEKin(), dir);
 
-  vecgeom::Vector3D<Precision> pos{p.x(), p.y(), p.z()};
-  vecgeom::Vector3D<Precision> direction{dir.x(), dir.y(), dir.z()};
-
   //! updates m_nextState to contain information about the next hitting boundary:
   //!   - if a daugher is hit: m_nextState.Top() will be daughter
   //!   - if ray leaves volume: m_nextState.Top() will point to current volume
   //!   - if step limit > step: m_nextState == in_state
   //!   ComputeStep is essentialy equal to ComputeStepAndPropagatedState without the relaction part
-  double step = m_currPV->GetLogicalVolume()->GetNavigator()->ComputeStepAndPropagatedState(pos, direction, stepLength, *m_currState, *m_nextState);
+  double step = m_currPV->GetLogicalVolume()->GetNavigator()->ComputeStepAndPropagatedState({p.x(), p.y(), p.z()}, {dir.x(), dir.y(), dir.z()}, stepLength, *m_currState, *m_nextState);
   std::swap(m_currState, m_nextState);
 
   bool sameVolume = step == stepLength;
@@ -93,9 +90,9 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   if (verbose && !sameVolume) { std::cout << "hitDaugherBoundary\n";}
 
   //Move next step
-  const double resolution = 1e-13; //fixme: this value should be in sync with the geometry tolerance
-  pos += (step + sameVolume ? 0 : resolution) * direction;
-  particle.moveForward(step);
+  const double resolution = 0; //fixme: this value should be in sync with the geometry tolerance
+  // pos += (step + sameVolume ? 0 : resolution) * direction;
+  particle.moveForward(step + (sameVolume ? 0 : resolution) );
 
   if (verbose) {
     std::cout << "scattered conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << " step " << step << std::endl << std::endl;

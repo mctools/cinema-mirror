@@ -29,17 +29,18 @@ namespace Prompt {
     double m_ekin, m_time;
     Vector m_dir, m_pos;
     unsigned m_pgd;
+    double m_weight;
     double m_rest_mass;
   };
 }
 
 
 inline Prompt::Particle::Particle()
-  :m_ekin(0.), m_time(0.), m_dir(), m_pos(), m_pgd(0), m_rest_mass(0.)
+  :m_ekin(0.), m_time(0.), m_dir(), m_pos(), m_pgd(0), m_weight(1.), m_rest_mass(0.)
 {}
 
 inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& pos)
-  :m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0) ,m_rest_mass(0)
+  :m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0),  m_weight(1.), m_rest_mass(0)
 {}
 
 inline void Prompt::Particle::moveForward(double length)

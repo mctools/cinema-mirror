@@ -9,13 +9,13 @@ namespace Prompt {
 
   class TrackManager {
   public:
-    void addTrack(std::unique_ptr<Prompt::Track> &aTrack);
+    void addTrack(std::unique_ptr<Prompt::Particle> &aparticle);
 
   private:
     friend class Singleton<TrackManager>;
     TrackManager();
     ~TrackManager();
-    std::vector<std::unique_ptr<Track> > m_tracks;
+    std::vector<std::unique_ptr<Particle> > m_tracks;
   };
 }
 
