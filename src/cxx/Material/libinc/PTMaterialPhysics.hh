@@ -1,15 +1,15 @@
-#ifndef Prompt_Material_hh
-#define Prompt_Material_hh
+#ifndef Prompt_MaterialPhysics_hh
+#define Prompt_MaterialPhysics_hh
 
 #include <string>
 #include "PromptCore.hh"
 #include "PTModelCollection.hh"
 
 namespace Prompt {
-  class Material  {
+  class MaterialPhysics  {
   public:
-    Material();
-    virtual ~Material();
+    MaterialPhysics();
+    virtual ~MaterialPhysics();
 
     double macroCrossSection(double ekin, const Prompt::Vector &dir);
     double sampleStepLength(double ekin, const Prompt::Vector &dir);

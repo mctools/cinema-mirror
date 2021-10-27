@@ -17,7 +17,7 @@ Prompt::GeoManager::GeoManager()
 Prompt::GeoManager::~GeoManager(){}
 
 
-void setLogicalVolumePhysics(vecgeom::LogicalVolume &lv, std::unique_ptr<Prompt::Material> &model)
+void setLogicalVolumePhysics(vecgeom::LogicalVolume &lv, std::unique_ptr<Prompt::MaterialPhysics> &model)
 {
   lv.SetUserExtensionPtr((void *)(model.get()));
 }
@@ -81,10 +81,10 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     auto volmat_iter = m_volmodelmap.find( mat.name);
     if(volmat_iter==m_volmodelmap.end())
     {
-      std::unique_ptr<Material> model = std::make_unique<Material>();
+      std::unique_ptr<MaterialPhysics> model = std::make_unique<MaterialPhysics>();
       const std::string &cfg = mat.attributes.find("atomValue")->second;
       model->addComposition(cfg);
-      m_volmodelmap.insert( std::pair<std::string, std::unique_ptr<Material> > (mat.name, std::move(model)) );
+      m_volmodelmap.insert( std::pair<std::string, std::unique_ptr<MaterialPhysics> > (mat.name, std::move(model)) );
     }
     // 3.1 link volum with physics using the void pointer in the volume
     setLogicalVolumePhysics(volume, m_volmodelmap[mat.name]);

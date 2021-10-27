@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 #include "PromptCore.hh"
-#include "PTMaterial.hh"
+#include "PTMaterialPhysics.hh"
 #include "PTSingleton.hh"
 
 // namespace vecgeom
@@ -24,7 +24,7 @@ namespace Prompt {
     GeoManager();
     ~GeoManager();
 
-    std::map<std::string, std::unique_ptr<Material> > m_volmodelmap; // the place to manage the life time of ModelCollection
+    std::map<std::string, std::unique_ptr<MaterialPhysics> > m_volmodelmap; // the place to manage the life time of ModelCollection
   };
 
 }

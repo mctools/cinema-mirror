@@ -20,9 +20,9 @@ Prompt::NavManager::~NavManager()
   delete m_nextState;
 }
 
-Prompt::Material *getLogicalVolumePhysics(const vecgeom::LogicalVolume &lv)
+Prompt::MaterialPhysics *getLogicalVolumePhysics(const vecgeom::LogicalVolume &lv)
 {
-  return (Prompt::Material *)(lv.GetUserExtensionPtr());
+  return (Prompt::MaterialPhysics *)(lv.GetUserExtensionPtr());
 }
 
 void Prompt::NavManager::locateLogicalVolume(const Vector &p)
@@ -91,7 +91,6 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
 
   //Move next step
   const double resolution = 0; //fixme: this value should be in sync with the geometry tolerance
-  // pos += (step + sameVolume ? 0 : resolution) * direction;
   particle.moveForward(step + (sameVolume ? 0 : resolution) );
 
   if (verbose) {
