@@ -5,8 +5,8 @@
 
 Prompt::NavManager::NavManager()
 :m_geo(vecgeom::GeoManager::Instance()), m_currPV(nullptr),
-m_matphys(nullptr), m_currState(nullptr), m_nextState(nullptr),
-m_hist2d(new Hist2D(-500,500,100,-500,500,100))
+m_matphysscor(nullptr), m_currState(nullptr),
+m_nextState(nullptr), m_hist2d(new Hist2D(-500,500,100,-500,500,100))
 {
   m_currState = vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth());
   m_nextState = vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth());
@@ -20,9 +20,9 @@ Prompt::NavManager::~NavManager()
   delete m_nextState;
 }
 
-Prompt::MaterialPhysics *getLogicalVolumePhysics(const vecgeom::LogicalVolume &lv)
+Prompt::VolumePhysicsScoror *getLogicalVolumePhysicsScoror(const vecgeom::LogicalVolume &lv)
 {
-  return (Prompt::MaterialPhysics *)(lv.GetUserExtensionPtr());
+  return (Prompt::VolumePhysicsScoror *)lv.GetUserExtensionPtr();
 }
 
 void Prompt::NavManager::locateLogicalVolume(const Vector &p)
@@ -41,7 +41,7 @@ void Prompt::NavManager::setupVolumePhysics()
   // Find next step
   // m_currState->Top() gets the placed volume
   m_currPV = m_currState->Top();
-  m_matphys = getLogicalVolumePhysics(*m_currPV->GetLogicalVolume());
+  m_matphysscor = getLogicalVolumePhysicsScoror(*m_currPV->GetLogicalVolume());
 }
 
 size_t Prompt::NavManager::getVolumeID()
@@ -75,7 +75,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     m_hist2d->fill(loc[0], loc[1]);
   }
 
-  double stepLength = m_matphys->sampleStepLength(particle.getEKin(), dir);
+  double stepLength = m_matphysscor->physics->sampleStepLength(particle.getEKin(), dir);
 
   //! updates m_nextState to contain information about the next hitting boundary:
   //!   - if a daugher is hit: m_nextState.Top() will be daughter
@@ -102,7 +102,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     //sample the interaction at the location
     double final_ekin(0);
     Vector final_dir;
-    m_matphys->sampleFinalState(particle.getEKin(), dir, final_ekin, final_dir);
+    m_matphysscor->physics->sampleFinalState(particle.getEKin(), dir, final_ekin, final_dir);
     particle.changeEKinTo(final_ekin);
     particle.changeDirectionTo(final_dir);
     return true;

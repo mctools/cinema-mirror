@@ -5,7 +5,9 @@ Prompt::ScororNeutronSq::ScororNeutronSq(const Vector &samplePos, const Vector &
 m_sourceSampleDist(sourceSampleDist), m_hist(std::make_unique<Hist1D>(qmin, qmax, numbin, linear))
 {}
 
-Prompt::ScororNeutronSq::~ScororNeutronSq() {}
+Prompt::ScororNeutronSq::~ScororNeutronSq() {
+  save("ScororNeutronSq.dat");
+}
 
 void Prompt::ScororNeutronSq::score(Prompt::Particle &particle, bool kill)
 {

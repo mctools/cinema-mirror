@@ -8,9 +8,10 @@
 #include "PTSingleton.hh"
 #include "PTParticle.hh"
 #include "PTMaterialPhysics.hh"
-
+#include "PTScoror.hh"
 #include "PTHist2D.hh"
 #include <VecGeom/management/GeoManager.h>
+#include "PTGeoManager.hh"
 
 namespace Prompt {
 
@@ -32,7 +33,7 @@ namespace Prompt {
 
     vecgeom::GeoManager &m_geo;
     const vecgeom::VPlacedVolume *m_currPV;
-    Prompt::MaterialPhysics *m_matphys;
+    VolumePhysicsScoror *m_matphysscor;
     // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
     // It is NavStatePath otherwise
     vecgeom::NavigationState *m_currState, *m_nextState;
