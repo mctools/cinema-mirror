@@ -41,6 +41,7 @@ namespace Prompt {
     Vector cross(const Vector&) const;
     void cross_inplace(const Vector&);
     double dot(const Vector&) const;
+    double angleCos(const Vector&) const;//slow
     double angle(const Vector&) const;//slow
     double angle_highres(const Vector&) const;//very slow, but precise even for small angles
     double mag() const;//slow
@@ -271,6 +272,16 @@ inline double Prompt::Vector::angle(const Prompt::Vector& vec2) const
   double result = dot(vec2) / norm;
   return std::acos( std::min(1.,std::max(-1.,result)) );
 }
+
+inline double Prompt::Vector::angleCos(const Prompt::Vector& vec2) const
+{
+  double norm = std::sqrt( mag2()*vec2.mag2() );
+  if (!norm)
+    PROMPT_THROW(CalcError,"PTVector::angle(): Can't find angle to/from null-vector.");
+  double result = dot(vec2) / norm;
+  return std::min(1.,std::max(-1.,result)) ;
+}
+
 
 inline double Prompt::Vector::angle_highres(const Prompt::Vector& vec2) const
 {

@@ -30,8 +30,10 @@ namespace Prompt {
     constexpr double kelvin = 1.;
   }
 
-  const unsigned const_neutron_pgd = 2112;
-  const unsigned const_proton_pgd = 2212;
+  constexpr unsigned const_neutron_pgd = 2112;
+  constexpr unsigned const_proton_pgd = 2212;
+
+  constexpr double const_eV2kk = 1.0/2.072124652399821e-3;
 
   ///！ constants are directly obtained from NCrystal's source code
   constexpr double const_c  = 299792458*Unit::m/Unit::s ;// speed of light in Aa/s

@@ -19,10 +19,14 @@ namespace Prompt {
 
     void changeEKinTo(double ekin);
     void changePositionTo(const Vector& pos);
-    Vector &getDirection() {return m_dir; }
-    Vector &getPosition() {return m_pos; }
-    double getTime() {return m_time;}
-    double getEKin() {return m_ekin;}
+    Vector &getDirection() { return m_dir; }
+    Vector &getPosition() { return m_pos; }
+    double getTime() { return m_time; }
+    double getEKin() { return m_ekin; }
+    double getWeight() { return m_weight; }
+
+    void kill();
+    bool isAlive();
 
     virtual double calcSpeed() const;
   protected:
@@ -31,16 +35,17 @@ namespace Prompt {
     unsigned m_pgd;
     double m_weight;
     double m_rest_mass;
+    bool m_alive;
   };
 }
 
 
 inline Prompt::Particle::Particle()
-  :m_ekin(0.), m_time(0.), m_dir(), m_pos(), m_pgd(0), m_weight(1.), m_rest_mass(0.)
+  :m_ekin(0.), m_time(0.), m_dir(), m_pos(), m_pgd(0), m_weight(1.), m_rest_mass(0.), m_alive(true)
 {}
 
 inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& pos)
-  :m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0),  m_weight(1.), m_rest_mass(0)
+  :m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0),  m_weight(1.), m_rest_mass(0), m_alive(true)
 {}
 
 inline void Prompt::Particle::moveForward(double length)

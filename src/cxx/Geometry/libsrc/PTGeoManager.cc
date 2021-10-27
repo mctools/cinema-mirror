@@ -49,6 +49,8 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
   for (const auto &item : geoManager.GetLogicalVolumesMap())
   {
+    std::unique_ptr<VolumePhysicsScoror> vps = std::make_unique<VolumePhysicsScoror>();
+
     // 1. fill volume into nativator
     auto &volume   = *item.second;
     const size_t volID = volume.id();
@@ -58,7 +60,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     if(mat_iter==volumeMatMap.end()) //union creates empty virtual volume
       continue;
 
-    // 2. setup analyser
+    // 2. setup scorors
     if(anaManager)
     {
       auto iter = volAuxInfo.find(volID);
@@ -76,18 +78,20 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
       }
     }
 
-    // 3. setup physics model
+    // 3. setup physics model, if it is not yet set
     const vgdml::Material& mat = mat_iter->second;
-    auto volmat_iter = m_volmodelmap.find( mat.name);
-    if(volmat_iter==m_volmodelmap.end())
+    auto volmat_iter = m_volphyscoror.find( mat.name);
+    if(volmat_iter==m_volphyscoror.end())
     {
       std::unique_ptr<MaterialPhysics> model = std::make_unique<MaterialPhysics>();
       const std::string &cfg = mat.attributes.find("atomValue")->second;
       model->addComposition(cfg);
-      m_volmodelmap.insert( std::pair<std::string, std::unique_ptr<MaterialPhysics> > (mat.name, std::move(model)) );
+      vps->physics=std::move(model);
+      setLogicalVolumePhysics(volume, vps->physics);
     }
-    // 3.1 link volum with physics using the void pointer in the volume
-    setLogicalVolumePhysics(volume, m_volmodelmap[mat.name]);
+    else
+      // 3.1 link volum with physics using the void pointer in the volume
+      setLogicalVolumePhysics(volume, m_volphyscoror[mat.name]->physics);
 
     std::cout << "volume name " << volume.GetName() << " (id = " << volume.id() << "): material name " << mat.name << std::endl;
     if (mat.attributes.size()) std::cout << "  attributes:\n";
@@ -99,7 +103,9 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     if (mat.components.size()) std::cout << "  components:\n";
     for (const auto &attv : mat.components)
       std::cout << "    " << attv.first << ": " << attv.second << std::endl;
+
+    m_volphyscoror.insert( std::pair<std::string, std::unique_ptr<VolumePhysicsScoror> > (mat.name, std::move(vps)) );
+
   }
   vecgeom::BVHManager::Init();
-
 }

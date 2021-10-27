@@ -6,13 +6,14 @@
 #include "PromptCore.hh"
 #include "PTMaterialPhysics.hh"
 #include "PTSingleton.hh"
-
-// namespace vecgeom
-// {
-//   class LogicalVolume;
-// }
+#include "PTScoror.hh"
 
 namespace Prompt {
+
+  struct VolumePhysicsScoror {
+    std::unique_ptr<MaterialPhysics>  physics;
+    std::vector<std::unique_ptr<Scoror> > scorors;
+  };
 
   class GeoManager  {
   public:
@@ -24,9 +25,9 @@ namespace Prompt {
     GeoManager();
     ~GeoManager();
 
-    std::map<std::string, std::unique_ptr<MaterialPhysics> > m_volmodelmap; // the place to manage the life time of ModelCollection
+    //the place to manage the life time of MaterialPhysics scorors
+    std::map<std::string, std::unique_ptr<VolumePhysicsScoror> > m_volphyscoror;
   };
-
 }
 
 #endif
