@@ -48,7 +48,9 @@ void Prompt::Hist1D::save(const std::string &filename) const
     "import matplotlib.pyplot as plt\n"
     "x=np.load('%s_bin.npy')\n"
     "y=np.load('%s_content.npy')\n"
-    "plt.step(x,y)\n"
+    "plt.plot(x,y)\n"
+    "plt.grid()\n"
+    "plt.ylim([0, 400])\n"
     "plt.show()\n", filename.c_str(), filename.c_str());
 
   std::ofstream outfile(filename+"_view.py");

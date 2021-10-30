@@ -61,8 +61,14 @@ const vecgeom::VPlacedVolume *Prompt::NavManager::getVolume()
 
 bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
 {
-  std::cout << m_currPV->GetLogicalVolume()->GetName() << ", scoror size "
-      << m_matphysscor->scorors.size() << std::endl;
+  // std::cout << m_currPV->GetLogicalVolume()->GetName() << ", scoror size "
+  //     << m_matphysscor->scorors.size() << std::endl;
+
+  if(m_matphysscor->scorors.size())
+  {
+    m_matphysscor->scorors[0]->score(particle, true);
+    // return false;
+  }
 
   Vector &p = particle.getPosition();
   Vector &dir = particle.getDirection();

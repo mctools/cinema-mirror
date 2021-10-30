@@ -13,5 +13,5 @@ std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::stri
 {
   std::vector<std::string> words;
   split(definition, ';', words);
-  return std::make_shared<Prompt::ScororNeutronSq>(Vector{0,0,0.}, Vector{0,0,1.}, 10., 0., 100.,1000);
+  return std::make_shared<Prompt::ScororNeutronSq>(Vector{0,0,0.}, Vector{0,0,1.}, 4000.*Unit::mm, 0., 10.,5000);
 }

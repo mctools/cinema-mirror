@@ -46,7 +46,9 @@ inline Prompt::Particle::Particle()
 
 inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& pos)
   :m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0),  m_weight(1.), m_rest_mass(0), m_alive(true)
-{}
+{
+  m_dir=m_dir.unit();
+}
 
 inline void Prompt::Particle::moveForward(double length)
 {
