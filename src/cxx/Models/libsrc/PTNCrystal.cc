@@ -24,7 +24,7 @@ private:
 
 
 Prompt::PTNCrystal::PTNCrystal(const std::string &cfgstring)
-:Prompt::PhysicsModel("NCrystal", const_neutron_pgd,
+:Prompt::PhysicsModel(cfgstring, const_neutron_pgd,
                       std::numeric_limits<double>::min(), 10*Prompt::Unit::eV),
                       m_scat(NCrystal::createScatter(cfgstring))
 {
@@ -42,7 +42,7 @@ Prompt::PTNCrystal::PTNCrystal(const std::string &cfgstring)
 
 Prompt::PTNCrystal::~PTNCrystal()
 {
-
+  std::cout<<"Destructing physics " << m_modelName <<std::endl;
 }
 
 

@@ -17,11 +17,32 @@ Prompt::GeoManager::GeoManager()
 Prompt::GeoManager::~GeoManager(){}
 
 
-void setLogicalVolumePhysicsScoror(vecgeom::LogicalVolume &lv, std::unique_ptr<Prompt::VolumePhysicsScoror> &vps)
+void setLogicalVolumePhysicsScoror(vecgeom::LogicalVolume &lv, std::shared_ptr<Prompt::VolumePhysicsScoror> &vps)
 {
   lv.SetUserExtensionPtr((void *)(vps.get()));
 }
 
+std::shared_ptr<Prompt::MaterialPhysics> Prompt::GeoManager::getMaterialPhysics(const std::string &name)
+{
+  auto it = m_globelPhysics.find(name);
+  if(it!=m_globelPhysics.end())
+  {
+    return it->second;
+  }
+  else
+    return nullptr;
+}
+
+std::shared_ptr<Prompt::Scoror> Prompt::GeoManager::getScoror(const std::string &name)
+{
+  auto it = m_globelScorors.find(name);
+  if(it!= m_globelScorors.end())
+  {
+    return it->second;
+  }
+  else
+    return nullptr;
+}
 
 void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 {
@@ -34,7 +55,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
   auto volumeMatMap   = aMiddleware.GetVolumeMatMap();
 
   // Get the volume auxiliary info
-  const auto& volAuxInfo = aMiddleware.GetVolumeAuxiliaryInfo();
+  const std::map<int, std::vector<vgdml::Auxiliary>>& volAuxInfo = aMiddleware.GetVolumeAuxiliaryInfo();
   std::cout << "Geometry contains "
             << volAuxInfo.size() << " entries of volum auxiliary info\n";
 
@@ -46,7 +67,8 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
   for (const auto &item : geoManager.GetLogicalVolumesMap())
   {
-    std::unique_ptr<VolumePhysicsScoror> vps = std::make_unique<VolumePhysicsScoror>();
+    m_volphyscoror.emplace_back(std::make_shared<VolumePhysicsScoror>());
+    std::shared_ptr<VolumePhysicsScoror> &vps = m_volphyscoror.back();
 
     // 1. fill volume into nativator
     auto &volume   = *item.second;
@@ -60,35 +82,50 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     // 2. setup scorors
     if(volAuxInfo.size())
     {
-      auto iter = volAuxInfo.find(volID);
-      if(iter != volAuxInfo.end())
+      auto volAuxInfo_iter = volAuxInfo.find(volID);
+      if(volAuxInfo_iter != volAuxInfo.end()) //it volume contains a scorors
       {
-        const auto &volAuxInfoVec = (*iter).second;
+        std::cout << volume.GetName()<< ", volID " << volID << " contains volAuxInfo\n";
+        const std::vector<vgdml::Auxiliary> &volAuxInfoVec = (*volAuxInfo_iter).second;
         auto volAuxInfoSize = volAuxInfoVec.size();
         std::cout << "volAuxInfoSize " << volume.GetName()  << " " << volAuxInfoSize << std::endl;
 
         for(const auto& info : volAuxInfoVec)
         {
-          vps->scorors.emplace_back(std::move(anaManager.createScoror(info.GetValue())));
-          std::cout <<"type "<< info.GetType() << " value " << info.GetValue() << std::endl;
+          auto scor = getScoror(info.GetType());
+
+          if(scor) //this scorer exist
+          {
+            vps->scorors.push_back( scor);
+          }
+          else
+          {
+            scor = anaManager.createScoror(info.GetValue());
+            m_globelScorors[info.GetType()]=scor;
+            vps->scorors.push_back(scor);
+          }
+          std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
         }
       }
     }
 
     // 3. setup physics model, if it is not yet set
     const vgdml::Material& mat = mat_iter->second;
-    auto volmat_iter = m_volphyscoror.find(mat.name);
-    if(volmat_iter==m_volphyscoror.end())
+    auto matphys = getMaterialPhysics(mat.name);
+    if(matphys) //m_volphyscoror not exist
     {
-      std::unique_ptr<MaterialPhysics> model = std::make_unique<MaterialPhysics>();
-      const std::string &cfg = mat.attributes.find("atomValue")->second;
-      model->addComposition(cfg);
-      vps->physics=std::move(model);
-      setLogicalVolumePhysicsScoror(volume, vps);
+      vps->physics=matphys;
     }
     else
-      // 3.1 link volum with physics using the void pointer in the volume
-      setLogicalVolumePhysicsScoror(volume, m_volphyscoror[mat.name]);
+    {
+      std::shared_ptr<MaterialPhysics> model = std::make_shared<MaterialPhysics>();
+      m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<MaterialPhysics>>
+                (std::string(mat.name) , std::move(model) ) );
+      auto theNewPhysics = getMaterialPhysics(mat.name);
+      const std::string &cfg = mat.attributes.find("atomValue")->second;
+      theNewPhysics->addComposition(cfg);
+      vps->physics=theNewPhysics;
+    }
 
     std::cout << "volume name " << volume.GetName() << " (id = " << volume.id() << "): material name " << mat.name << std::endl;
     if (mat.attributes.size()) std::cout << "  attributes:\n";
@@ -101,8 +138,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     for (const auto &attv : mat.components)
       std::cout << "    " << attv.first << ": " << attv.second << std::endl;
 
-    m_volphyscoror.insert( std::pair<std::string, std::unique_ptr<VolumePhysicsScoror> > (mat.name, std::move(vps)) );
-
+    setLogicalVolumePhysicsScoror(volume, vps);
   }
   vecgeom::BVHManager::Init();
 }

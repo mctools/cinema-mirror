@@ -22,7 +22,7 @@ TEST_CASE("GeoManager")
   //create navigation manager
   auto &navman = pt::Singleton<pt::NavManager>::getInstance();
 
-  size_t numBeam = 100000;
+  size_t numBeam = 10;
   pt::ProgressMonitor moni("Prompt simulation", numBeam);
   for(size_t i=0;i<numBeam;i++)
   {
@@ -36,7 +36,7 @@ TEST_CASE("GeoManager")
       navman.setupVolumePhysics();
 
       //! the next while loop, particle should move in the same volume
-      while(navman.proprogateInAVolume(neutron, 0))
+      while(navman.proprogateInAVolume(neutron, 1))
       {
         if(neutron.isAlive())
           continue;
