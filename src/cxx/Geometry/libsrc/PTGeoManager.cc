@@ -14,7 +14,12 @@ Prompt::GeoManager::GeoManager()
 {
 }
 
-Prompt::GeoManager::~GeoManager(){}
+Prompt::GeoManager::~GeoManager()
+{
+  std::cout << "Simulation completed!\n";
+  std::cout << "Simulation created " << numMaterialPhysics() << " material physics\n";
+  std::cout << "There are " << numScoror() << " scorors in total\n";
+}
 
 
 void setLogicalVolumePhysicsScoror(vecgeom::LogicalVolume &lv, std::shared_ptr<Prompt::VolumePhysicsScoror> &vps)

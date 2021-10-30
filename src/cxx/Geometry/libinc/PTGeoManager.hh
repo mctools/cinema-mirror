@@ -20,6 +20,8 @@ namespace Prompt {
     void loadFile(const std::string &loadFile);
     std::shared_ptr<MaterialPhysics> getMaterialPhysics(const std::string &name);
     std::shared_ptr<Scoror> getScoror(const std::string &name);
+    size_t numMaterialPhysics() {return m_globelPhysics.size();}
+    size_t numScoror() {return m_globelScorors.size();}
 
 
   private:
