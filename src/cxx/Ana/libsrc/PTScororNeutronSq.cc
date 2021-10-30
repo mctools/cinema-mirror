@@ -12,7 +12,7 @@ Prompt::ScororNeutronSq::~ScororNeutronSq() {
 void Prompt::ScororNeutronSq::score(Prompt::Particle &particle, bool kill)
 {
   double angle_cos = particle.getDirection().angleCos(m_refDir);
-  double dist = m_sourceSampleDist-(particle.getPosition()-m_samplePos).mag();
+  double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();
   double v = dist/particle.getTime();
   double ekin = 0.5*const_neutron_mass_evc2*v*v;
   //static approximation
