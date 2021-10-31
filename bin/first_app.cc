@@ -6,35 +6,78 @@
 #include "PTNeutron.hh"
 #include "PTProgressMonitor.hh"
 #include "PTMaxwellianGun.hh"
+#include <getopt.h> //long_options
 
 namespace pt = Prompt;
 
 int main(int argc, char *argv[])
 {
+
+  //default parameters
+  size_t numParticle = 100;
+  unsigned seed = 6402;
+  bool vis = false;
+  std::string geofile("../gdml/first_geo.gdml");
+
+
+  int opt_char;
+  int option_index;
+  static struct option long_options[] = {
+    {"particle", required_argument, 0, 'n'},
+    {"seed", required_argument, 0, 's'},
+    {"geometry", required_argument, 0, 'g'},
+    {"vis", no_argument, 0, 'v'},
+    {"help",        no_argument,       0, 'h'},
+    {NULL,          0,                 0, 0}
+  };
+
+  while((opt_char = getopt_long(argc, argv, "n:s:vh",
+            long_options, &option_index)) != -1) {
+  switch (opt_char) {
+      case 'n':
+      {
+        numParticle=atoi(optarg);
+        printf("number of particle is set to %lu\n", numParticle);
+        break;
+      }
+      case 's':
+      {
+        seed=atoi(optarg);
+        printf("seed is set to %d\n", seed);
+        break;
+      }
+      case 'v':
+      {
+        vis=false;
+        break;
+      }
+      case 'h':
+      {
+        printf("error optopt: %c\n", optopt);
+        printf("error opterr: %d\n", opterr);
+        break;
+      }
+    }
+  }
+
   //set the seed for the random generator
   auto &rng = pt::Singleton<pt::SingletonPTRand>::getInstance();
-  rng.setSeed(0);
+  rng.setSeed(seed);
 
   //load geometry
   auto &geoman = pt::Singleton<pt::GeoManager>::getInstance();
-  geoman.loadFile("../gdml/first_geo.gdml");
+  geoman.loadFile(geofile.c_str());
 
   //create navigation manager
   auto &navman = pt::Singleton<pt::NavManager>::getInstance();
 
+  auto gun = pt::MaxwellianGun(pt::Neutron(), 300, {100, 100, -12000, 10, 10, 0});
 
-  size_t numBeam = atoi(argv[1]);
-  pt::ProgressMonitor moni("Prompt simulation", numBeam);
-
-  auto gun = pt::MaxwellianGun(pt::Neutron(), 300, {20, 20, -12000, 4, 4,0});
-
-  for(size_t i=0;i<numBeam;i++)
+  pt::ProgressMonitor moni("Prompt simulation", numParticle, 0.01);
+  for(size_t i=0;i<numParticle;i++)
   {
     //double ekin, const Vector& dir, const Vector& pos
     auto neutron = gun.generate();
-    // double sampleHalfSize = 2.;
-    // pt::Neutron neutron(0.3-rng.generate()*0.25, {rng.generate()*1e-5,rng.generate()*1e-5,1.},
-    //   {rng.generate()*sampleHalfSize*2-sampleHalfSize,rng.generate()*sampleHalfSize*2-sampleHalfSize, -12000.*pt::Unit::mm});
 
     //! allocate the point in a volume
     navman.locateLogicalVolume(neutron.getPosition());
