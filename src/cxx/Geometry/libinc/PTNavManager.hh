@@ -33,7 +33,7 @@ namespace Prompt {
 
     vecgeom::GeoManager &m_geo;
     const vecgeom::VPlacedVolume *m_currPV;
-    VolumePhysicsScoror *m_matphysscor;
+    std::shared_ptr<VolumePhysicsScoror> m_matphysscor;
     // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
     // It is NavStatePath otherwise
     vecgeom::NavigationState *m_currState, *m_nextState;

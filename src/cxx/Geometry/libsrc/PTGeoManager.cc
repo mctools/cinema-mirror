@@ -22,11 +22,6 @@ Prompt::GeoManager::~GeoManager()
 }
 
 
-void setLogicalVolumePhysicsScoror(vecgeom::LogicalVolume &lv, std::shared_ptr<Prompt::VolumePhysicsScoror> &vps)
-{
-  lv.SetUserExtensionPtr((void *)(vps.get()));
-}
-
 std::shared_ptr<Prompt::MaterialPhysics> Prompt::GeoManager::getMaterialPhysics(const std::string &name)
 {
   auto it = m_globelPhysics.find(name);
@@ -72,12 +67,21 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
   for (const auto &item : geoManager.GetLogicalVolumesMap())
   {
-    m_volphyscoror.emplace_back(std::make_shared<VolumePhysicsScoror>());
-    std::shared_ptr<VolumePhysicsScoror> &vps = m_volphyscoror.back();
-
-    // 1. fill volume into nativator
     auto &volume   = *item.second;
     const size_t volID = volume.id();
+    std::shared_ptr<VolumePhysicsScoror> vps(nullptr);
+    if(m_volphyscoror.find(volID)==m_volphyscoror.end())
+    {
+      m_volphyscoror.insert(std::make_pair(volID,  std::make_shared<VolumePhysicsScoror>()));
+      vps = m_volphyscoror[volID];
+    }
+    else
+    {
+      PROMPT_THROW2(CalcError, "volume ID " << volID << " appear more than once")
+    }
+
+
+    // 1. fill volume into nativator
     auto nchildren = volume.GetDaughters().size();
     volume.SetNavigator(nchildren > 0 ? navigator : vecgeom::NewSimpleNavigator<>::Instance());
     auto mat_iter = volumeMatMap.find(volID);
@@ -146,8 +150,6 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     if (mat.components.size()) std::cout << "  components:\n";
     for (const auto &attv : mat.components)
       std::cout << "    " << attv.first << ": " << attv.second << std::endl;
-
-    setLogicalVolumePhysicsScoror(volume, vps);
   }
   vecgeom::BVHManager::Init();
 }

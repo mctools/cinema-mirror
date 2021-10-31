@@ -5,7 +5,7 @@
 
 Prompt::NavManager::NavManager()
 :m_geo(vecgeom::GeoManager::Instance()), m_currPV(nullptr),
-m_matphysscor(nullptr), m_currState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth())),
+m_currState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth())),
 m_nextState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth())), m_hist2d(new Hist2D(-500,500,100,-500,500,100))
 {}
 
@@ -42,7 +42,9 @@ void Prompt::NavManager::setupVolumePhysics()
   // Find next step
   // m_currState->Top() gets the placed volume
   m_currPV = m_currState->Top();
-  m_matphysscor = getLogicalVolumePhysicsScoror(*m_currPV->GetLogicalVolume());
+  auto &geo = Singleton<GeoManager>::getInstance();
+  m_matphysscor = geo.getVolumePhysicsScoror(getVolumeID())->second;
+  // m_matphysscor = getLogicalVolumePhysicsScoror(*m_currPV->GetLogicalVolume());
 }
 
 size_t Prompt::NavManager::getVolumeID()
