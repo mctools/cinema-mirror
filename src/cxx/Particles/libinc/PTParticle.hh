@@ -15,10 +15,10 @@ namespace Prompt {
     virtual ~Particle(){};
 
     virtual void moveForward(double length);
-    virtual void changeDirectionTo(const Vector& dir);
+    virtual void setDirection(const Vector& dir);
 
-    void changeEKinTo(double ekin);
-    void changePositionTo(const Vector& pos);
+    void setEKin(double ekin);
+    void setPosition(const Vector& pos);
     Vector &getDirection() { return m_dir; }
     Vector &getPosition() { return m_pos; }
     double getTime() { return m_time; }
@@ -57,17 +57,17 @@ inline void Prompt::Particle::moveForward(double length)
     m_time += length/calcSpeed();
 }
 
-inline void Prompt::Particle::changeEKinTo(double ekin)
+inline void Prompt::Particle::setEKin(double ekin)
 {
   m_ekin = ekin;
 }
 
-inline void Prompt::Particle::changePositionTo(const Vector& pos)
+inline void Prompt::Particle::setPosition(const Vector& pos)
 {
   m_pos = pos;
 }
 
-inline void Prompt::Particle::changeDirectionTo(const Vector& dir)
+inline void Prompt::Particle::setDirection(const Vector& dir)
 {
   m_dir = dir;
 }

@@ -113,8 +113,8 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     double final_ekin(0);
     Vector final_dir;
     m_matphysscor->physics->sampleFinalState(particle.getEKin(), dir, final_ekin, final_dir);
-    particle.changeEKinTo(final_ekin);
-    particle.changeDirectionTo(final_dir);
+    particle.setEKin(final_ekin);
+    particle.setDirection(final_dir);
     return true;
   }
   else

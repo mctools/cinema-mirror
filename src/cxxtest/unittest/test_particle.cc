@@ -19,14 +19,14 @@ TEST_CASE("Particle")
 
   for(auto en : en_vec)
   {
-    n.changeEKinTo(en);
-    p.changeEKinTo(en);
+    n.setEKin(en);
+    p.setEKin(en);
     printf("ekin %g, speed n %g, p %g\n\n", en, n.calcSpeed(), p.calcSpeed());
     double speedRatio = p.calcSpeed()/n.calcSpeed();
     CHECK(pt::floateq(speedRatio*speedRatio, pn_mass_ratio));
   }
 
-  n.changeEKinTo(pt::const_ekin_2200m_s);
+  n.setEKin(pt::const_ekin_2200m_s);
   printf("referce energy at 2200m/s %g \n\n", pt::const_ekin_2200m_s);
   CHECK(pt::floateq(n.calcSpeed(), 2200*pt::Unit::m/pt::Unit::s));
 

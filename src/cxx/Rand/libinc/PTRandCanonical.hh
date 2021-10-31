@@ -27,7 +27,6 @@ namespace Prompt {
     bool m_seedIsSet;
   };
 
-  //fixme: can't set SEED !!!
   class SingletonPTRand : public RandCanonical<std::mt19937_64>  {
   private:
     friend class Singleton<SingletonPTRand>;
