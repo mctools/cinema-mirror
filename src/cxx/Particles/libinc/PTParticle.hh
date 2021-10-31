@@ -9,6 +9,7 @@
 //! fixme: support Gamma (22) as well.
 namespace Prompt {
   class Particle {
+    friend class PrimaryGun;
   public:
     Particle();
     Particle(double ekin, const Vector& dir, const Vector& pos);
@@ -24,6 +25,7 @@ namespace Prompt {
     double getTime() { return m_time; }
     double getEKin() { return m_ekin; }
     double getWeight() { return m_weight; }
+    unsigned getEventID() { return m_eventid; }
 
     void kill();
     bool isAlive();
@@ -36,16 +38,19 @@ namespace Prompt {
     double m_weight;
     double m_rest_mass;
     bool m_alive;
+    unsigned m_eventid, m_id, m_parentid;
   };
 }
 
 
 inline Prompt::Particle::Particle()
-  :m_ekin(0.), m_time(0.), m_dir(), m_pos(), m_pgd(0), m_weight(1.), m_rest_mass(0.), m_alive(true)
+  :m_ekin(0.), m_time(0.), m_dir(), m_pos(), m_pgd(0),
+  m_weight(1.), m_rest_mass(0.), m_alive(true), m_eventid(0), m_id(0), m_parentid(0)
 {}
 
 inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& pos)
-  :m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0),  m_weight(1.), m_rest_mass(0), m_alive(true)
+  :m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0),
+  m_weight(1.), m_rest_mass(0), m_alive(true), m_eventid(0), m_id(0), m_parentid(0)
 {
   m_dir=m_dir.unit();
 }

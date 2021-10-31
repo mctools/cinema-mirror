@@ -32,6 +32,7 @@ namespace Prompt {
 
   constexpr unsigned const_neutron_pgd = 2112;
   constexpr unsigned const_proton_pgd = 2212;
+  constexpr double const_deg2rad = M_PI/180;
 
   constexpr double const_eV2kk = 1.0/2.072124652399821e-3;
 

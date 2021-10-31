@@ -50,7 +50,6 @@ void Prompt::Hist1D::save(const std::string &filename) const
     "y=np.load('%s_content.npy')\n"
     "plt.plot(x,y)\n"
     "plt.grid()\n"
-    "plt.ylim([0, 400])\n"
     "plt.show()\n", filename.c_str(), filename.c_str());
 
   std::ofstream outfile(filename+"_view.py");

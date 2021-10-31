@@ -5,6 +5,7 @@
 #include "PTMath.hh"
 #include "PTNeutron.hh"
 #include "PTProgressMonitor.hh"
+#include "PTMaxwellianGun.hh"
 
 namespace pt = Prompt;
 
@@ -25,12 +26,15 @@ int main(int argc, char *argv[])
   size_t numBeam = atoi(argv[1]);
   pt::ProgressMonitor moni("Prompt simulation", numBeam);
 
+  auto gun = pt::MaxwellianGun(pt::Neutron(), 300, {20, 20, -12000, 4, 4,0});
+
   for(size_t i=0;i<numBeam;i++)
   {
     //double ekin, const Vector& dir, const Vector& pos
-    double sampleHalfSize = 2.;
-    pt::Neutron neutron(0.3-rng.generate()*0.25, {rng.generate()*1e-5,rng.generate()*1e-5,1.},
-      {rng.generate()*sampleHalfSize*2-sampleHalfSize,rng.generate()*sampleHalfSize*2-sampleHalfSize, -12000.*pt::Unit::mm});
+    auto neutron = gun.generate();
+    // double sampleHalfSize = 2.;
+    // pt::Neutron neutron(0.3-rng.generate()*0.25, {rng.generate()*1e-5,rng.generate()*1e-5,1.},
+    //   {rng.generate()*sampleHalfSize*2-sampleHalfSize,rng.generate()*sampleHalfSize*2-sampleHalfSize, -12000.*pt::Unit::mm});
 
     //! allocate the point in a volume
     navman.locateLogicalVolume(neutron.getPosition());
