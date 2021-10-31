@@ -8,10 +8,11 @@
 
 namespace pt = Prompt;
 
-int main(int argC, char *argV[])
+int main(int argc, char *argv[])
 {
   //set the seed for the random generator
-  pt::Singleton<pt::SingletonPTRand>::getInstance().setSeed(0);
+  auto &rng = pt::Singleton<pt::SingletonPTRand>::getInstance();
+  rng.setSeed(0);
 
   //load geometry
   auto &geoman = pt::Singleton<pt::GeoManager>::getInstance();
@@ -21,14 +22,15 @@ int main(int argC, char *argV[])
   auto &navman = pt::Singleton<pt::NavManager>::getInstance();
 
 
-  size_t numBeam = 10;
+  size_t numBeam = atoi(argv[1]);
   pt::ProgressMonitor moni("Prompt simulation", numBeam);
 
   for(size_t i=0;i<numBeam;i++)
   {
-    std::cout << "i is " << i << std::endl;
     //double ekin, const Vector& dir, const Vector& pos
-    pt::Neutron neutron(0.05 , {0.,0.,1.}, {0,0,-12000.*pt::Unit::mm});
+    double sampleHalfSize = 2.;
+    pt::Neutron neutron(0.3-rng.generate()*0.25, {rng.generate()*1e-5,rng.generate()*1e-5,1.},
+      {rng.generate()*sampleHalfSize*2-sampleHalfSize,rng.generate()*sampleHalfSize*2-sampleHalfSize, -12000.*pt::Unit::mm});
 
     //! allocate the point in a volume
     navman.locateLogicalVolume(neutron.getPosition());

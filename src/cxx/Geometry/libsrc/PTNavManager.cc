@@ -25,8 +25,6 @@ Prompt::VolumePhysicsScoror *getLogicalVolumePhysicsScoror(const vecgeom::Logica
 
 void Prompt::NavManager::locateLogicalVolume(const Vector &p)
 {
-  std::cout << "locateLogicalVolume " << m_geo.GetWorld()->GetName()
-    <<" " << m_geo.GetWorld()->id() << std::endl;
   auto pv = vecgeom::GlobalLocator::LocateGlobalPoint(m_geo.GetWorld(),
                           {p.x(), p.y(), p.z()}, *m_currState, true);
   assert(pv == m_currState->Top());
@@ -70,7 +68,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   if(m_matphysscor->scorors.size())
   {
     m_matphysscor->scorors[0]->score(particle, true);
-    // return false;
+    return false;
   }
 
   Vector &p = particle.getPosition();

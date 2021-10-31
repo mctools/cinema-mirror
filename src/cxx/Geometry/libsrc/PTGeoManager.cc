@@ -92,12 +92,13 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     if(volAuxInfo.size())
     {
       auto volAuxInfo_iter = volAuxInfo.find(volID);
-      if(volAuxInfo_iter != volAuxInfo.end()) //it volume contains a scorors
+      if(volAuxInfo_iter != volAuxInfo.end()) //it volume contains a scoror info
       {
         std::cout << volume.GetName()<< ", volID " << volID << " contains volAuxInfo\n";
         const std::vector<vgdml::Auxiliary> &volAuxInfoVec = (*volAuxInfo_iter).second;
         auto volAuxInfoSize = volAuxInfoVec.size();
-        std::cout << "volAuxInfoSize " << volume.GetName()  << " " << volAuxInfoSize << std::endl;
+        std::cout << "volAuxInfoSize " << volume.GetName()  << " "
+              << volAuxInfoSize << std::endl;
 
         for(const auto& info : volAuxInfoVec)
         {
@@ -105,7 +106,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
           if(scor) //this scorer exist
           {
-            vps->scorors.push_back( scor);
+            vps->scorors.push_back(scor);
           }
           else
           {
