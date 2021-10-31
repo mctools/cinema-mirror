@@ -22,16 +22,16 @@ TEST_CASE("GeoManager")
   //create navigation manager
   auto &navman = pt::Singleton<pt::NavManager>::getInstance();
 
-  auto gen = std::make_shared<std::mt19937_64> (6402);
-  auto r = pt::RandCanonical<std::mt19937_64>(gen);
 
-
-  size_t numBeam = 100000000;
+  size_t numBeam = 10;
   pt::ProgressMonitor moni("Prompt simulation", numBeam);
+
   for(size_t i=0;i<numBeam;i++)
   {
+    std::cout << "i is " << i << std::endl;
     //double ekin, const Vector& dir, const Vector& pos
-    pt::Neutron neutron(0.05 , {r.generate()*1e-3,r.generate()*1e-3,1.}, {r.generate()*3,r.generate()*3,-4000.*pt::Unit::mm});
+    pt::Neutron neutron(0.05 , {0.,0.,1.}, {0,0,-12000.*pt::Unit::mm});
+    
     //! allocate the point in a volume
     navman.locateLogicalVolume(neutron.getPosition());
     while(!navman.exitWorld() && neutron.isAlive())

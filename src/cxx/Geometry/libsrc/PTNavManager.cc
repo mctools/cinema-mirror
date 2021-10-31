@@ -5,12 +5,9 @@
 
 Prompt::NavManager::NavManager()
 :m_geo(vecgeom::GeoManager::Instance()), m_currPV(nullptr),
-m_matphysscor(nullptr), m_currState(nullptr),
-m_nextState(nullptr), m_hist2d(new Hist2D(-500,500,100,-500,500,100))
-{
-  m_currState = vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth());
-  m_nextState = vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth());
-}
+m_matphysscor(nullptr), m_currState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth())),
+m_nextState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth())), m_hist2d(new Hist2D(-500,500,100,-500,500,100))
+{}
 
 Prompt::NavManager::~NavManager()
 {
@@ -18,6 +15,7 @@ Prompt::NavManager::~NavManager()
   delete m_hist2d;
   delete m_currState;
   delete m_nextState;
+  std::cout << "Destructed NavManager" << std::endl;
 }
 
 Prompt::VolumePhysicsScoror *getLogicalVolumePhysicsScoror(const vecgeom::LogicalVolume &lv)
@@ -27,8 +25,11 @@ Prompt::VolumePhysicsScoror *getLogicalVolumePhysicsScoror(const vecgeom::Logica
 
 void Prompt::NavManager::locateLogicalVolume(const Vector &p)
 {
-  vecgeom::GlobalLocator::LocateGlobalPoint(m_geo.GetWorld(),
+  std::cout << "locateLogicalVolume " << m_geo.GetWorld()->GetName()
+    <<" " << m_geo.GetWorld()->id() << std::endl;
+  auto pv = vecgeom::GlobalLocator::LocateGlobalPoint(m_geo.GetWorld(),
                           {p.x(), p.y(), p.z()}, *m_currState, true);
+  assert(pv == m_currState->Top());
 }
 
 bool Prompt::NavManager::exitWorld()

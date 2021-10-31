@@ -120,9 +120,13 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     if(matphys) //m_volphyscoror not exist
     {
       vps->physics=matphys;
+      std::cout << "Set model " << mat.name
+                << " for volume " << volume.GetName() << std::endl;
     }
     else
     {
+      std::cout << "Creating model " << mat.name << ", "
+                << mat.attributes.find("atomValue")->second << " for volume " << volume.GetName() << std::endl;
       std::shared_ptr<MaterialPhysics> model = std::make_shared<MaterialPhysics>();
       m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<MaterialPhysics>>
                 (std::string(mat.name) , std::move(model) ) );
