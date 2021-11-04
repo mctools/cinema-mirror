@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<gdml>
+
+   <define>
+    <position name="DetectorPos" x="0" y="500" z="0.0" />
+    <rotation name="rot" unit="deg" x="90" y="0" z="0" />
+  </define>
+
+  <materials>
+    <material name="Air">
+      <atom value="../ncmat/ambient_air.ncmat"/>
+    </material>
+    
+    <material name="Water">
+      <atom value="LiquidWaterH2O_T293.6K.ncmat"/>
+    </material>
+    
+    <material name="HeavyWater">
+      <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat"/>
+    </material>
+    
+    <material name="Al">
+      <atom value="Al_sg225.ncmat"/>
+    </material>
+    
+    <material name="V">
+      <atom value="V_sg229.ncmat"/>
+    </material>
+    
+    <material name="Si">
+      <atom value="Si_sg227.ncmat;packfact=0.5"/>
+    </material>
+    
+    <material name="Al2O3">
+      <atom value="Al2O3_sg167_Corundum.ncmat"/>
+    </material>
+    
+    
+  </materials>
+
+  <solids>
+    <box name="DetectorSolid" x="5000" y="5000" z="0.00001" />
+    <tube name="SampleSolid" rmin="0" rmax="5" z="1" startphi="0" deltaphi="360" aunit="deg"/>
+    <box name="worldSolid" x="12000.0" y="12000.0" z="120000.0" />
+  </solids>
+
+  <structure>
+    <volume name="Sample">
+      <materialref ref="HeavyWater"/>
+      <solidref ref="SampleSolid"/>
+    </volume>
+    
+    <volume name="Detector">
+      <materialref ref="Air"/>
+      <solidref ref="DetectorSolid"/>
+      <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;10.;0,100,1000"/>
+    </volume>
+    
+    <volume name="World">
+      <materialref ref="Air"/>
+      <solidref ref="worldSolid"/>
+      <!-- auxiliary auxtype="Sensitive" auxvalue="Tracker"/-->
+      <physvol>
+        <volumeref ref="Sample"/>
+        <!-- This comment should be ignored -->
+      </physvol>
+      
+      <physvol>
+        <volumeref ref="Detector"/>
+        <positionref ref="DetectorPos"/>
+        <rotationref ref="rot"/>
+        <!-- This comment should be ignored -->
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="default" version="1.0">
+    <world ref="World"/>
+  </setup>
+
+
+</gdml>

@@ -7,9 +7,9 @@ template<typename T>
 class Singleton
 {
 public:
-    static T& getInstance()
+    static thread_local T& getInstance()
     {
-        static T value;
+        static thread_local T value;
         return value;
     }
 

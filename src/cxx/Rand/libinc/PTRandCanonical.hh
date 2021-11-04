@@ -20,6 +20,7 @@ namespace Prompt {
     ~RandCanonical();
     double generate() const;
     void setSeed(uint64_t seed);
+    uint64_t getSeed() { return m_seed; };
 
   private:
     std::shared_ptr<T> m_generator;

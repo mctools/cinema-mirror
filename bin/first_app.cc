@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
   size_t numParticle = 100;
   unsigned seed = 6402;
   bool vis = false;
+  double printPrecent = 0.1;
   std::string geofile("../gdml/first_geo.gdml");
 
 
@@ -24,6 +25,7 @@ int main(int argc, char *argv[])
   int option_index;
   static struct option long_options[] = {
     {"particle", required_argument, 0, 'n'},
+    {"printPrecent", required_argument, 0, 'p'},
     {"seed", required_argument, 0, 's'},
     {"geometry", required_argument, 0, 'g'},
     {"vis", no_argument, 0, 'v'},
@@ -44,6 +46,11 @@ int main(int argc, char *argv[])
       {
         seed=atoi(optarg);
         printf("seed is set to %d\n", seed);
+        break;
+      }
+      case 'p':
+      {
+        printPrecent=atof(optarg);
         break;
       }
       case 'v':
@@ -71,13 +78,17 @@ int main(int argc, char *argv[])
   //create navigation manager
   auto &navman = pt::Singleton<pt::NavManager>::getInstance();
 
-  auto gun = pt::MaxwellianGun(pt::Neutron(), 300, {100, 100, -12000, 10, 10, 0});
+  auto gun = pt::MaxwellianGun(pt::Neutron(), 300, {1, 1, -12000, 1, 1, 0});
 
-  pt::ProgressMonitor moni("Prompt simulation", numParticle, 0.01);
+  pt::printLogo();
+  // pt::printLogo2();
+
+  pt::ProgressMonitor moni("Prompt simulation", numParticle, printPrecent);
   for(size_t i=0;i<numParticle;i++)
   {
     //double ekin, const Vector& dir, const Vector& pos
-    auto neutron = gun.generate();
+    // auto neutron = gun.generate();
+    auto neutron = pt::Neutron(0.1, {0.,0.,1.}, {0,0,-12000.});
 
     //! allocate the point in a volume
     navman.locateLogicalVolume(neutron.getPosition());

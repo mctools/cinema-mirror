@@ -30,15 +30,16 @@ std::vector<double> Prompt::Hist1D::getEdge() const
     return logspace(log10(m_xmin), log10(m_xmax), m_nbins+1);
 }
 
+#include "PTRandCanonical.hh"
 
 void Prompt::Hist1D::save(const std::string &filename) const
 {
-
+  auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
   NumpyWriter nvt;
-  nvt.writeNumpyFile(filename+"_content.npy", m_data, NumpyWriter::data_type::f8,
+  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_content.npy", m_data, NumpyWriter::data_type::f8,
                    std::vector<uint64_t>{m_nbins});
 
-  nvt.writeNumpyFile(filename+"_bin.npy", getEdge(), NumpyWriter::data_type::f8,
+  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_bin.npy", getEdge(), NumpyWriter::data_type::f8,
                    std::vector<uint64_t>{m_nbins});
 
   char buffer [500];
@@ -46,11 +47,11 @@ void Prompt::Hist1D::save(const std::string &filename) const
   n=sprintf (buffer,
     "import numpy as np\n"
     "import matplotlib.pyplot as plt\n"
-    "x=np.load('%s_bin.npy')\n"
-    "y=np.load('%s_content.npy')\n"
+    "x=np.load('%s_seed%ld_bin.npy')\n"
+    "y=np.load('%s_seed%ld_content.npy')\n"
     "plt.plot(x,y)\n"
     "plt.grid()\n"
-    "plt.show()\n", filename.c_str(), filename.c_str());
+    "plt.show()\n", filename.c_str(), seed, filename.c_str(), seed);
 
   std::ofstream outfile(filename+"_view.py");
   outfile << buffer;

@@ -14,4 +14,9 @@
 #include "PTUnitSystem.hh"
 #include "PTVector.hh"
 
+namespace Prompt {
+  void printLogo();
+  void printLogo2();
+
+}
 #endif
