@@ -6,10 +6,6 @@ find_package(HDF5 REQUIRED COMPONENTS C)
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
-#OpenMP
-find_package(OpenMP REQUIRED)
-add_compile_options ("-fopenmp")
-
 #Concurrent
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)

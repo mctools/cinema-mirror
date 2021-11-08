@@ -14,7 +14,7 @@ file(GLOB MAT_SRC "${PROJECT_SOURCE_DIR}/Material/libsrc/*.cc")
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${COR_SRC} ${RND_SRC} ${UTL_SRC} ${ANA_SRC} ${PAR_SRC} ${MOD_SRC} ${GEO_SRC} ${MAT_SRC})
 
 
-target_link_libraries(${PROJECT_NAME} PUBLIC Threads::Threads NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml OpenMP::OpenMP_CXX)
+target_link_libraries(${PROJECT_NAME} PUBLIC Threads::Threads NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml)
 
 target_include_directories( ${PROJECT_NAME}
     PUBLIC
