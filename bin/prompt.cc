@@ -1,25 +1,22 @@
 #include <iostream>
-#include <memory>
-#include "PTGeoManager.hh"
-#include "PTNavManager.hh"
-#include "PTMath.hh"
-#include "PTNeutron.hh"
-#include "PTProgressMonitor.hh"
-#include "PTMaxwellianGun.hh"
 #include <getopt.h> //long_options
+#include <memory>
+#include "PTMath.hh"
+#include "PTLauncher.hh"
+#include "PTMaxwellianGun.hh"
+#include "PTNeutron.hh"
+
 
 namespace pt = Prompt;
 
 int main(int argc, char *argv[])
 {
-
   //default parameters
   size_t numParticle = 100;
   unsigned seed = 6402;
   bool vis = false;
   double printPrecent = 0.1;
   std::string geofile("../gdml/first_geo.gdml");
-
 
   int opt_char;
   int option_index;
@@ -67,45 +64,12 @@ int main(int argc, char *argv[])
     }
   }
 
-  //set the seed for the random generator
-  auto &rng = pt::Singleton<pt::SingletonPTRand>::getInstance();
-  rng.setSeed(seed);
+  auto gun = std::make_shared<pt::MaxwellianGun>(pt::Neutron(), 300,  std::array<double, 6> {1, 1, -12000, 1, 1, 0});
+  auto &l = pt::Singleton<pt::Launcher>::getInstance();
+  l.setSeed(seed);
+  l.setGun(gun);
+  l.loadGeometry(geofile);
+  l.go(numParticle, printPrecent);
 
-  //load geometry
-  auto &geoman = pt::Singleton<pt::GeoManager>::getInstance();
-  geoman.loadFile(geofile.c_str());
-
-  //create navigation manager
-  auto &navman = pt::Singleton<pt::NavManager>::getInstance();
-
-  auto gun = pt::MaxwellianGun(pt::Neutron(), 300, {1, 1, -12000, 1, 1, 0});
-
-  pt::printLogo();
-  // pt::printLogo2();
-
-  pt::ProgressMonitor moni("Prompt simulation", numParticle, printPrecent);
-  for(size_t i=0;i<numParticle;i++)
-  {
-    //double ekin, const Vector& dir, const Vector& pos
-    // auto neutron = gun.generate();
-    auto neutron = pt::Neutron(0.1, {0.,0.,1.}, {0,0,-12000.});
-
-    //! allocate the point in a volume
-    navman.locateLogicalVolume(neutron.getPosition());
-    while(!navman.exitWorld() && neutron.isAlive())
-    {
-      //! first step of a particle in a volume
-      // std::cout << navman.getVolumeName() << " " << neutron.getPosition() << std::endl;
-      navman.setupVolumePhysics();
-
-      //! the next while loop, particle should move in the same volume
-      while(navman.proprogateInAVolume(neutron, 0))
-      {
-        if(neutron.isAlive())
-          continue;
-      }
-    }
-    moni.OneTaskCompleted();
-  }
   return 0;
 }
