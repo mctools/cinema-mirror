@@ -60,16 +60,45 @@ const vecgeom::VPlacedVolume *Prompt::NavManager::getVolume()
   return m_currPV;
 }
 
+void Prompt::NavManager::scoreEntry(Prompt::Particle &particle)
+{
+  if(m_matphysscor->entry_scorors.size())
+  {
+    for(auto &v:m_matphysscor->entry_scorors)
+    {
+      v->score(particle);
+    }
+  }
+}
+
+void Prompt::NavManager::scorePropagate(Prompt::Particle &particle)
+{
+  if(m_matphysscor->propagate_scorors.size())
+  {
+    for(auto &v:m_matphysscor->propagate_scorors)
+    {
+      v->score(particle);
+    }
+  }
+}
+
+void Prompt::NavManager::scoreExit(Prompt::Particle &particle)
+{
+  if(m_matphysscor->exit_scorors.size())
+  {
+    for(auto &v:m_matphysscor->exit_scorors)
+    {
+      v->score(particle);
+    }
+  }
+}
+
+
 bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
 {
   // std::cout << m_currPV->GetLogicalVolume()->GetName() << ", scoror size "
   //     << m_matphysscor->scorors.size() << std::endl;
 
-  if(m_matphysscor->scorors.size())
-  {
-    m_matphysscor->scorors[0]->score(particle, true);
-    return false;
-  }
 
   Vector &p = particle.getPosition();
   Vector &dir = particle.getDirection();

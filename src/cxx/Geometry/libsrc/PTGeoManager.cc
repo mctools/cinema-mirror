@@ -141,6 +141,8 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
       vps->physics=theNewPhysics;
     }
 
+    vps->sortScorors();
+
     std::cout << "volume name " << volume.GetName() << " (id = " << volume.id() << "): material name " << mat.name << std::endl;
     if (mat.attributes.size()) std::cout << "  attributes:\n";
     for (const auto &attv : mat.attributes)

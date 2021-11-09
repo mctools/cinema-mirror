@@ -26,6 +26,10 @@ namespace Prompt {
     std::string getVolumeName();
     const vecgeom::VPlacedVolume *getVolume();
 
+    void scoreEntry(Particle &particle);
+    void scorePropagate(Particle &particle);
+    void scoreExit(Particle &particle);
+
   private:
     friend class Singleton<NavManager>;
     NavManager();

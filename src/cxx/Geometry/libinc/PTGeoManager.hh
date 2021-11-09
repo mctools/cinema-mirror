@@ -14,6 +14,36 @@ namespace Prompt {
   struct VolumePhysicsScoror { // to attached to a volume
     std::shared_ptr<MaterialPhysics> physics;
     std::vector< std::shared_ptr<Scoror> >  scorors; /*scoror name, scoror*/
+
+    std::vector< std::shared_ptr<Scoror> >  entry_scorors;
+    std::vector< std::shared_ptr<Scoror> >  propagate_scorors;
+    std::vector< std::shared_ptr<Scoror> >  exit_scorors;
+
+    void sortScorors()
+    {
+      entry_scorors.clear();
+      propagate_scorors.clear();
+      exit_scorors.clear();
+
+      for(auto &v : scorors)
+      {
+        auto type = v->getType();
+        if(type==ScororType::ENTRY)
+        {
+          entry_scorors.push_back(v);
+        }
+        else if(type==ScororType::PROPAGATE)
+        {
+          propagate_scorors.push_back(v);
+        }
+        else if(type==ScororType::EXIT)
+        {
+          exit_scorors.push_back(v);
+        }
+        else
+          PROMPT_THROW(BadInput, "unknown scoror type")
+      }
+    }
   };
   using VPSMap = std::unordered_map<size_t, std::shared_ptr<VolumePhysicsScoror>>;
 

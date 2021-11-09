@@ -51,13 +51,16 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent)
       //! first step of a particle in a volume
       // std::cout << navman.getVolumeName() << " " << particle.getPosition() << std::endl;
       navman.setupVolumePhysics();
+      navman.scoreEntry(particle);
 
       //! the next while loop, particle should move in the same volume
       while(navman.proprogateInAVolume(particle, 0))
       {
+        navman.scorePropagate(particle);
         if(particle.isAlive())
           continue;
       }
+      navman.scoreExit(particle);
     }
     moni.OneTaskCompleted();
   }
