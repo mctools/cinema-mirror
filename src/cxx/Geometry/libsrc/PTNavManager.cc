@@ -25,6 +25,7 @@ Prompt::VolumePhysicsScoror *getLogicalVolumePhysicsScoror(const vecgeom::Logica
 
 void Prompt::NavManager::locateLogicalVolume(const Vector &p)
 {
+  m_currState->Clear();
   auto pv = vecgeom::GlobalLocator::LocateGlobalPoint(m_geo.GetWorld(),
                           {p.x(), p.y(), p.z()}, *m_currState, true);
   assert(pv == m_currState->Top());
@@ -71,13 +72,13 @@ void Prompt::NavManager::scoreEntry(Prompt::Particle &particle)
   }
 }
 
-void Prompt::NavManager::scorePropagate(Prompt::Particle &particle)
+void Prompt::NavManager::scorePropagate(Prompt::Particle &particle, const DeltaParticle &dltpar)
 {
   if(m_matphysscor->propagate_scorors.size())
   {
     for(auto &v:m_matphysscor->propagate_scorors)
     {
-      v->score(particle);
+      v->score(particle, dltpar);
     }
   }
 }
