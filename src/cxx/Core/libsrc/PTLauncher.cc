@@ -35,13 +35,14 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent)
   auto &navman = Singleton<NavManager>::getInstance();
 
   printLogo();
-  // printLogo2();
+  DeltaParticle dltpar;
 
   ProgressMonitor moni("Prompt simulation", numParticle, printPrecent);
   for(size_t i=0;i<numParticle;i++)
   {
     //double ekin, const Vector& dir, const Vector& pos
     auto particle = m_gun->generate();
+    dltpar.setLastParticle(particle);
     // auto particle = Neutron(0.1, {0.,0.,1.}, {0,0,-12000.});
 
     //! allocate the point in a volume
@@ -56,7 +57,11 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent)
       //! the next while loop, particle should move in the same volume
       while(navman.proprogateInAVolume(particle, 0) )
       {
-        navman.scorePropagate(particle);
+        if(navman.hasPropagateScoror())
+        {
+          dltpar.calcDeltaParticle(particle);
+          navman.scorePropagate(particle, dltpar);
+        }
       }
       navman.scoreExit(particle);
     }

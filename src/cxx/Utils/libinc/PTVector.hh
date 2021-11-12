@@ -41,7 +41,7 @@ namespace Prompt {
     Vector cross(const Vector&) const;
     void cross_inplace(const Vector&);
     double dot(const Vector&) const;
-    double angleCos(const Vector&) const;//slow
+    double angleCos(const Vector&) const;//better
     double angle(const Vector&) const;//slow
     double angle_highres(const Vector&) const;//very slow, but precise even for small angles
     double mag() const;//slow

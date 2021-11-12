@@ -8,6 +8,7 @@
 //! Particle is neutron with pgd code of 2112 by defult. Proton (2212) is also supported.
 //! fixme: support Gamma (22) as well.
 namespace Prompt {
+
   class Particle {
     friend class PrimaryGun;
   public:
@@ -32,6 +33,7 @@ namespace Prompt {
 
     virtual double calcSpeed() const;
   protected:
+    friend class DeltaParticle;
     double m_ekin, m_time;
     Vector m_dir, m_pos;
     unsigned m_pgd;
@@ -40,6 +42,26 @@ namespace Prompt {
     bool m_alive;
     unsigned m_eventid, m_id, m_parentid;
   };
+
+  struct DeltaParticle {
+    double dlt_ekin, dlt_time, dlt_position;
+    Vector dlt_dir, dlt_pos;
+    Particle lastParticle;
+    void setLastParticle(const Particle &p)
+    {
+      lastParticle=p;
+    }
+
+    void calcDeltaParticle(const Particle &p)
+    {
+      dlt_ekin=p.m_ekin-lastParticle.m_ekin;
+      dlt_time=p.m_time-lastParticle.m_time;
+      dlt_dir=p.m_dir-lastParticle.m_dir;
+      dlt_pos=p.m_pos-lastParticle.m_pos;
+      lastParticle = p;
+    }
+  };
+
 }
 
 
@@ -52,7 +74,7 @@ inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& 
   :m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0),
   m_weight(1.), m_rest_mass(0), m_alive(true), m_eventid(0), m_id(0), m_parentid(0)
 {
-  m_dir=m_dir.unit();
+  m_dir.normalise();
 }
 
 inline void Prompt::Particle::moveForward(double length)

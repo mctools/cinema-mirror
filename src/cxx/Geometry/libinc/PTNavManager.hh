@@ -27,7 +27,8 @@ namespace Prompt {
     const vecgeom::VPlacedVolume *getVolume();
 
     void scoreEntry(Particle &particle);
-    void scorePropagate(Particle &particle);
+    void scorePropagate(Particle &particle, const DeltaParticle &dltpar);
+    bool hasPropagateScoror() {return m_matphysscor->propagate_scorors.size(); };
     void scoreExit(Particle &particle);
 
   private:

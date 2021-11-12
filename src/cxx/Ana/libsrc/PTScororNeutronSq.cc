@@ -20,8 +20,13 @@ void Prompt::ScororNeutronSq::score(Prompt::Particle &particle)
   //static approximation
   double q = neutronAngle2Q(angle_cos, ekin, ekin);
   m_hist->fill(q, particle.getWeight());
-  if(m_kill)
-    particle.kill();
+  // if(m_kill)
+    // particle.kill();
+}
+
+void Prompt::ScororNeutronSq::score(Prompt::Particle &particle, const DeltaParticle &dltpar)
+{
+  score(particle);
 }
 
 void Prompt::ScororNeutronSq::save(const std::string &fname)

@@ -15,6 +15,7 @@ namespace Prompt {
     const std::string &getName() { return m_name; }
     ScororType getType() { return m_type; }
     virtual void score(Particle &particle) = 0;
+    virtual void score(Particle &particle, const DeltaParticle &dltpar) = 0;
 
   private:
     const std::string m_name;

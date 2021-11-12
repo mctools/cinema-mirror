@@ -11,7 +11,8 @@ namespace Prompt {
   public:
     ScororNeutronSq(const Vector &samplePos, const Vector &refDir, double sourceSampleDist, double qmin, double qmax, unsigned numbin, bool kill=true, bool linear=true);
     virtual ~ScororNeutronSq();
-    virtual void score(Particle &particle) override; //make it in the base with delta track infomation
+    virtual void score(Particle &particle) override;
+    virtual void score(Particle &particle, const DeltaParticle &dltpar) override;
     void save(const std::string &fname);
   private:
     const Vector m_samplePos, m_refDir;
