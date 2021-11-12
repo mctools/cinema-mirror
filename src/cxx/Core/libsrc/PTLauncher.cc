@@ -62,5 +62,4 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent)
     }
     moni.OneTaskCompleted();
   }
-
 }

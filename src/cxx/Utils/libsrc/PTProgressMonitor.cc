@@ -9,7 +9,7 @@ m_completedRatio(0), m_interval(interval), m_estimated_ms(0), m_begin(std::chron
 
 Prompt::ProgressMonitor::~ProgressMonitor()
 {
-
+  printf("%s speed: %.2e primary events per second.\n", m_name.c_str(), m_currentTask/m_estimated_ms*1e3);
 }
 
 void Prompt::ProgressMonitor::OneTaskCompleted()
