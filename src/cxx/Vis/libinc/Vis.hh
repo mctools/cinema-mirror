@@ -1,5 +1,5 @@
 //
-// // unplaced volume
+// // PlacedVolume
 // SolidMesh *CreateMesh3D(size_t nFaces) const
 // {
 //   return GetUnplacedVolume()->CreateMesh3D(*this->GetTransformation(), nFaces);
