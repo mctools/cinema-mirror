@@ -54,11 +54,9 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent)
       navman.scoreEntry(particle);
 
       //! the next while loop, particle should move in the same volume
-      while(navman.proprogateInAVolume(particle, 0))
+      while(navman.proprogateInAVolume(particle, 0) )
       {
         navman.scorePropagate(particle);
-        if(particle.isAlive())
-          continue;
       }
       navman.scoreExit(particle);
     }

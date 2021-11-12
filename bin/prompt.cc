@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
       {
         printf("error optopt: %c\n", optopt);
         printf("error opterr: %d\n", opterr);
-        break;
+        return 0;
       }
     }
   }

@@ -57,7 +57,9 @@ namespace Prompt {
 
     VPSMap::const_iterator getVolumePhysicsScoror(size_t id)
     {
-      return m_volphyscoror.find(id);
+      auto it = m_volphyscoror.find(id);
+      assert(it!=m_volphyscoror.end());
+      return it;
     }
 
 
