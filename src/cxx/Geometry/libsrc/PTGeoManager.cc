@@ -44,6 +44,7 @@ std::shared_ptr<Prompt::Scoror> Prompt::GeoManager::getScoror(const std::string 
     return nullptr;
 }
 
+
 void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 {
   vgdml::Parser p;
@@ -65,6 +66,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
   auto &geoManager = vecgeom::GeoManager::Instance();
   auto navigator = vecgeom::BVHNavigator<>::Instance();
 
+  //geoManager.GetLogicalVolumesMap() returens std::map<unsigned int, LogicalVolume *>
   for (const auto &item : geoManager.GetLogicalVolumesMap())
   {
     auto &volume   = *item.second;

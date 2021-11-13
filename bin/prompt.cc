@@ -5,6 +5,7 @@
 #include "PTLauncher.hh"
 #include "PTMaxwellianGun.hh"
 #include "PTNeutron.hh"
+#include "PTVisualiser.hh"
 
 
 namespace pt = Prompt;
@@ -69,6 +70,8 @@ int main(int argc, char *argv[])
   l.setSeed(seed);
   l.setGun(gun);
   l.loadGeometry(geofile);
+  prompt_placedVolume();
+  abort();
   l.go(numParticle, printPrecent);
 
   return 0;
