@@ -6,7 +6,7 @@
 #include <VecGeom/navigation/NewSimpleNavigator.h>
 #include <VecGeom/gdml/Frontend.h>
 
-void prompt_placedVolume()
+void prompt_placedVolume(double *points, unsigned *numPointInFace, unsigned *faces)
 {
   auto &geoManager = vecgeom::GeoManager::Instance();
   size_t pvolsize =  geoManager.GetPlacedVolumesCount();
@@ -18,23 +18,19 @@ void prompt_placedVolume()
 
     // Utils3D::USolidMesh
     auto *mesh = vol->CreateMesh3D(10);
-    // // mesh->GetVertices() returns Utils3D::vector_t<Utils3D::Vec_t>
-    // for(const auto &v: mesh->GetVertices())
-    // {
-    //   std::cout << v << std::endl;
-    // }
-    // mesh->GetPolygons() returns Utils3D::vector_t<Utils3D::Polygon>
-    std::vector<double> points;
-    std::vector<unsigned> faces;
+    // std::vector<double> points,
+    // std::vector<unsigned> numPointInFace,
+    // std::vector<unsigned> faces
     for(const auto &v: mesh->GetPolygons())
     {
       std::cout << v << std::endl;
+      *(++numPointInFace) = v.fN;
       for (size_t i = 0; i < v.fN; ++i)
       {
-        faces.push_back(i);
-        points.push_back(v.GetVertex(i)[0]);
-        points.push_back(v.GetVertex(i)[1]);
-        points.push_back(v.GetVertex(i)[2]);
+        *(faces++)=i;
+        *(points++)=v.GetVertex(i)[0];
+        *(points++)=v.GetVertex(i)[1];
+        *(points++)=v.GetVertex(i)[2];
         std::cout <<  v.GetVertex(i) << "\n";
       }
     }

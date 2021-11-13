@@ -2,6 +2,7 @@ build
 __pycache__
 gdml
 ptvirenv
+promptbin
 
 # Prerequisites
 *.d

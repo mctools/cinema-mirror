@@ -1,0 +1,26 @@
+#!/bin/bash
+
+USAGE="Usage: $0 -t for unit test"
+
+
+while getopts ti: option
+  do
+    case "${option}"
+    in
+      h) echo "$USAGE"
+         exit 0;;
+      t) TESTFLAG="test";;
+    esac
+done
+
+
+cd $PTPATH/takbin
+cmake ..
+make -j
+
+if [ -z ${TESTFLAG} ]; then
+  echo "Skipped unittest";
+else
+  make -j test
+fi
+cd -

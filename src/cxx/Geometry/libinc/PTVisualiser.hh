@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 
-void prompt_placedVolume();
+void prompt_placedVolume(double *points, unsigned *numPointInFace, unsigned *faces);
 
 
 
