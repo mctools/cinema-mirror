@@ -2,7 +2,7 @@
 
 USAGE="Usage: $0 -t for unit test"
 
-
+. ~/git/ncrystal/install/setup.sh
 while getopts ti: option
   do
     case "${option}"
@@ -14,7 +14,7 @@ while getopts ti: option
 done
 
 
-cd $PTPATH/takbin
+cd $PTPATH/promptbin
 cmake ..
 make -j
 

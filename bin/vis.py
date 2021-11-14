@@ -13,18 +13,16 @@ import pyvista as pv
 #
 
 
-
-
-
-
-
 points = np.array([[-2500, 500, 2500],[-2500, 500, -2500],[2500, 500, -2500],[2500, 500, 2500],[-2500, 500, 2500],[2500, 500, 2500],[2500, 500, -2500],[-2500, 500, -2500]])
 faces = [[0, 1, 2, 3],[0, 1, 2, 3]]
 tmesh = trimesh.Trimesh(points, faces=faces, process=False)
 mesh = pv.wrap(tmesh)
 print(mesh)
 
+blocks = pv.MultiBlock()
+blocks["detector"] = mesh
+blocks.plot()
 
-p = pv.Plotter()
-p.add_mesh(mesh)
-p.show()
+# p = pv.Plotter()
+# p.add_mesh(mesh)
+# p.show()

@@ -26,14 +26,6 @@ endif()
 find_package(NCrystal 2.7.0 REQUIRED)
 
 
-# Find Geant4, optional for now
-find_package(Geant4 QUIET)
-if(Geant4_FOUND)
-  message(STATUS "Using Geant4 version ${Geant4_VERSION} from ${Geant4_INCLUDE_DIRS}")
-else()
-  message(STATUS "Did not find Geant4")
-endif()
-
 
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
