@@ -69,7 +69,6 @@ class Mesh():
         NumPolygonPoints = np.zeros(nPlolygen, dtype=_sizet)
         facesVec = np.zeros(faceSize, dtype=_sizet)
         _pt_getMesh(self.n, nSegments, vert, NumPolygonPoints, facesVec)
-        print('facesVec max', facesVec.max())
 
         faces=[]
         curPos=0
