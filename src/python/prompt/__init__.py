@@ -103,3 +103,42 @@ class Launcher():
 
     def loadGeometry(self, fileName):
         _pt_Launcher_loadGeometry(self.cobj, fileName.encode('utf-8'));
+
+
+import pyvista as pv
+import trimesh
+import random
+class Visualiser():
+    def __init__(self, printWorld=False):
+        self.plotter = pv.Plotter()
+        self.worldMesh = Mesh()
+        if printWorld:
+            self.worldMesh.printMesh()
+        self.loadMesh()
+
+    def loadMesh(self):
+        for am in self.worldMesh:
+            name = am.getMeshName()
+            print(f'loading mesh {name}')
+            if name!='World':
+                name, points, faces = am.getMesh(100)
+                rcolor = random.choice(['red', 'grey', 'yellow', 'blue', 'black'])
+
+                face3p = []
+                face4p = []
+                for face in faces:
+                    if face.size == 3:
+                        face3p.append(face)
+                    elif face.size == 4:
+                        face4p.append(face)
+                rcolor = np.random.random(3)
+                if len(face4p) !=0 :
+                    tmesh4 = pv.wrap(trimesh.Trimesh(points, faces=face4p, process=False))
+                    self.plotter.add_mesh(tmesh4, color=rcolor, opacity=0.3)
+
+                if len(face3p) !=0 :
+                    tmesh3 = pv.wrap(trimesh.Trimesh(points, faces=face3p, process=False))
+                    self.plotter.add_mesh(tmesh3, color=rcolor, opacity=0.3)
+
+    def show(self):
+        self.plotter.show()
