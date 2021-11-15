@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
   l.setSeed(seed);
   l.setGun(gun);
   l.loadGeometry(geofile);
-  prompt_printMesh();
+  pt_printMesh();
   l.go(numParticle, printPrecent);
 
   return 0;

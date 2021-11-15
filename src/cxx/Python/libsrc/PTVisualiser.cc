@@ -1,61 +1,86 @@
 #include "PTVisualiser.hh"
 #include <VecGeom/base/Config.h>
-#include <VecGeom/base/Utils3D.h>
+#include <VecGeom/volumes/SolidMesh.h>
 #include <VecGeom/management/GeoManager.h>
 #include <VecGeom/gdml/Middleware.h>
 #include <VecGeom/navigation/BVHNavigator.h>
 #include <VecGeom/navigation/NewSimpleNavigator.h>
 #include <VecGeom/gdml/Frontend.h>
 
-size_t prompt_pVolSize()
+size_t pt_placedVolNum()
 {
   auto &geoManager = vecgeom::GeoManager::Instance();
   return geoManager.GetPlacedVolumesCount();
 }
 
-void prompt_meshInfo(size_t pvolID, unsigned nSegments, size_t &npoints, size_t &nPlolygen)
+void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlolygen, size_t &faceSize)
 {
   auto &geoManager = vecgeom::GeoManager::Instance();
   size_t pvolsize =  geoManager.GetPlacedVolumesCount();
 
   // const vgdml::VPlacedVolume
   auto *vol = geoManager.Convert(pvolID);
-  std::cout << vol->GetName() << std::endl;
 
   // Utils3D::USolidMesh
   auto *mesh = vol->CreateMesh3D(nSegments);
   nPlolygen = mesh->GetPolygons().size();
-  npoints = mesh->GetVertices().size();
+  npoints = 0;
+  for(const auto &apolygon: mesh->GetPolygons())
+  {
+    if(!npoints)
+      npoints = apolygon.fVert.size();
+    faceSize += apolygon.fInd.size();
+  }
+}
+
+const char* pt_getMeshName(size_t pvolID)
+{
+  auto &geoManager = vecgeom::GeoManager::Instance();
+  return geoManager.Convert(pvolID)->GetName();
 }
 
 //size of points: 3*n
 //size of faces: n
 //size of NumPolygonPoints: m
-void prompt_getMesh(size_t pvolID, unsigned nSegments, double *points, size_t *NumPolygonPoints)
+void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPolygonPoints, size_t *faces)
 {
   auto &geoManager = vecgeom::GeoManager::Instance();
-  size_t pvolsize =  geoManager.GetPlacedVolumesCount();
 
   // const vgdml::VPlacedVolume
   auto *vol = geoManager.Convert(pvolID);
-  std::cout << vol->GetName() << std::endl;
+  // std::cout << vol->GetName() << std::endl;
   // Utils3D::USolidMesh
   auto *mesh = vol->CreateMesh3D(nSegments);
-  for(const auto &v: mesh->GetPolygons())
+
+   if(mesh->GetPolygons().empty())
+      PROMPT_THROW(BadInput, "empty mesh");
+
+
+   auto &polygens = mesh->GetPolygons();
+   for(const auto &poly: polygens)
+   {
+     for(const auto &vert: poly.fVert)
+     {
+       *(points++)=vert[0];
+       *(points++)=vert[1];
+       *(points++)=vert[2];
+     }
+     break;
+   }
+
+  for(const auto &apolygon: polygens)
   {
-    std::cout << v << std::endl;
-    *(++NumPolygonPoints) = v.fN;
-    for (size_t i = 0; i < v.fN; ++i)
+    *(NumPolygonPoints++) = apolygon.fN;
+
+    for(auto vt : apolygon.fInd )
     {
-      *(points++)=v.GetVertex(i)[0];
-      *(points++)=v.GetVertex(i)[1];
-      *(points++)=v.GetVertex(i)[2];
-      std::cout <<  v.GetVertex(i) << "\n";
+      *(faces++) = vt;
+      // std::cout << vt << std::endl;
     }
   }
 }
 
-void prompt_printMesh()
+void pt_printMesh()
 {
   auto &geoManager = vecgeom::GeoManager::Instance();
   size_t pvolsize =  geoManager.GetPlacedVolumesCount();
