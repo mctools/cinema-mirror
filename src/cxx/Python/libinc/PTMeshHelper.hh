@@ -1,5 +1,5 @@
-#ifndef Prompt_Visualiser_hh
-#define Prompt_Visualiser_hh
+#ifndef Prompt_MeshHelper_hh
+#define Prompt_MeshHelper_hh
 
 #include "PromptCore.hh"
 

@@ -1,4 +1,4 @@
-#include "PTVisualiser.hh"
+#include "PTMeshHelper.hh"
 #include <VecGeom/base/Config.h>
 #include <VecGeom/volumes/SolidMesh.h>
 #include <VecGeom/management/GeoManager.h>
