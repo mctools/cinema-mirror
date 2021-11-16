@@ -6,13 +6,11 @@
 Prompt::NavManager::NavManager()
 :m_geo(vecgeom::GeoManager::Instance()), m_currPV(nullptr),
 m_currState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth())),
-m_nextState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth())), m_hist2d(new Hist2D(-500,500,100,-500,500,100))
+m_nextState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth()))
 {}
 
 Prompt::NavManager::~NavManager()
 {
-  m_hist2d->save("promt_first_hist.dat");
-  delete m_hist2d;
   delete m_currState;
   delete m_nextState;
   std::cout << "Destructed NavManager" << std::endl;
@@ -97,22 +95,25 @@ void Prompt::NavManager::scoreExit(Prompt::Particle &particle)
 
 bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
 {
+  std::cout << "proprogateInAVolume 1 " << (particle.isAlive()?" particle alive" : " fucking dead") << std::endl;
   if(!particle.isAlive())
     return false;
 
+  std::cout << "proprogateInAVolume 2" << std::endl;
+
   Vector &p = particle.getPosition();
   Vector &dir = particle.getDirection();
-
   if (verbose) {
     std::cout << m_currPV->GetLogicalVolume()->GetName() << ", id " << m_currPV->GetLogicalVolume()->id() << std::endl;
     std::cout << "initial conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << std::endl;
   }
 
-  if(m_currPV->GetLogicalVolume()->id()==1)
-  {
-    auto loc = m_currState->GlobalToLocal({p.x(), p.y(), p.z()});
-    m_hist2d->fill(loc[0], loc[1]);
-  }
+  // if(m_currPV->GetLogicalVolume()->id()==1)
+  // {
+  //   auto loc = m_currState->GlobalToLocal({p.x(), p.y(), p.z()});
+  //   m_hist2d->fill(loc[0], loc[1]);
+  // }
+  std::cout << "proprogateInAVolume 3" << std::endl;
 
   double stepLength = m_matphysscor->physics->sampleStepLength(particle.getEKin(), dir);
 

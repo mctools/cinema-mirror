@@ -3,8 +3,6 @@
 #include <VecGeom/base/Config.h>
 #include <VecGeom/management/GeoManager.h>
 #include <VecGeom/gdml/Middleware.h>
-#include <VecGeom/navigation/BVHNavigator.h>
-#include <VecGeom/navigation/NewSimpleNavigator.h>
 #include <VecGeom/gdml/Frontend.h>
 #include <VecGeom/volumes/PlacedVolume.h>
 
@@ -85,9 +83,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
   auto &anaManager = Singleton<AnaManager>::getInstance();
 
-  //initialise navigator
   auto &geoManager = vecgeom::GeoManager::Instance();
-  auto navigator = vecgeom::BVHNavigator<>::Instance();
 
   //geoManager.GetLogicalVolumesMap() returens std::map<unsigned int, LogicalVolume *>
   for (const auto &item : geoManager.GetLogicalVolumesMap())
@@ -106,12 +102,11 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     }
 
 
-    // 1. fill volume into nativator
-    // auto nchildren = volume.GetDaughters().size();
-    // volume.SetNavigator(nchildren > 0 ? navigator : vecgeom::NewSimpleNavigator<>::Instance());
+    // 1. filter out material-empty volume
     auto mat_iter = volumeMatMap.find(volID);
     if(mat_iter==volumeMatMap.end()) //union creates empty virtual volume
-      continue;
+      PROMPT_THROW(CalcError, "empty volume ")
+      // continue;
 
     // 2. setup scorors
     if(volAuxInfo.size())
@@ -127,6 +122,9 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
         for(const auto& info : volAuxInfoVec)
         {
+          if (info.GetType() != "Sensitive")
+            continue;
+
           auto scor = getScoror(info.GetType());
 
           if(scor) //this scorer exist
@@ -179,5 +177,4 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     for (const auto &attv : mat.components)
       std::cout << "    " << attv.first << ": " << attv.second << std::endl;
   }
-  vecgeom::BVHManager::Init();
 }
