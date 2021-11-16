@@ -126,9 +126,10 @@ import pyvista as pv
 import trimesh
 import random
 class Visualiser():
-    def __init__(self, printWorld=False):
+    def __init__(self, blacklist, printWorld=False):
         self.plotter = pv.Plotter()
         self.worldMesh = Mesh()
+        self.blacklist = blacklist
         if printWorld:
             self.worldMesh.printMesh()
         self.loadMesh()
@@ -140,6 +141,9 @@ class Visualiser():
     def loadMesh(self):
         for am in self.worldMesh:
             name = am.getMeshName()
+            if any(srchstr in name for srchstr in self.blacklist):
+                continue
+
             print(f'loading mesh {name}')
             if name!='World':
                 name, points, faces = am.getMesh(100)

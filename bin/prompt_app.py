@@ -8,7 +8,7 @@ l = Launcher()
 l.setSeed(100)
 l.loadGeometry("../gdml/mpi_detector.gdml");
 # l.loadGeometry("../gdml/first_geo.gdml");
-v = Visualiser()
+v = Visualiser(['Tube300', 'Tube500', '300_L', '500_L'])
 
 for i in range(10):
     print(f'trajectory size {l.getTrajSize()}')
