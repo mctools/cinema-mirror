@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
   bool vis = false;
   double printPrecent = 0.1;
   std::string geofile("../gdml/first_geo.gdml");
+  bool printTrj = false;
 
   int opt_char;
   int option_index;
@@ -31,7 +32,7 @@ int main(int argc, char *argv[])
     {NULL,          0,                 0, 0}
   };
 
-  while((opt_char = getopt_long(argc, argv, "n:s:vh",
+  while((opt_char = getopt_long(argc, argv, "n:s:g:vth",
             long_options, &option_index)) != -1) {
   switch (opt_char) {
       case 'n':
@@ -44,6 +45,17 @@ int main(int argc, char *argv[])
       {
         seed=atoi(optarg);
         printf("seed is set to %d\n", seed);
+        break;
+      }
+      case 't':
+      {
+        printTrj=true;
+        break;
+      }
+      case 'g':
+      {
+        geofile=std::string(optarg);
+        printf("geometry file is set to %s\n", optarg);
         break;
       }
       case 'p':
@@ -70,8 +82,17 @@ int main(int argc, char *argv[])
   l.setSeed(seed);
   l.setGun(gun);
   l.loadGeometry(geofile);
-  pt_printMesh();
-  l.go(numParticle, printPrecent);
+  // pt_printMesh();
+  l.go(numParticle, printPrecent, printTrj);
+
+  if(printTrj)
+  {
+    auto &trj = l.getTrajectory();
+    for(const auto &v : trj )
+    {
+      std::cout << v << std::endl;
+    }
+  }
 
   return 0;
 }
