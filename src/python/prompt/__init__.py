@@ -104,7 +104,7 @@ class Launcher():
     def __init__(self):
         self.cobj = _pt_Launcher_getInstance()
 
-    def setSeed(seed):
+    def setSeed(self, seed):
         _pt_Launcher_setSeed(self.cobj, seed)
 
     def loadGeometry(self, fileName):
@@ -132,6 +132,10 @@ class Visualiser():
         if printWorld:
             self.worldMesh.printMesh()
         self.loadMesh()
+
+    def addLine(self, data):
+        line = pv.lines_from_points(data)
+        self.plotter.add_mesh(line, color='blue', opacity=0.9, line_width=4)
 
     def loadMesh(self):
         for am in self.worldMesh:

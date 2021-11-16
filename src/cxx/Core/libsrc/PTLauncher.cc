@@ -5,7 +5,8 @@
 #include "PTMath.hh"
 #include "PTParticle.hh"
 #include "PTProgressMonitor.hh"
-
+#include "PTSimpleThermalGun.hh"
+#include "PTNeutron.hh"
 
 Prompt::Launcher::Launcher()
 {
@@ -34,11 +35,24 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
   //create navigation manager
   auto &navman = Singleton<NavManager>::getInstance();
 
+  if(!m_gun.use_count())
+  {
+    std::cout << "PrimaryGun is not set, fallback to the neutron SimpleThermalGun\n";
+    m_gun = std::make_shared<SimpleThermalGun>(Neutron());
+  }
+
   DeltaParticle dltpar;
 
   ProgressMonitor moni("Prompt simulation", numParticle, printPrecent);
   for(size_t i=0;i<numParticle;i++)
   {
+    if(recordTrj)
+    {
+      std::vector<Vector> tmp{};
+      tmp.reserve(m_trajectory.size());
+      m_trajectory.swap(tmp);
+    }
+
     //double ekin, const Vector& dir, const Vector& pos
     auto particle = m_gun->generate();
     dltpar.setLastParticle(particle);
@@ -48,11 +62,10 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
     navman.locateLogicalVolume(particle.getPosition());
     while(!navman.exitWorld() && particle.isAlive())
     {
+
       if(recordTrj)
       {
-        std::vector<Vector> tmp;
-        tmp.reserve(m_trajectory.size());
-        m_trajectory.swap(tmp);
+        m_trajectory.push_back(particle.getPosition());
       }
 
       //! first step of a particle in a volume
