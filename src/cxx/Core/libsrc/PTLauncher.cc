@@ -84,6 +84,11 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       }
       navman.scoreExit(particle);
     }
+
+    if(recordTrj)
+    {
+      m_trajectory.push_back(particle.getPosition());
+    }
     moni.OneTaskCompleted();
   }
 }

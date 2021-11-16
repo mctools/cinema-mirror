@@ -124,7 +124,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   double step = m_currPV->GetLogicalVolume()->GetNavigator()->ComputeStepAndPropagatedState({p.x(), p.y(), p.z()}, {dir.x(), dir.y(), dir.z()}, stepLength, *m_currState, *m_nextState);
   std::swap(m_currState, m_nextState);
 
-  bool sameVolume = step == stepLength;
+  bool sameVolume (step == stepLength);
   assert(stepLength >= step);
   if (verbose && !sameVolume) { std::cout << "hitDaugherBoundary\n";}
 
