@@ -6,6 +6,8 @@
 #include <VecGeom/navigation/BVHNavigator.h>
 #include <VecGeom/navigation/NewSimpleNavigator.h>
 #include <VecGeom/gdml/Frontend.h>
+#include <VecGeom/volumes/PlacedVolume.h>
+
 
 #include "PTNCrystal.hh"
 #include "PTAnaManager.hh"
@@ -43,6 +45,27 @@ std::shared_ptr<Prompt::Scoror> Prompt::GeoManager::getScoror(const std::string 
   else
     return nullptr;
 }
+
+// void Prompt::GeoManager::loadFile(const std::string &gdml_file)
+// {
+//   vgdml::Parser p;
+//   const auto loadedMiddleware = p.Load(gdml_file.c_str(), false, 1.);
+//   if (!loadedMiddleware) PROMPT_THROW(DataLoadError, "failed to load the gdml file ");
+//   const auto &aMiddleware = *loadedMiddleware;
+//
+//   auto &geoManager = vecgeom::GeoManager::Instance();
+//   geoManager.SetTransformationCacheDepth(0);
+//
+//   std::vector<vecgeom::VPlacedVolume *> placedvolumes;
+//   geoManager.getAllPlacedVolumes(placedvolumes);
+//
+//   for(auto pv: placedvolumes)
+//   {
+//     std::cout << "placed vloume " << pv->GetLogicalVolume()->GetName() << std::endl;
+//   }
+//
+//
+// }
 
 
 void Prompt::GeoManager::loadFile(const std::string &gdml_file)
@@ -84,8 +107,8 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
 
     // 1. fill volume into nativator
-    auto nchildren = volume.GetDaughters().size();
-    volume.SetNavigator(nchildren > 0 ? navigator : vecgeom::NewSimpleNavigator<>::Instance());
+    // auto nchildren = volume.GetDaughters().size();
+    // volume.SetNavigator(nchildren > 0 ? navigator : vecgeom::NewSimpleNavigator<>::Instance());
     auto mat_iter = volumeMatMap.find(volID);
     if(mat_iter==volumeMatMap.end()) //union creates empty virtual volume
       continue;

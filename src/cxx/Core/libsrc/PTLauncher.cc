@@ -46,23 +46,21 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
   ProgressMonitor moni("Prompt simulation", numParticle, printPrecent);
   for(size_t i=0;i<numParticle;i++)
   {
-    if(recordTrj)
-    {
-      std::vector<Vector> tmp{};
-      tmp.reserve(m_trajectory.size());
-      m_trajectory.swap(tmp);
-    }
-
     //double ekin, const Vector& dir, const Vector& pos
     auto particle = m_gun->generate();
     dltpar.setLastParticle(particle);
-    // auto particle = Neutron(0.1, {0.,0.,1.}, {0,0,-12000.});
+
+    if(recordTrj)
+    {
+      std::vector<Vector> tmp;
+      tmp.reserve(m_trajectory.size());
+      m_trajectory.swap(tmp);
+    }
 
     //! allocate the point in a volume
     navman.locateLogicalVolume(particle.getPosition());
     while(!navman.exitWorld() && particle.isAlive())
     {
-
       if(recordTrj)
       {
         m_trajectory.push_back(particle.getPosition());

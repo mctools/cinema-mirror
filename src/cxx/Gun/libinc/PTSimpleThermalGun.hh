@@ -12,7 +12,7 @@ namespace Prompt {
     : PrimaryGun(aParticle) {};
     virtual ~SimpleThermalGun() {};
     virtual void sampleEnergy(double &ekin) {ekin = 0.0253; };
-    virtual void samplePosDir(Vector &pos, Vector &dir) { pos = Vector{0.,0.,0.}; dir=Vector{0.,0.,1.}; }
+    virtual void samplePosDir(Vector &pos, Vector &dir) { pos = Vector{0.,0.,-2000.}; dir=Vector{0.,0.,1.}; }
   };
 }
 

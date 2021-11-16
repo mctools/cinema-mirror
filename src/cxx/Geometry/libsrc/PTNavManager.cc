@@ -97,8 +97,6 @@ void Prompt::NavManager::scoreExit(Prompt::Particle &particle)
 
 bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
 {
-  // std::cout << m_currPV->GetLogicalVolume()->GetName() << ", scoror size "
-  //     << m_matphysscor->scorors.size() << std::endl;
   if(!particle.isAlive())
     return false;
 
