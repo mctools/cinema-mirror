@@ -5,7 +5,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 l = Launcher()
-l.loadGeometry("../gdml/first_geo.gdml");
-
+l.setSeed(100)
+l.loadGeometry("../gdml/mpi_detector.gdml");
+# l.loadGeometry("../gdml/first_geo.gdml");
 v = Visualiser()
+
+for i in range(10):
+    print(f'trajectory size {l.getTrajSize()}')
+    l.go(1, recordTrj=True)
+    print(f'trajectory size {l.getTrajSize()}')
+    trj = l.getTrajectory()
+    v.addLine(trj)
+    print(trj)
+
+
 v.show()

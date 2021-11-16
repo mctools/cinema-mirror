@@ -95,11 +95,8 @@ void Prompt::NavManager::scoreExit(Prompt::Particle &particle)
 
 bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
 {
-  std::cout << "proprogateInAVolume 1 " << (particle.isAlive()?" particle alive" : " fucking dead") << std::endl;
   if(!particle.isAlive())
     return false;
-
-  std::cout << "proprogateInAVolume 2" << std::endl;
 
   Vector &p = particle.getPosition();
   Vector &dir = particle.getDirection();
@@ -113,7 +110,6 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   //   auto loc = m_currState->GlobalToLocal({p.x(), p.y(), p.z()});
   //   m_hist2d->fill(loc[0], loc[1]);
   // }
-  std::cout << "proprogateInAVolume 3" << std::endl;
 
   double stepLength = m_matphysscor->physics->sampleStepLength(particle.getEKin(), dir);
 
