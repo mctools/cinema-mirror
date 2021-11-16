@@ -15,7 +15,7 @@ Prompt::Launcher::Launcher()
 
 Prompt::Launcher::~Launcher()
 {
-
+  printLogo();
 }
 
 void Prompt::Launcher::loadGeometry(const std::string &geofile)
@@ -26,7 +26,7 @@ void Prompt::Launcher::loadGeometry(const std::string &geofile)
 }
 
 
-void Prompt::Launcher::go(uint64_t numParticle, double printPrecent)
+void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj)
 {
   //set the seed for the random generator
   auto &rng = Singleton<SingletonPTRand>::getInstance();
@@ -34,7 +34,6 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent)
   //create navigation manager
   auto &navman = Singleton<NavManager>::getInstance();
 
-  printLogo();
   DeltaParticle dltpar;
 
   ProgressMonitor moni("Prompt simulation", numParticle, printPrecent);
@@ -49,6 +48,13 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent)
     navman.locateLogicalVolume(particle.getPosition());
     while(!navman.exitWorld() && particle.isAlive())
     {
+      if(recordTrj)
+      {
+        std::vector<Vector> tmp;
+        tmp.reserve(m_trajectory.size());
+        m_trajectory.swap(tmp);
+      }
+
       //! first step of a particle in a volume
       // std::cout << navman.getVolumeName() << " " << particle.getPosition() << std::endl;
       navman.setupVolumePhysics();
@@ -62,6 +68,8 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent)
           dltpar.calcDeltaParticle(particle);
           navman.scorePropagate(particle, dltpar);
         }
+        if(recordTrj)
+          m_trajectory.push_back(particle.getPosition());
       }
       navman.scoreExit(particle);
     }

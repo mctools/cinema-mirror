@@ -7,6 +7,7 @@ import os
 import time
 
 _sizet, _sizetp = (ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t))
+_bool = ctypes.c_bool
 _int,_intp,_uint,_uintp,_dbl,_dblp,_cstr,_voidp = (ctypes.c_int, ctypes.POINTER(ctypes.c_int),
                                                    ctypes.c_uint,ctypes.POINTER(ctypes.c_uint), ctypes.c_double,
                                                    ctypes.POINTER(ctypes.c_double), ctypes.c_char_p, ctypes.c_void_p)
@@ -93,6 +94,11 @@ class Mesh():
 _pt_Launcher_getInstance = _cFunc('pt_Launcher_getInstance', _voidp, [] )
 _pt_Launcher_setSeed = _cFunc('pt_Launcher_setSeed', None, [_voidp, _sizet] )
 _pt_Launcher_loadGeometry = _cFunc('pt_Launcher_loadGeometry', None, [_voidp, _cstr] )
+_pt_Launcher_getTrajSize = _cFunc('pt_Launcher_getTrajSize', _sizet, [_voidp])
+_pt_Launcher_getTrajectory = _cFunc('pt_Launcher_getTrajectory', None, [_voidp, _npdbl2d])
+_pt_Launcher_go = _cFunc('pt_Launcher_go', None, [_voidp, _sizet, _dbl, _bool])
+
+
 
 class Launcher():
     def __init__(self):
@@ -104,6 +110,17 @@ class Launcher():
     def loadGeometry(self, fileName):
         _pt_Launcher_loadGeometry(self.cobj, fileName.encode('utf-8'));
 
+    def getTrajSize(self):
+        return _pt_Launcher_getTrajSize(self.cobj)
+
+    def getTrajectory(self):
+        trjsize = self.getTrajSize()
+        trj = np.zeros([trjsize, 3])
+        _pt_Launcher_getTrajectory(self.cobj, trj)
+        return trj
+
+    def go(self, numPrimary, printPrecent=0.1, recordTrj=False):
+        _pt_Launcher_go(self.cobj, numPrimary, printPrecent, recordTrj)
 
 import pyvista as pv
 import trimesh

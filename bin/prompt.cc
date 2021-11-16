@@ -5,7 +5,7 @@
 #include "PTLauncher.hh"
 #include "PTMaxwellianGun.hh"
 #include "PTNeutron.hh"
-#include "PTVisualiser.hh"
+#include "PTMeshHelper.hh"
 
 
 namespace pt = Prompt;
