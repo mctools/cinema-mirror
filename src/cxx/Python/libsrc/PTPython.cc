@@ -3,6 +3,12 @@
 
 namespace pt = Prompt;
 
+
+double pt_rand_generate()
+{
+  return pt::Singleton<pt::SingletonPTRand>::getInstance().generate();  
+}
+
 void* pt_Launcher_getInstance()
 {
   return static_cast<void *>(std::addressof(pt::Singleton<pt::Launcher>::getInstance()));
