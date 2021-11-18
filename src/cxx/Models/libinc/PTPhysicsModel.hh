@@ -6,7 +6,27 @@
 #include "PromptCore.hh"
 #include "PTVector.hh"
 
+#include "NCrystal/NCrystal.hh"
+#include "PTRandCanonical.hh"
+
 namespace Prompt {
+
+  class SingletonPTRandWrapper : public NCrystal::RNGStream{
+  public:
+    SingletonPTRandWrapper()
+    :NCrystal::RNGStream(), m_ptrng(Prompt::Singleton<Prompt::SingletonPTRand>::getInstance())
+    {}
+    virtual ~SingletonPTRandWrapper() override {}
+
+    double actualGenerate() override {return m_ptrng.generate(); }
+
+    //For the sake of example, we wrongly claim that this generator is safe and
+    //sensible to use multithreaded (see NCRNG.hh for how to correctly deal with
+    //MT safety, RNG states, etc.):
+    bool useInAllThreads() const override { return true; }
+  private:
+    Prompt::SingletonPTRand &m_ptrng;
+  };
 
   class PhysicsModel {
   public:

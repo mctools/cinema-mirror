@@ -1,5 +1,5 @@
-#ifndef Prompt_NCrystalScat_hh
-#define Prompt_NCrystalScat_hh
+#ifndef Prompt_NCrystalAbs_hh
+#define Prompt_NCrystalAbs_hh
 
 #include <string>
 
@@ -15,13 +15,13 @@ namespace NCrystal {
 
 namespace Prompt {
 
-  //NCrystalScat is in fact a scatterer of NCrystal
+  //NCrystalAbs is in fact a scatterer of NCrystal
   //Physics model should be initialised from material
 
-  class NCrystalScat  : public PhysicsModel {
+  class NCrystalAbs  : public PhysicsModel {
   public:
-    NCrystalScat(const std::string &cfgstring);
-    ~NCrystalScat();
+    NCrystalAbs(const std::string &cfgstring);
+    ~NCrystalAbs();
 
     virtual double getCrossSection(double ekin) const override;
     virtual double getCrossSection(double ekin, const Vector &dir) const override;
@@ -29,8 +29,7 @@ namespace Prompt {
     virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
 
   private:
-    mutable  NCrystal::Scatter m_scat;
-    static bool m_ncrystal_initialised;
+    mutable  NCrystal::Absorption m_abs;
   };
 
 }
