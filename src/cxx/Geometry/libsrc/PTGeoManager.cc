@@ -7,7 +7,7 @@
 #include <VecGeom/volumes/PlacedVolume.h>
 
 
-#include "PTNCrystal.hh"
+
 #include "PTAnaManager.hh"
 
 #include "PTUtils.hh"

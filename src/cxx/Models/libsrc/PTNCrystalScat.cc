@@ -1,6 +1,6 @@
 #include <limits>
 
-#include "PTNCrystal.hh"
+#include "PTNCrystalScat.hh"
 #include "PTUnitSystem.hh"
 #include "PTRandCanonical.hh"
 
@@ -23,7 +23,7 @@ private:
 };
 
 
-Prompt::PTNCrystal::PTNCrystal(const std::string &cfgstring)
+Prompt::NCrystalScat::NCrystalScat(const std::string &cfgstring)
 :Prompt::PhysicsModel(cfgstring, const_neutron_pgd,
                       std::numeric_limits<double>::min(), 10*Prompt::Unit::eV),
                       m_scat(NCrystal::createScatter(cfgstring))
@@ -40,13 +40,13 @@ Prompt::PTNCrystal::PTNCrystal(const std::string &cfgstring)
   NCrystal::setDefaultRNG(NCrystal::makeSO<SingletonPTRandWrapper>());
 }
 
-Prompt::PTNCrystal::~PTNCrystal()
+Prompt::NCrystalScat::~NCrystalScat()
 {
   std::cout<<"Destructing physics " << m_modelName <<std::endl;
 }
 
 
-double Prompt::PTNCrystal::getCrossSection(double ekin) const
+double Prompt::NCrystalScat::getCrossSection(double ekin) const
 {
   if( m_scat.isOriented() ) {
     PROMPT_THROW(CalcError, "material is oriented");
@@ -58,7 +58,7 @@ double Prompt::PTNCrystal::getCrossSection(double ekin) const
   }
 }
 
-double Prompt::PTNCrystal::getCrossSection(double ekin, const Prompt::Vector &dir) const
+double Prompt::NCrystalScat::getCrossSection(double ekin, const Prompt::Vector &dir) const
 {
   NCrystal::CrossSect xsect;
   if( m_scat.isOriented() ) {
@@ -72,12 +72,12 @@ double Prompt::PTNCrystal::getCrossSection(double ekin, const Prompt::Vector &di
 }
 
 
-void Prompt::PTNCrystal::generate(double &ekin, Prompt::Vector &dir) const
+void Prompt::NCrystalScat::generate(double &ekin, Prompt::Vector &dir) const
 {
   PROMPT_THROW(CalcError, "not yet implemented");
 }
 
-void Prompt::PTNCrystal::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
+void Prompt::NCrystalScat::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
 {
   auto outcome1 = m_scat.sampleScatter( NCrystal::NeutronEnergy(ekin), {dir.x(), dir.y(), dir.z()});
   final_ekin = outcome1.ekin.get();

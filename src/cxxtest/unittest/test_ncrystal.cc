@@ -1,5 +1,5 @@
 #include "../doctest.h"
-#include "PTNCrystal.hh"
+#include "PTNCrystalScat.hh"
 #include "PTMath.hh"
 
 TEST_CASE("NCrystal")
@@ -26,7 +26,7 @@ TEST_CASE("NCrystal")
   // Create and use aluminium powder: //
   //////////////////////////////////////
 
-  auto pc = Prompt::PTNCrystal( "Al_sg225.ncmat;dcutoff=0.5;temp=25C" );
+  auto pc = Prompt::NCrystalScat( "Al_sg225.ncmat;dcutoff=0.5;temp=25C" );
   double xs = pc.getCrossSection(1);
   Prompt::Vector out;
   double final;

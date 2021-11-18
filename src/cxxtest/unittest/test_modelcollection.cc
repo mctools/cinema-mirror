@@ -1,5 +1,4 @@
 #include "../doctest.h"
-#include "PTNCrystal.hh"
 #include "PTMath.hh"
 #include "PTModelCollection.hh"
 

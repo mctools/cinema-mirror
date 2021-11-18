@@ -1,5 +1,5 @@
 #include "PTModelCollection.hh"
-#include "PTNCrystal.hh"
+#include "PTNCrystalScat.hh"
 #include "PTPhysicsModel.hh"
 
 Prompt::ModelCollection::ModelCollection()
@@ -10,7 +10,7 @@ Prompt::ModelCollection::~ModelCollection() {}
 
 void Prompt::ModelCollection::addPhysicsModel(const std::string &cfg)
 {
-  m_models.emplace_back(std::make_shared<PTNCrystal>(cfg));
+  m_models.emplace_back(std::make_shared<NCrystalScat>(cfg));
   if(m_models.back()->isOriented())
     m_oriented=true;
   m_cache.cache_xs.resize(m_models.size());

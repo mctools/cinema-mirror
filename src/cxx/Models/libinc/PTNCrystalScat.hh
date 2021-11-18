@@ -1,5 +1,5 @@
-#ifndef Prompt_PTNCrystal_hh
-#define Prompt_PTNCrystal_hh
+#ifndef Prompt_NCrystalScat_hh
+#define Prompt_NCrystalScat_hh
 
 #include <string>
 
@@ -15,13 +15,13 @@ namespace NCrystal {
 
 namespace Prompt {
 
-  //PTNCrystal is in fact a scatterer of NCrystal
+  //NCrystalScat is in fact a scatterer of NCrystal
   //Physics model should be initialised from material
 
-  class PTNCrystal  : public PhysicsModel {
+  class NCrystalScat  : public PhysicsModel {
   public:
-    PTNCrystal(const std::string &cfgstring);
-    ~PTNCrystal();
+    NCrystalScat(const std::string &cfgstring);
+    ~NCrystalScat();
 
     virtual double getCrossSection(double ekin) const override;
     virtual double getCrossSection(double ekin, const Vector &dir) const override;
