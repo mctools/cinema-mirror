@@ -3,7 +3,7 @@
 USAGE="Usage: $0 -t for unit test"
 
 . ~/git/ncrystal/install/setup.sh
-while getopts ti: option
+while getopts ti:d option
   do
     case "${option}"
     in

@@ -44,28 +44,6 @@ std::shared_ptr<Prompt::Scoror> Prompt::GeoManager::getScoror(const std::string 
     return nullptr;
 }
 
-// void Prompt::GeoManager::loadFile(const std::string &gdml_file)
-// {
-//   vgdml::Parser p;
-//   const auto loadedMiddleware = p.Load(gdml_file.c_str(), false, 1.);
-//   if (!loadedMiddleware) PROMPT_THROW(DataLoadError, "failed to load the gdml file ");
-//   const auto &aMiddleware = *loadedMiddleware;
-//
-//   auto &geoManager = vecgeom::GeoManager::Instance();
-//   geoManager.SetTransformationCacheDepth(0);
-//
-//   std::vector<vecgeom::VPlacedVolume *> placedvolumes;
-//   geoManager.getAllPlacedVolumes(placedvolumes);
-//
-//   for(auto pv: placedvolumes)
-//   {
-//     std::cout << "placed vloume " << pv->GetLogicalVolume()->GetName() << std::endl;
-//   }
-//
-//
-// }
-
-
 void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 {
   vgdml::Parser p;
@@ -82,7 +60,6 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
             << volAuxInfo.size() << " entries of volum auxiliary info\n";
 
   auto &anaManager = Singleton<AnaManager>::getInstance();
-
   auto &geoManager = vecgeom::GeoManager::Instance();
 
   //geoManager.GetLogicalVolumesMap() returens std::map<unsigned int, LogicalVolume *>
@@ -112,7 +89,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     if(volAuxInfo.size())
     {
       auto volAuxInfo_iter = volAuxInfo.find(volID);
-      if(volAuxInfo_iter != volAuxInfo.end()) //it volume contains a scoror info
+      if(volAuxInfo_iter != volAuxInfo.end()) //it volume contains an AuxInfo info
       {
         std::cout << volume.GetName()<< ", volID " << volID << " contains volAuxInfo\n";
         const std::vector<vgdml::Auxiliary> &volAuxInfoVec = (*volAuxInfo_iter).second;
@@ -125,16 +102,16 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
           if (info.GetType() != "Sensitive")
             continue;
 
-          auto scor = getScoror(info.GetType());
+          std::shared_ptr<Prompt::Scoror> scor = getScoror(info.GetValue());
 
-          if(scor) //this scorer exist
+          if(scor.use_count()) //this scorer exist
           {
             vps->scorors.push_back(scor);
           }
           else
           {
             scor = anaManager.createScoror(info.GetValue());
-            m_globelScorors[info.GetType()]=scor;
+            m_globelScorors[info.GetValue()]=scor;
             vps->scorors.push_back(scor);
           }
           std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;

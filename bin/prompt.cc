@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
   unsigned seed = 6402;
   bool vis = false;
   double printPrecent = 0.1;
-  std::string geofile("../gdml/first_geo.gdml");
+  std::string geofile("../gdml/mpi_detector.gdml");
   bool printTrj = false;
 
   int opt_char;
@@ -77,9 +77,9 @@ int main(int argc, char *argv[])
     }
   }
 
-  auto gun = std::make_shared<pt::MaxwellianGun>(pt::Neutron(), 300,  std::array<double, 6> {1, 1, -12000, 1, 1, 0});
   auto &l = pt::Singleton<pt::Launcher>::getInstance();
   l.setSeed(seed);
+  auto gun = std::make_shared<pt::MaxwellianGun>(pt::Neutron(), 300,  std::array<double, 6> {600, 600, -30000, 10, 10, -1000});
   l.setGun(gun);
   l.loadGeometry(geofile);
   // pt_printMesh();

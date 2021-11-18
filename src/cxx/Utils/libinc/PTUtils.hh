@@ -4,7 +4,8 @@
 #include "PromptCore.hh"
 
 namespace Prompt {
-  void split(const std::string& text, char delimiter, std::vector<std::string> &words);
+  std::vector<std::string> split(const std::string& text, char delimiter);
+  Vector string2vec(const std::string& text, char delimiter=',');
 }
 
 #endif
