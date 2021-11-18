@@ -2,7 +2,7 @@
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
     <userinfo>
-      <auxiliary auxtype="Region" auxvalue="DefaultRegionForTheWorld" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" />
     </userinfo>
 
     <define>
@@ -84,7 +84,7 @@
             <solidref ref="Tube300_He" />
             <materialref ref="G4_He" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;12000.;1.5004;49.9996;60625"/>
+            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;30000.;1.5004;49.9996;60625"/>
         </volume>
 
         <volume name="LV_Tube300_Wall">
@@ -107,7 +107,7 @@
 
         <volume name="LV_Tube500_He">
             <solidref ref="Tube500_He" />
-            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;12000.;1.5004;49.9996;60625"/>
+            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;30000.;1.5004;49.9996;60625"/>
             <materialref ref="G4_He" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
         </volume>

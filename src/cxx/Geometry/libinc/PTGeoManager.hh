@@ -8,6 +8,7 @@
 #include "PTMaterialPhysics.hh"
 #include "PTSingleton.hh"
 #include "PTScoror.hh"
+#include "PTPrimaryGun.hh"
 
 namespace Prompt {
 
@@ -61,6 +62,8 @@ namespace Prompt {
       assert(it!=m_volphyscoror.end());
       return it;
     }
+
+    std::shared_ptr<PrimaryGun> m_gun;
 
 
   private:

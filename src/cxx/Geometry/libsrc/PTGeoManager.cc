@@ -10,7 +10,12 @@
 #include "PTNCrystal.hh"
 #include "PTAnaManager.hh"
 
+#include "PTUtils.hh"
+#include "PTMaxwellianGun.hh"
+#include "PTNeutron.hh"
+
 Prompt::GeoManager::GeoManager()
+:m_gun(nullptr)
 {
 }
 
@@ -53,6 +58,29 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
   const auto &aMiddleware = *loadedMiddleware;
   auto volumeMatMap   = aMiddleware.GetVolumeMatMap();
+
+  // Get User info, which includes primary generator definition
+  auto uinfo = aMiddleware.GetUserInfo();
+  for(const auto& info : uinfo)
+  {
+    std::cout << info.GetType() << std::endl;
+    std::cout << info.GetValue() << std::endl;
+
+    if(info.GetType()=="PrimaryGun")
+    {
+      auto words = split(info.GetValue(), ';');
+      if(words[0]!="MaxwellianGun")
+        PROMPT_THROW2(BadInput, "MaxwellianGun only for the moement")
+
+      double temp = std::stod(words[2]);
+      auto positions = split(words[3], ',');
+
+      m_gun = std::make_shared<MaxwellianGun>(Neutron(), temp,
+        std::array<double, 6> {std::stod(positions[0]), std::stod(positions[1]), std::stod(positions[2]),
+                               std::stod(positions[3]), std::stod(positions[4]), std::stod(positions[5])});
+    }
+  }
+
 
   // Get the volume auxiliary info
   const std::map<int, std::vector<vgdml::Auxiliary>>& volAuxInfo = aMiddleware.GetVolumeAuxiliaryInfo();
