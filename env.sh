@@ -36,7 +36,7 @@ if [ -d $PTPATH/promptbin ]; then
   #export PATH="$PTPATH/resource/src/bin:$PATH"
   export LD_LIBRARY_PATH="$PTPATH/promptbin:$LD_LIBRARY_PATH"
   export DYLD_LIBRARY_PATH="$PTPATH/promptbin:$DYLD_LIBRARY_PATH"
-  export PATH="$PTPATH/promptbin:$PTPATH/scripts:$PATH"
+  export PATH="$PTPATH/promptbin/bin:$PTPATH/scripts:$PATH"
   echo "Added the promptbin directory into environment"
 fi
 
