@@ -28,6 +28,10 @@
           <atom value="LiquidWaterH2O_T293.6K.ncmat"/>
         </material>
 
+        <material name="Cd">
+          <atom value="../ncmat/Cd.ncmat"/>
+        </material>
+
         <material name="HeavyWater">
           <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat;packfact=0.1"/>
         </material>

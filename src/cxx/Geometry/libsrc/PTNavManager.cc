@@ -105,12 +105,6 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     std::cout << "initial conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << std::endl;
   }
 
-  // if(m_currPV->GetLogicalVolume()->id()==1)
-  // {
-  //   auto loc = m_currState->GlobalToLocal({p.x(), p.y(), p.z()});
-  //   m_hist2d->fill(loc[0], loc[1]);
-  // }
-
   double stepLength = m_matphysscor->physics->sampleStepLength(particle.getEKin(), dir);
 
   //! updates m_nextState to contain information about the next hitting boundary:
@@ -139,8 +133,13 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     double final_ekin(0);
     Vector final_dir;
     m_matphysscor->physics->sampleFinalState(particle.getEKin(), dir, final_ekin, final_dir);
-    particle.setEKin(final_ekin);
-    particle.setDirection(final_dir);
+    if(final_ekin==-1.)
+      particle.kill();
+    else
+    {
+      particle.setEKin(final_ekin);
+      particle.setDirection(final_dir);
+    }
     return true;
   }
   else
