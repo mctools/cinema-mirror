@@ -12,6 +12,7 @@
 
 #include "PTUtils.hh"
 #include "PTMaxwellianGun.hh"
+#include "PTSimpleThermalGun.hh"
 #include "PTNeutron.hh"
 
 Prompt::GeoManager::GeoManager()
@@ -69,15 +70,22 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     if(info.GetType()=="PrimaryGun")
     {
       auto words = split(info.GetValue(), ';');
-      if(words[0]!="MaxwellianGun")
-        PROMPT_THROW2(BadInput, "MaxwellianGun only for the moement")
+      if(words[0]=="MaxwellianGun")
+      {
+        double temp = std::stod(words[2]);
+        auto positions = split(words[3], ',');
 
-      double temp = std::stod(words[2]);
-      auto positions = split(words[3], ',');
-
-      m_gun = std::make_shared<MaxwellianGun>(Neutron(), temp,
-        std::array<double, 6> {std::stod(positions[0]), std::stod(positions[1]), std::stod(positions[2]),
-                               std::stod(positions[3]), std::stod(positions[4]), std::stod(positions[5])});
+        m_gun = std::make_shared<MaxwellianGun>(Neutron(), temp,
+          std::array<double, 6> {std::stod(positions[0]), std::stod(positions[1]), std::stod(positions[2]),
+                                 std::stod(positions[3]), std::stod(positions[4]), std::stod(positions[5])});
+      }
+      else if(words[0]=="SimpleThermalGun")
+      {
+        double temp = std::stod(words[1]);
+        m_gun = std::make_shared<SimpleThermalGun>(Neutron(), temp, string2vec(words[2]), string2vec(words[3]));
+      }
+      else
+        PROMPT_THROW2(BadInput, "MaxwellianGun only for the moement");
     }
   }
 
