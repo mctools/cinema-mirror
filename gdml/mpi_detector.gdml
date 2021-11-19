@@ -88,7 +88,7 @@
             <solidref ref="Tube300_He" />
             <materialref ref="G4_He" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;30000.;1.5004;49.9996;60625"/>
+            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;30000.;1.5004;49.9996;1000"/>
         </volume>
 
         <volume name="LV_Tube300_Wall">
@@ -111,7 +111,7 @@
 
         <volume name="LV_Tube500_He">
             <solidref ref="Tube500_He" />
-            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;30000.;1.5004;49.9996;60625"/>
+            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;30000.;1.5004;49.9996;1000"/>
             <materialref ref="G4_He" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
         </volume>

@@ -6,9 +6,9 @@
 
 bool Prompt::NCrystalScat::m_ncrystal_initialised = false;
 
-Prompt::NCrystalScat::NCrystalScat(const std::string &cfgstring)
+Prompt::NCrystalScat::NCrystalScat(const std::string &cfgstring, double bias)
 :Prompt::PhysicsModel(cfgstring, const_neutron_pgd,
-                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV),
+                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV, bias),
                       m_scat(NCrystal::createScatter(cfgstring))
 {
   m_oriented = m_scat.isOriented();
@@ -30,19 +30,19 @@ Prompt::NCrystalScat::NCrystalScat(const std::string &cfgstring)
 
 Prompt::NCrystalScat::~NCrystalScat()
 {
-  std::cout<<"Destructing physics " << m_modelName <<std::endl;
+  std::cout<<"Destructing scattering physics " << m_modelName <<std::endl;
 }
 
 
 double Prompt::NCrystalScat::getCrossSection(double ekin) const
 {
   if( m_scat.isOriented() ) {
-    PROMPT_THROW(CalcError, "material is oriented");
+    PROMPT_THROW(CalcError, "no incident direction, material can not be oriented");
   }
   else
   {
     auto xsect = m_scat.crossSectionIsotropic( NCrystal::NeutronEnergy(ekin) );
-    return xsect.get()*Unit::barn;
+    return xsect.get()*m_bias*Unit::barn;
   }
 }
 
@@ -56,7 +56,7 @@ double Prompt::NCrystalScat::getCrossSection(double ekin, const Prompt::Vector &
   {
     xsect = m_scat.crossSectionIsotropic( NCrystal::NeutronEnergy(ekin) );
   }
-  return xsect.get()*Unit::barn;
+  return xsect.get()*m_bias*Unit::barn;
 }
 
 

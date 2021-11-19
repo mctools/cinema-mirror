@@ -20,7 +20,7 @@ namespace Prompt {
 
   class NCrystalAbs  : public PhysicsModel {
   public:
-    NCrystalAbs(const std::string &cfgstring);
+    NCrystalAbs(const std::string &cfgstring, double bias=1.0);
     ~NCrystalAbs();
 
     virtual double getCrossSection(double ekin) const override;

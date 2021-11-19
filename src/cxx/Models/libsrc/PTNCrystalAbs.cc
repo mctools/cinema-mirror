@@ -5,9 +5,9 @@
 #include "PTRandCanonical.hh"
 
 
-Prompt::NCrystalAbs::NCrystalAbs(const std::string &cfgstring)
+Prompt::NCrystalAbs::NCrystalAbs(const std::string &cfgstring, double bias)
 :Prompt::PhysicsModel(cfgstring, const_neutron_pgd,
-                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV),
+                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV, bias),
                       m_abs(NCrystal::createAbsorption(cfgstring))
 {
   if( m_abs.isOriented() ) {
@@ -17,7 +17,7 @@ Prompt::NCrystalAbs::NCrystalAbs(const std::string &cfgstring)
 
 Prompt::NCrystalAbs::~NCrystalAbs()
 {
-  std::cout<<"Destructing Absorption physics " << m_modelName <<std::endl;
+  std::cout<<"Destructing absorption physics " << m_modelName <<std::endl;
 }
 
 
