@@ -49,8 +49,9 @@ void Prompt::Hist1D::save(const std::string &filename) const
     "import matplotlib.pyplot as plt\n"
     "x=np.load('%s_seed%ld_bin.npy')\n"
     "y=np.load('%s_seed%ld_content.npy')\n"
-    "plt.plot(x,y)\n"
+    "plt.plot(x,y, label=f'integral={np.trapz(y,x)}')\n"
     "plt.grid()\n"
+    "plt.legend()\n"
     "plt.show()\n", filename.c_str(), seed, filename.c_str(), seed);
 
   std::ofstream outfile(filename+"_view.py");

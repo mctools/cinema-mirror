@@ -26,6 +26,7 @@ namespace Prompt {
     double getTime() { return m_time; }
     double getEKin() { return m_ekin; }
     double getWeight() { return m_weight; }
+    void scaleWeight(double factor) { m_weight *= factor; }
     unsigned getEventID() { return m_eventid; }
 
     void kill();
