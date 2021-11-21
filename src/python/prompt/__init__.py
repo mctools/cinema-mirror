@@ -5,6 +5,7 @@ import numpy as np
 import glob
 import os
 import time
+import matplotlib.colors as mcolors
 
 _sizet, _sizetp = (ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t))
 _bool = ctypes.c_bool
@@ -121,12 +122,14 @@ import pyvista as pv
 import random
 class Visualiser():
     def __init__(self, blacklist, printWorld=False):
+        self.color =  list(mcolors.CSS4_COLORS.keys())
         self.plotter = pv.Plotter()
         self.worldMesh = Mesh()
         self.blacklist = blacklist
         if printWorld:
             self.worldMesh.printMesh()
         self.loadMesh()
+
 
     def addLine(self, data):
         line = pv.lines_from_points(data)
@@ -141,7 +144,7 @@ class Visualiser():
             print(f'loading mesh {name}')
             if name!='World':
                 name, points, faces = am.getMesh(10)
-                rcolor = random.choice(['red', 'grey', 'yellow', 'blue', 'black'])
+                rcolor = random.choice(self.color)
                 mesh = pv.PolyData(points, faces)
                 self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
 
