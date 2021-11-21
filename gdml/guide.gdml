@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 <gdml>
 
+  <userinfo>
+    <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;0.0253; 0,0,-100; 0,0,1" />
+  </userinfo>
+
    <define>
-    <position name="DetectorPos" x="0" y="500" z="0.0" />
-    <rotation name="rot" unit="deg" x="90" y="0" z="0" />
+    <position name="DetectorPos" x="0" y="15" z="20.0" />
+    <rotation name="rotX" unit="deg" x="89.9" y="0" z="0" />
   </define>
 
   <materials>
@@ -35,18 +39,20 @@
       <atom value="Al2O3_sg167_Corundum.ncmat"/>
     </material>
 
-
+    <material name="Cd">
+      <atom value="../ncmat/Cd.ncmat"/>
+    </material>
   </materials>
 
   <solids>
-    <box name="DetectorSolid" x="5000" y="5000" z="0.00001" />
-    <tube name="SampleSolid" rmin="0" rmax="5" z="10" startphi="0" deltaphi="360" aunit="deg"/>
-    <box name="worldSolid" x="12000.0" y="12000.0" z="120000.0" />
+    <box name="DetectorSolid" x="30" y="30" z="0.00001" />
+    <box name="SampleSolid" x="10" y="10" z="0.1" />
+    <box name="worldSolid" x="400.0" y="400.0" z="400.0" />
   </solids>
 
   <structure>
     <volume name="Sample">
-      <materialref ref="HeavyWater"/>
+      <materialref ref="Cd"/>
       <solidref ref="SampleSolid"/>
     </volume>
 
@@ -62,13 +68,12 @@
       <!-- auxiliary auxtype="Sensitive" auxvalue="Tracker"/-->
       <physvol>
         <volumeref ref="Sample"/>
-        <!-- This comment should be ignored -->
+        <rotationref ref="rotX"/>
       </physvol>
 
       <physvol>
         <volumeref ref="Detector"/>
         <positionref ref="DetectorPos"/>
-        <rotationref ref="rot"/>
         <!-- This comment should be ignored -->
       </physvol>
     </volume>

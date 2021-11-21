@@ -81,8 +81,8 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
       }
       else if(words[0]=="SimpleThermalGun")
       {
-        double temp = std::stod(words[1]);
-        m_gun = std::make_shared<SimpleThermalGun>(Neutron(), temp, string2vec(words[2]), string2vec(words[3]));
+        double ekin = std::stod(words[2]);
+        m_gun = std::make_shared<SimpleThermalGun>(Neutron(), ekin, string2vec(words[3]), string2vec(words[4]));
       }
       else
         PROMPT_THROW2(BadInput, "MaxwellianGun only for the moement");

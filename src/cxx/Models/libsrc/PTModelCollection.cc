@@ -12,7 +12,7 @@ Prompt::ModelCollection::~ModelCollection() {}
 void Prompt::ModelCollection::addPhysicsModel(const std::string &cfg)
 {
   m_models.emplace_back(std::make_shared<NCrystalAbs>(cfg));
-  m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, 2.));
+  m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, 1.));
   if(m_models.back()->isOriented())
     m_oriented=true;
   m_cache.cache_xs.resize(m_models.size());
