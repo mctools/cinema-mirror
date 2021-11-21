@@ -68,15 +68,10 @@ class Mesh():
         name, npoints, nPlolygen, faceSize = self.meshInfo(nSegments)
         vert = np.zeros([npoints, 3], dtype=float)
         NumPolygonPoints = np.zeros(nPlolygen, dtype=_sizet)
-        facesVec = np.zeros(faceSize, dtype=_sizet)
+        facesVec = np.zeros(faceSize+nPlolygen, dtype=_sizet)
         _pt_getMesh(self.n, nSegments, vert, NumPolygonPoints, facesVec)
 
-        faces=[]
-        curPos=0
-        for numPoints in NumPolygonPoints:
-            curPos += int(numPoints)
-            faces.append(np.array(facesVec[int(curPos-numPoints):curPos], dtype=int))
-        return name, vert, faces
+        return name, vert, facesVec
 
 
     def __iter__(self):
@@ -123,7 +118,6 @@ class Launcher():
         _pt_Launcher_go(self.cobj, numPrimary, printPrecent, recordTrj)
 
 import pyvista as pv
-import trimesh
 import random
 class Visualiser():
     def __init__(self, blacklist, printWorld=False):
@@ -146,24 +140,10 @@ class Visualiser():
 
             print(f'loading mesh {name}')
             if name!='World':
-                name, points, faces = am.getMesh(100)
+                name, points, faces = am.getMesh(10)
                 rcolor = random.choice(['red', 'grey', 'yellow', 'blue', 'black'])
-
-                face3p = []
-                face4p = []
-                for face in faces:
-                    if face.size == 3:
-                        face3p.append(face)
-                    elif face.size == 4:
-                        face4p.append(face)
-                rcolor = np.random.random(3)
-                if len(face4p) !=0 :
-                    tmesh4 = pv.wrap(trimesh.Trimesh(points, faces=face4p, process=False))
-                    self.plotter.add_mesh(tmesh4, color=rcolor, opacity=0.3)
-
-                if len(face3p) !=0 :
-                    tmesh3 = pv.wrap(trimesh.Trimesh(points, faces=face3p, process=False))
-                    self.plotter.add_mesh(tmesh3, color=rcolor, opacity=0.3)
+                mesh = pv.PolyData(points, faces)
+                self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
 
     def show(self):
         self.plotter.show()

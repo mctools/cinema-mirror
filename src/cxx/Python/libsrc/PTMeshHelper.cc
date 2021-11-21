@@ -71,6 +71,7 @@ void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPoly
   for(const auto &apolygon: polygens)
   {
     *(NumPolygonPoints++) = apolygon.fN;
+    *(faces++)  = apolygon.fN;
 
     for(auto vt : apolygon.fInd )
     {
