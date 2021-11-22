@@ -132,13 +132,15 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     //sample the interaction at the location
     double final_ekin(0);
     Vector final_dir;
-    m_matphysscor->physics->sampleFinalState(particle.getEKin(), dir, final_ekin, final_dir);
+    double scaleWeight;
+    m_matphysscor->physics->sampleFinalState(particle.getEKin(), dir, final_ekin, final_dir, scaleWeight);
     if(final_ekin==-1.)
       particle.kill();
     else
     {
       particle.setEKin(final_ekin);
       particle.setDirection(final_dir);
+      particle.scaleWeight(scaleWeight);
     }
     return true;
   }

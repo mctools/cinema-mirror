@@ -18,9 +18,9 @@ double Prompt::MaterialPhysics::macroCrossSection(double ekin, const Prompt::Vec
   return m_numdensity*m_model->totalCrossSection(ekin, dir);
 }
 
-void Prompt::MaterialPhysics::sampleFinalState(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir)
+void Prompt::MaterialPhysics::sampleFinalState(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight)
 {
-  m_model->sample(ekin, dir, final_ekin, final_dir);
+  m_model->sample(ekin, dir, final_ekin, final_dir, scaleWeight);
 }
 
 double Prompt::MaterialPhysics::sampleStepLength(double ekin, const Prompt::Vector &dir)

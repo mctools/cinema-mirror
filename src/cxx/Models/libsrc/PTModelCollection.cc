@@ -46,7 +46,7 @@ double Prompt::ModelCollection::totalCrossSection(double ekin, const Vector &dir
   }
 }
 
-void Prompt::ModelCollection::sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const
+void Prompt::ModelCollection::sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight) const
 {
   if(!sameInquiryAsLastTime(ekin, dir))
     printf("WARNING, sampling event with different incident energy and/or direction\n");
@@ -67,5 +67,5 @@ void Prompt::ModelCollection::sample(double ekin, const Vector &dir, double &fin
     if(p > r1)
       break;
   }
-  m_models[i]->generate(ekin, dir, final_ekin, final_dir);
+  m_models[i]->generate(ekin, dir, final_ekin, final_dir, scaleWeight);
 }

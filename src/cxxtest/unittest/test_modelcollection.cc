@@ -17,12 +17,13 @@ TEST_CASE("ModelCollection")
 
   CHECK(Prompt::floateq(1.378536096609809*Prompt::Unit::barn, xs ));
 
-  collection.sample(1., {1,0,0}, final, out);
+  double weight(0);
+  collection.sample(1., {1,0,0}, final, out, weight);
   std::cout << final << " " << out << std::endl;
 
-  collection.sample(1., {1,0,0}, final, out);
+  collection.sample(1., {1,0,0}, final, out, weight);
   std::cout << final << " " << out << std::endl;
 
-  collection.sample(1., {1,0,0}, final, out);
+  collection.sample(1., {1,0,0}, final, out, weight);
   std::cout << final << " " << out << std::endl;
 }

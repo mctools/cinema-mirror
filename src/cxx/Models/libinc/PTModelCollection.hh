@@ -24,10 +24,10 @@ namespace Prompt {
   class ModelCollection  {
   public:
     ModelCollection();
-    ~ModelCollection();
+    virtual ~ModelCollection();
 
     double totalCrossSection(double ekin, const Vector &dir) const;
-    void sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const;
+    void sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight) const;
 
     void addPhysicsModel(const std::string &cfg);
     bool sameInquiryAsLastTime(double ekin, const Vector &dir) const;

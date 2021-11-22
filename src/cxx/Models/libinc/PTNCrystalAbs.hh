@@ -21,11 +21,11 @@ namespace Prompt {
   class NCrystalAbs  : public DiscreteModel {
   public:
     NCrystalAbs(const std::string &cfgstring, double bias=1.0);
-    ~NCrystalAbs();
+    virtual ~NCrystalAbs();
 
     virtual double getCrossSection(double ekin) const override;
     virtual double getCrossSection(double ekin, const Vector &dir) const override;
-    virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
+    virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight) const override;
 
   private:
     mutable  NCrystal::Absorption m_abs;
