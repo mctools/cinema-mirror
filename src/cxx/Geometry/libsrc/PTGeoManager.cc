@@ -151,6 +151,14 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
             }
             std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
           }
+          else if(info.GetType() == "MirrorPhysics")
+          {
+            std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
+            std::cout << "info is " << info.GetValue() << std::endl;
+
+            vps->mirrorPhysics = std::make_shared<MirrorPhyiscs>(info.GetValue(), 1e-5);
+            std::cout << "added mirror physics " << std::endl;
+          }
         }
       }
     }

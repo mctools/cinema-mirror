@@ -2,12 +2,12 @@
 <gdml>
 
   <userinfo>
-    <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;0.0253; 0,0,-100; 0,0,1" />
+    <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;0.000253; 0,0,-100; 0,0,1" />
   </userinfo>
 
    <define>
     <position name="DetectorPos" x="0" y="15" z="20.0" />
-    <rotation name="rotX" unit="deg" x="89.9" y="0" z="0" />
+    <rotation name="rotX" unit="deg" x="96" y="0" z="0" />
   </define>
 
   <materials>
@@ -54,6 +54,7 @@
     <volume name="Sample">
       <materialref ref="Cd"/>
       <solidref ref="SampleSolid"/>
+      <auxiliary auxtype="MirrorPhysics" auxvalue="mirror;cfg"/>
     </volume>
 
     <volume name="Detector">

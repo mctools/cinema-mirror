@@ -5,6 +5,7 @@ Prompt::MirrorPhyiscs::MirrorPhyiscs(const std::string &cfgstring, double weight
 :Prompt::DiscreteModel(cfgstring, const_neutron_pgd,
                       std::numeric_limits<double>::min(), 10*Prompt::Unit::eV), m_wcut(weightCut)
 {
+  std::cout << "constructor mirror physics " << std::endl;
   //Eq. 5.1, McStas 2.3 components manual
   double m_i=4;
   double R0=1;
@@ -25,6 +26,7 @@ Prompt::MirrorPhyiscs::MirrorPhyiscs(const std::string &cfgstring, double weight
       r[i]=0.5*R0*(1-tanh(( q[i]-m_i*Qc)/W))*(1-alpha*( q[i]-Qc));
   }
   m_table = std::make_shared<LookUpTable>(q, r, LookUpTable::kConst_Zero);
+  std::cout << "constructor mirror physics completed" << std::endl;
 }
 
 

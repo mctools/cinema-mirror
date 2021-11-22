@@ -6,8 +6,8 @@ import numpy as np
 
 l = Launcher()
 l.setSeed(100)
-l.loadGeometry("../gdml/mpi_detector.gdml");
-# l.loadGeometry("../gdml/guide.gdml");
+# l.loadGeometry("../gdml/mpi_detector.gdml");
+l.loadGeometry("../gdml/guide.gdml");
 # l.loadGeometry("../gdml/first_geo.gdml");
 
 v = Visualiser(['Tube300', 'Tube500', '300_L', '500_L'])

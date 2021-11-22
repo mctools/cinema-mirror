@@ -41,8 +41,28 @@ void Prompt::NavManager::setupVolumePhysics()
   m_currPV = m_currState->Top();
   auto &geo = Singleton<GeoManager>::getInstance();
   m_matphysscor = geo.getVolumePhysicsScoror(getVolumeID())->second;
-  // m_matphysscor = getLogicalVolumePhysicsScoror(*m_currPV->GetLogicalVolume());
 }
+
+bool Prompt::NavManager::surfacePhysics(Particle &particle)
+{
+  if(hasMirrorPhyiscs())
+  {
+    Vector pos(particle.getPosition());
+    vecgeom::cxx::Vector3D<double> norm;
+    m_currPV->Normal({pos.x(), pos.y(), pos.z()}, norm);
+    double eout(0), scaleWeigh(0);
+    Vector ptNorm{norm[0], norm[1], norm[2]};
+    m_matphysscor->mirrorPhysics->generate(particle.getEKin(),
+    particle.getDirection(), eout, ptNorm, scaleWeigh);
+    particle.setDirection(ptNorm);
+    particle.scaleWeight(scaleWeigh);
+    return true;
+  }
+  else
+    return false;
+}
+
+
 
 size_t Prompt::NavManager::getVolumeID()
 {
@@ -91,7 +111,10 @@ void Prompt::NavManager::scoreExit(Prompt::Particle &particle)
     }
   }
 }
-
+bool Prompt::NavManager::hasMirrorPhyiscs()
+{
+  return m_matphysscor->mirrorPhysics.use_count();
+}
 
 bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
 {

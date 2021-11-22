@@ -4,7 +4,8 @@
 #include "NCrystal/NCrystal.hh"
 
 Prompt::MaterialPhysics::MaterialPhysics()
-:m_rng(Singleton<SingletonPTRand>::getInstance()), m_model(std::make_unique<ModelCollection>()),
+:m_rng(Singleton<SingletonPTRand>::getInstance()),
+m_model(std::make_unique<ModelCollection>()),
 m_numdensity(0.)
 {
 }

@@ -31,6 +31,9 @@ namespace Prompt {
     bool hasPropagateScoror() {return m_matphysscor->propagate_scorors.size(); };
     void scoreExit(Particle &particle);
 
+    bool hasMirrorPhyiscs();
+    bool surfacePhysics(Particle &particle);
+
   private:
     friend class Singleton<NavManager>;
     NavManager();
@@ -42,7 +45,6 @@ namespace Prompt {
     // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
     // It is NavStatePath otherwise
     vecgeom::NavigationState *m_currState, *m_nextState;
-    Hist2D *m_hist2d;
   };
 
 }

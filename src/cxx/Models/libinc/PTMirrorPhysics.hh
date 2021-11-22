@@ -14,7 +14,7 @@ namespace Prompt {
   class MirrorPhyiscs  : public DiscreteModel {
     public:
       MirrorPhyiscs(const std::string &cfgstring, double weightCut = 1e-5);
-      ~MirrorPhyiscs();
+      virtual ~MirrorPhyiscs() override;
 
       virtual double getCrossSection(double ekin) const override;
       virtual double getCrossSection(double ekin, const Vector &dir) const override;

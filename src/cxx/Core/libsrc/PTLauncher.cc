@@ -97,6 +97,11 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       //! first step of a particle in a volume
       // std::cout << navman.getVolumeName() << " " << particle.getPosition() << std::endl;
       navman.setupVolumePhysics();
+      //if reflected
+      if(navman.surfacePhysics(particle))
+      {
+        std::cout << "reflection weight " << particle.getWeight() << "\n";
+      }
       navman.scoreEntry(particle);
 
       //! the next while loop, particle should move in the same volume

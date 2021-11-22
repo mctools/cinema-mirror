@@ -9,11 +9,13 @@
 #include "PTSingleton.hh"
 #include "PTScoror.hh"
 #include "PTPrimaryGun.hh"
+#include "PTMirrorPhysics.hh"
 
 namespace Prompt {
 
   struct VolumePhysicsScoror { // to attached to a volume
-    std::shared_ptr<MaterialPhysics> physics;
+    std::shared_ptr<MaterialPhysics> physics; //bulk physics
+    std::shared_ptr<MirrorPhyiscs> mirrorPhysics; //boundary physics
     std::vector< std::shared_ptr<Scoror> >  scorors; /*scoror name, scoror*/
 
     std::vector< std::shared_ptr<Scoror> >  entry_scorors;

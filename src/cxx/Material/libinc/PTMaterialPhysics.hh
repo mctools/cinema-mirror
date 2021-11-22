@@ -21,6 +21,7 @@ namespace Prompt {
     SingletonPTRand &m_rng;
     std::unique_ptr<ModelCollection> m_model;
     double m_numdensity;
+
   };
 
 }
