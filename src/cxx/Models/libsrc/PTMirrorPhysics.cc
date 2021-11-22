@@ -51,6 +51,7 @@ void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, doubl
 
   double Q = neutronAngleCosine2Q(angleCos, ekin, ekin);
   scaleWeight =  m_table->get(Q);
+  // std::cout << "Q " << Q << " scale " << scaleWeight << std::endl;
   if(m_wcut > scaleWeight)
     final_ekin = -1.0; //paprose kill
 

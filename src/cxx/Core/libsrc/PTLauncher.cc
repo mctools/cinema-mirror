@@ -77,6 +77,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
     //double ekin, const Vector& dir, const Vector& pos
     auto particle = m_gun->generate();
     dltpar.setLastParticle(particle);
+    // std::cout << "ekin " << particle.getEKin() << std::endl;
 
     if(recordTrj)
     {
@@ -100,7 +101,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       //if reflected
       if(navman.surfacePhysics(particle))
       {
-        std::cout << "reflection weight " << particle.getWeight() << "\n";
+        // std::cout << "reflection weight " << particle.getWeight() << "\n";
       }
       navman.scoreEntry(particle);
 

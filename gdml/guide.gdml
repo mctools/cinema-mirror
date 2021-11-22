@@ -2,17 +2,21 @@
 <gdml>
 
   <userinfo>
-    <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;0.000253; 0,0,-100; 0,0,1" />
+    <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;-1; 0,0,-10000; 0,0,1" />
   </userinfo>
 
    <define>
     <position name="DetectorPos" x="0" y="15" z="20.0" />
-    <rotation name="rotX" unit="deg" x="96" y="0" z="0" />
+    <rotation name="rotX" unit="deg" x="91" y="0" z="0" />
   </define>
 
   <materials>
     <material name="Air">
       <atom value="../ncmat/ambient_air.ncmat"/>
+    </material>
+
+    <material name="Vaccum">
+      <atom value="../ncmat/vacuum.ncmat"/>
     </material>
 
     <material name="Water">
@@ -46,8 +50,8 @@
 
   <solids>
     <box name="DetectorSolid" x="30" y="30" z="0.00001" />
-    <box name="SampleSolid" x="10" y="10" z="0.1" />
-    <box name="worldSolid" x="400.0" y="400.0" z="400.0" />
+    <box name="SampleSolid" x="10" y="10" z="0.01" />
+    <box name="worldSolid" x="400.0" y="400.0" z="21000.0" />
   </solids>
 
   <structure>
@@ -60,11 +64,11 @@
     <volume name="Detector">
       <materialref ref="Air"/>
       <solidref ref="DetectorSolid"/>
-      <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;-100.;1.5004;49.9996;1000"/>
+      <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;-10000.;0.001;0.1;1000"/>
     </volume>
 
     <volume name="World">
-      <materialref ref="Air"/>
+      <materialref ref="Vaccum"/>
       <solidref ref="worldSolid"/>
       <!-- auxiliary auxtype="Sensitive" auxvalue="Tracker"/-->
       <physvol>
