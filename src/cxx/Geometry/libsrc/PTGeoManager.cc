@@ -135,22 +135,22 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
         for(const auto& info : volAuxInfoVec)
         {
-          if (info.GetType() != "Sensitive")
-            continue;
-
-          std::shared_ptr<Prompt::Scoror> scor = getScoror(info.GetValue());
-
-          if(scor.use_count()) //this scorer exist
+          if (info.GetType() == "Sensitive")
           {
-            vps->scorors.push_back(scor);
+            std::shared_ptr<Prompt::Scoror> scor = getScoror(info.GetValue());
+
+            if(scor.use_count()) //this scorer exist
+            {
+              vps->scorors.push_back(scor);
+            }
+            else
+            {
+              scor = anaManager.createScoror(info.GetValue());
+              m_globelScorors[info.GetValue()]=scor;
+              vps->scorors.push_back(scor);
+            }
+            std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
           }
-          else
-          {
-            scor = anaManager.createScoror(info.GetValue());
-            m_globelScorors[info.GetValue()]=scor;
-            vps->scorors.push_back(scor);
-          }
-          std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
         }
       }
     }
