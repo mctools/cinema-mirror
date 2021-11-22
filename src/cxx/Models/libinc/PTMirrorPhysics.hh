@@ -13,7 +13,7 @@ namespace Prompt {
 
   class MirrorPhyiscs  : public DiscreteModel {
     public:
-      MirrorPhyiscs(const std::string &cfgstring);
+      MirrorPhyiscs(const std::string &cfgstring, double weightCut = 1e-5);
       ~MirrorPhyiscs();
 
       virtual double getCrossSection(double ekin) const override;
@@ -21,7 +21,8 @@ namespace Prompt {
       virtual void generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor, double &scaleWeight) const override;
 
     private:
-      std::shared_ptr<LookUpTable> m_table; 
+      std::shared_ptr<LookUpTable> m_table;
+      double m_wcut;
 
   };
 

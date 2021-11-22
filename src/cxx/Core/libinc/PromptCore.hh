@@ -13,6 +13,7 @@
 #include "PTException.hh"
 #include "PTUnitSystem.hh"
 #include "PTVector.hh"
+#include "PTMath.hh"
 
 namespace Prompt {
   void printLogo();

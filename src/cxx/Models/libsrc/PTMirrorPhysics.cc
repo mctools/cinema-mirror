@@ -1,9 +1,9 @@
 #include "PTMirrorPhysics.hh"
 #include "PTUtils.hh"
 
-Prompt::MirrorPhyiscs::MirrorPhyiscs(const std::string &cfgstring)
+Prompt::MirrorPhyiscs::MirrorPhyiscs(const std::string &cfgstring, double weightCut)
 :Prompt::DiscreteModel(cfgstring, const_neutron_pgd,
-                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV)
+                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV), m_wcut(weightCut)
 {
   //Eq. 5.1, McStas 2.3 components manual
   double m_i=4;
@@ -48,5 +48,8 @@ void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, doubl
   double angleCos = reflectionNor.angleCos(nDirInLab);
 
   double Q = neutronAngleCosine2Q(angleCos, ekin, ekin);
-  scaleWeight =  m_table.get(Q);
+  scaleWeight =  m_table->get(Q);
+  if(m_wcut > scaleWeight)
+    final_ekin = -1.0; //paprose kill
+
 }

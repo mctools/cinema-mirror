@@ -11,4 +11,5 @@ TEST_CASE("Math")
 {
   auto n = pt::Neutron( 100, pt::Vector(1,0,0), pt::Vector(0,0,0) );
   printf("%.16g\n", n.calcSpeed());
+  CHECK(pt::floateq(n.calcSpeed(), 138315926.4696229));
 }
