@@ -4,21 +4,24 @@
 #include <string>
 
 #include "PromptCore.hh"
+#include "PTLookUpTable.hh"
 #include "PTDiscreteModel.hh"
-#include <memory>
 
 #include "NCrystal/NCrystal.hh"
 
 namespace Prompt {
 
   class MirrorPhyiscs  : public DiscreteModel {
-  public:
-    MirrorPhyiscs(const std::string &cfgstring);
-    ~MirrorPhyiscs();
+    public:
+      MirrorPhyiscs(const std::string &cfgstring);
+      ~MirrorPhyiscs();
 
-    virtual double getCrossSection(double ekin) const override;
-    virtual double getCrossSection(double ekin, const Vector &dir) const override;
-    virtual void generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor, double &scaleWeight) const override;
+      virtual double getCrossSection(double ekin) const override;
+      virtual double getCrossSection(double ekin, const Vector &dir) const override;
+      virtual void generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor, double &scaleWeight) const override;
+
+    private:
+      std::shared_ptr<LookUpTable> m_table; 
 
   };
 

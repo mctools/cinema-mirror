@@ -12,21 +12,19 @@ Prompt::MirrorPhyiscs::MirrorPhyiscs(const std::string &cfgstring)
   double alpha=6.49;
   double W=1./300;
   unsigned q_arr_size=1000;
-  double q_max = 0.13;
-  double *q = new double[q_arr_size];
-  double *r = new double[q_arr_size];
+  double q_max = 10;
+  std::vector<double> q(q_arr_size);
+  std::vector<double> r(q_arr_size);
+
   for(unsigned i=0;i<q_arr_size;i++)
   {
-    q[i]=q_max/q_arr_size*i;
+    q[i]=i*(q_max/q_arr_size);
     if(q[i]<Qc)
       r[i]=1.;
     else
       r[i]=0.5*R0*(1-tanh(( q[i]-m_i*Qc)/W))*(1-alpha*( q[i]-Qc));
   }
-
-  // m_reflectivity = new G4PhysicsOrderedFreeVector(q,r,q_arr_size);
-  delete[] q;
-  delete[] r;
+  m_table = std::make_shared<LookUpTable>(q, r, LookUpTable::kConst_Zero);
 }
 
 
@@ -47,6 +45,8 @@ void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, doubl
 {
   final_ekin=ekin;
   reflectionNor = nDirInLab - reflectionNor*(2*(nDirInLab.dot(reflectionNor)));
+  double angleCos = reflectionNor.angleCos(nDirInLab);
 
-
+  double Q = neutronAngleCosine2Q(angleCos, ekin, ekin);
+  scaleWeight =  m_table.get(Q);
 }

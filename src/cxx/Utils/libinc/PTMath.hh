@@ -9,7 +9,7 @@ namespace Prompt {
   std::vector<double> linspace(double start, double stop, unsigned num);
 
   double neutronEKin2k(double ekin);
-  double neutronAngle2Q(double angle_rad, double enin_eV, double enout_eV);
+  double neutronAngleCosine2Q(double anglecosine, double enin_eV, double enout_eV);
 }
 
 #include "PTMath.icc"
