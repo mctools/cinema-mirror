@@ -36,8 +36,12 @@
           <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat;packfact=0.1"/>
         </material>
 
-        <material name="Air">
+        <material name="Vacuum">
           <atom value="../ncmat/vacuum.ncmat"/>
+        </material>
+
+        <material name="Air">
+          <atom value="../ncmat/ambient_air.ncmat"/>
         </material>
 
         <material name="Al">
@@ -99,7 +103,7 @@
 
         <volume name="LV_Tube300">
             <solidref ref="Tube300" />
-            <materialref ref="Air" />
+            <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
             <physvol name="LV_Tube300_Wall">
                 <volumeref ref="LV_Tube300_Wall" />
@@ -124,7 +128,7 @@
 
         <volume name="LV_Tube500">
             <solidref ref="Tube500" />
-            <materialref ref="Air" />
+            <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
             <physvol name="LV_Tube500_Wall">
                 <volumeref ref="LV_Tube500_Wall" />
@@ -136,7 +140,7 @@
 
         <volume name="LV_Box_Module300_L">
             <solidref ref="Module300_L" />
-            <materialref ref="Air" />
+            <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
             <physvol name="LV_Tube300_1">
                 <volumeref ref="LV_Tube300" />
@@ -174,7 +178,7 @@
 
         <volume name="LV_Box_Module500_L">
             <solidref ref="Module500_L" />
-            <materialref ref="Air" />
+            <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
             <physvol name="LV_Tube500_1">
                 <volumeref ref="LV_Tube500" />
@@ -212,7 +216,7 @@
 
         <volume name="LV_Box_Module300">
             <solidref ref="Module300_G" />
-            <materialref ref="Air" />
+            <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
 
             <physvol name="Module300_Local">
@@ -223,7 +227,7 @@
 
         <volume name="LV_Box_Module500">
             <solidref ref="Module500_G" />
-            <materialref ref="Air" />
+            <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
 
             <physvol name="Module500_Local">
@@ -234,7 +238,7 @@
 
         <volume name="worldVOL">
             <solidref ref="WorldBox" />
-            <materialref ref="Air" />
+            <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
 
             <physvol name="LV_Tube_SampleCan">
