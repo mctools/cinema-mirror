@@ -26,7 +26,6 @@ namespace Prompt {
     virtual bool applicable(unsigned pgd, double ekin) const;
     virtual double getCrossSection(double ekin) const = 0;
     virtual double getCrossSection(double ekin, const Vector &dir) const = 0;
-    virtual void generate(double &ekin, Vector &dir) const = 0;
     virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const = 0;
 
   protected:
