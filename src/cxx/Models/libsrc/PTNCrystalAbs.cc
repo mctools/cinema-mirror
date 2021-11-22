@@ -6,7 +6,7 @@
 
 
 Prompt::NCrystalAbs::NCrystalAbs(const std::string &cfgstring, double bias)
-:Prompt::PhysicsModel(cfgstring, const_neutron_pgd,
+:Prompt::DiscreteModel(cfgstring, const_neutron_pgd,
                       std::numeric_limits<double>::min(), 10*Prompt::Unit::eV, bias),
                       m_abs(NCrystal::createAbsorption(cfgstring))
 {

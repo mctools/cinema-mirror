@@ -8,6 +8,25 @@
 #include "PTSimpleThermalGun.hh"
 #include "PTNeutron.hh"
 
+#include "NCrystal/NCrystal.hh"
+class SingletonPTRandWrapper : public NCrystal::RNGStream{
+public:
+  SingletonPTRandWrapper()
+  :NCrystal::RNGStream(), m_ptrng(Prompt::Singleton<Prompt::SingletonPTRand>::getInstance())
+  {}
+  virtual ~SingletonPTRandWrapper() override {}
+
+  double actualGenerate() override {return m_ptrng.generate(); }
+
+  //For the sake of example, we wrongly claim that this generator is safe and
+  //sensible to use multithreaded (see NCRNG.hh for how to correctly deal with
+  //MT safety, RNG states, etc.):
+  bool useInAllThreads() const override { return true; }
+private:
+  Prompt::SingletonPTRand &m_ptrng;
+};
+
+
 Prompt::Launcher::Launcher()
 {
 
@@ -21,6 +40,13 @@ Prompt::Launcher::~Launcher()
 
 void Prompt::Launcher::loadGeometry(const std::string &geofile)
 {
+  //This checks that the included NCrystal headers and the linked NCrystal
+  //library are from the same release of NCrystal:
+  NCrystal::libClashDetect();
+
+  //set the generator for ncrystal
+  NCrystal::setDefaultRNG(NCrystal::makeSO<SingletonPTRandWrapper>());
+
   //load geometry
   auto &geoman = Singleton<GeoManager>::getInstance();
   geoman.loadFile(geofile.c_str());

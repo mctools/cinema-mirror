@@ -4,7 +4,7 @@
 #include <string>
 
 #include "PromptCore.hh"
-#include "PTPhysicsModel.hh"
+#include "PTDiscreteModel.hh"
 #include <memory>
 
 #include "NCrystal/NCrystal.hh"
@@ -18,7 +18,7 @@ namespace Prompt {
   //NCrystalAbs is in fact a scatterer of NCrystal
   //Physics model should be initialised from material
 
-  class NCrystalAbs  : public PhysicsModel {
+  class NCrystalAbs  : public DiscreteModel {
   public:
     NCrystalAbs(const std::string &cfgstring, double bias=1.0);
     ~NCrystalAbs();

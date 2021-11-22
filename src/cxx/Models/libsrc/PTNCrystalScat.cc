@@ -4,46 +4,15 @@
 #include "PTUnitSystem.hh"
 #include "PTRandCanonical.hh"
 
-bool Prompt::NCrystalScat::m_ncrystal_initialised = false;
-
-class SingletonPTRandWrapper : public NCrystal::RNGStream{
-public:
-  SingletonPTRandWrapper()
-  :NCrystal::RNGStream(), m_ptrng(Prompt::Singleton<Prompt::SingletonPTRand>::getInstance())
-  {}
-  virtual ~SingletonPTRandWrapper() override {}
-
-  double actualGenerate() override {return m_ptrng.generate(); }
-
-  //For the sake of example, we wrongly claim that this generator is safe and
-  //sensible to use multithreaded (see NCRNG.hh for how to correctly deal with
-  //MT safety, RNG states, etc.):
-  bool useInAllThreads() const override { return true; }
-private:
-  Prompt::SingletonPTRand &m_ptrng;
-};
-
 
 Prompt::NCrystalScat::NCrystalScat(const std::string &cfgstring, double bias)
-:Prompt::PhysicsModel(cfgstring, const_neutron_pgd,
+:Prompt::DiscreteModel(cfgstring, const_neutron_pgd,
                       std::numeric_limits<double>::min(), 10*Prompt::Unit::eV, bias),
                       m_scat(NCrystal::createScatter(cfgstring))
 {
   m_oriented = m_scat.isOriented();
-
-  if(!m_ncrystal_initialised)
-  {
-    //This checks that the included NCrystal headers and the linked NCrystal
-    //library are from the same release of NCrystal:
-    NCrystal::libClashDetect();
-
-    //set the generator for ncrystal
-    NCrystal::setDefaultRNG(NCrystal::makeSO<SingletonPTRandWrapper>());
-  }
-  m_ncrystal_initialised = true;
   if(Unit::eV != 1.)
     PROMPT_THROW(CalcError, "The default unit of NCrystal is eV");
-
 }
 
 Prompt::NCrystalScat::~NCrystalScat()

@@ -1,12 +1,12 @@
 #include "PTPhysicsModel.hh"
 
-Prompt::PhysicsModel::PhysicsModel(const std::string &name, double bias)
- :m_modelName(name), m_oriented(false), m_bias(bias)  {};
+Prompt::PhysicsModel::PhysicsModel(const std::string &name)
+ :m_modelName(name), m_oriented(false) {};
 
 Prompt::PhysicsModel::PhysicsModel(const std::string &name, unsigned gdp,
-             double emin, double emax, double bias)
+             double emin, double emax)
  :m_modelName(name), m_supportPGD(gdp), m_minEkin(emin),
-  m_maxEkin(emax), m_oriented(false), m_bias(bias)  {};
+  m_maxEkin(emax), m_oriented(false)  {};
 
 bool Prompt::PhysicsModel::applicable(unsigned pgd) const
 { return m_supportPGD==pgd; }
