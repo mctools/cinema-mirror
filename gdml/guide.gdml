@@ -58,13 +58,14 @@
     <volume name="Sample">
       <materialref ref="Cd"/>
       <solidref ref="SampleSolid"/>
-      <auxiliary auxtype="MirrorPhysics" auxvalue="mirror;cfg"/>
+      <auxiliary auxtype="MirrorPhysics" auxvalue="3.0"/>
     </volume>
 
     <volume name="Detector">
       <materialref ref="Air"/>
       <solidref ref="DetectorSolid"/>
-      <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;-10000.;0.001;0.1;1000"/>
+      <auxiliary auxtype="Sensitive" auxvalue="PSD;NeutronHistMap;-15;15;100;-15;15;100"/>
+      <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;Sq;0,0,0;0,0,1;-10000.;0.001;0.1;1000"/>
     </volume>
 
     <volume name="World">

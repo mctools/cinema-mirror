@@ -43,8 +43,7 @@ void Prompt::Hist1D::save(const std::string &filename) const
                    std::vector<uint64_t>{m_nbins});
 
   char buffer [500];
-  int n, a=5, b=3;
-  n=sprintf (buffer,
+  int n =sprintf (buffer,
     "import numpy as np\n"
     "import matplotlib.pyplot as plt\n"
     "x=np.load('%s_seed%ld_bin.npy')\n"

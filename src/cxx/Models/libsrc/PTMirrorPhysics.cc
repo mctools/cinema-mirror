@@ -1,17 +1,17 @@
 #include "PTMirrorPhysics.hh"
 #include "PTUtils.hh"
 
-Prompt::MirrorPhyiscs::MirrorPhyiscs(const std::string &cfgstring, double weightCut)
-:Prompt::DiscreteModel(cfgstring, const_neutron_pgd,
+Prompt::MirrorPhyiscs::MirrorPhyiscs(double mvalue, double weightCut)
+:Prompt::DiscreteModel("MirrorPhysics", const_neutron_pgd,
                       std::numeric_limits<double>::min(), 10*Prompt::Unit::eV), m_wcut(weightCut)
 {
   std::cout << "constructor mirror physics " << std::endl;
-  //Eq. 5.1, McStas 2.3 components manual
-  double m_i=4;
-  double R0=1;
-  double Qc=0.02;
-  double alpha=6.49;
-  double W=1./300;
+  //parameters sync with mcastas 2.7 guide component default value
+  double m_i=mvalue;
+  double R0=0.99;
+  double Qc=0.0219;
+  double alpha=6.07;
+  double W=0.003;
   unsigned q_arr_size=1000;
   double q_max = 10;
   std::vector<double> q(q_arr_size);
@@ -21,7 +21,7 @@ Prompt::MirrorPhyiscs::MirrorPhyiscs(const std::string &cfgstring, double weight
   {
     q[i]=i*(q_max/q_arr_size);
     if(q[i]<Qc)
-      r[i]=1.;
+      r[i]=R0;
     else
       r[i]=0.5*R0*(1-tanh(( q[i]-m_i*Qc)/W))*(1-alpha*( q[i]-Qc));
   }

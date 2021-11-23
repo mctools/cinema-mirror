@@ -53,7 +53,7 @@
     <volume name="Detector">
       <materialref ref="Air"/>
       <solidref ref="DetectorSolid"/>
-      <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;0,0,0;0,0,1;-100.;1.5004;49.9996;1000"/>
+      <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;Sq;0,0,0;0,0,1;-100.;1.5004;49.9996;1000"/>
     </volume>
 
     <volume name="World">

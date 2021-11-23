@@ -48,6 +48,21 @@ void Prompt::Hist2D::save(const std::string &filename) const
   }
   ofs.close();
 
+  char buffer [500];
+  int n =sprintf (buffer,
+    "import numpy as np\n"
+    "import matplotlib.pyplot as plt\n"
+    "import matplotlib.colors as colors\n"
+    "data=np.loadtxt('%s')\n"
+    "fig=plt.figure()\n"
+    "ax = fig.add_subplot(111)\n"
+    "pcm = ax.pcolormesh(data.T, cmap=plt.cm.jet,  norm=colors.LogNorm(vmin=data.max()*1e-10, vmax=data.max()), shading='auto')\n"
+    "plt.show()\n", filename.c_str());
+
+  std::ofstream outfile(filename+"_view.py");
+  outfile << buffer;
+  outfile.close();
+
 }
 
 //Normal filling:

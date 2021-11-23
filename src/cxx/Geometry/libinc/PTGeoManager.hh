@@ -18,6 +18,7 @@ namespace Prompt {
     std::shared_ptr<MirrorPhyiscs> mirrorPhysics; //boundary physics
     std::vector< std::shared_ptr<Scoror> >  scorors; /*scoror name, scoror*/
 
+    std::vector< std::shared_ptr<Scoror> >  surface_scorors;
     std::vector< std::shared_ptr<Scoror> >  entry_scorors;
     std::vector< std::shared_ptr<Scoror> >  propagate_scorors;
     std::vector< std::shared_ptr<Scoror> >  exit_scorors;
@@ -31,20 +32,24 @@ namespace Prompt {
       for(auto &v : scorors)
       {
         auto type = v->getType();
-        if(type==ScororType::ENTRY)
+        if(type==Scoror::ENTRY)
         {
           entry_scorors.push_back(v);
         }
-        else if(type==ScororType::PROPAGATE)
+        else if(type==Scoror::PROPAGATE)
         {
           propagate_scorors.push_back(v);
         }
-        else if(type==ScororType::EXIT)
+        else if(type==Scoror::EXIT)
         {
           exit_scorors.push_back(v);
         }
+        else if(type==Scoror::SURFACE)
+        {
+          surface_scorors.push_back(v);
+        }
         else
-          PROMPT_THROW(BadInput, "unknown scoror type")
+          PROMPT_THROW2(BadInput, "unknown scoror type " << type);
       }
     }
   };

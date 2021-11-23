@@ -90,6 +90,19 @@ void Prompt::NavManager::scoreEntry(Prompt::Particle &particle)
   }
 }
 
+void Prompt::NavManager::scoreSurface(const Vector &pos, double w)
+{
+  if(m_matphysscor->surface_scorors.size())
+  {
+    auto loc = m_currState->GlobalToLocal({pos.x(), pos.y(), pos.z()});
+    for(auto &v:m_matphysscor->surface_scorors)
+    {
+      v->scoreLocal(Vector{loc[0], loc[1], loc[2]}, w);
+    }
+  }
+}
+
+
 void Prompt::NavManager::scorePropagate(Prompt::Particle &particle, const DeltaParticle &dltpar)
 {
   if(m_matphysscor->propagate_scorors.size())

@@ -1,15 +1,19 @@
 #include "PTScororNeutronSq.hh"
 
-Prompt::ScororNeutronSq::ScororNeutronSq(const Vector &samplePos, const Vector &refDir,
+Prompt::ScororNeutronSq::ScororNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin, bool kill, bool linear)
-:Scoror("ScororNeutronSq", ENTRY), m_samplePos(samplePos), m_refDir(refDir),
-m_sourceSampleDist(sourceSampleDist), m_hist(std::make_unique<Hist1D>(qmin, qmax, numbin, linear)),
+:Scoror1D("ScororNeutronSq_" + name, Scoror::ENTRY, std::make_unique<Hist1D>(qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
+m_sourceSampleDist(sourceSampleDist),
 m_kill(kill)
 {}
 
-Prompt::ScororNeutronSq::~ScororNeutronSq() {
-  save("ScororNeutronSq.dat");
+Prompt::ScororNeutronSq::~ScororNeutronSq() {}
+
+void Prompt::ScororNeutronSq::scoreLocal(const Vector &, double)
+{
+  PROMPT_THROW2(BadInput, m_name << " does not support scoreLocal()");
 }
+
 
 void Prompt::ScororNeutronSq::score(Prompt::Particle &particle)
 {
@@ -27,9 +31,4 @@ void Prompt::ScororNeutronSq::score(Prompt::Particle &particle)
 void Prompt::ScororNeutronSq::score(Prompt::Particle &particle, const DeltaParticle &dltpar)
 {
   score(particle);
-}
-
-void Prompt::ScororNeutronSq::save(const std::string &fname)
-{
-  m_hist->save(fname);
 }

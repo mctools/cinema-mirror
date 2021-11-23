@@ -8,7 +8,7 @@ namespace pt = Prompt;
 
 TEST_CASE("Mirror physics")
 {
-  auto mirr = pt::MirrorPhyiscs( "cfg" );
+  auto mirr = pt::MirrorPhyiscs( 4. );
   pt::Vector dir{0, 0.9, 0.01}, nor{0, 0., 1};
   dir.normalise();
   double ekin(0.0253), eout(0), wscale(0.);

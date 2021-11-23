@@ -30,6 +30,7 @@ namespace Prompt {
     void scorePropagate(Particle &particle, const DeltaParticle &dltpar);
     bool hasPropagateScoror() {return m_matphysscor->propagate_scorors.size(); };
     void scoreExit(Particle &particle);
+    void scoreSurface(const Vector &particle, double w);
 
     bool hasMirrorPhyiscs();
     bool surfacePhysics(Particle &particle);
