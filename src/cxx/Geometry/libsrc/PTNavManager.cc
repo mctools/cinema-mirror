@@ -54,6 +54,8 @@ bool Prompt::NavManager::surfacePhysics(Particle &particle)
     Vector ptNorm{norm[0], norm[1], norm[2]};
     m_matphysscor->mirrorPhysics->generate(particle.getEKin(),
     particle.getDirection(), eout, ptNorm, scaleWeigh);
+    if(eout==-1.)
+      particle.kill();
     particle.setDirection(ptNorm);
     particle.scaleWeight(scaleWeigh);
     return true;
