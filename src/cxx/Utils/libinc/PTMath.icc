@@ -9,6 +9,12 @@ inline double Prompt::neutronEKin2k(double ekin)
   return std::sqrt(ekin*Unit::eV*const_eV2kk);
 }
 
+inline double Prompt::neutronEKin2wl(double ekin)
+{
+  return 2*M_PI/neutronEKin2k(ekin);
+}
+
+
 inline double Prompt::neutronAngleCosine2Q(double angle_cos, double enin_eV, double enout_eV)
 {
   double ratio = enout_eV/enin_eV;

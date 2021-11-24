@@ -13,6 +13,7 @@
 #include "PTUtils.hh"
 #include "PTMaxwellianGun.hh"
 #include "PTSimpleThermalGun.hh"
+#include "PTUniModeratorGun.hh"
 #include "PTNeutron.hh"
 
 Prompt::GeoManager::GeoManager()
@@ -79,6 +80,17 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
           std::array<double, 6> {std::stod(positions[0]), std::stod(positions[1]), std::stod(positions[2]),
                                  std::stod(positions[3]), std::stod(positions[4]), std::stod(positions[5])});
       }
+      else if(words[0]=="UniModeratorGun")
+      {
+        double wl0 = std::stod(words[2]);
+        double wl_dlt = std::stod(words[3]);
+        auto positions = split(words[4], ',');
+
+        m_gun = std::make_shared<UniModeratorGun>(Neutron(), wl0, wl_dlt,
+          std::array<double, 6> {std::stod(positions[0]), std::stod(positions[1]), std::stod(positions[2]),
+                                 std::stod(positions[3]), std::stod(positions[4]), std::stod(positions[5])});
+
+      }
       else if(words[0]=="SimpleThermalGun")
       {
         double ekin = std::stod(words[2]);
@@ -118,8 +130,11 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     // 1. filter out material-empty volume
     auto mat_iter = volumeMatMap.find(volID);
     if(mat_iter==volumeMatMap.end()) //union creates empty virtual volume
-      PROMPT_THROW(CalcError, "empty volume ")
-      // continue;
+    {
+      m_volphyscoror.erase(volID);
+      // PROMPT_THROW(CalcError, "empty volume ")
+      continue;
+    }
 
     // 2. setup scorors
     if(volAuxInfo.size())
