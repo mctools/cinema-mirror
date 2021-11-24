@@ -1,16 +1,12 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
-    <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="UniModeratorGun;Neutron;3.39;0.3;50, 50, 0, 50, 50, 1000" />
-    </userinfo>
-
     <define>
         <constant name="HALFPI" value="pi/2."/>
         <constant name="PI" value="1.*pi"/>
         <constant name="TWOPI" value="2.*pi"/>
-        <position name="Monitor1Pos" x="0" y="0" z="1000.0" />
-        <position name="GuidePos" x="0" y="0" z="1600.0" />
-        <position name="Monitor2Pos" x="0" y="0" z="3100.0" />
+        <position name="Monitor1Pos" x="0" y="0" z="1000.000005" unit="mm"/>
+        <position name="GuidePos" x="0" y="0" z="1600.00001" unit="mm"/>
+        <position name="Monitor2Pos" x="0" y="0" z="4100.000015" unit="mm"/>
     </define>
 
     <materials>
@@ -18,7 +14,7 @@
         <atom value="../ncmat/ambient_air.ncmat"/>
       </material>
 
-      <material name="Vaccum">
+      <material name="G4_AIR">
         <atom value="../ncmat/vacuum.ncmat"/>
       </material>
 
@@ -46,47 +42,44 @@
         <atom value="Al2O3_sg167_Corundum.ncmat"/>
       </material>
 
-      <material name="Cd">
+      <material name="G4_Cd">
         <atom value="../ncmat/Cd.ncmat"/>
       </material>
     </materials>
 
     <solids>
-        <box name="WorldBox" x="1200.0" y="1200.0" z="8000.0" lunit="mm"/>
+        <box name="WorldBox" x="1200.0" y="1200.0" z="10000.0" lunit="mm"/>
         <box name="Guider1_outer" z="1000" y="53" x="53" lunit="mm"/>
         <box name="Guider1_inner" z="1000" y="50" x="50" lunit="mm"/>
         <subtraction name="Guider1">
             <first ref="Guider1_outer"/>
             <second ref="Guider1_inner"/>
         </subtraction>
-        <box name="Monitor1Solid" x="50" y="50" z="0.00001" />
-        <box name="Monitor2Solid" x="70" y="70" z="0.00001" />
+        <box name="Monitor1Solid" x="50" y="50" z="0.00001" lunit="mm"/>
+        <box name="Monitor2Solid" x="70" y="70" z="0.00001" lunit="mm"/>
     </solids>
 
     <structure>
         <volume name="LV_Guider1">
             <solidref ref="Guider1"/>
-            <materialref ref="Cd"/>
+            <materialref ref="G4_Cd"/>
             <auxiliary auxtype="Color" auxvalue="#ffe4ff00"/>
             <auxiliary auxtype="MirrorPhysics" auxvalue="1.0"/>
         </volume>
 
         <volume name="logMonitor1">
             <solidref ref="Monitor1Solid"/>
-            <auxiliary auxtype="Sensitive" auxvalue="PSD;Monitor1;-25;25;20;-25;25;20"/>
-            <materialref ref="Vaccum"/>
+            <materialref ref="G4_AIR"/>
         </volume>
 
         <volume name="logMonitor2">
             <solidref ref="Monitor2Solid"/>
-            <auxiliary auxtype="Sensitive" auxvalue="PSD;Monitor2;-35;35;20;-35;35;20"/>
-            <materialref ref="Vaccum"/>
+            <materialref ref="G4_AIR"/>
         </volume>
-
 
         <volume name="worldVOL"><!-- World -->
             <solidref ref="WorldBox"/>
-            <materialref ref="Vaccum"/>
+            <materialref ref="G4_AIR"/>
             <auxiliary auxtype="Color" auxvalue="#ff9f0000"/>
 
             <physvol name="Guider_1">
@@ -103,9 +96,12 @@
                 <volumeref ref="logMonitor2"/>
                 <positionref ref="Monitor2Pos"/>
             </physvol>
-
         </volume>
     </structure>
+
+    <userinfo>
+      <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;50, 50, 0, 50, 50, 600" />
+    </userinfo>
 
     <setup name="Default" version="1.0">
         <world ref="worldVOL"/>

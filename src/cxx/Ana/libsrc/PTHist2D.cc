@@ -57,6 +57,7 @@ void Prompt::Hist2D::save(const std::string &filename) const
     "fig=plt.figure()\n"
     "ax = fig.add_subplot(111)\n"
     "pcm = ax.pcolormesh(data.T, cmap=plt.cm.jet, shading='auto')\n"
+    "fig.colorbar(pcm, ax=ax)\n"
     "plt.show()\n", filename.c_str());
 
   std::ofstream outfile(filename+"_view.py");

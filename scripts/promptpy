@@ -7,12 +7,12 @@ import numpy as np
 l = Launcher()
 l.setSeed(100)
 # l.loadGeometry("../gdml/mpi_detector.gdml");
-l.loadGeometry("../gdml/guide.gdml");
+l.loadGeometry("../gdml/guide_1.gdml");
 # l.loadGeometry("../gdml/first_geo.gdml");
+# v = Visualiser(['Tube300', 'Tube500', '300_L', '500_L'])
+v = Visualiser(['LV_Guider1', 'Tube500', '300_L', '500_L'])
 
-v = Visualiser(['Tube300', 'Tube500', '300_L', '500_L'])
-
-for i in range(10):
+for i in range(100):
     print(f'trajectory size {l.getTrajSize()}')
     l.go(1, recordTrj=True)
     print(f'trajectory size {l.getTrajSize()}')

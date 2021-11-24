@@ -15,7 +15,7 @@ namespace Prompt {
     virtual ~UniModeratorGun() {};
     virtual void sampleEnergy(double &ekin) override
     {
-      ekin = neutronEKin2wl(m_wl0+ m_dlt_wl*(m_rng.generate()-0.5));
+      ekin = wl2ekin(m_wl0+ m_dlt_wl*(m_rng.generate()-0.5));
     }
 
   private:
