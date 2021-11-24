@@ -1,24 +1,48 @@
-inline bool Prompt::floateq(double a, double b, double rtol, double atol)
+inline constexpr bool Prompt::floateq(double a, double b, double rtol, double atol)
 {
   return std::abs(a-b) <= 0.5 * rtol * (std::abs(a) + std::abs(b)) + atol;
 }
 
-inline double Prompt::neutronEKin2k(double ekin)
+inline constexpr double Prompt::neutronEKin2k(double ekin)
 {
   assert(ekin>=0.);
   return std::sqrt(ekin*Unit::eV*const_eV2kk);
 }
 
-inline double Prompt::neutronEKin2wl(double ekin)
-{
-  return 2*M_PI/neutronEKin2k(ekin);
-}
-
-
-inline double Prompt::neutronAngleCosine2Q(double angle_cos, double enin_eV, double enout_eV)
+inline constexpr double Prompt::neutronAngleCosine2Q(double angle_cos, double enin_eV, double enout_eV)
 {
   double ratio = enout_eV/enin_eV;
   double k0=neutronEKin2k(enin_eV);
   double scale = sqrt(1.+ ratio - 2*angle_cos *sqrt(ratio) );
   return k0*scale;
+}
+
+inline constexpr double Prompt::wl2ekin( double wl)
+{
+  //angstrom to eV
+  return wlsq2ekin( wl * wl );
+}
+
+inline constexpr double Prompt::ekin2wl( double ekin)
+{
+  //eV to angstrom
+  return ekin ? std::sqrt( 0.081804209605330899 / ekin ) : std::numeric_limits<double>::max();
+}
+
+inline constexpr double Prompt::wlsq2ekin( double wlsq )
+{
+  //angstrom^2 to eV
+  return (wlsq ? ( 0.081804209605330899 / wlsq )  : std::numeric_limits<double>::max());
+}
+
+inline constexpr double Prompt::ekin2wlsq( double ekin)
+{
+  //eV to angstrom^2
+  return ekin ? 0.081804209605330899 / ekin : std::numeric_limits<double>::max();
+}
+
+inline constexpr double Prompt::ekin2wlsqinv( double ekin)
+{
+  //eV to 1/angstrom^2
+  return ekin * 12.22430978582345950656;//constant is 1/0.081804209605330899
 }
