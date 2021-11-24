@@ -68,7 +68,7 @@ class Mesh():
     def getMesh(self, nSegments=10):
         name, npoints, nPlolygen, faceSize = self.meshInfo(nSegments)
         if npoints==0:
-            return name, np.array([]), np.array([]) 
+            return name, np.array([]), np.array([])
         vert = np.zeros([npoints, 3], dtype=float)
         NumPolygonPoints = np.zeros(nPlolygen, dtype=_sizet)
         facesVec = np.zeros(faceSize+nPlolygen, dtype=_sizet)
@@ -135,7 +135,11 @@ class Visualiser():
 
     def addLine(self, data):
         line = pv.lines_from_points(data)
-        self.plotter.add_mesh(line, color='blue', opacity=0.9, line_width=4)
+        self.plotter.add_mesh(line, color='blue', opacity=0.2, line_width=2)
+        if data.size>2:
+            point_cloud = pv.PolyData(data[1:-1])
+            self.plotter.add_mesh(point_cloud, color='red', opacity=0.3)
+
 
     def loadMesh(self):
         for am in self.worldMesh:
