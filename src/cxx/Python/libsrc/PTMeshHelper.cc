@@ -23,6 +23,14 @@ void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlol
 
   // Utils3D::USolidMesh
   auto *mesh = vol->CreateMesh3D(nSegments);
+  if(!mesh)
+  {
+    npoints=0;
+    nPlolygen=0;
+    faceSize=0;
+    return;
+  }
+
   nPlolygen = mesh->GetPolygons().size();
   npoints = 0;
   for(const auto &apolygon: mesh->GetPolygons())
@@ -83,19 +91,39 @@ void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPoly
 
 void pt_printMesh()
 {
-  auto &geoManager = vecgeom::GeoManager::Instance();
-  size_t pvolsize =  geoManager.GetPlacedVolumesCount();
-  for (size_t i=0; i<pvolsize; i++)
+  std::vector<vecgeom::VPlacedVolume *> v1;
+  vecgeom::GeoManager::Instance().getAllPlacedVolumes(v1);
+  for (auto &plvol : v1)
   {
-    // const vgdml::VPlacedVolume
-    auto *vol = geoManager.Convert(i);
-    std::cout << vol->GetName() << std::endl;
-    // Utils3D::USolidMesh
-    auto *mesh = vol->CreateMesh3D(10);
+    std::cerr << "placedVol=" << plvol << ", name=" << plvol->GetName()
+              << ". type name " << typeid(plvol).name()
+              << ". Number of solids " << plvol->GetDaughters().size()
+              << ", " << vecgeom::GeoManager::Instance().GetWorld() << ">\n";
 
-    for(const auto &v: mesh->GetPolygons())
+    // Utils3D::USolidMesh
+    auto *mesh = plvol->CreateMesh3D(10);
+    if(mesh)
     {
-      std::cout << v << std::endl;
+      for(const auto &v: mesh->GetPolygons())
+      {
+        std::cout << v << std::endl;
+      }
     }
   }
+
+  // auto &geoManager = vecgeom::GeoManager::Instance();
+  // size_t pvolsize =  geoManager.GetPlacedVolumesCount();
+  // for (size_t i=0; i<pvolsize; i++)
+  // {
+  //   // const vgdml::VPlacedVolume
+  //   auto *vol = geoManager.Convert(i);
+  //   std::cout << vol->GetName() << std::endl;
+  //   // Utils3D::USolidMesh
+  //   auto *mesh = vol->CreateMesh3D(10);
+  //
+  //   for(const auto &v: mesh->GetPolygons())
+  //   {
+  //     std::cout << v << std::endl;
+  //   }
+  // }
 }

@@ -67,6 +67,8 @@ class Mesh():
 
     def getMesh(self, nSegments=10):
         name, npoints, nPlolygen, faceSize = self.meshInfo(nSegments)
+        if npoints==0:
+            return name, np.array([]), np.array([]) 
         vert = np.zeros([npoints, 3], dtype=float)
         NumPolygonPoints = np.zeros(nPlolygen, dtype=_sizet)
         facesVec = np.zeros(faceSize+nPlolygen, dtype=_sizet)
@@ -144,6 +146,8 @@ class Visualiser():
             print(f'loading mesh {name}')
             if name!='World':
                 name, points, faces = am.getMesh(10)
+                if points.size==0:
+                    continue
                 rcolor = random.choice(self.color)
                 mesh = pv.PolyData(points, faces)
                 self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
