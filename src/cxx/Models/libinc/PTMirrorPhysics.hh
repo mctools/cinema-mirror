@@ -23,6 +23,7 @@ namespace Prompt {
     private:
       std::shared_ptr<LookUpTable> m_table;
       double m_wcut;
+      SingletonPTRand &m_rng;
 
   };
 

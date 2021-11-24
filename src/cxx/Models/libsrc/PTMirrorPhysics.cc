@@ -2,8 +2,8 @@
 #include "PTUtils.hh"
 
 Prompt::MirrorPhyiscs::MirrorPhyiscs(double mvalue, double weightCut)
-:Prompt::DiscreteModel("MirrorPhysics", const_neutron_pgd,
-                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV), m_wcut(weightCut)
+:Prompt::DiscreteModel("MirrorPhysics", const_neutron_pgd, std::numeric_limits<double>::min(), 10*Prompt::Unit::eV),
+m_wcut(weightCut), m_rng(Singleton<SingletonPTRand>::getInstance())
 {
   std::cout << "constructor mirror physics " << std::endl;
   //parameters sync with mcastas 2.7 guide component default value
@@ -53,6 +53,14 @@ void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, doubl
   scaleWeight =  m_table->get(Q);
   // std::cout << "Q " << Q << " scale " << scaleWeight << std::endl;
   if(m_wcut > scaleWeight)
-    final_ekin = -1.0; //paprose kill
+  {
+    if(m_wcut*m_rng.generate() < scaleWeight )
+    {
+      scaleWeight = m_wcut;
+    }
+    else
+      final_ekin = -1.0; //paprose kill
+  }
+
 
 }
