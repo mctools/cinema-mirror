@@ -15,7 +15,7 @@ namespace Prompt {
     double sampleStepLength(double ekin, const Prompt::Vector &dir);
     double getScaleWeight(double step, bool selBiase);
     void sampleFinalState(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight);
-    void addComposition(const std::string &cfg);
+    void addComposition(const std::string &cfg, double bias=1.0);
 
   private:
     double calNumDensity(const std::string &cfg);

@@ -190,13 +190,20 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     else
     {
       std::cout << "Creating model " << mat.name << ", "
-                << mat.attributes.find("atomValue")->second << " for volume " << volume.GetName() << std::endl;
+                << mat.attributes.find("atomValue")->second << volume.GetName() << std::endl;
       std::shared_ptr<MaterialPhysics> model = std::make_shared<MaterialPhysics>();
       m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<MaterialPhysics>>
                 (std::string(mat.name) , std::move(model) ) );
       auto theNewPhysics = getMaterialPhysics(mat.name);
+      double bias (1.);
+      auto itbias = mat.attributes.find("D");
+
+      if(itbias!=mat.attributes.end())
+      {
+        bias = std::stod(itbias->second);
+      }
       const std::string &cfg = mat.attributes.find("atomValue")->second;
-      theNewPhysics->addComposition(cfg);
+      theNewPhysics->addComposition(cfg, bias);
       vps->physics=theNewPhysics;
     }
 

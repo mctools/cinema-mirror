@@ -22,6 +22,12 @@ namespace Prompt {
     double getOverflow() const {return m_overflow;};
     double getUnderflow() const {return m_underflow;};
     uint32_t getNBin() const {return m_nbins;};
+    double getTotalHist() const {
+      double sum(0);
+      for(auto v: m_hit)
+        sum += v;
+      return sum;
+    };
 
     void scale(double scalefact);
     void reset();

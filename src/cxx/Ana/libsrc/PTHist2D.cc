@@ -35,6 +35,7 @@ void Prompt::Hist2D::operator+=(const Hist2D& hist)
 #include<fstream>
 void Prompt::Hist2D::save(const std::string &filename) const
 {
+  std::cout << "total count " << getTotalHist() << std::endl;
   std::ofstream ofs;
   ofs.open(filename, std::ios::out);
 
@@ -48,6 +49,18 @@ void Prompt::Hist2D::save(const std::string &filename) const
   }
   ofs.close();
 
+  ofs.open(filename+"_hit", std::ios::out);
+
+  for(uint32_t i=0;i<m_xnbins;i++)
+  {
+    for(uint32_t j=0;j<m_ynbins;j++)
+    {
+      ofs << m_hit[i*m_ynbins + j] << " ";
+    }
+    ofs << "\n";
+  }
+  ofs.close();
+
   char buffer [500];
   int n =sprintf (buffer,
     "import numpy as np\n"
@@ -56,9 +69,13 @@ void Prompt::Hist2D::save(const std::string &filename) const
     "data=np.loadtxt('%s')\n"
     "fig=plt.figure()\n"
     "ax = fig.add_subplot(111)\n"
-    "pcm = ax.pcolormesh(data.T, cmap=plt.cm.jet, shading='auto')\n"
+    "pcm = ax.pcolormesh(data.T, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=data.max()*1e-10, vmax=data.max()), shading='auto')\n"
     "fig.colorbar(pcm, ax=ax)\n"
-    "plt.show()\n", filename.c_str());
+    "count=np.loadtxt('%s')\n"
+    "count=count.sum()-count.max()\n"
+    "integral= data.sum()\n"
+    "plt.title(f'Integral {integral}, count {count}')\n"
+    "plt.show()\n", filename.c_str(), (filename+"_hit").c_str());
 
   std::ofstream outfile(filename+"_view.py");
   outfile << buffer;

@@ -4,7 +4,7 @@
 TEST_CASE("Material")
 {
   auto mat = Prompt::MaterialPhysics() ;
-  mat.addComposition("LiquidWaterH2O_T293.6K.ncmat"); //LiquidWaterH2O_T293.6K, Be_sg194, Al_sg225, UO2_sg225_UraniumDioxide
+  mat.addComposition("LiquidWaterH2O_T293.6K.ncmat", 1); //LiquidWaterH2O_T293.6K, Be_sg194, Al_sg225, UO2_sg225_UraniumDioxide
   double ekin  = 2e-3;
   double meanFreePath = 1/mat.macroCrossSection(ekin, {1,0,0} );
   double totlength(0.);

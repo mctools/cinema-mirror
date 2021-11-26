@@ -9,18 +9,14 @@ Prompt::ModelCollection::ModelCollection()
 
 Prompt::ModelCollection::~ModelCollection() {}
 
-void Prompt::ModelCollection::addPhysicsModel(const std::string &cfg)
+void Prompt::ModelCollection::addPhysicsModel(const std::string &cfg, double bias)
 {
-  if (cfg.find("Water") != std::string::npos)
-  {
-    m_models.emplace_back(std::make_shared<NCrystalAbs>(cfg, 3));
-    m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, 3));
-  }
-  else
-  {
-    m_models.emplace_back(std::make_shared<NCrystalAbs>(cfg, 1));
-    m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, 1));
-  }
+  if(bias!=1.)
+    std::cout << "material " << cfg << " has a bias of " << bias << std::endl;
+
+  m_models.emplace_back(std::make_shared<NCrystalAbs>(cfg, bias));
+  m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, bias));
+
   if(m_models.back()->isOriented())
     m_oriented=true;
   m_cache.cache_xs.push_back(0.);

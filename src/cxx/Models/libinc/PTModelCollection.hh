@@ -32,7 +32,7 @@ namespace Prompt {
     double totalCrossSection(double ekin, const Vector &dir) const;
     void sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight) const;
 
-    void addPhysicsModel(const std::string &cfg);
+    void addPhysicsModel(const std::string &cfg, double bias=1.);
     bool sameInquiryAsLastTime(double ekin, const Vector &dir) const;
 
     double calculateWeight(double lengthRho, bool selBiase);

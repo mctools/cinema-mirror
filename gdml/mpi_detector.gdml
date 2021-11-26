@@ -2,7 +2,8 @@
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" />
+      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
+      <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;0.0253; 0,0,-30000; 0,0,1" />
     </userinfo>
 
     <define>
@@ -33,7 +34,7 @@
         </material>
 
         <material name="HeavyWater">
-          <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat;packfact=0.1"/>
+          <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat"/>
         </material>
 
         <material name="Vacuum">
@@ -68,7 +69,7 @@
 
     <solids>
         <box lunit="mm" name="WorldBox" x="30000.0" y="30000.0" z="65000.0" />
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="7.0" rmin="0.0" startphi="0.0" z="50.0" />
+        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="0.1" rmin="0.0" startphi="0.0" z="50.0" />
         <box lunit="mm" name="Module300_L" x="25.4" y="211.2" z="300" />
         <box lunit="mm" name="Module300_G" x="300" y="211.2" z="25.4" />
         <box lunit="mm" name="Module500_L" x="25.4" y="211.2" z="500" />
@@ -92,7 +93,7 @@
             <solidref ref="Tube300_He" />
             <materialref ref="G4_He" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;S(Q);0,0,0;0,0,1;30000.;1.5004;49.9996;1000"/>
+            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;SofQ;0,0,0;0,0,1;30000.;1.5004;49.9996;1000"/>
         </volume>
 
         <volume name="LV_Tube300_Wall">
@@ -115,7 +116,7 @@
 
         <volume name="LV_Tube500_He">
             <solidref ref="Tube500_He" />
-            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;S(Q);0,0,0;0,0,1;30000.;1.5004;49.9996;1000"/>
+            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;SofQ;0,0,0;0,0,1;30000.;1.5004;49.9996;1000"/>
             <materialref ref="G4_He" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
         </volume>

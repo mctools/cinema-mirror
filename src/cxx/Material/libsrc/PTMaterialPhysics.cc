@@ -55,8 +55,8 @@ double Prompt::MaterialPhysics::calNumDensity(const std::string &cfg)
   }
 }
 
-void Prompt::MaterialPhysics::addComposition(const std::string &cfg)
+void Prompt::MaterialPhysics::addComposition(const std::string &cfg, double bias)
 {
-  m_modelcoll->addPhysicsModel(cfg);
+  m_modelcoll->addPhysicsModel(cfg, bias);
   m_numdensity += calNumDensity(cfg);
 }

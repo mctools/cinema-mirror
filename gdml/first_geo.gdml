@@ -1,12 +1,21 @@
 <?xml version="1.0"?>
 <gdml>
 
+  <userinfo>
+    <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
+    <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;0.0253; 0,0,-100; 0,0,1" />
+  </userinfo>
+
    <define>
-    <position name="DetectorPos" x="0" y="500" z="0.0" />
+    <position name="DetectorPos" x="0" y="0" z="50." />
     <rotation name="rot" unit="deg" x="90" y="0" z="0" />
   </define>
 
   <materials>
+    <material name="Vacuum">
+      <atom value="../ncmat/vacuum.ncmat"/>
+    </material>
+
     <material name="Air">
       <atom value="../ncmat/ambient_air.ncmat"/>
     </material>
@@ -21,6 +30,11 @@
 
     <material name="Al">
       <atom value="Al_sg225.ncmat"/>
+    </material>
+
+    <material name="AlSample">
+      <atom value="Al_sg225.ncmat"/>
+      <D value="10"/>
     </material>
 
     <material name="V">
@@ -39,25 +53,26 @@
   </materials>
 
   <solids>
-    <box name="DetectorSolid" x="5000" y="5000" z="0.00001" />
+    <box name="DetectorSolid" x="500" y="500" z="0.00001" />
     <tube name="SampleSolid" rmin="0" rmax="5" z="10" startphi="0" deltaphi="360" aunit="deg"/>
-    <box name="worldSolid" x="12000.0" y="12000.0" z="120000.0" />
+    <box name="worldSolid" x="1200.0" y="1200.0" z="1200.0" />
   </solids>
 
   <structure>
     <volume name="Sample">
-      <materialref ref="HeavyWater"/>
+      <materialref ref="AlSample"/>
       <solidref ref="SampleSolid"/>
     </volume>
 
     <volume name="Detector">
-      <materialref ref="Air"/>
+      <materialref ref="Vacuum"/>
       <solidref ref="DetectorSolid"/>
-      <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;Sq;0,0,0;0,0,1;-100.;1.5004;49.9996;1000"/>
+      <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;Sq;0,0,0;0,0,1;-100.;0.5004;49.9996;1000"/>
+      <auxiliary auxtype="Sensitive" auxvalue="PSD;NeutronHistMap;-250;250;100;-250;250;100"/>
     </volume>
 
     <volume name="World">
-      <materialref ref="Air"/>
+      <materialref ref="Vacuum"/>
       <solidref ref="worldSolid"/>
       <!-- auxiliary auxtype="Sensitive" auxvalue="Tracker"/-->
       <physvol>
@@ -68,7 +83,6 @@
       <physvol>
         <volumeref ref="Detector"/>
         <positionref ref="DetectorPos"/>
-        <rotationref ref="rot"/>
         <!-- This comment should be ignored -->
       </physvol>
     </volume>
