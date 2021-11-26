@@ -145,6 +145,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
 
   double stepLength = m_matphysscor->physics->sampleStepLength(particle.getEKin(), dir);
 
+
   //! updates m_nextState to contain information about the next hitting boundary:
   //!   - if a daugher is hit: m_nextState.Top() will be daughter
   //!   - if ray leaves volume: m_nextState.Top() will point to current volume
@@ -170,18 +171,35 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     //sample the interaction at the location
     double final_ekin(0);
     Vector final_dir;
-    double scaleWeight;
-    m_matphysscor->physics->sampleFinalState(particle.getEKin(), dir, final_ekin, final_dir, scaleWeight);
+    double dummy(0.);
+    m_matphysscor->physics->sampleFinalState(particle.getEKin(), dir, final_ekin, final_dir, dummy);
+    // final reaction channel is picked here, calculate the weigth factor
+    // based on individual xs, stepLength and picked physics
+    particle.scaleWeight( m_matphysscor->physics->getScaleWeight(step, true));
+    // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
+    
     if(final_ekin==-1.)
       particle.kill();
     else
     {
       particle.setEKin(final_ekin);
       particle.setDirection(final_dir);
-      particle.scaleWeight(scaleWeight);
     }
     return true;
   }
   else
+  {
+    // final reaction channel is picked here, calculate the weigth factor
+    // based on individual xs, stepLength and picked physics
+    auto fq=particle;
+    double final_ekin(0);
+    Vector final_dir;
+    double dummy(0.);
+
+    m_matphysscor->physics->sampleFinalState(fq.getEKin(), dir, final_ekin, final_dir, dummy);
+    particle.scaleWeight(m_matphysscor->physics->getScaleWeight(step, false));
+    // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
     return false;
+  }
+
 }

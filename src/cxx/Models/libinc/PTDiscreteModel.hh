@@ -20,6 +20,8 @@ namespace Prompt {
     DiscreteModel(const std::string &name, double bias=1.0);
     DiscreteModel(const std::string &name, unsigned gdp, double emin, double emax, double bias=1.0);
     virtual ~DiscreteModel();
+    double getBias() const
+    { return m_bias; }
 
   protected:
     double m_bias;

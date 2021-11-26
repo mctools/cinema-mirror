@@ -6,6 +6,7 @@
 #include "PromptCore.hh"
 #include "PTVector.hh"
 #include "PTRandCanonical.hh"
+#include "PTDiscreteModel.hh"
 
 namespace Prompt {
 
@@ -15,6 +16,8 @@ namespace Prompt {
     double ekin;
     Vector dir;
     std::vector<double> cache_xs;
+    std::vector<double> bias;
+    double selectedBias;
     double tot;
   };
 
@@ -32,8 +35,10 @@ namespace Prompt {
     void addPhysicsModel(const std::string &cfg);
     bool sameInquiryAsLastTime(double ekin, const Vector &dir) const;
 
+    double calculateWeight(double lengthRho, bool selBiase);
+
   private:
-    std::vector<std::shared_ptr<PhysicsModel> > m_models;
+    std::vector<std::shared_ptr<DiscreteModel> > m_models;
     mutable XSCache m_cache;
     bool m_oriented;
 

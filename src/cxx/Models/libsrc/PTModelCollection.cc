@@ -11,11 +11,20 @@ Prompt::ModelCollection::~ModelCollection() {}
 
 void Prompt::ModelCollection::addPhysicsModel(const std::string &cfg)
 {
-  m_models.emplace_back(std::make_shared<NCrystalAbs>(cfg));
-  m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, 1.));
+  if (cfg.find("Water") != std::string::npos)
+  {
+    m_models.emplace_back(std::make_shared<NCrystalAbs>(cfg, 3));
+    m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, 3));
+  }
+  else
+  {
+    m_models.emplace_back(std::make_shared<NCrystalAbs>(cfg, 1));
+    m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, 1));
+  }
   if(m_models.back()->isOriented())
     m_oriented=true;
-  m_cache.cache_xs.resize(m_models.size());
+  m_cache.cache_xs.push_back(0.);
+  m_cache.bias.push_back(1.);
 }
 
 bool Prompt::ModelCollection::sameInquiryAsLastTime(double ekin, const Vector &dir) const
@@ -37,6 +46,7 @@ double Prompt::ModelCollection::totalCrossSection(double ekin, const Vector &dir
       double channelxs = m_oriented ? m_models[i]->getCrossSection(ekin, dir) :
                                       m_models[i]->getCrossSection(ekin);
       m_cache.cache_xs[i] = channelxs;
+      m_cache.bias[i] = m_models[i]->getBias();
       xs += channelxs;
     }
     m_cache.tot = xs;
@@ -51,6 +61,7 @@ void Prompt::ModelCollection::sample(double ekin, const Vector &dir, double &fin
   if(!sameInquiryAsLastTime(ekin, dir))
     printf("WARNING, sampling event with different incident energy and/or direction\n");
 
+  //if xs is zero, do nothing
   if(!m_cache.tot)
   {
     final_ekin = ekin;
@@ -68,4 +79,24 @@ void Prompt::ModelCollection::sample(double ekin, const Vector &dir, double &fin
       break;
   }
   m_models[i]->generate(ekin, dir, final_ekin, final_dir, scaleWeight);
+  m_cache.selectedBias = m_models[i]->getBias();
+  // std::cout << "selected model " << m_models[i]->getName() << " "
+  // << " total model num " << m_models.size() << std::endl;
+}
+
+//call it right after cross section is updated
+double Prompt::ModelCollection::calculateWeight(double lengthRho, bool selBiase)
+{
+  double factor(1.);
+  for(size_t i=0;i<m_models.size();i++)
+  {
+    double modbias(m_models[i]->getBias());
+    if (modbias==1.) continue;
+    factor *= exp( (m_cache.bias[i]-1.)*lengthRho* m_cache.cache_xs[i]/m_cache.bias[i] );
+    // std::cout << "exponet " <<  (m_cache.bias[i]-1.)*lengthRho* m_cache.cache_xs[i] <<
+    // " "<< exp( (m_cache.bias[i]-1.)*lengthRho* m_cache.cache_xs[i] ) << std::endl;
+  }
+  // std::cout << "selectedBias " << m_cache.selectedBias << " factor " << factor
+  // << std::endl;
+  return (m_cache.selectedBias!=1. && selBiase ) ?  (factor/m_cache.selectedBias) : factor;
 }
