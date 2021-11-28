@@ -2,6 +2,7 @@
 #include "PTUtils.hh"
 #include "PTScororNeutronSq.hh"
 #include "PTScororPSD.hh"
+#include "PTScororVolFlux.hh"
 
 Prompt::AnaManager::AnaManager()
 {}
@@ -10,7 +11,7 @@ Prompt::AnaManager::~AnaManager()
 {}
 
 
-std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::string &cfg)
+std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::string &cfg, double vol)
 {
   auto words = split(cfg, ';');
   std::cout << "Creating scoror with config: ";
@@ -31,6 +32,19 @@ std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::stri
   {
     return std::make_shared<Prompt::ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
                                           std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]) );
+
+  }
+  else if(words[0]=="VolFlux")
+  {
+    std::cout << words[1] << " "
+    <<  std::stod(words[2]) << " "
+    <<  std::stod(words[3]) << " "
+    <<  std::stoi(words[4]) << " "
+    <<  std::stoi(words[5]) << " "
+    <<  vol << std::endl;
+    return std::make_shared<Prompt::ScororVolFlux>(words[1], std::stod(words[2]) ,
+                std::stod(words[3]) , std::stoi(words[4]) ,  std::stoi(words[5]),
+                vol );
 
   }
   else

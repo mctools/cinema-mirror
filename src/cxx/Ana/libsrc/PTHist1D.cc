@@ -39,19 +39,19 @@ void Prompt::Hist1D::save(const std::string &filename) const
   nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_content.npy", m_data, NumpyWriter::data_type::f8,
                    std::vector<uint64_t>{m_nbins});
 
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_bin.npy", getEdge(), NumpyWriter::data_type::f8,
-                   std::vector<uint64_t>{m_nbins});
+  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_edge.npy", getEdge(), NumpyWriter::data_type::f8,
+                   std::vector<uint64_t>{m_nbins+1});
 
   char buffer [500];
   int n =sprintf (buffer,
     "import numpy as np\n"
     "import matplotlib.pyplot as plt\n"
-    "x=np.load('%s_seed%ld_bin.npy')\n"
+    "x=np.load('%s_seed%ld_edge.npy')\n"
     "y=np.load('%s_seed%ld_content.npy')\n"
-    "plt.plot(x,y, label=f'integral={np.trapz(y,x)}')\n"
+    "plt.%s(x[:-1],y/np.diff(x), label=f'integral={y.sum()}')\n"
     "plt.grid()\n"
     "plt.legend()\n"
-    "plt.show()\n", filename.c_str(), seed, filename.c_str(), seed);
+    "plt.show()\n", filename.c_str(), seed, filename.c_str(), seed, m_linear? "plot":"loglog");
 
   std::ofstream outfile(filename+"_view.py");
   outfile << buffer;

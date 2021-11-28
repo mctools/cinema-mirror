@@ -54,7 +54,7 @@ std::shared_ptr<Prompt::Scoror> Prompt::GeoManager::getScoror(const std::string 
 void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 {
   vgdml::Parser p;
-  const auto loadedMiddleware = p.Load(gdml_file.c_str(), false, 1.);
+  const auto loadedMiddleware = p.Load(gdml_file.c_str(), false, 1);
 
   if (!loadedMiddleware) PROMPT_THROW(DataLoadError, "failed to load the gdml file ");
 
@@ -160,9 +160,11 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
             }
             else
             {
-              scor = anaManager.createScoror(info.GetValue());
+              scor = anaManager.createScoror(info.GetValue(), volume.GetUnplacedVolume()->Capacity() );
               m_globelScorors[info.GetValue()]=scor;
               vps->scorors.push_back(scor);
+              std::cout << "vol name " << volume.GetName() <<" capacity "<<  volume.GetUnplacedVolume()->Capacity()  << std::endl;
+
             }
             std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
           }

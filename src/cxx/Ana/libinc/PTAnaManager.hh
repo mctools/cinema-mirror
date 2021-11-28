@@ -18,7 +18,7 @@ namespace Prompt {
   class AnaManager  {
   public:
     //used in GeoManager::loadFile
-    std::shared_ptr<Scoror> createScoror(const std::string &cfg);
+    std::shared_ptr<Scoror> createScoror(const std::string &cfg, double v);
 
   private:
     friend class Singleton<AnaManager>;
