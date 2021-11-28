@@ -45,7 +45,7 @@ namespace Prompt {
   };
 
   struct DeltaParticle {
-    double dlt_ekin, dlt_time, dlt_position;
+    double dlt_ekin, dlt_time;
     Vector dlt_dir, dlt_pos;
     Particle lastParticle;
     void setLastParticle(const Particle &p)
