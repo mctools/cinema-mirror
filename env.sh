@@ -72,6 +72,10 @@ fi
 
 if [ ! -d $PTPATH/promptbin ]; then
   mkdir $PTPATH/promptbin
+  cd $PTPATH/promptbin
+  cmake ..
+  make -j8 
+  cd -
 fi
 
 
