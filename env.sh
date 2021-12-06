@@ -30,8 +30,7 @@ if [ ! -f $PTPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
   fi
   git clone https://gitlab.com/xxcai1/ncrystal.git
   cd -
-  cd $PTPATH/external/ncrystal
-  mkdir build && cd build
+  mkdir $PTPATH/external/ncrystal/build && cd $PTPATH/external/ncrystal/build
   cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/ncrystal/install ..
   make -j 8 && make install
   cd -
@@ -53,8 +52,7 @@ if [ ! -f $PTPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
   fi
   git clone https://gitlab.com/xxcai1/VecGeom.git
   cd -
-  cd $PTPATH/external/VecGeom
-  mkdir build && cd build
+  mkdir $PTPATH/external/VecGeom/build && cd $PTPATH/external/VecGeom/build
   cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/VecGeom/install -DGDML=On -DUSE_NAVINDEX=On  ..
   make -j 8 && make install
   cd -
