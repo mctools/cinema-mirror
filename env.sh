@@ -29,10 +29,12 @@ if [ ! -f $PTPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
     rm -rf ncrystal
   fi
   git clone https://gitlab.com/xxcai1/ncrystal.git
-  cd ncrystal
+  cd -
+  cd $PTPATH/external/ncrystal
   mkdir build && cd build
   cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/ncrystal/install ..
   make -j 8 && make install
+  cd -
   echo "installed  ncrystal"
 else
   echo "Found ncrystal"
@@ -50,10 +52,12 @@ if [ ! -f $PTPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
     rm -rf VecGeom
   fi
   git clone https://gitlab.com/xxcai1/VecGeom.git
-  cd VecGeom
+  cd -
+  cd $PTPATH/external/VecGeom
   mkdir build && cd build
   cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/VecGeom/install -DGDML=On -DUSE_NAVINDEX=On  ..
   make -j 8 && make install
+  cd -
   echo "installed  VecGeom"
 else
   echo "Found VecGeom"
