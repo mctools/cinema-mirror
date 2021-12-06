@@ -25,7 +25,9 @@ if [ ! -f $PTPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
     mkdir $PTPATH/external
   fi
   cd $PTPATH/external
-  rm -rf ncrystal
+  if [ -d ncrystal ]; then
+    rm -rf ncrystal
+  fi
   git clone https://gitlab.com/xxcai1/ncrystal.git
   cd ncrystal
   mkdir build && cd build
@@ -37,24 +39,25 @@ else
 fi
 .  $PTPATH/external/ncrystal/install/setup.sh
 
-# #install VecGeom
-# if [ ! -f $PTPATH/externals/ncrystal/lib/libncrstal.so ]; then
-#   if [ ! -d $PTPATH/external ]; then
-#     mkdir $PTPATH/external
-#   fi
-#   cd $PTPATH/external
-#   rm -rf ncrystal
-#   git clone https://gitlab.com/xxcai1/ncrystal.git
-#   cd ncrystal
-#   mkdir build && cd build
-#   cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/ncrystal/install ..
-#   make -j 8 && make install
-#   echo "installed  ncrystal"
-# else
-#   echo "Found ncrystal"
-# fi
-# .  $PTPATH/externals/ncrystal/install/setup.sh
-#
+#install VecGeom
+
+if [ ! -f $PTPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
+  if [ ! -d $PTPATH/external ]; then
+    mkdir $PTPATH/external
+  fi
+  cd $PTPATH/external
+  if [ -d VecGeom ]; then
+    rm -rf VecGeom
+  fi
+  git clone https://gitlab.com/xxcai1/VecGeom.git
+  cd VecGeom
+  mkdir build && cd build
+  cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/VecGeom/install -DGDML=On -DUSE_NAVINDEX=On  ..
+  make -j 8 && make install
+  echo "installed  VecGeom"
+else
+  echo "Found VecGeom"
+fi
 
 
 if [ -f $PTPATH/src/python/prompt/__init__.py ]; then
