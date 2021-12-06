@@ -3,6 +3,7 @@ __pycache__
 gdml
 ptvirenv
 promptbin
+external
 
 # Prerequisites
 *.d

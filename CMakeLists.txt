@@ -23,6 +23,7 @@ if(NOT TARGET VecGeom::vgdml)
 endif()
 
 # NCrystal
+set(NCrystal_DIR ${CMAKE_SOURCE_DIR}/external/ncrystal/install/lib/cmake)
 find_package(NCrystal 2.7.0 REQUIRED)
 
 

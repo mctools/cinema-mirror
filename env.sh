@@ -18,6 +18,45 @@ unset prompt_prunepath
 
 export PTPATH="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+#install ncrystal
+
+if [ ! -f $PTPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
+  if [ ! -d $PTPATH/external ]; then
+    mkdir $PTPATH/external
+  fi
+  cd $PTPATH/external
+  rm -rf ncrystal
+  git clone https://gitlab.com/xxcai1/ncrystal.git
+  cd ncrystal
+  mkdir build && cd build
+  cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/ncrystal/install ..
+  make -j 8 && make install
+  echo "installed  ncrystal"
+else
+  echo "Found ncrystal"
+fi
+.  $PTPATH/external/ncrystal/install/setup.sh
+
+# #install VecGeom
+# if [ ! -f $PTPATH/externals/ncrystal/lib/libncrstal.so ]; then
+#   if [ ! -d $PTPATH/external ]; then
+#     mkdir $PTPATH/external
+#   fi
+#   cd $PTPATH/external
+#   rm -rf ncrystal
+#   git clone https://gitlab.com/xxcai1/ncrystal.git
+#   cd ncrystal
+#   mkdir build && cd build
+#   cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/ncrystal/install ..
+#   make -j 8 && make install
+#   echo "installed  ncrystal"
+# else
+#   echo "Found ncrystal"
+# fi
+# .  $PTPATH/externals/ncrystal/install/setup.sh
+#
+
+
 if [ -f $PTPATH/src/python/prompt/__init__.py ]; then
   export PYTHONPATH="$PTPATH/src/python:$PYTHONPATH"
   echo "Added prompt python module into path"
@@ -51,6 +90,7 @@ else
     pip install -r requirements
   fi
 fi
+
 
 # ln -s
 echo -e "Enjoy!"
