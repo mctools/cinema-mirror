@@ -1,5 +1,19 @@
 #!/bin/bash
 
+if ! hash cmake 2>/dev/null
+then
+    echo "cmake is required to continue the installation of Prompt"
+    return
+fi
+
+if ! hash git 2>/dev/null
+then
+    echo "git is required to continue the installation of Prompt"
+    return
+fi
+
+NUMCPU=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
+
 #remove previously sourced env
 function prompt_prunepath() {
     P=$(IFS=:;for p in ${!1}; do [[ $p != ${2}* ]] && echo -n ":$p" || :; done)
@@ -21,46 +35,52 @@ export PTPATH="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #install ncrystal
 
 if [ ! -f $PTPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
-  if [ ! -d $PTPATH/external ]; then
-    mkdir $PTPATH/external
+  read -r -p "Do you want to install NCrysta into $PTPATH/external? [y/N] " response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+      if [ ! -d $PTPATH/external ]; then
+        mkdir $PTPATH/external
+      fi
+      cd $PTPATH/external
+      if [ -d ncrystal ]; then
+        rm -rf ncrystal
+      fi
+      git clone https://gitlab.com/xxcai1/ncrystal.git
+      cd -
+      mkdir $PTPATH/external/ncrystal/build && cd $PTPATH/external/ncrystal/build
+      cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/ncrystal/install ..
+      make -j ${NUMCPU} && make install
+      cd -
+      echo "installed  ncrystal"
+    else
+      echo "Found ncrystal"
+    fi
+    .  $PTPATH/external/ncrystal/install/setup.sh
   fi
-  cd $PTPATH/external
-  if [ -d ncrystal ]; then
-    rm -rf ncrystal
-  fi
-  git clone https://gitlab.com/xxcai1/ncrystal.git
-  cd -
-  mkdir $PTPATH/external/ncrystal/build && cd $PTPATH/external/ncrystal/build
-  cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/ncrystal/install ..
-  make -j 8 && make install
-  cd -
-  echo "installed  ncrystal"
-else
-  echo "Found ncrystal"
-fi
-.  $PTPATH/external/ncrystal/install/setup.sh
+
 
 #install VecGeom
 
 if [ ! -f $PTPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
-  if [ ! -d $PTPATH/external ]; then
-    mkdir $PTPATH/external
+  read -r -p "Do you want to install VecGeom into $PTPATH/external? [y/N] " response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    if [ ! -d $PTPATH/external ]; then
+      mkdir $PTPATH/external
+    fi
+    cd $PTPATH/external
+    if [ -d VecGeom ]; then
+      rm -rf VecGeom
+    fi
+    git clone https://gitlab.com/xxcai1/VecGeom.git
+    cd -
+    mkdir $PTPATH/external/VecGeom/build && cd $PTPATH/external/VecGeom/build
+    cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/VecGeom/install -DGDML=On -DUSE_NAVINDEX=On  ..
+    make -j ${NUMCPU} && make install
+    cd -
+    echo "installed  VecGeom"
+  else
+    echo "Found VecGeom"
   fi
-  cd $PTPATH/external
-  if [ -d VecGeom ]; then
-    rm -rf VecGeom
-  fi
-  git clone https://gitlab.com/xxcai1/VecGeom.git
-  cd -
-  mkdir $PTPATH/external/VecGeom/build && cd $PTPATH/external/VecGeom/build
-  cmake  -DCMAKE_INSTALL_PREFIX=$PTPATH/external/VecGeom/install -DGDML=On -DUSE_NAVINDEX=On  ..
-  make -j 8 && make install
-  cd -
-  echo "installed  VecGeom"
-else
-  echo "Found VecGeom"
 fi
-
 
 if [ -f $PTPATH/src/python/prompt/__init__.py ]; then
   export PYTHONPATH="$PTPATH/src/python:$PYTHONPATH"
@@ -74,7 +94,7 @@ if [ ! -d $PTPATH/promptbin ]; then
   mkdir $PTPATH/promptbin
   cd $PTPATH/promptbin
   cmake ..
-  make -j8 
+  make -j8
   cd -
 fi
 
@@ -92,11 +112,11 @@ fi
 if [ -f $PTPATH/ptvirenv/bin/activate ]; then
   . $PTPATH/ptvirenv/bin/activate
 else
-  read -r -p "Do you want install Prompt python virtual environment in $PTPATH/virenv? [y/N] " response
+  read -r -p "Do you want install Prompt python virtual environment in $PTPATH/ptvirenv? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-    python3 -m venv $PTPATH/virenv
-    . $PTPATH/virenv/bin/activate
-    pip install -r requirements
+    python3 -m venv $PTPATH/ptvirenv
+    . $PTPATH/ptvirenv/bin/activate
+    pip install -r $PTPATH/requirement
   fi
 fi
 
