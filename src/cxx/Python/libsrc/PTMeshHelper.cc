@@ -110,20 +110,4 @@ void pt_printMesh()
       }
     }
   }
-
-  // auto &geoManager = vecgeom::GeoManager::Instance();
-  // size_t pvolsize =  geoManager.GetPlacedVolumesCount();
-  // for (size_t i=0; i<pvolsize; i++)
-  // {
-  //   // const vgdml::VPlacedVolume
-  //   auto *vol = geoManager.Convert(i);
-  //   std::cout << vol->GetName() << std::endl;
-  //   // Utils3D::USolidMesh
-  //   auto *mesh = vol->CreateMesh3D(10);
-  //
-  //   for(const auto &v: mesh->GetPolygons())
-  //   {
-  //     std::cout << v << std::endl;
-  //   }
-  // }
 }
