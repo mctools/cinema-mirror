@@ -1,5 +1,5 @@
 # Prompt
-Probroblitiy-Conserved Cross Section Biasing Monte Carlo Particle Transport System
+Probability-Conserved Cross Section Biasing Monte Carlo Particle Transport System
 
 Before compiling Prompt, please install the vecgeom package (https://gitlab.cern.ch/VecGeom/VecGeom), which is the only dependence of this Monte Carlo system at the moment. 
 
