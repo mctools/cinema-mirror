@@ -2,7 +2,7 @@
 
 USAGE="Usage: $0 -t for unit test"
 
-. ~/git/ncrystal/install/setup.sh
+.  $PTPATH/external/ncrystal/install/setup.sh
 while getopts ti:d option
   do
     case "${option}"
