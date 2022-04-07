@@ -22,6 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
+#include "PTPrimaryGun.hh"
 #include "PTParticle.hh"
 #include "PTVector.hh"
 
