@@ -6,8 +6,9 @@ import numpy as np
 
 l = Launcher()
 l.setSeed(100)
+l.loadGeometry("../gdml/mpi_detector_LW_0_1.gdml")
 # l.loadGeometry("../gdml/mpi_detector.gdml");
-l.loadGeometry("../gdml/guide_1.gdml");
+#l.loadGeometry("../gdml/guide_1.gdml");
 # l.loadGeometry("../gdml/first_geo.gdml");
 v = Visualiser(['Tube300', 'Tube500', '300_L', '500_L'], printWorld=True)
 # v = Visualiser(['LV_Guider1', 'Tube500', '300_L', '500_L'], printWorld=True)
@@ -17,7 +18,10 @@ for i in range(100):
     l.go(1, recordTrj=True)
     print(f'trajectory size {l.getTrajSize()}')
     trj = l.getTrajectory()
-    v.addLine(trj)
+    try:
+        v.addLine(trj)
+    except ValueError:
+        print("skip ValueError in File '/Prompt/scripts/promptpy', in <module>, v.addLine(trj)")
     print(trj)
 
 
