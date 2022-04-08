@@ -1,0 +1,31 @@
+NCMAT v5
+#
+# Helium (aka "Helium-4" ) gas.
+#
+# Noble gasses such as this one can be modelled realistically using the freegas
+# model of NCrystal. The density is the value at STP (273.15K, 1atm) calculated
+# with the ideal gas equation. The density value must currently (NCrystal
+# v2.7.0) be manually changed by the user if modelling using different
+# temperatures or pressures is desired (the formula is given below).
+#
+@STATEOFMATTER
+  gas
+@DYNINFO
+  element  He3
+  fraction 1
+  type     freegas
+@ATOMDB
+ #name  mass      coh_b    inc_xs   abs_xs
+  He3  3.01603u   0.0001fm     0b    5333b
+@DENSITY
+  # Notice: For He4 gas, we are hardcoding the STP values (273.15K, 1atm) here. For other
+  # values of pressure and temperature, it can be calculated as:
+  #
+  #      density [kg/m3] = 48.77840 * ( P[atm] / T[K] )
+  #
+  # Which assumes a He4 mass of 4.002602 amu, so 0.178577 kg_per_m3
+  # For He3 of mass 3.01603, the density is then 
+  0.134561 kg_per_m3
+  
+  
+
