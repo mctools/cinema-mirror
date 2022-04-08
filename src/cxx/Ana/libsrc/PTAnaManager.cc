@@ -46,13 +46,15 @@ std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::stri
     double minQ = std::stod(words[5]);
     double maxQ = std::stod(words[6]);
     int numBin = std::stoi(words[7]);
-    return std::make_shared<Prompt::ScororNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scoror::ENTRY);
+    if(words[8]=="ABSORB")
+      return std::make_shared<Prompt::ScororNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scoror::ABSORB);
+    else if(words[8]=="ENTRY")
+      return std::make_shared<Prompt::ScororNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scoror::ENTRY);
   }
   else if(words[0]=="PSD")
   {
     return std::make_shared<Prompt::ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
                                           std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]) );
-
   }
   else if(words[0]=="VolFlux")
   {
@@ -65,7 +67,6 @@ std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::stri
     return std::make_shared<Prompt::ScororVolFlux>(words[1], std::stod(words[2]) ,
                 std::stod(words[3]) , std::stoi(words[4]) ,  std::stoi(words[5]),
                 vol );
-
   }
   else
     PROMPT_THROW2(BadInput, "Scoror type " << words[0] << " is not supported. ")

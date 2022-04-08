@@ -50,6 +50,9 @@ namespace Prompt {
       entry_scorors.clear();
       propagate_scorors.clear();
       exit_scorors.clear();
+      surface_scorors.clear();
+      absorb_scorors.clear();
+
 
       for(auto &v : scorors)
       {
@@ -57,22 +60,27 @@ namespace Prompt {
         if(type==Scoror::ENTRY)
         {
           entry_scorors.push_back(v);
+          std::cout << "Added ENTRY type scoror: " << v->getName() << std::endl;
         }
         else if(type==Scoror::PROPAGATE)
         {
           propagate_scorors.push_back(v);
+          std::cout << "Added PROPAGATE type scoror: " << v->getName() << std::endl;
         }
         else if(type==Scoror::EXIT)
         {
           exit_scorors.push_back(v);
+          std::cout << "Added EXIT type scoror: " << v->getName() << std::endl;
         }
         else if(type==Scoror::SURFACE)
         {
           surface_scorors.push_back(v);
+          std::cout << "Added SURFACE type scoror: " << v->getName() << std::endl;
         }
         else if(type==Scoror::ABSORB)
         {
           absorb_scorors.push_back(v);
+          std::cout << "Added ABSORB type scoror: " << v->getName() << std::endl;
         }
         else
           PROMPT_THROW2(BadInput, "unknown scoror type " << type);

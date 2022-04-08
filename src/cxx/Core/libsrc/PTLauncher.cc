@@ -146,8 +146,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
     {
       if(particle.getKillType()==Particle::ABSORB)
       {
-        // std::cout << "Logging ABSORB  " << std::endl;
-        // navman.scoreAbsorb(particle);
+        navman.scoreAbsorb(particle);
       }
     }
 
