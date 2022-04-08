@@ -46,7 +46,7 @@ std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::stri
     double minQ = std::stod(words[5]);
     double maxQ = std::stod(words[6]);
     int numBin = std::stoi(words[7]);
-    return std::make_shared<Prompt::ScororNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin);
+    return std::make_shared<Prompt::ScororNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scoror::ENTRY);
   }
   else if(words[0]=="PSD")
   {

@@ -49,6 +49,7 @@ namespace Prompt {
     double getWeight() { return m_weight; }
     void scaleWeight(double factor) { m_weight *= factor; }
     unsigned getEventID() { return m_eventid; }
+    KillType getKillType() { return m_killtype; }
 
     void kill(KillType t);
     bool isAlive();

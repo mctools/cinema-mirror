@@ -124,6 +124,19 @@ void Prompt::NavManager::scoreSurface(const Vector &pos, double w)
 }
 
 
+void Prompt::NavManager::scoreAbsorb(Prompt::Particle &particle)
+{
+  if(m_matphysscor->absorb_scorors.size())
+  {
+    for(auto &v:m_matphysscor->absorb_scorors)
+    {
+      v->score(particle);
+    }
+  }
+}
+
+
+
 void Prompt::NavManager::scorePropagate(Prompt::Particle &particle, const DeltaParticle &dltpar)
 {
   if(m_matphysscor->propagate_scorors.size())
@@ -200,7 +213,6 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     if(final_ekin==-1.) // fixme: are we sure all -1 means capture??
     {
       particle.kill(Particle::ABSORB);
-      std::cout << "killed" << std::endl;
     }
     else
     {

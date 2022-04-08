@@ -42,6 +42,8 @@ namespace Prompt {
     std::vector< std::shared_ptr<Scoror> >  entry_scorors;
     std::vector< std::shared_ptr<Scoror> >  propagate_scorors;
     std::vector< std::shared_ptr<Scoror> >  exit_scorors;
+    std::vector< std::shared_ptr<Scoror> >  absorb_scorors;
+
 
     void sortScorors()
     {
@@ -67,6 +69,10 @@ namespace Prompt {
         else if(type==Scoror::SURFACE)
         {
           surface_scorors.push_back(v);
+        }
+        else if(type==Scoror::ABSORB)
+        {
+          absorb_scorors.push_back(v);
         }
         else
           PROMPT_THROW2(BadInput, "unknown scoror type " << type);

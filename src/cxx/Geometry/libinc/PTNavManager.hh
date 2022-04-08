@@ -48,9 +48,11 @@ namespace Prompt {
 
     void scoreEntry(Particle &particle);
     void scorePropagate(Particle &particle, const DeltaParticle &dltpar);
-    bool hasPropagateScoror() {return m_matphysscor->propagate_scorors.size(); };
     void scoreExit(Particle &particle);
     void scoreSurface(const Vector &particle, double w);
+    void scoreAbsorb(Particle &particle);
+
+    bool hasPropagateScoror() {return m_matphysscor->propagate_scorors.size(); };
 
     bool hasMirrorPhyiscs();
     bool surfacePhysics(Particle &particle);

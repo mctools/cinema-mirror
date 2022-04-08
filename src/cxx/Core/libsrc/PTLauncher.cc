@@ -130,7 +130,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       //! the next while loop, particle should move in the same volume
       while(navman.proprogateInAVolume(particle, 0) )
       {
-        // score if any scoror is available 
+        // score if any scoror is available
         if(navman.hasPropagateScoror())
         {
           dltpar.calcDeltaParticle(particle);
@@ -140,6 +140,15 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
           m_trajectory.push_back(particle.getPosition());
       }
       navman.scoreExit(particle);
+    }
+
+    if(!navman.exitWorld() && !particle.isAlive())
+    {
+      if(particle.getKillType()==Particle::ABSORB)
+      {
+        // std::cout << "Logging ABSORB  " << std::endl;
+        // navman.scoreAbsorb(particle);
+      }
     }
 
     if(recordTrj)
