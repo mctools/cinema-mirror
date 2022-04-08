@@ -20,9 +20,10 @@
 
 #include "PTParticle.hh"
 
-void Prompt::Particle::kill()
+void Prompt::Particle::kill(KillType t)
 {
   m_alive = false;
+  m_killtype = t;
 }
 
 bool Prompt::Particle::isAlive()

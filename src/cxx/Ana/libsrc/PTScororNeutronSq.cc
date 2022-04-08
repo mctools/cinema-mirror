@@ -51,7 +51,7 @@ void Prompt::ScororNeutronSq::score(Prompt::Particle &particle)
   double q = neutronAngleCosine2Q(angle_cos, ekin, ekin);
   m_hist->fill(q, particle.getWeight());
   if(m_kill)
-    particle.kill();
+    particle.kill(Particle::SCORE);
 }
 
 void Prompt::ScororNeutronSq::score(Prompt::Particle &particle, const DeltaParticle &dltpar)

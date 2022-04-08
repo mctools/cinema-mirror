@@ -28,9 +28,10 @@
 //! Particle is neutron with pgd code of 2112 by defult. Proton (2212) is also supported.
 //! fixme: support Gamma (22) as well.
 namespace Prompt {
-
   class Particle {
     friend class PrimaryGun;
+  public:
+    enum KillType {ABSORB, SCORE, BIAS};
   public:
     Particle();
     Particle(double ekin, const Vector& dir, const Vector& pos);
@@ -49,7 +50,7 @@ namespace Prompt {
     void scaleWeight(double factor) { m_weight *= factor; }
     unsigned getEventID() { return m_eventid; }
 
-    void kill();
+    void kill(KillType t);
     bool isAlive();
 
     virtual double calcSpeed() const;
@@ -62,6 +63,7 @@ namespace Prompt {
     double m_rest_mass;
     bool m_alive;
     unsigned m_eventid, m_id, m_parentid;
+    KillType m_killtype;
   };
 
   struct DeltaParticle {

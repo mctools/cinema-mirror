@@ -74,7 +74,7 @@ bool Prompt::NavManager::surfacePhysics(Particle &particle)
     m_matphysscor->mirrorPhysics->generate(particle.getEKin(),
     particle.getDirection(), eout, ptNorm, scaleWeigh);
     if(eout==-1.)
-      particle.kill();
+      particle.kill(Particle::BIAS);
     particle.setDirection(ptNorm);
     particle.scaleWeight(scaleWeigh);
     return true;
@@ -196,9 +196,12 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     // based on individual xs, stepLength and picked physics
     particle.scaleWeight( m_matphysscor->physics->getScaleWeight(step, true));
     // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
-    
-    if(final_ekin==-1.)
-      particle.kill();
+
+    if(final_ekin==-1.) // fixme: are we sure all -1 means capture??
+    {
+      particle.kill(Particle::ABSORB);
+      std::cout << "killed" << std::endl;
+    }
     else
     {
       particle.setEKin(final_ekin);
