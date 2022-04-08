@@ -28,7 +28,9 @@ namespace Prompt {
 
   class ScororNeutronSq  : public Scoror1D {
   public:
-    ScororNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir, double sourceSampleDist, double qmin, double qmax, unsigned numbin, bool kill=true, bool linear=true);
+    ScororNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
+      double sourceSampleDist, double qmin, double qmax, unsigned numbin,
+      ScororType styp=Scoror::ENTRY, bool linear=true);
     virtual ~ScororNeutronSq();
     virtual void scoreLocal(const Vector &vec, double w) override;
     virtual void score(Particle &particle) override;

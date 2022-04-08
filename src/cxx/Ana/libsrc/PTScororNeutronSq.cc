@@ -21,11 +21,17 @@
 #include "PTScororNeutronSq.hh"
 
 Prompt::ScororNeutronSq::ScororNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, bool kill, bool linear)
-:Scoror1D("ScororNeutronSq_" + name, Scoror::ENTRY, std::make_unique<Hist1D>(qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
-m_sourceSampleDist(sourceSampleDist),
-m_kill(kill)
-{}
+      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScororType stype, bool linear)
+:Scoror1D("ScororNeutronSq_" + name, stype, std::make_unique<Hist1D>(qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
+m_sourceSampleDist(sourceSampleDist)
+{
+  if(stype==Scoror::ENTRY)
+    m_kill=true;
+  else if (stype==Scoror::ABSORB)
+    m_kill=false;
+  else
+    PROMPT_THROW(BadInput, "ScororNeutronSq can only be Scoror::ENTRY or Scoror::ABSORB");
+}
 
 Prompt::ScororNeutronSq::~ScororNeutronSq() {}
 
