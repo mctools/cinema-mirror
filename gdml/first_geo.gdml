@@ -68,7 +68,7 @@
       <materialref ref="Vacuum"/>
       <solidref ref="DetectorSolid"/>
       <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;Sq;0,0,0;0,0,1;-100.;0.5004;49.9996;1000"/>
-      <auxiliary auxtype="Sensitive" auxvalue="PSD;NeutronHistMap;-250;250;100;-250;250;100"/>
+      <auxiliary auxtype="Sensitive" auxvalue="PSD;NeutronHistMap;-250;250;100;-250;250;100;XY"/>
     </volume>
 
     <volume name="World">
