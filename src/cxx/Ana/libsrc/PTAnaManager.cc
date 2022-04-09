@@ -36,6 +36,7 @@ std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::stri
   auto words = split(cfg, ';');
   std::cout << "Creating scoror with config: ";
   std::cout << cfg << "\n";
+  //fixme check number of input config
 
   if(words[0]=="NeutronSq")
   {
@@ -50,11 +51,29 @@ std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::stri
       return std::make_shared<Prompt::ScororNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scoror::ABSORB);
     else if(words[8]=="ENTRY")
       return std::make_shared<Prompt::ScororNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scoror::ENTRY);
+    else
+    {
+      PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScororNeutronSq");
+      return std::make_shared<Prompt::ScororNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scoror::ENTRY);
+    }
   }
   else if(words[0]=="PSD")
   {
-    return std::make_shared<Prompt::ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
-                                          std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]) );
+    if(words[8]=="XY")
+        return std::make_shared<ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
+                                          std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScororPSD::XY );
+    else if(words[8]=="XZ")
+        return std::make_shared<ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
+                                          std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScororPSD::XZ );
+    else if(words[8]=="YZ")
+        return std::make_shared<ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
+                                          std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScororPSD::YZ );
+    else
+    {
+      PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScororPSD");
+      return std::make_shared<ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
+                                        std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScororPSD::YZ );
+    }
   }
   else if(words[0]=="VolFlux")
   {

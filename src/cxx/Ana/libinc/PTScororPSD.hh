@@ -28,11 +28,16 @@ namespace Prompt {
 
   class ScororPSD  : public Scoror2D {
   public:
-    ScororPSD(const std::string &name, double xmin, double xmax, unsigned nxbins, double ymin, double ymax, unsigned nybins);
+    enum ScororType {XY, XZ, YZ};
+  public:
+    ScororPSD(const std::string &name, double xmin, double xmax, unsigned nxbins,
+      double ymin, double ymax, unsigned nybins, ScororType type=XY);
     virtual ~ScororPSD();
     virtual void scoreLocal(const Vector &vec, double w) override;
     virtual void score(Particle &particle) override;
     virtual void score(Particle &particle, const DeltaParticle &dltpar) override;
+  private:
+    ScororType m_type;
   };
 }
 #endif

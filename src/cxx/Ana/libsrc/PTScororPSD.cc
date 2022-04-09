@@ -20,15 +20,25 @@
 
 #include "PTScororPSD.hh"
 
-Prompt::ScororPSD::ScororPSD(const std::string &name, double xmin, double xmax, unsigned nxbins, double ymin, double ymax, unsigned nybins)
-:Scoror2D("ScororPSD_"+name, Scoror::SURFACE, std::make_unique<Hist2D>(xmin, xmax, nxbins, ymin, ymax, nybins))
+Prompt::ScororPSD::ScororPSD(const std::string &name, double xmin, double xmax,
+   unsigned nxbins, double ymin, double ymax, unsigned nybins, ScororType type)
+:Scoror2D("ScororPSD_"+name, Scoror::SURFACE,
+  std::make_unique<Hist2D>(xmin, xmax, nxbins, ymin, ymax, nybins)),
+ m_type(type)
 {}
 
 Prompt::ScororPSD::~ScororPSD() {}
 
 void Prompt::ScororPSD::scoreLocal(const Vector &vec, double w)
 {
-  m_hist->fill(vec.x(), vec.y(), w);
+  if (m_type==XY)
+    m_hist->fill(vec.x(), vec.y(), w);
+  else if (m_type==YZ)
+    m_hist->fill(vec.y(), vec.z(), w);
+  else if (m_type==XZ)
+    m_hist->fill(vec.x(), vec.z(), w);
+  else
+    PROMPT_THROW2(BadInput, m_name << " not support type");
 }
 
 void Prompt::ScororPSD::score(Prompt::Particle &particle)
