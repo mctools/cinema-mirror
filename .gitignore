@@ -1,9 +1,10 @@
 build*
 __pycache__
-gdml
+#gdml
 ptvirenv
 promptbin
 external
+rundir
 
 # Prerequisites
 *.d
