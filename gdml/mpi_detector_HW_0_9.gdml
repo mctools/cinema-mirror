@@ -3,7 +3,7 @@
 
     <userinfo>
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
-      <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;500, 500, -30000, 10, 10, -1000" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="MPIGun;Neutron;500, 500, -30000, 20, 40, 0" />
     </userinfo>
 
     <define>
@@ -74,7 +74,7 @@
     <solids>
         <box lunit="mm" name="WorldBox" x="30000.0" y="30000.0" z="65000.0" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="4.35" rmin="0.0" startphi="0.0" z="13.7633" />
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleVan" rmax="6.0" rmin="4.35" startphi="0.0" z="18.0" />
+        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleVan" rmax="4.64" rmin="4.35" startphi="0.0" z="18.0" />
         <box lunit="mm" name="Module300_L" x="25.4" y="211.2" z="300" />
         <box lunit="mm" name="Module300_G" x="300" y="211.2" z="25.4" />
         <box lunit="mm" name="Module500_L" x="25.4" y="211.2" z="500" />
@@ -285,7 +285,7 @@
                 <position name="P_module10504" unit="mm" x="-1174.8288960730047" y="13.200000000000003" z="-59.71411523061067" />
                 <rotation name="R_module10504" unit="deg" x="-0.0" y="-76.393" z="-0.0" />
                 <auxiliary auxtype="name" auxvalue="module10504" />
-                
+
             </physvol>
 
 

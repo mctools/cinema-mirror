@@ -25,9 +25,6 @@
 #include <VecGeom/gdml/Middleware.h>
 #include <VecGeom/gdml/Frontend.h>
 #include <VecGeom/volumes/PlacedVolume.h>
-
-
-
 #include "PTAnaManager.hh"
 
 #include "PTUtils.hh"
@@ -35,6 +32,7 @@
 #include "PTSimpleThermalGun.hh"
 #include "PTUniModeratorGun.hh"
 #include "PTNeutron.hh"
+#include "PTMPIGun.hh"
 
 Prompt::GeoManager::GeoManager()
 :m_gun(nullptr)
@@ -100,6 +98,13 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
           std::array<double, 6> {std::stod(positions[0]), std::stod(positions[1]), std::stod(positions[2]),
                                  std::stod(positions[3]), std::stod(positions[4]), std::stod(positions[5])});
       }
+      else if(words[0]=="MPIGun")
+      {
+        auto positions = split(words[2], ',');
+        m_gun = std::make_shared<MPIGun>(Neutron(),
+          std::array<double, 6> {std::stod(positions[0]), std::stod(positions[1]), std::stod(positions[2]),
+                                 std::stod(positions[3]), std::stod(positions[4]), std::stod(positions[5])});
+      }
       else if(words[0]=="UniModeratorGun")
       {
         double wl0 = std::stod(words[2]);
@@ -109,7 +114,6 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
         m_gun = std::make_shared<UniModeratorGun>(Neutron(), wl0, wl_dlt,
           std::array<double, 6> {std::stod(positions[0]), std::stod(positions[1]), std::stod(positions[2]),
                                  std::stod(positions[3]), std::stod(positions[4]), std::stod(positions[5])});
-
       }
       else if(words[0]=="SimpleThermalGun")
       {
@@ -117,7 +121,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
         m_gun = std::make_shared<SimpleThermalGun>(Neutron(), ekin, string2vec(words[3]), string2vec(words[4]));
       }
       else
-        PROMPT_THROW2(BadInput, "MaxwellianGun only for the moement");
+        PROMPT_THROW2(BadInput, "No such gun");
     }
   }
 
@@ -145,7 +149,6 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     {
       PROMPT_THROW2(CalcError, "volume ID " << volID << " appear more than once")
     }
-
 
     // 1. filter out material-empty volume
     auto mat_iter = volumeMatMap.find(volID);
