@@ -18,6 +18,15 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+inline constexpr double Prompt::ptclamp(double val, double low, double up)
+{
+  pt_assert(up>=low);
+  //NB: C++17 has std::clamp, not sure if it is more efficient. The version here
+  //was checked to produce just two instructions (do NOT change argument order
+  //here, or it will generate more instructions).
+  return std::min(std::max(val,low),up);
+}
+
 inline constexpr bool Prompt::floateq(double a, double b, double rtol, double atol)
 {
   return std::abs(a-b) <= 0.5 * rtol * (std::abs(a) + std::abs(b)) + atol;
@@ -65,4 +74,26 @@ inline constexpr double Prompt::ekin2wlsqinv( double ekin)
 {
   //eV to 1/angstrom^2
   return ekin * 12.22430978582345950656;//constant is 1/0.081804209605330899
+}
+
+
+inline Prompt::StableSum::StableSum()
+  : m_sum(0.0), m_correction(0.0)
+{
+}
+
+inline Prompt::StableSum::~StableSum()
+{
+}
+
+inline void Prompt::StableSum::add( double x )
+{
+  double t = m_sum + x;
+  m_correction += std::abs(m_sum)>=std::abs(x)  ? (m_sum-t)+x : (x-t)+m_sum;
+  m_sum = t;
+}
+
+inline double Prompt::StableSum::sum() const
+{
+  return m_sum + m_correction;
 }

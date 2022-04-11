@@ -24,6 +24,7 @@
 #include "PromptCore.hh"
 
 namespace Prompt {
+  constexpr double ptclamp(double val, double low, double up);
   constexpr bool floateq(double a, double b, double rtol=1e-14, double atol=1e-14);
   std::vector<double> logspace(double start, double stop, unsigned num);
   std::vector<double> linspace(double start, double stop, unsigned num);
@@ -35,6 +36,18 @@ namespace Prompt {
   constexpr double wlsq2ekin( double wlsq );
   constexpr double ekin2wlsq( double ekin);
   constexpr double ekin2wlsqinv( double ekin);
+
+  class StableSum {
+  public:
+    //Numerically stable summation, based on Neumaier's
+    //algorithm (doi:10.1002/zamm.19740540106).
+    StableSum();
+    ~StableSum();
+    void add(double x);
+    double sum() const;
+  private:
+    double m_sum, m_correction;
+  };
 }
 
 #include "PTMath.icc"
