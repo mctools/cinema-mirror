@@ -19,6 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTScororNeutronSq.hh"
+#include "PTRandCanonical.hh"
 
 Prompt::ScororNeutronSq::ScororNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScororType stype, bool linear)
@@ -31,8 +32,8 @@ m_sourceSampleDist(sourceSampleDist)
     m_kill=false;
   else
     PROMPT_THROW(BadInput, "ScororNeutronSq can only be Scoror::ENTRY or Scoror::ABSORB");
-
-    m_dataout.open("ScororNeutronSq_" + name+".wgt");
+    auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
+    m_dataout.open("ScororNeutronSq_" + name + "_seed"+std::to_string(seed)+".wgt");
 }
 
 Prompt::ScororNeutronSq::~ScororNeutronSq()
