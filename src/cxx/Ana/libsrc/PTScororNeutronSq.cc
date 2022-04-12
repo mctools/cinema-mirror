@@ -49,6 +49,13 @@ void Prompt::ScororNeutronSq::score(Prompt::Particle &particle)
   double ekin = 0.5*const_neutron_mass_evc2*v*v;
   //static approximation
   double q = neutronAngleCosine2Q(angle_cos, ekin, ekin);
+  // if(q<5)
+  // {
+  //   double qtrue = neutronAngleCosine2Q(angle_cos,  particle.getEKin0(), particle.getEKin());
+  //   printf("Qe, Qtrue; Ekine , Ekin0 , Ekin; x y z\n");
+  //   printf("%f, %f, %.02e, %.02e, %.02e; %.02f %.02f %.02f\n\n", q, qtrue, ekin, particle.getEKin0(), particle.getEKin()
+  //   , particle.getPosition().x(), particle.getPosition().y(), particle.getPosition().z());
+  // }
   m_hist->fill(q, particle.getWeight());
   if(m_kill)
     particle.kill(Particle::SCORE);
