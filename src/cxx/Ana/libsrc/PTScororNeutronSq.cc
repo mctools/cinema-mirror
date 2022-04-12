@@ -31,9 +31,14 @@ m_sourceSampleDist(sourceSampleDist)
     m_kill=false;
   else
     PROMPT_THROW(BadInput, "ScororNeutronSq can only be Scoror::ENTRY or Scoror::ABSORB");
+
+    m_dataout.open("ScororNeutronSq_" + name+".wgt");
 }
 
-Prompt::ScororNeutronSq::~ScororNeutronSq() {}
+Prompt::ScororNeutronSq::~ScororNeutronSq()
+{
+  m_dataout.close();
+}
 
 void Prompt::ScororNeutronSq::scoreLocal(const Vector &, double)
 {
@@ -49,13 +54,24 @@ void Prompt::ScororNeutronSq::score(Prompt::Particle &particle)
   double ekin = 0.5*const_neutron_mass_evc2*v*v;
   //static approximation
   double q = neutronAngleCosine2Q(angle_cos, ekin, ekin);
-  // if(q<5)
-  // {
-  //   double qtrue = neutronAngleCosine2Q(angle_cos,  particle.getEKin0(), particle.getEKin());
-  //   printf("Qe, Qtrue; Ekine , Ekin0 , Ekin; x y z\n");
-  //   printf("%f, %f, %.02e, %.02e, %.02e; %.02f %.02f %.02f\n\n", q, qtrue, ekin, particle.getEKin0(), particle.getEKin()
-  //   , particle.getPosition().x(), particle.getPosition().y(), particle.getPosition().z());
-  // }
+
+  double qtrue = neutronAngleCosine2Q(angle_cos,  particle.getEKin0(), particle.getEKin());
+  double tof_us = particle.getTime()*1e6;
+  m_dataout << tof_us << " "
+  <<  particle.getPosition().x() << " "
+  <<  particle.getPosition().y() << " "
+  <<  particle.getPosition().z() << " "
+  << q << " "
+  << qtrue << " "
+  << ekin << " "
+  << particle.getEKin0() << " "
+  << particle.getEKin() << " "
+  << particle.getWeight() <<  "\n";
+
+  // printf("Qe, Qtrue; Ekine , Ekin0 , Ekin; TOF; x y z\n");
+  // printf("%f, %f, %.02e, %.02e, %.02e;  %.02f; %.02f %.02f %.02f\n\n", q, qtrue, ekin, particle.getEKin0(), particle.getEKin(),
+  // tof_us, particle.getPosition().x(), particle.getPosition().y(), particle.getPosition().z());
+
   m_hist->fill(q, particle.getWeight());
   if(m_kill)
     particle.kill(Particle::SCORE);

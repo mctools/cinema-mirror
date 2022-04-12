@@ -23,6 +23,7 @@
 
 #include "PromptCore.hh"
 #include "PTScoror.hh"
+#include <fstream>
 
 namespace Prompt {
 
@@ -39,6 +40,7 @@ namespace Prompt {
     const Vector m_samplePos, m_refDir;
     const double m_sourceSampleDist;
     bool m_kill;
+    std::ofstream m_dataout;
   };
 }
 #endif
