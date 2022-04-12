@@ -270,12 +270,12 @@
                 <auxiliary auxtype="name" auxvalue="module10701" />
             </physvol>
 
-            <physvol name="module10801">
+            <!-- <physvol name="module10801">
                 <volumeref ref="LV_Box_Module300" />
                 <position name="P_module10801" unit="mm" x="363.988798" y="-307.79999999999995" z="-1238.990777" />
                 <rotation name="R_module10801" unit="deg" x="0.0" y="0.0" z="0.0" />
                 <auxiliary auxtype="name" auxvalue="module10801" />
-            </physvol>
+            </physvol> -->
 
 
             <physvol name="module10504">
@@ -287,12 +287,12 @@
             </physvol>
 
 
-            <physvol name="module11004">
+            <!-- <physvol name="module11004">
                 <volumeref ref="LV_Box_Module500" />
                 <position name="P_module11004" unit="mm" x="1174.8262974655179" y="13.200000000000003" z="-59.71348558252896" />
                 <rotation name="R_module11004" unit="deg" x="-0.0" y="76.39300000000004" z="-0.0" />
                 <auxiliary auxtype="name" auxvalue="module11004" />
-            </physvol>
+            </physvol> -->
         </volume>
     </structure>
 
