@@ -24,6 +24,7 @@
 Prompt::Particle Prompt::PrimaryGun::generate()
 {
   sampleEnergy(m_ekin);
+  m_ekin0=m_ekin;
   samplePosDir(m_pos, m_dir);
   m_eventid++;
   m_weight=1.;

@@ -82,6 +82,7 @@ void Prompt::Hist2D::save(const std::string &filename) const
   ofs.close();
 
   char buffer [500];
+  //fixme: add xy to dimansion
   int n =sprintf (buffer,
     "import numpy as np\n"
     "import matplotlib.pyplot as plt\n"

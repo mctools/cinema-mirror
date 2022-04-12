@@ -46,6 +46,7 @@ namespace Prompt {
     Vector &getPosition() { return m_pos; }
     double getTime() { return m_time; }
     double getEKin() { return m_ekin; }
+    double getEKin0() { return m_ekin0; }
     double getWeight() { return m_weight; }
     void scaleWeight(double factor) { m_weight *= factor; }
     unsigned getEventID() { return m_eventid; }
@@ -57,7 +58,7 @@ namespace Prompt {
     virtual double calcSpeed() const;
   protected:
     friend class DeltaParticle;
-    double m_ekin, m_time;
+    double m_ekin0, m_ekin, m_time;
     Vector m_dir, m_pos;
     unsigned m_pgd;
     double m_weight;
@@ -90,12 +91,12 @@ namespace Prompt {
 
 
 inline Prompt::Particle::Particle()
-  :m_ekin(0.), m_time(0.), m_dir(), m_pos(), m_pgd(0),
+  :m_ekin0(0.), m_ekin(0.), m_time(0.), m_dir(), m_pos(), m_pgd(0),
   m_weight(1.), m_rest_mass(0.), m_alive(true), m_eventid(0), m_id(0), m_parentid(0)
 {}
 
 inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& pos)
-  :m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0),
+  :m_ekin0(ekin), m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0),
   m_weight(1.), m_rest_mass(0), m_alive(true), m_eventid(0), m_id(0), m_parentid(0)
 {
   m_dir.normalise();

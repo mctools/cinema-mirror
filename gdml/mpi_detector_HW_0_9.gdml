@@ -154,6 +154,7 @@
             <solidref ref="Module300_L" />
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
+            <auxiliary auxtype="Sensitive" auxvalue="PSD;NeutronHistMapM300;-170;170;68;-125;125;50;YZ"/>
             <physvol name="LV_Tube300_1">
                 <volumeref ref="LV_Tube300" />
                 <positionref ref="P_LV_Tube_1" />
@@ -192,6 +193,7 @@
             <solidref ref="Module500_L" />
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
+            <auxiliary auxtype="Sensitive" auxvalue="PSD;NeutronHistMapM500;-270;270;108;-125;125;50;YZ"/>
             <physvol name="LV_Tube500_1">
                 <volumeref ref="LV_Tube500" />
                 <positionref ref="P_LV_Tube_1" />
@@ -230,8 +232,6 @@
             <solidref ref="Module300_G" />
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
-            <auxiliary auxtype="Sensitive" auxvalue="PSD;NeutronHistMapM300;-170;170;50;-125;125;50;XY"/>
-
             <physvol name="Module300_Local">
                 <volumeref ref="LV_Box_Module300_L" />
                 <rotationref ref="R_LV_Module" />
@@ -242,8 +242,6 @@
             <solidref ref="Module500_G" />
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
-            <auxiliary auxtype="Sensitive" auxvalue="PSD;NeutronHistMapM500;-275;275;50;-125;125;50;XY"/>
-
             <physvol name="Module500_Local">
                 <volumeref ref="LV_Box_Module500_L" />
                 <rotationref ref="R_LV_Module" />
