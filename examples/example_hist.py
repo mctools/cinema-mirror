@@ -6,7 +6,7 @@
 ##                                                                            ##
 ##  Copyright 2021-2022 Prompt developers                                     ##
 ##                                                                            ##
-##  Licensed under the Apache License, Version 2.0 (the "License")           ##
+##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
 ##  You may obtain a copy of the License at                                   ##
 ##                                                                            ##
@@ -20,28 +20,26 @@
 ##                                                                            ##
 ################################################################################
 
-deg = 0.017453292519943295
+import matplotlib.pyplot as plt
+import numpy as np
+from Prompt.Math.Hist import Hist1D
+from Prompt.Math import *
+import Prompt.Math.Units as Units
 
-eV = 1.
-MeV = 1.e6*eV
-GeV = 1.e9*eV
-keV = 1.e3*eV
-meV = 1.e-3*eV
+#converters
+ekin = 0.0253*Units.eV
+angle = 45.*Units.deg
+eout = 0.03*Units.eV
+wl = 1.8*Units.Aa
 
-s = 1.
-ms = 1.e-3*s
-ns = 1.e-9*s
-ps = 1.e-12*s
-fs = 1.e-15*s
+print(2*np.pi/eKin2k(ekin))
+print(angleCosine2Q(np.cos(angle), ekin, eout))
+print(wl2ekin(wl))
+print(ekin2v(ekin))
 
-m = 1e10
-Aa = 1e-10*m
-mm = 1e-2*m
-cm = 10*mm
+num = 100000
+hist = Hist1D(0.,1.2,50)
+hist.fillmany(x=np.random.random(num), weight=np.random.random(num))
 
-Aa3 = Aa*Aa*Aa
-barn = 1e-28*m*m
-
-g = 1.
-kg = 1.e3*g
-kelvin = 1.
+plt.plot(hist.getEdge()[:-1], hist.getWeight())
+plt.show()
