@@ -27,6 +27,14 @@
 extern "C" {
 #endif
 
+
+// Converters
+double pt_eKin2k(double ekin) { return Prompt::neutronEKin2k(ekin); }
+double pt_angleCosine2Q(double anglecosine, double enin_eV, double enout_eV) {  return Prompt::neutronAngleCosine2Q(anglecosine, enin_eV, enout_eV); }
+double pt_wl2ekin( double wl) { return Prompt::wl2ekin(wl); }
+double pt_ekin2wl( double ekin) { return Prompt::ekin2wl(ekin); }
+double pt_ekin2speed( double ekin) { return std::sqrt(2*ekin/Prompt::const_neutron_mass_evc2);}
+
 // random
 double pt_rand_generate();
 

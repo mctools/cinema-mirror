@@ -20,39 +20,11 @@
 ##                                                                            ##
 ################################################################################
 
-from .Interface import *
-import numpy as np
-
-_pt_Hist1D_new = importFunc('pt_Hist1D_new', type_voidp, [type_dbl, type_dbl, type_uint, type_bool])
-_pt_Hist1D_delete = importFunc('pt_Hist1D_delete', None, [type_voidp])
-_pt_Hist1D_getEdge = importFunc('pt_Hist1D_getEdge', None, [type_voidp, type_npdbl1d])
-_pt_Hist1D_getWeight = importFunc('pt_Hist1D_getWeight', None, [type_voidp, type_npdbl1d])
-_pt_Hist1D_fill = importFunc('pt_Hist1D_fill', None, [type_voidp, type_dbl, type_dbl])
-_pt_Hist1D_fill_many = importFunc('pt_Hist1D_fillmany', None, [type_voidp, type_sizet, type_npdbl1d, type_npdbl1d])
+from Interface import *
 
 
-class Hist1D():
-    def __init__(self, xmin, ylim, num, linear=True):
-        self.cobj = _pt_Hist1D_new(xmin, ylim, num, linear)
-        self.numbin = num
-
-    def __del__(self):
-        _pt_Hist1D_delete(self.cobj)
-
-    def getEdge(self):
-        edge = np.zeros(self.numbin+1)
-        _pt_Hist1D_getEdge(self.cobj, edge)
-        return edge
-
-    def getWeight(self):
-        w = np.zeros(self.numbin)
-        _pt_Hist1D_getWeight(self.cobj, w)
-        return w
-
-    def fill(self, x, weight):
-        _pt_Hist1D_fill(self.cobj, x, weight)
-
-    def fillmany(self, x, weight):
-        if(x.size !=weight.size):
-            raise RunTimeError('fillnamy different size')
-        _pt_Hist1D_fill_many(self.cobj, x.size, x, weight )
+eKin2k = importFunc('pt_eKin2k', type_dbl, [type_dbl] )
+angleCosine2Q = importFunc('pt_angleCosine2Q', type_dbl, [type_dbl, type_dbl, type_dbl] )
+wl2ekin = importFunc('pt_wl2ekin', type_dbl, [type_dbl] )
+ekin2wl = importFunc('pt_ekin2wl', type_dbl, [type_dbl] )
+ekin2v = importFunc('pt_ekin2speed', type_dbl, [type_dbl] )

@@ -19,11 +19,7 @@
 ##  limitations under the License.                                            ##
 ##                                                                            ##
 ################################################################################
+from Interface import *
 
-#
-# import time
-#
-from .Launcher import Launcher as Launcher
-from .Mesh import Mesh as Mesh
-from .Visualiser import Visualiser as Visualiser
-from .Math.Hist import Hist1D as Hist1D
+
+a=1

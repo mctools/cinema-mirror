@@ -6,7 +6,7 @@
 ##                                                                            ##
 ##  Copyright 2021-2022 Prompt developers                                     ##
 ##                                                                            ##
-##  Licensed under the Apache License, Version 2.0 (the "License");           ##
+##  Licensed under the Apache License, Version 2.0 (the "License")           ##
 ##  you may not use this file except in compliance with the License.          ##
 ##  You may obtain a copy of the License at                                   ##
 ##                                                                            ##
@@ -20,10 +20,28 @@
 ##                                                                            ##
 ################################################################################
 
-#
-# import time
-#
-from .Launcher import Launcher as Launcher
-from .Mesh import Mesh as Mesh
-from .Visualiser import Visualiser as Visualiser
-from .Math.Hist import Hist1D as Hist1D
+deg = 0.017453292519943295
+
+eV = 1.
+MeV = 1.e6*eV
+GeV = 1.e9*eV
+keV = 1.e3*eV
+meV = 1.e-3*eV
+
+s = 1.
+ms = 1.e-3*s
+ns = 1.e-9*s
+ps = 1.e-12*s
+fs = 1.e-15*s
+
+mm = 1.
+cm = 10*mm
+m = 1e3*mm
+Aa = 1e-10*m
+
+Aa3 = Aa*Aa*Aa
+barn = 1e-28*m*m
+
+g = 1.
+kg = 1.e3*g
+kelvin = 1.

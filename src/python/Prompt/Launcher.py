@@ -20,7 +20,7 @@
 ##                                                                            ##
 ################################################################################
 
-from .Interface import *
+from Interface import *
 
 _pt_Launcher_getInstance = importFunc('pt_Launcher_getInstance', type_voidp, [] )
 _pt_Launcher_setSeed = importFunc('pt_Launcher_setSeed', None, [type_voidp, type_sizet] )
