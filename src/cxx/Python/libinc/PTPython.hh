@@ -39,6 +39,15 @@ size_t pt_Launcher_getTrajSize(void* obj);
 void pt_Launcher_getTrajectory(void* obj, double *trj);
 void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj);
 
+// Prompt::Hist1D
+void* pt_Hist1D_new(double xmin, double xmax, unsigned nbins, bool linear);
+void pt_Hist1D_delete(void* obj);
+void pt_Hist1D_getEdge(void* obj, double* edge);
+void pt_Hist1D_getWeight(void* obj, double* w);
+void pt_Hist1D_fill(void* obj, double val, double weight);
+void pt_Hist1D_fillmany(void* obj, size_t n, double* val, double* weight);
+
+
 #ifdef __cplusplus
 }
 #endif

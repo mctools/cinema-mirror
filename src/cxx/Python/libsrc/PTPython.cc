@@ -20,13 +20,14 @@
 
 #include "PTPython.hh"
 #include "PTLauncher.hh"
+#include "PTHist1D.hh"
 
 namespace pt = Prompt;
 
 
 double pt_rand_generate()
 {
-  return pt::Singleton<pt::SingletonPTRand>::getInstance().generate();  
+  return pt::Singleton<pt::SingletonPTRand>::getInstance().generate();
 }
 
 void* pt_Launcher_getInstance()
@@ -68,4 +69,44 @@ void pt_Launcher_getTrajectory(void* obj, double *trj)
 void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj)
 {
   static_cast<pt::Launcher *>(obj)->go(numParticle, printPrecent, recordTrj);
+}
+
+
+void* pt_Hist1D_new(double xmin, double xmax, unsigned nbins, bool linear)
+{
+    return static_cast<void *>(new pt::Hist1D(xmin, xmax, nbins, linear));
+}
+
+void pt_Hist1D_getEdge(void* obj, double* edge)
+{
+  auto edgevec = static_cast<pt::Hist1D *>(obj)->getEdge();
+  for(size_t i=0;i<edgevec.size();i++)
+  {
+    edge[i]=edgevec[i];
+  }
+}
+
+void pt_Hist1D_getWeight(void* obj, double* w)
+{
+  auto weight = static_cast<pt::Hist1D *>(obj)->getRaw();
+  for(size_t i=0;i<weight.size();i++)
+  {
+    w[i] = weight[i];
+  }
+}
+
+void pt_Hist1D_fill(void* obj, double val, double weight)
+{
+  static_cast<pt::Hist1D *>(obj)->fill(val, weight);
+}
+
+void pt_Hist1D_fillmany(void* obj, size_t n, double* val, double* weight)
+{
+  for(size_t i=0;i<n;i++)
+    static_cast<pt::Hist1D *>(obj)->fill(val[i], weight[i]);
+}
+
+void pt_Hist1D_delete(void* obj)
+{
+  delete static_cast<pt::Hist1D *>(obj);
 }

@@ -19,36 +19,3 @@
 ##  limitations under the License.                                            ##
 ##                                                                            ##
 ################################################################################
-
-import ctypes
-import numpy as np
-import glob
-import os
-
-type_sizet, type_sizetp = (ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t))
-type_bool = ctypes.c_bool
-type_int, type_intp, type_uint, type_uintp, type_dbl, _dblp, type_cstr, type_voidp = (ctypes.c_int, ctypes.POINTER(ctypes.c_int),
-                                                   ctypes.c_uint,ctypes.POINTER(ctypes.c_uint), ctypes.c_double,
-                                                   ctypes.POINTER(ctypes.c_double), ctypes.c_char_p, ctypes.c_void_p)
-type_npdbl1d=np.ctypeslib.ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS')
-type_npdbl2d=np.ctypeslib.ndpointer(dtype=np.float64,ndim=2,flags='C_CONTIGUOUS')
-type_npdbl3d=np.ctypeslib.ndpointer(dtype=np.float64,ndim=3,flags='C_CONTIGUOUS')
-type_npszt1d=np.ctypeslib.ndpointer(dtype=ctypes.c_size_t,ndim=1,flags='C_CONTIGUOUS')
-
-def _getPromptLib():
-    _ptpath = os.getenv('PTPATH')
-    if _ptpath is None:
-        raise IOError('PTPATH enviroment is not set')
-    libfile = glob.glob(_ptpath +'/promptbin/src/cxx/libprompt_core.so')[0]
-    return ctypes.CDLL(libfile), _ptpath
-
-_taklib, _ptpath = _getPromptLib()
-
-def _findData(fileName):
-    pass
-
-def importFunc(funcName, resType, argType):
-    func = getattr(_taklib, funcName)
-    func.restype = resType
-    func.argtypes = argType
-    return func

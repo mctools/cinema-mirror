@@ -20,35 +20,39 @@
 ##                                                                            ##
 ################################################################################
 
-import ctypes
+from .Interface import *
 import numpy as np
-import glob
-import os
 
-type_sizet, type_sizetp = (ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t))
-type_bool = ctypes.c_bool
-type_int, type_intp, type_uint, type_uintp, type_dbl, _dblp, type_cstr, type_voidp = (ctypes.c_int, ctypes.POINTER(ctypes.c_int),
-                                                   ctypes.c_uint,ctypes.POINTER(ctypes.c_uint), ctypes.c_double,
-                                                   ctypes.POINTER(ctypes.c_double), ctypes.c_char_p, ctypes.c_void_p)
-type_npdbl1d=np.ctypeslib.ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS')
-type_npdbl2d=np.ctypeslib.ndpointer(dtype=np.float64,ndim=2,flags='C_CONTIGUOUS')
-type_npdbl3d=np.ctypeslib.ndpointer(dtype=np.float64,ndim=3,flags='C_CONTIGUOUS')
-type_npszt1d=np.ctypeslib.ndpointer(dtype=ctypes.c_size_t,ndim=1,flags='C_CONTIGUOUS')
+_pt_Hist1D_new = importFunc('pt_Hist1D_new', type_voidp, [type_dbl, type_dbl, type_uint, type_bool])
+_pt_Hist1D_delete = importFunc('pt_Hist1D_delete', None, [type_voidp])
+_pt_Hist1D_getEdge = importFunc('pt_Hist1D_getEdge', None, [type_voidp, type_npdbl1d])
+_pt_Hist1D_getWeight = importFunc('pt_Hist1D_getWeight', None, [type_voidp, type_npdbl1d])
+_pt_Hist1D_fill = importFunc('pt_Hist1D_fill', None, [type_voidp, type_dbl, type_dbl])
+_pt_Hist1D_fill_many = importFunc('pt_Hist1D_fillmany', None, [type_voidp, type_sizet, type_npdbl1d, type_npdbl1d])
 
-def _getPromptLib():
-    _ptpath = os.getenv('PTPATH')
-    if _ptpath is None:
-        raise IOError('PTPATH enviroment is not set')
-    libfile = glob.glob(_ptpath +'/promptbin/src/cxx/libprompt_core.so')[0]
-    return ctypes.CDLL(libfile), _ptpath
 
-_taklib, _ptpath = _getPromptLib()
+class Hist1D():
+    def __init__(self, xmin, ylim, num, linear=True):
+        self.cobj = _pt_Hist1D_new(xmin, ylim, num, linear)
+        self.numbin = num
 
-def _findData(fileName):
-    pass
+    def __del__(self):
+        _pt_Hist1D_delete(self.cobj)
 
-def importFunc(funcName, resType, argType):
-    func = getattr(_taklib, funcName)
-    func.restype = resType
-    func.argtypes = argType
-    return func
+    def getEdge(self):
+        edge = np.zeros(self.numbin+1)
+        _pt_Hist1D_getEdge(self.cobj, edge)
+        return edge
+
+    def getWeight(self):
+        w = np.zeros(self.numbin)
+        _pt_Hist1D_getWeight(self.cobj, w)
+        return w
+
+    def fill(self, x, weight):
+        _pt_Hist1D_fill(self.cobj, x, weight)
+
+    def fillmany(self, x, weight):
+        if(x.size !=weight.size):
+            raise RunTimeError('fillnamy different size')
+        _pt_Hist1D_fill_many(self.cobj, x.size, x, weight )
