@@ -82,7 +82,7 @@ if [ ! -f $PTPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
   fi
 fi
 
-if [ -f $PTPATH/src/python/prompt/__init__.py ]; then
+if [ -f $PTPATH/src/python/Prompt/__init__.py ]; then
   export PYTHONPATH="$PTPATH/src/python:$PYTHONPATH"
   echo "Added prompt python module into path"
 else
