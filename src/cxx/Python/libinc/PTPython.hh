@@ -29,11 +29,11 @@ extern "C" {
 
 
 // Converters
-double pt_eKin2k(double ekin) { return Prompt::neutronEKin2k(ekin); }
-double pt_angleCosine2Q(double anglecosine, double enin_eV, double enout_eV) {  return Prompt::neutronAngleCosine2Q(anglecosine, enin_eV, enout_eV); }
-double pt_wl2ekin( double wl) { return Prompt::wl2ekin(wl); }
-double pt_ekin2wl( double ekin) { return Prompt::ekin2wl(ekin); }
-double pt_ekin2speed( double ekin) { return std::sqrt(2*ekin/Prompt::const_neutron_mass_evc2);}
+double pt_eKin2k(double ekin);
+double pt_angleCosine2Q(double anglecosine, double enin_eV, double enout_eV);
+double pt_wl2ekin( double wl);
+double pt_ekin2wl( double ekin) ;
+double pt_ekin2speed( double ekin);
 
 // random
 double pt_rand_generate();
@@ -54,6 +54,14 @@ void pt_Hist1D_getEdge(void* obj, double* edge);
 void pt_Hist1D_getWeight(void* obj, double* w);
 void pt_Hist1D_fill(void* obj, double val, double weight);
 void pt_Hist1D_fillmany(void* obj, size_t n, double* val, double* weight);
+
+// Prompt::Hist2D
+void* pt_Hist2D_new(double xmin, double xmax, unsigned nxbins,
+                    double ymin, double ymax, unsigned nybins);
+void pt_Hist2D_delete(void* obj);
+void pt_Hist2D_getWeight(void* obj, double* w);
+void pt_Hist2D_fill(void* obj, double xval, double yval, double weight);
+void pt_Hist2D_fillmany(void* obj, size_t n, double* xval, double* yval, double* weight);
 
 
 #ifdef __cplusplus
