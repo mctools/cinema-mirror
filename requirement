@@ -1,3 +1,7 @@
+#required packages for Prompt visualisation
 pyvista
 pyvistaqt
 matplotlib
+
+#required packages for post-analysis
+scipy
