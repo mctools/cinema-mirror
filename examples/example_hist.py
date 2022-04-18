@@ -22,7 +22,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from Prompt.Math.Hist import Hist1D
+from Prompt.Math.Hist import Hist1D, Hist2D
 from Prompt.Math import *
 import Prompt.Math.Units as Units
 
@@ -40,6 +40,14 @@ print(ekin2v(ekin))
 num = 100000
 hist = Hist1D(0.,1.2,50)
 hist.fillmany(x=np.random.random(num), weight=np.random.random(num))
+edge = hist.getEdge()
+weight = hist.getWeight()
+hist.plot()
 
-plt.plot(hist.getEdge()[:-1], hist.getWeight())
+
+hist2d = Hist2D(0.,1.,50, 0.,1,100)
+hist2d.fill(0.2, 0.1)
+
+hist2d.plot()
+
 plt.show()

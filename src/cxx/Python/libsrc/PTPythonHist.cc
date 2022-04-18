@@ -95,5 +95,5 @@ void pt_Hist2D_fill(void* obj, double xval, double yval, double weight)
 void pt_Hist2D_fillmany(void* obj, size_t n, double* xval, double* yval, double* weight)
 {
   for(size_t i=0;i<n;i++)
-    static_cast<pt::Hist2D *>(obj)->fill(xval[i], yval[i], weight[i]);  
+    static_cast<pt::Hist2D *>(obj)->fill(xval[i], yval[i], weight[i]);
 }
