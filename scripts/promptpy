@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
-from prompt import Launcher, Visualiser
+from Prompt import Launcher, Visualiser
 import matplotlib.pyplot as plt
 import numpy as np
 
 l = Launcher()
 l.setSeed(100)
-l.loadGeometry("../gdml/mpi_detector_LW_0_1.gdml")
+l.loadGeometry("../gdml/totScat2022.gdml")
 # l.loadGeometry("../gdml/mpi_detector.gdml");
 #l.loadGeometry("../gdml/guide_1.gdml");
 # l.loadGeometry("../gdml/first_geo.gdml");
+#l.loadGeometry("../gdml/simple_geo.gdml")
+#v = Visualiser(['DetectorSolid'], printWorld=True)
 v = Visualiser(['Tube300', 'Tube500', '300_L', '500_L'], printWorld=True)
 # v = Visualiser(['LV_Guider1', 'Tube500', '300_L', '500_L'], printWorld=True)
 
