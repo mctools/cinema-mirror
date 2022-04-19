@@ -19,3 +19,6 @@
 ##  limitations under the License.                                            ##
 ##                                                                            ##
 ################################################################################
+
+from .DataLoader import DataLoader as DataLoader
+from .DataLoader import IDFLoader as IDFLoader

@@ -22,8 +22,30 @@
 
 from Interface import *
 
+#!/usr/bin/env python3
+import numpy as np
+import h5py
+import glob, os
+
+def readKeys(content, file):
+    try:
+        for key in file.keys():
+            content.append(file[key].name)
+            subfile=file.get(file[key].name)
+            readKeys(content,subfile)
+    except AttributeError as e:
+        print(e)
+
+
+class IDFLoader():
+    def __init__(self, dir):
+        self.dict = {}
+        for file in glob.glob(dir+'/*.txt'):
+            self.dict[os.path.basename(file)] = np.loadtxt(file)
+
+
 class DataLoader():
-    def __init__(self):
+    def __init__(self, fname):
         self.tof = 1 #vector
         self.pid = 1 #vector
         self.tofpidMat = 1 #matrix
@@ -32,3 +54,15 @@ class DataLoader():
         self.protonCharge = 1 #vector
         self.distMod2Monitor = 1 #vector
         self.distMod2Sample =1 #double
+
+        file_content=[]
+        hf=h5py.File(fname,'r')
+        readKeys(file_content, hf)
+        for var in file_content:
+            print(var)
+
+        module10203_hist  =  hf['/csns/instrument/module10203/histogram_data'][()]
+        module10203_pixel =  hf['/csns/instrument/module10203/pixel_id'][()]
+        module10203_tof   =  hf['/csns/instrument/module10203/time_of_flight'][()]
+        print(module10203_hist.shape, module10203_pixel.shape, module10203_tof.shape)
+        hf.close()

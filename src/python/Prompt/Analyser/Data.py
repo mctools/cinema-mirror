@@ -103,4 +103,4 @@ class SampleData(RunData):
         if bkgRun:
             self -= bkgRun
         if holderRun:
-            self -= bkgRun
+            self -= holderRun
