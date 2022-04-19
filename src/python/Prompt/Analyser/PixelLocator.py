@@ -20,12 +20,21 @@
 ##                                                                            ##
 ################################################################################
 
-from Interface import *
+from scipy.spatial import KDTree
+points = np.array([[0,0,1],[0,1,0],[1,0,0]])
+tree = KDTree(points)
+distanace, idx = tree.query([[0, 0, 1.1], [0, 0, 0.1]], k=1)
+print(distanace)
+print(idx)
 
-class RunData(DataLoader):
-    def __init__(self):
-        super().__init__()
 
-    def normalise(self, byMonitor=True, byProtonCharge=False):
-        if not (byMonitor and byProtonCharge):
-            raise RunTimeError('normalise either byMonitor or byProtonCharge')
+class PixelLocator(KDTree):
+    def __init__(pixelID, location, tolerence=None):
+        super().__init__(location)
+        self.pixelID = pixelID
+        self.tolerence = tolerence
+
+    def locate(locations, numNearestPt=1):
+        dist, idx = self.query(locations, k=numNearestPt)
+        #fixme: print warnings or error if dist is
+        return self.pixelID[idx], dist
