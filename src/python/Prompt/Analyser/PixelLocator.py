@@ -21,12 +21,6 @@
 ################################################################################
 
 from scipy.spatial import KDTree
-points = np.array([[0,0,1],[0,1,0],[1,0,0]])
-tree = KDTree(points)
-distanace, idx = tree.query([[0, 0, 1.1], [0, 0, 0.1]], k=1)
-print(distanace)
-print(idx)
-
 
 class PixelLocator(KDTree):
     def __init__(pixelID, location, tolerence=None):
