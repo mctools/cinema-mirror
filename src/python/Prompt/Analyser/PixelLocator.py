@@ -20,34 +20,15 @@
 ##                                                                            ##
 ################################################################################
 
-import matplotlib.pyplot as plt
-import numpy as np
-from Prompt.Math.Hist import Hist1D, Hist2D
-from Prompt.Math import *
-import Prompt.Math.Units as Units
+from scipy.spatial import KDTree
 
-#converters
-ekin = 0.0253*Units.eV
-angle = 45.*Units.deg
-eout = 0.03*Units.eV
-wl = 1.8*Units.Aa
+class PixelLocator(KDTree):
+    def __init__(pixelID, location, tolerence=None):
+        super().__init__(location)
+        self.pixelID = pixelID
+        self.tolerence = tolerence
 
-print(2*np.pi/eKin2k(ekin))
-print(angleCosine2Q(np.cos(angle), ekin, eout))
-print(wl2ekin(wl))
-print(ekin2v(ekin))
-
-num = 100000
-hist = Hist1D(0.,1.2,50)
-hist.fillmany(x=np.random.random(num), weight=np.random.random(num))
-edge = hist.getEdge()
-weight = hist.getWeight()
-hist.plot()
-
-
-hist2d = Hist2D(0.,1.,50, 0.,1,100)
-hist2d.fill(0.2, 0.1)
-
-hist2d.plot()
-
-plt.show()
+    def locate(locations, numNearestPt=1):
+        dist, idx = self.query(locations, k=numNearestPt)
+        #fixme: print warnings or error if dist is
+        return self.pixelID[idx], dist

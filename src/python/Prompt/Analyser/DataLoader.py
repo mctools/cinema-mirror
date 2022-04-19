@@ -20,34 +20,15 @@
 ##                                                                            ##
 ################################################################################
 
-import matplotlib.pyplot as plt
-import numpy as np
-from Prompt.Math.Hist import Hist1D, Hist2D
-from Prompt.Math import *
-import Prompt.Math.Units as Units
+from Interface import *
 
-#converters
-ekin = 0.0253*Units.eV
-angle = 45.*Units.deg
-eout = 0.03*Units.eV
-wl = 1.8*Units.Aa
-
-print(2*np.pi/eKin2k(ekin))
-print(angleCosine2Q(np.cos(angle), ekin, eout))
-print(wl2ekin(wl))
-print(ekin2v(ekin))
-
-num = 100000
-hist = Hist1D(0.,1.2,50)
-hist.fillmany(x=np.random.random(num), weight=np.random.random(num))
-edge = hist.getEdge()
-weight = hist.getWeight()
-hist.plot()
-
-
-hist2d = Hist2D(0.,1.,50, 0.,1,100)
-hist2d.fill(0.2, 0.1)
-
-hist2d.plot()
-
-plt.show()
+class DataLoader():
+    def __init__(self):
+        self.tof = 1 #vector
+        self.pid = 1 #vector
+        self.tofpidMat = 1 #matrix
+        self.tofMonitor = 1  #vector or matrix
+        self.protonPulse = 1 #vector
+        self.protonCharge = 1 #vector
+        self.distMod2Monitor = 1 #vector
+        self.distMod2Sample =1 #double
