@@ -22,6 +22,7 @@
 
 from enum import Enum, unique
 import numpy as np
+from .DataLoader import DataLoader
 
 # class DataLoader():
 #     def __init__(self):
@@ -41,8 +42,8 @@ class Normalise(Enum):
     byProtonCharge = 2
 
 class RunData(DataLoader):
-    def __init__(self, normMethod = Normalise.byMonitor):
-        super().__init__()
+    def __init__(self, fname, moduleName, normMethod = Normalise.byMonitor):
+        super().__init__(fname, moduleName)
         self.normalise(normMethod)
 
     def normalise(self, normMethod):
@@ -53,6 +54,7 @@ class RunData(DataLoader):
             totMonitor  = self.tofMonitor.sum()
             if totMonitor == 0:
                 raise RunTimeError('Monitor count is zero')
+            self.tofpidMat = self.tofpidMat.astype(float)
             self.tofpidMat /= totMonitor
 
         elif normMethod == Normalise.byProtonCharge:
@@ -63,43 +65,11 @@ class RunData(DataLoader):
         else:
             raise RunTimeError('Unknown normalise method')
 
-    def compatible(self, other):
-        np.testing.assert_almost_equal(self.tof, other.tof)
-        np.testing.assert_almost_equal(self.pid, other.pid)
-        np.testing.assert_almost_equal(self.protonPulse, other.protonPulse)
-        np.testing.assert_almost_equal(self.distMod2Monitor, other.distMod2Monitor)
-        np.testing.assert_almost_equal(self.distMod2Sample, other.distMod2Sample)
-
-    # += operator
-    def __iadd__(self, other):
-        self.compatible(other)
-        self.tofpidMat += other.tofpidMat
-        self.tofMonitor += other.tofMonitor
-        self.protonCharge += other.protonCharge
-
-    # -= operator
-    def __isub__(self, other):
-        self.compatible(other)
-        self.tofpidMat -= other.tofpidMat
-        self.tofMonitor -= other.tofMonitor
-        self.protonCharge -= other.protonCharge
-
-    # /= operator
-    def __idiv__(self, other):
-        self.compatible(other)
-        self.tofpidMat = np.divide(self.tofpidMat, other.tofpidMat, where=(other.tofpidMat!=0))
-        self.tofMonitor = np.divide(self.tofMonitor, other.tofMonitor, where=(other.tofMonitor!=0))
-        self.protonCharge = np.divide(self.protonCharge, other.protonCharge, where=(other.protonCharge!=0))
-
-    def scale(self, factor):
-        self.tofpidMat *= factor
-        self.tofMonitor *= factor
-        self.protonCharge *= factor
 
 
 class SampleData(RunData):
-    def __init__(self, bkgRun=None, holderRun=None):
-        super().__init__()
+    def __init__(self, fname, moduleName, bkgRun=None, holderRun=None):
+        super().__init__(fname, moduleName)
         if bkgRun:
             self -= bkgRun
         if holderRun:

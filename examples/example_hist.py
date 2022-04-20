@@ -37,6 +37,7 @@ print(angleCosine2Q(np.cos(angle), ekin, eout))
 print(wl2ekin(wl))
 print(ekin2v(ekin))
 
+######################################3
 num = 100000
 hist = Hist1D(0.,1.2,50)
 hist.fillmany(x=np.random.random(num), weight=np.random.random(num))
@@ -44,10 +45,17 @@ edge = hist.getEdge()
 weight = hist.getWeight()
 hist.plot()
 
-
 hist2d = Hist2D(0.,1.,50, 0.,1,100)
-hist2d.fill(0.2, 0.1)
-
+hist2d.fillmany(x=np.random.random(num), y=np.random.random(num))
 hist2d.plot()
+
+
+##############################################
+from scipy.spatial import KDTree
+points = np.array([[0,0,1],[0,1,0],[1,0,0]])
+tree = KDTree(points)
+distanace, idx = tree.query([[0, 0, 1.1], [0, 0, 0.1]], k=1)
+print(distanace)
+print(idx)
 
 plt.show()

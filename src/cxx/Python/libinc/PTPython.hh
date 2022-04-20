@@ -60,6 +60,7 @@ void* pt_Hist2D_new(double xmin, double xmax, unsigned nxbins,
                     double ymin, double ymax, unsigned nybins);
 void pt_Hist2D_delete(void* obj);
 void pt_Hist2D_getWeight(void* obj, double* w);
+void pt_Hist2D_getDensity(void* obj, double* d);
 void pt_Hist2D_fill(void* obj, double xval, double yval, double weight);
 void pt_Hist2D_fillmany(void* obj, size_t n, double* xval, double* yval, double* weight);
 

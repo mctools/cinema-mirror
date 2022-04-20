@@ -44,29 +44,36 @@ class Hist1D():
         _pt_Hist1D_getEdge(self.cobj, edge)
         return edge
 
+    def getCentre(self):
+        edge = self.getEdge()
+        center = edge[:-1]+np.diff(edge)*0.5
+        return center
+
     def getWeight(self):
         w = np.zeros(self.numbin)
         _pt_Hist1D_getWeight(self.cobj, w)
         return w
 
-    def fill(self, x, weight):
+    def fill(self, x, weight=1.):
         _pt_Hist1D_fill(self.cobj, x, weight)
 
-    def fillmany(self, x, weight):
+    def fillmany(self, x, weight=None):
+        if weight is None:
+            weight = np.ones(x.size)
         if(x.size !=weight.size):
+            print(x.size, weight.size)
             raise RunTimeError('fillnamy different size')
         _pt_Hist1D_fill_many(self.cobj, x.size, x, weight )
 
-    def plot(self):
+    def plot(self, show=False):
         try:
             import matplotlib.pyplot as plt
-            edge = self.getEdge()
-            center = edge[:-1]+np.diff(edge)*0.5
+            center = self.getCentre()
             plt.plot(center, self.getWeight())
-
+            if show:
+                plt.show()
         except Exception as e:
             print (e)
-            print (sys.exc_type)
 
 
 
@@ -74,6 +81,7 @@ class Hist1D():
 _pt_Hist2D_new = importFunc('pt_Hist2D_new', type_voidp, [type_dbl, type_dbl, type_uint, type_dbl, type_dbl, type_uint])
 _pt_Hist2D_delete = importFunc('pt_Hist2D_delete', None, [type_voidp])
 _pt_Hist2D_getWeight = importFunc('pt_Hist2D_getWeight', None, [type_voidp, type_npdbl2d])
+_pt_Hist2D_getDensity = importFunc('pt_Hist2D_getDensity', None, [type_voidp, type_npdbl2d])
 _pt_Hist2D_fill = importFunc('pt_Hist2D_fill', None, [type_voidp, type_dbl, type_dbl, type_dbl])
 _pt_Hist2D_fill_many = importFunc('pt_Hist2D_fillmany', None, [type_voidp, type_sizet, type_npdbl1d, type_npdbl1d, type_npdbl1d])
 
@@ -100,6 +108,11 @@ class Hist2D():
         _pt_Hist2D_getWeight(self.cobj, w)
         return w
 
+    def getDensity(self):
+        d = np.zeros([self.xNumBin, self.yNumBin])
+        _pt_Hist2D_getWeight(self.cobj, d)
+        return d
+
     def fill(self, x, y, weight=1.):
         _pt_Hist2D_fill(self.cobj, x, y, weight)
 
@@ -110,7 +123,7 @@ class Hist2D():
             raise RunTimeError('fillnamy different size')
         _pt_Hist2D_fill_many(self.cobj, x.size, x, y, weight )
 
-    def plot(self):
+    def plot(self, show=False):
         try:
             import matplotlib.pyplot as plt
             import matplotlib.colors as colors
@@ -122,6 +135,8 @@ class Hist2D():
             pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
             fig.colorbar(pcm, ax=ax)
             plt.grid()
+            if show:
+                plt.show()
 
         except Exception as e:
             print(e)

@@ -97,3 +97,15 @@ void pt_Hist2D_fillmany(void* obj, size_t n, double* xval, double* yval, double*
   for(size_t i=0;i<n;i++)
     static_cast<pt::Hist2D *>(obj)->fill(xval[i], yval[i], weight[i]);
 }
+
+void pt_Hist2D_getDensity(void* obj, double* d)
+{
+  auto nbin = static_cast<pt::Hist2D *>(obj)->getNBin();
+  auto weight = static_cast<pt::Hist2D *>(obj)->getRaw();
+  auto hit = static_cast<pt::Hist2D *>(obj)->getHit();
+  for(size_t i=0;i<nbin;i++)
+  {
+    if(hit[i])
+      d[i]=weight[i]/hit[i];
+  }
+}

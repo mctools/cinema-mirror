@@ -25,7 +25,6 @@ from Interface import *
 #!/usr/bin/env python3
 import numpy as np
 import h5py
-import glob, os
 
 def readKeys(content, file):
     try:
@@ -37,32 +36,56 @@ def readKeys(content, file):
         print(e)
 
 
-class IDFLoader():
-    def __init__(self, dir):
-        self.dict = {}
-        for file in glob.glob(dir+'/*.txt'):
-            self.dict[os.path.basename(file)] = np.loadtxt(file)
-
-
 class DataLoader():
-    def __init__(self, fname):
-        self.tof = 1 #vector
-        self.pid = 1 #vector
-        self.tofpidMat = 1 #matrix
-        self.tofMonitor = 1  #vector or matrix
+    def __init__(self, fname, moduleName):
+        hf=h5py.File(fname,'r')
+        self.tof = hf[f'/csns/instrument/{moduleName}/time_of_flight'][()] #vector
+        print(self.tof)
+        self.pid = hf[f'/csns/instrument/{moduleName}/pixel_id'][()] #vector
+        self.tofpidMat = hf[f'/csns/instrument/{moduleName}/histogram_data'][()] #matrix
+        self.tofMonitor = hf[f'/csns/histogram_data/monitor01/histogram_data'][()]  #vector or matrix
         self.protonPulse = 1 #vector
         self.protonCharge = 1 #vector
         self.distMod2Monitor = 1 #vector
         self.distMod2Sample =1 #double
 
-        file_content=[]
-        hf=h5py.File(fname,'r')
-        readKeys(file_content, hf)
-        for var in file_content:
-            print(var)
-
-        module10203_hist  =  hf['/csns/instrument/module10203/histogram_data'][()]
-        module10203_pixel =  hf['/csns/instrument/module10203/pixel_id'][()]
-        module10203_tof   =  hf['/csns/instrument/module10203/time_of_flight'][()]
-        print(module10203_hist.shape, module10203_pixel.shape, module10203_tof.shape)
+        # file_content=[]
+        # hf=h5py.File(fname,'r')
+        # readKeys(file_content, hf)
+        # for var in file_content:
+        #     print(var)
         hf.close()
+
+    def compatible(self, other):
+        np.testing.assert_almost_equal(self.tof, other.tof)
+        np.testing.assert_almost_equal(self.pid, other.pid)
+        np.testing.assert_almost_equal(self.protonPulse, other.protonPulse)
+        np.testing.assert_almost_equal(self.distMod2Monitor, other.distMod2Monitor)
+        np.testing.assert_almost_equal(self.distMod2Sample, other.distMod2Sample)
+
+    # += operator
+    def __iadd__(self, other):
+        self.compatible(other)
+        self.tofpidMat += other.tofpidMat
+        self.tofMonitor += other.tofMonitor
+        self.protonCharge += other.protonCharge
+        return self
+
+    # -= operator
+    def __isub__(self, other):
+        self.compatible(other)
+        self.tofpidMat -= other.tofpidMat
+        self.tofMonitor -= other.tofMonitor
+        self.protonCharge -= other.protonCharge
+        return self
+
+    def divide(self, other):
+        self.compatible(other)
+        self.tofpidMat = np.divide(self.tofpidMat, other.tofpidMat, where=(other.tofpidMat!=0))
+        self.tofMonitor = np.divide(self.tofMonitor, other.tofMonitor, where=(other.tofMonitor!=0))
+        self.protonCharge = np.divide(self.protonCharge, other.protonCharge, where=(other.protonCharge!=0))
+
+    def scale(self, factor):
+        self.tofpidMat *= factor
+        self.tofMonitor *= factor
+        self.protonCharge *= factor
