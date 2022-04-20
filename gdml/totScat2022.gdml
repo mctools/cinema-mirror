@@ -73,9 +73,14 @@
 
     <solids>
         <box lunit="mm" name="WorldBox" x="30000.0" y="30000.0" z="65000.0" />
-        <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="4.35" rmin="0.0" startphi="0.0" z="13.7633" /> -->
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="4.35" rmin="0.0" startphi="0.0" z="13.7633" />
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleVan" rmax="4.64" rmin="4.35" startphi="0.0" z="18.0" />
+        <!-- Heavy Water -->
+        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="4.4758" rmin="0.0" startphi="0.0" z="14.3376" />
+        <!-- Light Water -->
+        <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="4.4758" rmin="0.0" startphi="0.0" z="4.7792" /> -->
+        <!-- Vanadium Stick -->
+        <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="4.4758" rmin="0.0" startphi="0.0" z="60.0" /> -->
+        <!-- Vanadium Box -->
+        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleVan" rmax="4.7658" rmin="4.4758" startphi="0.0" z="60.0" />
         <box lunit="mm" name="Module300_L" x="25.4" y="211.2" z="300" />
         <box lunit="mm" name="Module300_G" x="300" y="211.2" z="25.4" />
         <box lunit="mm" name="Module500_L" x="25.4" y="211.2" z="500" />
@@ -276,7 +281,7 @@
                 <position name="P_module10801" unit="mm" x="363.988798" y="-307.79999999999995" z="-1238.990777" />
                 <rotation name="R_module10801" unit="deg" x="0.0" y="0.0" z="0.0" />
                 <auxiliary auxtype="name" auxvalue="module10801" />
-            </physvol> -->
+            </physvol> --> -->
 
 
             <physvol name="module10504">
@@ -293,7 +298,7 @@
                 <position name="P_module11004" unit="mm" x="1174.8262974655179" y="13.200000000000003" z="-59.71348558252896" />
                 <rotation name="R_module11004" unit="deg" x="-0.0" y="76.39300000000004" z="-0.0" />
                 <auxiliary auxtype="name" auxvalue="module11004" />
-            </physvol> -->
+            </physvol> --> -->
         </volume>
     </structure>
 
