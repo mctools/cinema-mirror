@@ -82,9 +82,9 @@
         <!-- Vanadium Box -->
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleVan" rmax="4.7658" rmin="4.4758" startphi="0.0" z="60.0" />
         <box lunit="mm" name="Module300_L" x="25.4" y="211.2" z="300" />
-        <box lunit="mm" name="Module300_G" x="300" y="211.2" z="25000.4" />
+        <box lunit="mm" name="Module300_G" x="300" y="211.2" z="25.4" />
         <box lunit="mm" name="Module500_L" x="25.4" y="211.2" z="500" />
-        <box lunit="mm" name="Module500_G" x="500" y="211.2" z="25000.4" />
+        <box lunit="mm" name="Module500_G" x="500" y="211.2" z="25.4" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube300" rmax="12.7" rmin="0.0" startphi="0.0" z="300.0" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube300_Wall" rmax="12.7" rmin="12.2" startphi="0.0" z="300.0" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube300_He" rmax="12.2" rmin="0.0" startphi="0.0" z="300.0" />
@@ -295,7 +295,7 @@
                 <position name="P_module10801" unit="mm" x="363.988798" y="-307.79999999999995" z="-1238.990777" />
                 <rotation name="R_module10801" unit="deg" x="0.0" y="0.0" z="0.0" />
                 <auxiliary auxtype="name" auxvalue="module10801" />
-            </physvol> --> 
+            </physvol> -->
 
 
             <!-- <physvol name="module10504">
@@ -312,7 +312,7 @@
                 <position name="P_module11004" unit="mm" x="1174.8262974655179" y="13.200000000000003" z="-59.71348558252896" />
                 <rotation name="R_module11004" unit="deg" x="-0.0" y="76.39300000000004" z="-0.0" />
                 <auxiliary auxtype="name" auxvalue="module11004" />
-            </physvol> --> 
+            </physvol> -->
         </volume>
     </structure>
 
