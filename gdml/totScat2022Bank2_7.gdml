@@ -82,9 +82,9 @@
         <!-- Vanadium Box -->
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleVan" rmax="4.7658" rmin="4.4758" startphi="0.0" z="60.0" />
         <box lunit="mm" name="Module300_L" x="25.4" y="211.2" z="300" />
-        <box lunit="mm" name="Module300_G" x="300" y="211.2" z="25.4" />
+        <box lunit="mm" name="Module300_G" x="300" y="211.2" z="25000.4" />
         <box lunit="mm" name="Module500_L" x="25.4" y="211.2" z="500" />
-        <box lunit="mm" name="Module500_G" x="500" y="211.2" z="25.4" />
+        <box lunit="mm" name="Module500_G" x="500" y="211.2" z="25000.4" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube300" rmax="12.7" rmin="0.0" startphi="0.0" z="300.0" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube300_Wall" rmax="12.7" rmin="12.2" startphi="0.0" z="300.0" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube300_He" rmax="12.2" rmin="0.0" startphi="0.0" z="300.0" />
@@ -269,11 +269,18 @@
                 <rotationref ref="R_LV_SampleVan" />
             </physvol>
 
-            <physvol name="module10203">
-                <volumeref ref="LV_Box_Module500" />
-                <position name="P_module10203" unit="mm" x="-513.21952039157" y="-93.80000000000001" z="2936.368359973269" />
+            <!-- <physvol name="module10203">
+               <volumeref ref="LV_Box_Module500" />
+               <position name="P_module10203" unit="mm" x="-513.21952039157" y="-93.80000000000001" z="2936.368359973269" />
                <rotation name="R_module10203" unit="deg" x="-0.0" y="75.40589600264069" z="-0.0" />
                <auxiliary auxtype="name" auxvalue="module10203" />
+            </physvol> -->
+
+            <physvol name="module10303">
+                <volumeref ref="LV_Box_Module500" />
+                <position name="P_module10303" unit="mm" x="-993.5439465134674" y="-93.79999999999998" z="2041.9928173722174" />
+                <rotation name="R_module10303" unit="deg" x="-0.0" y="74.0341369080653" z="-0.0" />
+                <auxiliary auxtype="name" auxvalue="module10303" />
             </physvol>
 
             <physvol name="module10701">
