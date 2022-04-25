@@ -25,3 +25,4 @@ from .PixelLocator import IDFLoader as IDFLoader
 from .PixelLocator import PixelLocator as PixelLocator
 from .Data import RunData as RunData
 from .Data import SampleData as SampleData
+from .Data import Normalise as Normalise

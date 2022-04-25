@@ -37,23 +37,28 @@ def readKeys(content, file):
 
 
 class DataLoader():
-    def __init__(self, fname, moduleName):
+    def __init__(self, fname, moduleName, tofcut=30, printCentent=False):
         hf=h5py.File(fname,'r')
-        self.tof = hf[f'/csns/instrument/{moduleName}/time_of_flight'][()] #vector
-        print(self.tof)
+        if printCentent:
+            keys=[]
+            readKeys(keys, hf)
+            print(keys)
+
+        self.tof = hf[f'/csns/instrument/{moduleName}/time_of_flight'][()]*1.e-6 #vector
+        self.tofCentre = self.tof[:-1]+np.diff(self.tof) #vector
         self.pid = hf[f'/csns/instrument/{moduleName}/pixel_id'][()] #vector
         self.tofpidMat = hf[f'/csns/instrument/{moduleName}/histogram_data'][()] #matrix
-        self.tofMonitor = hf[f'/csns/histogram_data/monitor01/histogram_data'][()]  #vector or matrix
+        self.tofpidMat[:, :tofcut] = 0
+        self.tofpidMat = self.tofpidMat.astype(float)
+
+        self.tofMonitor = hf[f'/csns/histogram_data/monitor01/histogram_data'][()][0]  #vector or matrix
+        self.tofMonitor = self.tofMonitor.astype(float)
+        self.tofMonitor[:tofcut] = 0
         self.protonPulse = 1 #vector
         self.protonCharge = 1 #vector
         self.distMod2Monitor = 1 #vector
         self.distMod2Sample =1 #double
 
-        # file_content=[]
-        # hf=h5py.File(fname,'r')
-        # readKeys(file_content, hf)
-        # for var in file_content:
-        #     print(var)
         hf.close()
 
     def compatible(self, other):
@@ -81,9 +86,18 @@ class DataLoader():
 
     def divide(self, other):
         self.compatible(other)
-        self.tofpidMat = np.divide(self.tofpidMat, other.tofpidMat, where=(other.tofpidMat!=0))
-        self.tofMonitor = np.divide(self.tofMonitor, other.tofMonitor, where=(other.tofMonitor!=0))
-        self.protonCharge = np.divide(self.protonCharge, other.protonCharge, where=(other.protonCharge!=0))
+        pixint = other.tofpidMat.sum(axis=1)
+        if pixint.size != self.tofpidMat.shape[0]:
+            raise RunTimeError('pixint.size != self.tofpidMat.shape[0]')
+        for pixidx in range(self.tofpidMat.shape[0]):
+            if pixint[pixidx]!=0:
+                self.tofpidMat[pixidx,:] /= pixint[pixidx]
+            else:
+                self.tofpidMat[pixidx,:] = 0.
+
+        # self.tofpidMat = np.divide(self.tofpidMat, other.tofpidMat, where=(other.tofpidMat!=0))
+        # self.tofMonitor = np.divide(self.tofMonitor, other.tofMonitor, where=(other.tofMonitor!=0))
+        # self.protonCharge = np.divide(self.protonCharge, other.protonCharge, where=(other.protonCharge!=0))
 
     def scale(self, factor):
         self.tofpidMat *= factor

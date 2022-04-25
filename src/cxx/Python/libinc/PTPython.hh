@@ -34,6 +34,7 @@ double pt_angleCosine2Q(double anglecosine, double enin_eV, double enout_eV);
 double pt_wl2ekin( double wl);
 double pt_ekin2wl( double ekin) ;
 double pt_ekin2speed( double ekin);
+double pt_speed2ekin( double v);
 
 // random
 double pt_rand_generate();

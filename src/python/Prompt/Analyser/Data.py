@@ -39,7 +39,8 @@ from .DataLoader import DataLoader
 class Normalise(Enum):
     skip = 0
     byMonitor = 1
-    byProtonCharge = 2
+    byMonitorTOF = 2
+    byProtonCharge = 3
 
 class RunData(DataLoader):
     def __init__(self, fname, moduleName, normMethod = Normalise.byMonitor):
@@ -54,13 +55,14 @@ class RunData(DataLoader):
             totMonitor  = self.tofMonitor.sum()
             if totMonitor == 0:
                 raise RunTimeError('Monitor count is zero')
-            self.tofpidMat = self.tofpidMat.astype(float)
             self.tofpidMat /= totMonitor
-
+        elif normMethod == Normalise.byMonitorTOF:
+            self.tofpidMat = np.divide(self.tofpidMat, self.tofMonitor/np.arange(1, self.tofMonitor.size+1), where=(self.tofMonitor!=0))
         elif normMethod == Normalise.byProtonCharge:
             totCharge = self.protonCharge.sum()
             if totCharge == 0:
                 raise RunTimeError('Proton charge is zero')
+
 
         else:
             raise RunTimeError('Unknown normalise method')

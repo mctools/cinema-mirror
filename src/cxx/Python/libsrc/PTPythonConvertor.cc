@@ -28,3 +28,4 @@ double pt_angleCosine2Q(double anglecosine, double enin_eV, double enout_eV) {  
 double pt_wl2ekin( double wl) { return Prompt::wl2ekin(wl); }
 double pt_ekin2wl( double ekin) { return Prompt::ekin2wl(ekin); }
 double pt_ekin2speed( double ekin) { return std::sqrt(2*ekin/Prompt::const_neutron_mass_evc2);}
+double pt_speed2ekin( double v) { return v*v*0.5*Prompt::const_neutron_mass_evc2; }

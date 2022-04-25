@@ -26,34 +26,29 @@ import glob, os
 from ..Math.Hist import Hist1D, Hist2D
 
 class DD():
-    def __init__(self, xmin=0., xmax=60., xbin=300):
+    def __init__(self):
         self.dd = {}
-        self.xmin = xmin
-        self.xmax = xmax
-        self.xbin = xbin
 
     def get(self, key1, key2):
-        if self.dd.get(key1) is None:
+        if self.dd.get(key1) is not None:
+            return self.dd.get(key1).get(key2)
+        else:
             return None
-        return self.dd.get(key1).get(key2)
 
     def set(self, key1, key2, data):
         if self.dd.get(key1) is None:
             self.dd[key1] = {}
-            hist = Hist1D(self.xmin, self.xmax, self.xbin)
-            hist.fill(data)
-            self.dd[key1][key2] = hist
+            self.dd[key1][key2] = [data]
         elif self.dd.get(key1).get(key2) is None:
-            hist = Hist1D(self.xmin, self.xmax, self.xbin)
-            hist.fill(data)
-            self.dd[key1][key2] = hist
+            self.dd[key1][key2] = [data]
         else:
-            self.dd[key1][key2].fill(data)
+            self.dd[key1][key2].append(data)
 
 class PixelLocator(KDTree):
     def __init__(self, pixelID, location, tolerence=None):
+        self.location = np.copy(location)
+        self.pixelID = np.copy(pixelID)
         super().__init__(location)
-        self.pixelID = pixelID
         self.tolerence = tolerence
 
     def locate(self, locations, numNearestPt=1):
@@ -64,16 +59,27 @@ class PixelLocator(KDTree):
     def generateDD(self, fileNamewild, tofbinwidth=8):
         dd = DD()
         for fileName in glob.glob(fileNamewild):
+            print(f'processing {fileName}')
             tof_us = np.loadtxt(fileName, usecols=(0))
             tof = (tof_us/tofbinwidth).astype(int)
-            pos = np.loadtxt(fileName, usecols=(1,2,3))*1e-3
+            pos = np.loadtxt(fileName, usecols=(1,2,3))
             pid, dist = self.locate(pos)
+            print(dist.min(), dist.mean(), dist.max())
             pididx = pid - self.pixelID[0]
-            #  4:Qe, Qt, ekin_tof, ekin0,  ekin, wgt
-            data = np.loadtxt(fileName, usecols=(5))
-            for p, t, d in zip(pid, tof, data):
+            #  Qe, Qt, ekin_tof, ekin0,  ekin, wgt
+            data = np.loadtxt(fileName, usecols=(4, 5))
+            for p, t, d in zip(pididx, tof, data):
                 dd.set(p, t, d)
+
+        #combine as numpy array
+        for sdict in dd.dd.keys():
+            for ssdict in dd.dd[sdict].keys():
+                dd.dd[sdict][ssdict] = np.array(dd.dd[sdict][ssdict])
+
         return dd
+
+
+
 
     def processHitMat(self, fileNamewild, Tofdensity, tofbinwidth=8):
         hist1dqe = Hist1D(0,70,500)
@@ -153,7 +159,7 @@ class IDFLoader():
         self.idf = {}
         for file in glob.glob(dir+'/*.txt'):
             pid = np.loadtxt(file, dtype=int, usecols=(0))
-            loc = np.loadtxt(file, dtype=float, usecols=(1,2,3))
+            loc = np.loadtxt(file, dtype=float, usecols=(1,2,3))*1e3 #meter to mm
             basename =  os.path.basename(file)
             self.idf[basename[:-4]] = PixelLocator(pid, loc)
             print(f'IDFLoader loaded file {basename}, contains {pid.size} pixels')
