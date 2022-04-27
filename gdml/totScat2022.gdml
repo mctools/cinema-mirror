@@ -55,6 +55,7 @@
         <material name="V">
           <atom value="V_sg229.ncmat"/>
           <D value="1"/>
+          <bragg="0">
         </material>
 
         <material name="SiPower">
