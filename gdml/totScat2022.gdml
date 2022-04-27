@@ -21,8 +21,8 @@
         <position name="P_LV_Module_300_Center" unit="mm" x="150.0" y="105.6" z="-12.7" />
         <position name="P_LV_Module_500_Center" unit="mm" x="250.0" y="105.6" z="-12.7" />
         <rotation name="R_LV_Module" unit="deg" y="90.0" />
-        <rotation name="R_LV_SampleCan" unit="deg" x="-90" />
-        <rotation name="R_LV_SampleVan" unit="deg" x="-90" />
+        <rotation name="R_LV_SampleStick" unit="deg" x="-90" />
+        <rotation name="R_LV_SampleHolder" unit="deg" x="-90" />
     </define>
 
     <materials>
@@ -74,13 +74,13 @@
     <solids>
         <box lunit="mm" name="WorldBox" x="30000.0" y="30000.0" z="65000.0" />
         <!-- Heavy Water -->
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="4.4758" rmin="0.0" startphi="0.0" z="14.3376" />
+        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleStick" rmax="4.4758" rmin="0.0" startphi="0.0" z="14.3376" />
         <!-- Light Water -->
-        <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="4.4758" rmin="0.0" startphi="0.0" z="4.7792" /> -->
+        <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleStick" rmax="4.4758" rmin="0.0" startphi="0.0" z="4.7792" /> -->
         <!-- Vanadium Stick -->
-        <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="3.175" rmin="0.0" startphi="0.0" z="60.0" /> -->
-        <!-- Vanadium Box -->
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleVan" rmax="4.7658" rmin="4.4758" startphi="0.0" z="60.0" />
+        <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleStick" rmax="3.175" rmin="0.0" startphi="0.0" z="60.0" /> -->
+        <!-- Vanadium SampleHolder -->
+        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleHolder" rmax="4.7658" rmin="4.4758" startphi="0.0" z="60.0" />
         <box lunit="mm" name="Module300_L" x="25.4" y="211.2" z="300" />
         <box lunit="mm" name="Module300_G" x="300" y="211.2" z="25.4" />
         <box lunit="mm" name="Module500_L" x="25.4" y="211.2" z="500" />
@@ -94,14 +94,14 @@
     </solids>
 
     <structure>
-        <volume name="LV_Tube_SampleCan">
-            <solidref ref="SampleCan" />
+        <volume name="LV_Tube_SampleStick">
+            <solidref ref="SampleStick" />
             <materialref ref="HeavyWater" />
             <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
         </volume>
 
-        <volume name="LV_Tube_SampleVan">
-            <solidref ref="SampleVan" />
+        <volume name="LV_Tube_SampleHolder">
+            <solidref ref="SampleHolder" />
             <materialref ref="V" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
         </volume>
@@ -259,14 +259,14 @@
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
 
-            <physvol name="LV_Tube_SampleCan">
-                <volumeref ref="LV_Tube_SampleCan" />
-                <rotationref ref="R_LV_SampleCan" />
+            <physvol name="LV_Tube_SampleStick">
+                <volumeref ref="LV_Tube_SampleStick" />
+                <rotationref ref="R_LV_SampleStick" />
             </physvol>
 
-            <physvol name="LV_Tube_SampleVan">
-                <volumeref ref="LV_Tube_SampleVan" />
-                <rotationref ref="R_LV_SampleVan" />
+            <physvol name="LV_Tube_SampleHolder">
+                <volumeref ref="LV_Tube_SampleHolder" />
+                <rotationref ref="R_LV_SampleHolder" />
             </physvol>
 
             <physvol name="module10203">
@@ -277,7 +277,7 @@
                <auxiliary auxtype="name" auxvalue="module10203" />
             </physvol>
 
-            <!-- <physvol name="module10303">
+             <!-- <physvol name="module10303">
                 <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10303" unit="mm" x="-993.5439465134674" y="-93.79999999999998" z="2041.9928173722174" />
                 <rotation name="R_module10303" unit="deg" x="-0.0" y="74.0341369080653" z="-0.0" />
