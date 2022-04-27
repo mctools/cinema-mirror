@@ -35,6 +35,82 @@ def readKeys(content, file):
     except AttributeError as e:
         print(e)
 
+class ErrorPropagator():
+    def __init__(self, weight,  xcentre, ycentre=None,  count=None, error = None):
+        self.xcentre = np.copy(xcentre)
+        self.weight = np.copy(weight)
+        if error is not None:
+            self.error = error
+        else:
+            uncet = np.sqrt(count/10.)
+            self.error = np.divide(weight, uncet, where=(uncet!=0.))
+        if ycentre is not None:
+            self.ycentre = np.copy(ycentre)
+
+    def compatible(self, xcentre, ycentre):
+        np.testing.assert_almost_equal(self.xcentre, xcentre)
+        if ycentre is not None:
+            np.testing.assert_almost_equal(self.ycentre, ycentre)
+
+    def add(self, weight, error, xcentre,  ycentre=None):
+        self.compatible(xcentre, ycentre)
+        self.weight = self.weight + weight
+        othererror = error
+        self.error = np.sqrt(self.error*self.error + othererror*othererror)
+
+    def __iadd__(self, other):
+        if hasattr(other, 'ycentre'):
+            self.add(other.weight, other.error, other.xcentre, other.ycentre)
+        else:
+            self.add(other.weight, other.error, other.xcentre)
+        return self
+
+    def substract(self, weight, error, xcentre,  ycentre=None):
+        self.compatible(xcentre, ycentre)
+        self.weight = self.weight - weight
+        othererror = error
+        self.error = np.sqrt(self.error*self.error + othererror*othererror)
+
+    def __isub__(self, other):
+        if hasattr(other, 'ycentre'):
+            self.substract(other.weight, other.error, other.xcentre, other.ycentre)
+        else:
+            self.substract(other.weight, other.error, other.xcentre)
+        return self
+
+    def divide(self, weight, error, xcentre,  ycentre=None):
+        self.compatible(xcentre, ycentre)
+        selferr = np.divide(self.error, self.weight, where=(self.weight!=0.))
+        otherw = weight
+        othererr = np.divide(error, otherw, where=(otherw!=0.))
+        self.error = np.sqrt( selferr*selferr + othererr*othererr)
+        self.weight = np.divide(self.weight, otherw, where=(otherw!=0.))
+
+    def __idiv__(self, other):
+        if hasattr(other, 'ycentre'):
+            self.divide(other.weight, other.error, other.xcentre, other.ycentre)
+        else:
+            self.divide(other.weight, other.error, other.xcentre)
+        return self
+
+    def scale(self, factor):
+        self.weight = self.weight*factor
+        self.error = self.error*factor
+
+
+    def plot(self, show=False, label=None, idx = 2000):
+        try:
+            import matplotlib.pyplot as plt
+            print(f'{self.xcentre.shape}, {self.weight.shape}')
+            if self.weight.ndim == 1:
+                plt.errorbar(self.xcentre, self.weight, yerr=self.error, fmt='o', label=label)
+            elif self.weight.ndim == 2:
+                plt.errorbar(self.xcentre, self.weight[:,idx], yerr=self.error[:,idx], fmt='o', label=label)
+            if show:
+                plt.show()
+        except Exception as e:
+            print (e)
+
 
 class DataLoader():
     def __init__(self, fname, moduleName, tofcut=30, printCentent=False):
@@ -44,62 +120,16 @@ class DataLoader():
             readKeys(keys, hf)
             print(keys)
 
-        self.tof = hf[f'/csns/instrument/{moduleName}/time_of_flight'][()]*1.e-6 #vector
-        self.tofCentre = self.tof[:-1]+np.diff(self.tof) #vector
-        self.pid = hf[f'/csns/instrument/{moduleName}/pixel_id'][()] #vector
-        self.tofpidMat = hf[f'/csns/instrument/{moduleName}/histogram_data'][()] #matrix
-        self.tofpidMat[:, :tofcut] = 0
-        self.tofpidMat = self.tofpidMat.astype(float)
+        tof = hf[f'/csns/instrument/{moduleName}/time_of_flight'][()]*1.e-6 #vector, to second
+        pid = hf[f'/csns/instrument/{moduleName}/pixel_id'][()].flatten() #vector
+        tofpidMat = hf[f'/csns/instrument/{moduleName}/histogram_data'][()] #matrix
+        tofpidMat[:, :tofcut] = 0
+        self.tofCentre = tof[:-1]+np.diff(tof) #vector
 
-        self.tofMonitor = hf[f'/csns/histogram_data/monitor01/histogram_data'][()][0]  #vector or matrix
-        self.tofMonitor = self.tofMonitor.astype(float)
-        self.tofMonitor[:tofcut] = 0
-        self.protonPulse = 1 #vector
-        self.protonCharge = 1 #vector
-        self.distMod2Monitor = 1 #vector
-        self.distMod2Sample =1 #double
+        self.detErrPro = ErrorPropagator(tofpidMat, pid, tof, tofpidMat)
+
+        tofMonitor = hf[f'/csns/histogram_data/monitor01/histogram_data'][()][0]  #vector or matrix
+        tofMonitor[:tofcut] = 0
+        self.moniErrPro = ErrorPropagator(tofMonitor, tof, count=tofMonitor)
 
         hf.close()
-
-    def compatible(self, other):
-        np.testing.assert_almost_equal(self.tof, other.tof)
-        np.testing.assert_almost_equal(self.pid, other.pid)
-        np.testing.assert_almost_equal(self.protonPulse, other.protonPulse)
-        np.testing.assert_almost_equal(self.distMod2Monitor, other.distMod2Monitor)
-        np.testing.assert_almost_equal(self.distMod2Sample, other.distMod2Sample)
-
-    # += operator
-    def __iadd__(self, other):
-        self.compatible(other)
-        self.tofpidMat += other.tofpidMat
-        self.tofMonitor += other.tofMonitor
-        self.protonCharge += other.protonCharge
-        return self
-
-    # -= operator
-    def __isub__(self, other):
-        self.compatible(other)
-        self.tofpidMat -= other.tofpidMat
-        self.tofMonitor -= other.tofMonitor
-        self.protonCharge -= other.protonCharge
-        return self
-
-    def divide(self, other):
-        self.compatible(other)
-        pixint = other.tofpidMat.sum(axis=1)
-        if pixint.size != self.tofpidMat.shape[0]:
-            raise RunTimeError('pixint.size != self.tofpidMat.shape[0]')
-        for pixidx in range(self.tofpidMat.shape[0]):
-            if pixint[pixidx]!=0:
-                self.tofpidMat[pixidx,:] /= pixint[pixidx]
-            else:
-                self.tofpidMat[pixidx,:] = 0.
-
-        # self.tofpidMat = np.divide(self.tofpidMat, other.tofpidMat, where=(other.tofpidMat!=0))
-        # self.tofMonitor = np.divide(self.tofMonitor, other.tofMonitor, where=(other.tofMonitor!=0))
-        # self.protonCharge = np.divide(self.protonCharge, other.protonCharge, where=(other.protonCharge!=0))
-
-    def scale(self, factor):
-        self.tofpidMat *= factor
-        self.tofMonitor *= factor
-        self.protonCharge *= factor

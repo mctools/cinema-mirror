@@ -1,5 +1,5 @@
-#ifndef Hist1D_hh
-#define Hist1D_hh
+#ifndef Est1D_hh
+#define Est1D_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,26 +21,17 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTHistBase.hh"
+#include "PTHist1D.hh"
 #include <cmath>
 
 namespace Prompt {
-  class Hist1D : public HistBase {
+  class Est1D : public Hist1D {
   public:
-    explicit Hist1D(double xmin, double xmax, unsigned nbins,bool linear=true);
-    virtual ~Hist1D();
-
-    unsigned dimension() const override { return 1; }  ;
-    std::vector<double> getEdge() const;
-    void save(const std::string &filename) const override;
-
-    virtual void fill(double val);
-    virtual void fill(double val, double weight);
-
-  protected:
-    double m_binfactor;
-    double m_logxmin;
-    bool m_linear;
+    explicit Est1D(double xmin, double xmax, unsigned nbins,bool linear=true);
+    virtual ~Est1D();
+    void fill(double val) override;
+    void fill(double val, double weight) override;
+    void fill(double val, double weight, double error);
   };
 }
 

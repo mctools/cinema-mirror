@@ -21,6 +21,8 @@
 #include "PTPython.hh"
 #include "PTHist1D.hh"
 #include "PTHist2D.hh"
+#include "PTEst1D.hh"
+
 
 namespace pt = Prompt;
 
@@ -47,6 +49,16 @@ void pt_Hist1D_getWeight(void* obj, double* w)
     w[i] = weight[i];
   }
 }
+
+void pt_Hist1D_getHit(void* obj, double* h)
+{
+  auto hit = static_cast<pt::Hist1D *>(obj)->getHit();
+  for(size_t i=0;i<hit.size();i++)
+  {
+    h[i] = hit[i];
+  }
+}
+
 
 void pt_Hist1D_fill(void* obj, double val, double weight)
 {
@@ -98,6 +110,16 @@ void pt_Hist2D_fillmany(void* obj, size_t n, double* xval, double* yval, double*
     static_cast<pt::Hist2D *>(obj)->fill(xval[i], yval[i], weight[i]);
 }
 
+void pt_Hist2D_getHit(void* obj, double* h)
+{
+  auto hit = static_cast<pt::Hist2D *>(obj)->getHit();
+  for(size_t i=0;i<hit.size();i++)
+  {
+    h[i] = hit[i];
+  }
+}
+
+
 void pt_Hist2D_getDensity(void* obj, double* d)
 {
   auto nbin = static_cast<pt::Hist2D *>(obj)->getNBin();
@@ -107,5 +129,30 @@ void pt_Hist2D_getDensity(void* obj, double* d)
   {
     if(hit[i])
       d[i]=weight[i]/hit[i];
+  }
+}
+
+// Prompt::Hist1D
+void* pt_Est1D_new(double xmin, double xmax, unsigned nbins, bool linear)
+{
+  return static_cast<void *>(new pt::Est1D(xmin, xmax, nbins, linear));
+}
+
+void pt_Est1D_delete(void* obj)
+{
+  delete static_cast<pt::Est1D *>(obj);
+}
+
+void pt_Est1D_fill(void* obj, double val, double weight, double error)
+{
+  static_cast<pt::Est1D *>(obj)->fill(val, weight, error);
+}
+
+void pt_Est1D_fillmany(void* obj, size_t n, double* val, double* weight, double* error)
+{
+  auto o = static_cast<pt::Est1D *>(obj);
+  for(size_t i=0;i<n;i++)
+  {
+    o->fill(val[i], weight[i], error[i]);
   }
 }

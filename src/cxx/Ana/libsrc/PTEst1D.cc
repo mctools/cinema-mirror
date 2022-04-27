@@ -1,6 +1,3 @@
-#ifndef Hist1D_hh
-#define Hist1D_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,27 +18,45 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTHistBase.hh"
-#include <cmath>
+#include "PTEst1D.hh"
+#include "PTMath.hh"
 
-namespace Prompt {
-  class Hist1D : public HistBase {
-  public:
-    explicit Hist1D(double xmin, double xmax, unsigned nbins,bool linear=true);
-    virtual ~Hist1D();
-
-    unsigned dimension() const override { return 1; }  ;
-    std::vector<double> getEdge() const;
-    void save(const std::string &filename) const override;
-
-    virtual void fill(double val);
-    virtual void fill(double val, double weight);
-
-  protected:
-    double m_binfactor;
-    double m_logxmin;
-    bool m_linear;
-  };
+Prompt::Est1D::Est1D(double xmin, double xmax, unsigned nbins, bool linear)
+:Hist1D(xmin, xmax, nbins, linear)
+{
 }
 
-#endif
+Prompt::Est1D::~Est1D()
+{
+}
+
+//Normal filling:
+void Prompt::Est1D::fill(double val)
+{
+  PROMPT_THROW2(BadInput, "Prompt::Est1D::fill(double val) is not implemented");
+}
+
+void Prompt::Est1D::fill(double val, double w)
+{
+  PROMPT_THROW2(BadInput, "Prompt::Est1D::fill(double val, double w) is not implemented");
+}
+
+
+void Prompt::Est1D::fill(double val, double w, double error)
+{
+  std::lock_guard<std::mutex> guard(m_hist_mutex);
+
+  m_sumW+=w;
+  if(val<m_xmin) {
+    m_underflow += w;
+    return;
+  }
+  else if(val>m_xmax) {
+    m_overflow += w;
+    return;
+  }
+
+  unsigned i = m_linear ? floor((val-m_xmin)*m_binfactor) : floor((log10(val)-m_logxmin)*m_binfactor) ;
+  m_data[i] += w;
+  m_hit[i] =  std::sqrt(error*error+m_hit[i]*m_hit[i]);
+}

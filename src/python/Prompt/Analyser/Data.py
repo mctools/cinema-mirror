@@ -47,22 +47,24 @@ class RunData(DataLoader):
         super().__init__(fname, moduleName)
         self.normalise(normMethod)
 
+    # += operator
+    def __iadd__(self, other):
+        self.detErrPro += other.detErrPro
+        self.moniErrPro += other.moniErrPro
+        return self
+
+    # -= operator
+    def __isub__(self, other):
+        self.detErrPro -= other.detErrPro
+        self.moniErrPro += other.moniErrPro
+        return self
+
     def normalise(self, normMethod):
         if normMethod == Normalise.skip:
             pass
-
         elif normMethod == Normalise.byMonitor:
-            totMonitor  = self.tofMonitor.sum()
-            if totMonitor == 0:
-                raise RunTimeError('Monitor count is zero')
-            self.tofpidMat /= totMonitor
-        elif normMethod == Normalise.byMonitorTOF:
-            self.tofpidMat = np.divide(self.tofpidMat, self.tofMonitor/np.arange(1, self.tofMonitor.size+1), where=(self.tofMonitor!=0))
-        elif normMethod == Normalise.byProtonCharge:
-            totCharge = self.protonCharge.sum()
-            if totCharge == 0:
-                raise RunTimeError('Proton charge is zero')
-
+            totMonitor  = self.moniErrPro.weight.sum()
+            self.detErrPro.scale(1./totMonitor)
 
         else:
             raise RunTimeError('Unknown normalise method')

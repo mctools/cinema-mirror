@@ -27,7 +27,6 @@
 extern "C" {
 #endif
 
-
 // Converters
 double pt_eKin2k(double ekin);
 double pt_angleCosine2Q(double anglecosine, double enin_eV, double enout_eV);
@@ -53,8 +52,15 @@ void* pt_Hist1D_new(double xmin, double xmax, unsigned nbins, bool linear);
 void pt_Hist1D_delete(void* obj);
 void pt_Hist1D_getEdge(void* obj, double* edge);
 void pt_Hist1D_getWeight(void* obj, double* w);
+void pt_Hist1D_getHit(void* obj, double* h);
 void pt_Hist1D_fill(void* obj, double val, double weight);
 void pt_Hist1D_fillmany(void* obj, size_t n, double* val, double* weight);
+
+// Prompt::Est1D
+void* pt_Est1D_new(double xmin, double xmax, unsigned nbins, bool linear);
+void pt_Est1D_delete(void* obj);
+void pt_Est1D_fill(void* obj, double val, double weight, double error);
+void pt_Est1D_fillmany(void* obj, size_t n, double* val, double* weight, double* error);
 
 // Prompt::Hist2D
 void* pt_Hist2D_new(double xmin, double xmax, unsigned nxbins,
@@ -62,9 +68,9 @@ void* pt_Hist2D_new(double xmin, double xmax, unsigned nxbins,
 void pt_Hist2D_delete(void* obj);
 void pt_Hist2D_getWeight(void* obj, double* w);
 void pt_Hist2D_getDensity(void* obj, double* d);
+void pt_Hist2D_getHit(void* obj, double* h);
 void pt_Hist2D_fill(void* obj, double xval, double yval, double weight);
 void pt_Hist2D_fillmany(void* obj, size_t n, double* xval, double* yval, double* weight);
-
 
 #ifdef __cplusplus
 }
