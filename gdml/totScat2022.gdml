@@ -53,9 +53,8 @@
         </material>
 
         <material name="V">
-          <atom value="V_sg229.ncmat"/>
+          <atom value="V_sg229.ncmat;bragg=0"/>
           <D value="1"/>
-          <bragg="0">
         </material>
 
         <material name="SiPower">
@@ -82,6 +81,7 @@
         <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleStick" rmax="3.175" rmin="0.0" startphi="0.0" z="60.0" /> -->
         <!-- Vanadium SampleHolder -->
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleHolder" rmax="4.7658" rmin="4.4758" startphi="0.0" z="60.0" />
+        <box lunit="mm" name="MonitorIn" x="40.0" y="40.0" z="1.0" />
         <box lunit="mm" name="Module300_L" x="25.4" y="211.2" z="300" />
         <box lunit="mm" name="Module300_G" x="300" y="211.2" z="25.4" />
         <box lunit="mm" name="Module500_L" x="25.4" y="211.2" z="500" />
@@ -104,6 +104,12 @@
         <volume name="LV_Tube_SampleHolder">
             <solidref ref="SampleHolder" />
             <materialref ref="V" />
+            <auxiliary auxtype="Color" auxvalue="#00ff1700" />
+        </volume>
+
+        <volume name="LV_MonitorIn">
+            <solidref ref="MonitorIn" />
+            <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
         </volume>
 
@@ -268,6 +274,11 @@
             <physvol name="LV_Tube_SampleHolder">
                 <volumeref ref="LV_Tube_SampleHolder" />
                 <rotationref ref="R_LV_SampleHolder" />
+            </physvol>
+
+            <physvol name="LV_MonitorIn">
+                <volumeref ref="LV_MonitorIn" />
+                <position name="P_MonitorIn" unit="mm" x="0.0" y="0.0" z="-457.0" />
             </physvol>
 
             <physvol name="module10203">
