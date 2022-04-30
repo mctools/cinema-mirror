@@ -1,10 +1,7 @@
 import numpy as np
 import math #isclose
 import time
-try:
-    from  PiXiu.Utils.cHist import NumpyHist2D
-except ImportError:
-    from  PiXiu.Utils.Histogram import Hist2D as NumpyHist2D
+from  Prompt.Math.Hist import Hist2D
 
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from PiXiu.Common.Units import *
@@ -113,7 +110,7 @@ class CalcBase:
         qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
         maxhkl = np.int(maxQ/np.ceil(qmin1d))
 
-        hist=NumpyHist2D(QSize, enSize, [ [0, maxQ + extraHistQranage], [0, self.en.max()+extraHistEnrange]] )
+        hist=Hist2D(0, maxQ + extraHistQranage, QSize, 0, self.en.max()+extraHistEnrange, enSize )
 
         for h in range(0,maxhkl+1,jump):  # half a space
                 for k in range(-maxhkl,maxhkl+1,jump):
@@ -158,12 +155,12 @@ class CalcBase:
             enbuf.append(self.en[i])
             sbuf.append(Smag*hklweight)
             if len(qbuf)>=1000:
-                hist.fill(np.array(qbuf).flatten(), np.array(enbuf).flatten(),np.array(sbuf).flatten())
+                hist.fillmany(np.array(qbuf).flatten(), np.array(enbuf).flatten(),np.array(sbuf).flatten())
                 qbuf=[]
                 enbuf=[]
                 sbuf=[]
 
-        hist.fill(np.array(qbuf).flatten(), np.array(enbuf).flatten(),np.array(sbuf).flatten())
+        hist.fillmany(np.array(qbuf).flatten(), np.array(enbuf).flatten(),np.array(sbuf).flatten())
 
     def show(self, H, xedges, yedges):
         import matplotlib.pyplot as plt

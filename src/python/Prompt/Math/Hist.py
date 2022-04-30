@@ -175,6 +175,12 @@ class Hist2D():
         self.xNumBin = xnum
         self.yNumBin = ynum
 
+        self.xmin = xmin
+        self.xmax = xmax
+
+        self.ymin = ymin
+        self.ymax = ymax
+
     def __del__(self):
         _pt_Hist2D_delete(self.cobj)
 

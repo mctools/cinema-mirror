@@ -14,4 +14,4 @@ maxQ=5.
 # profile.run('calc.calcPowder(maxQ, enSize, QSize, jump=1)')
 hist = calc.calcPowder(maxQ, enSize, QSize, jump=1)
 
-calc.show(hist.getHistVal(), hist.getXedges(), hist.getYedges())
+calc.show(hist.getWeight(), hist.xedge, hist.yedge)
