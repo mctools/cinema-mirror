@@ -11,7 +11,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 # VecGeom
-set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/VecGeom/install/") 
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/VecGeom/install/")
 set(VecGeom_VERSION 1.1.17)
 find_package(VecGeom ${VecGeom_VERSION} REQUIRED)
 message(STATUS "Using VecGeom version ${VecGeom_VERSION}")
@@ -37,6 +37,15 @@ add_subdirectory(bin)
 
 #Test
 enable_testing()
-add_subdirectory(src/cxxtest)
+add_subdirectory(src/cxxtests)
 
-#find_package(Python REQUIRED COMPONENTS Interpreter Development)
+find_package(Python REQUIRED COMPONENTS Interpreter Development)
+
+file(GLOB TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontest/*.py")
+foreach(TS ${TESTFILES})
+	get_filename_component(EXCNAME  ${TS}  NAME_WE)
+	add_test (NAME python-${EXCNAME}
+	  COMMAND ${Python_EXECUTABLE} ${TS}
+	  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/takbin #fixme find a temp dir defined in the enviroment
+	)
+endforeach(TS ${TESTFILES})
