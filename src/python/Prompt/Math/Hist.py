@@ -76,7 +76,11 @@ class Hist1D():
         try:
             import matplotlib.pyplot as plt
             center = self.getCentre()
-            plt.plot(center, self.getWeight(), label=label)
+            w = self.getWeight()
+            uncet = np.sqrt(self.getHit()/10.)
+            err = np.divide(w, uncet, where=(uncet!=0.))
+            plt.errorbar(center, w, yerr=err, fmt='o', label=label)
+
             if show:
                 plt.show()
         except Exception as e:
