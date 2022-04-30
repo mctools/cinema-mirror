@@ -1,0 +1,12 @@
+{
+    "name": "Al benchmark",
+    "lattice": [
+      [0, 2.018470, 2.018470],
+      [2.018470, 0, 2.018470],
+      [2.018470, 2.018470, 0]
+    ],
+    "atom":{
+      "1": {"Al": [0,0,0]}
+    },
+    "__comment__": "a scatLength field (in the unit of 10fm!) will override the default scattering length used for calculations"
+}
