@@ -38,3 +38,5 @@ rundir
 *.exe
 *.out
 *.app
+
+bigdata

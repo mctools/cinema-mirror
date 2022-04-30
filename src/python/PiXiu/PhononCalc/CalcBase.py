@@ -139,9 +139,6 @@ class CalcBase:
         #S=np.array([self.nAtom*3*self.numQpoint, 3])
         tau=np.dot(hkl,self.lattice_reci)
         modeWeight = 1./(self.nAtom) #fixme: So the xs is in the unit of per atom? but the  eigv is already weighted
-        qbuf=[] #fixme: use python array for faster code
-        enbuf=[]
-        sbuf=[]
         for i in range(self.numQpoint):
             Q=self.qpoint[i]+tau
             Qmag=np.linalg.norm(Q)
@@ -150,17 +147,7 @@ class CalcBase:
             F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
             #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
             Smag=(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar*modeWeight/self.en[i]
-
-            qbuf.append(np.repeat(Qmag,self.nAtom*3))
-            enbuf.append(self.en[i])
-            sbuf.append(Smag*hklweight)
-            if len(qbuf)>=1000:
-                hist.fillmany(np.array(qbuf).flatten(), np.array(enbuf).flatten(),np.array(sbuf).flatten())
-                qbuf=[]
-                enbuf=[]
-                sbuf=[]
-
-        hist.fillmany(np.array(qbuf).flatten(), np.array(enbuf).flatten(),np.array(sbuf).flatten())
+            hist.fillmany(np.repeat(Qmag,self.nAtom*3), self.en[i], Smag*hklweight)
 
     def show(self, H, xedges, yedges):
         import matplotlib.pyplot as plt
