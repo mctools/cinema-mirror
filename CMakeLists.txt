@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project(prompt)
+project(cinema)
 
 find_package(HDF5 REQUIRED COMPONENTS C)
 
@@ -41,7 +41,7 @@ add_subdirectory(src/cxxtests)
 
 find_package(Python REQUIRED COMPONENTS Interpreter Development)
 
-file(GLOB TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontest/*.py")
+file(GLOB TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontests/*.py")
 foreach(TS ${TESTFILES})
 	get_filename_component(EXCNAME  ${TS}  NAME_WE)
 	add_test (NAME python-${EXCNAME}

@@ -2,8 +2,7 @@
 
 from io import BytesIO
 import numpy as np
-from  PiXiu.Utils.cHist import NumpyHist2D
-from PiXiu.Utils.Histogram import Hist2D
+from  Prompt.Math.Hist import Hist2D, NumpyHist2D
 
 import matplotlib.pyplot as plt
 
@@ -16,14 +15,14 @@ ymin=0.
 ymax=1.
 
 hist=NumpyHist2D(xbin, ybin, [[xmin, xmax], [ymin, ymax]])
-histSlow=Hist2D(xbin, ybin, [[xmin, xmax], [ymin, ymax]])
+histcpp=Hist2D(xmin, xmax, xbin, ymin, ymax, ybin)
 
 for i in range(100):
     data=np.random.random([2, 10000])
     hist.fill(data[0], data[1])
-    histSlow.fill(data[0], data[1])
+    histcpp.fillmany(data[0], data[1])
 
 
-np.testing.assert_array_equal(hist.hist, histSlow.hist)
+np.testing.assert_array_equal(hist.hist, histcpp.getWeight())
 
 print('passed')

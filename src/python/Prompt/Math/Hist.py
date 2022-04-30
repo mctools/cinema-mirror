@@ -229,3 +229,51 @@ class Hist2D():
 
         except Exception as e:
             print(e)
+
+
+# Class NumpyHist2D is written to validate Hist2D only. It shouldn't be
+# used in practice due to slow performance.
+class NumpyHist2D():
+    def __init__(self, xbin, ybin, range):
+        range=np.array(range)
+        if range.shape != (2,2):
+            raise IOError('wrong range shape')
+        self.range=range
+        self.xedge=np.linspace(range[0][0], range[0][1], xbin+1)
+        self.yedge=np.linspace(range[1][0], range[1][1], ybin+1)
+        if range[0][0] == range[0][1] or range[1][0] == range[1][1]:
+            raise IOError('wrong range input')
+        self.xbinfactor=xbin/float(range[0][1]-range[0][0])
+        self.ybinfactor=ybin/float(range[1][1]-range[1][0])
+        self.xmin=range[0][0]
+        self.xmax=range[0][1]
+        self.ymin=range[1][0]
+        self.ymax=range[1][1]
+        self.hist =np.zeros([xbin, ybin])
+
+    def fill(self, x, y, weights=None):
+        h, xedge, yedge = np.histogram2d(x, y, bins=[self.xedge, self.yedge], weights=weights)
+        self.hist += h
+
+    def getHistVal(self):
+        return self.hist
+
+    def getXedges(self):
+        return self.xedge
+
+    def getYedges(self):
+        return self.yedge
+
+    def show(self):
+        import matplotlib.pyplot as plt
+        fig=plt.figure()
+        ax = fig.add_subplot(111)
+        H = self.hist.T
+
+        X, Y = np.meshgrid(self.xedge, self.yedge)
+        import matplotlib.colors as colors
+        pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet,  norm=colors.LogNorm(vmin=H.max()*1e-4, vmax=H.max()),)
+        fig.colorbar(pcm, ax=ax)
+        plt.xlabel('Q, Aa^-1')
+        plt.ylabel('energy, eV')
+        plt.show()

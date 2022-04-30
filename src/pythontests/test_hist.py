@@ -2,7 +2,7 @@
 
 from io import BytesIO
 import numpy as np
-from  PiXiu.Utils.cHist import NumpyHist2D
+from  Prompt.Math.Hist import Hist2D
 import matplotlib.pyplot as plt
 
 xbin=10
@@ -14,24 +14,20 @@ ymin=0.
 ymax=1.
 
 
-for i in range(1000):
-    hist=NumpyHist2D(xbin, ybin, [[xmin, xmax], [ymin, ymax]])
+for i in range(100):
+    hist=Hist2D(xmin, xmax, xbin, ymin, ymax, ybin)
     input = np.random.random([2,1])
     x=input[0]
     y=input[1]
     hist.fill(x,y)
-    # data=hist.getHistVal()
 
-    hist.save('test.npy')
-    with open('test.npy', mode='rb') as file: # b is important -> binary
-      fileContent = file.read()
-    data=np.load(BytesIO(fileContent))
+    data=hist.getWeight()
 
     histLoc = np.nonzero(data)
-    xi = ((x-xmin)/(xmax-xmin)*xbin).astype(np.int)
-    yi = ((y-ymin)/(ymax-ymin)*ybin).astype(np.int)
+    xi = ((x-xmin)/(xmax-xmin)*xbin).astype(int)
+    yi = ((y-ymin)/(ymax-ymin)*ybin).astype(int)
 
     np.testing.assert_equal(histLoc[0], xi)
     np.testing.assert_equal(histLoc[1], yi)
 
-print('passed 1000 times')
+print('passed 100 times')
