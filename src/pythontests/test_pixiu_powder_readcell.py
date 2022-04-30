@@ -4,7 +4,8 @@ import numpy as np
 from PiXiu.PhononCalc import MeshCell
 
 kt =0.0253 #temperature in kelvin
-calc = MeshCell('./data/Al/mesh.hdf5', './data/Al/cell.json', kt)
+#fixme: finddata pacakge
+calc = MeshCell('../data/Al/mesh.hdf5', '../data/Al/cell.json', kt)
 
 enSize=3
 QSize=3
