@@ -1,10 +1,10 @@
 import numpy as np
 import math #isclose
 import time
-from  Prompt.Math.Hist import Hist2D
+from  Cinema.Prompt.Math.Hist import Hist2D
 
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from PiXiu.Common.Units import *
+from ..Common.Units import *
 
 # lattice (Aa), mass (atomic mass), pos (fractional coordinate), bc (sqrt(barn))
 # qpoints(reduced coordinate), energy(eV ), eigv (unity magnitude), qweight (dimensionless), kt(eV)

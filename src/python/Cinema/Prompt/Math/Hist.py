@@ -20,7 +20,7 @@
 ##                                                                            ##
 ################################################################################
 
-from Interface import *
+from Cinema.Interface import *
 import numpy as np
 
 

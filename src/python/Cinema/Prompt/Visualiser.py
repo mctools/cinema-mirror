@@ -20,7 +20,7 @@
 ##                                                                            ##
 ################################################################################
 
-from Interface import *
+from ..Interface import *
 
 import pyvista as pv
 import random

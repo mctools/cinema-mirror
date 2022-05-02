@@ -1,7 +1,7 @@
 import h5py
 import numpy as np
-from PiXiu.PhononCalc.CalcBase import CalcBase
-from PiXiu.Common.Units import *
+from .CalcBase import CalcBase
+from ..Common.Units import *
 
 class Hdf5Mesh(CalcBase):
     def __init__(self, lattice, mass, pos, bc, kt, fileName):

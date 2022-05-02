@@ -20,7 +20,7 @@
 ##                                                                            ##
 ################################################################################
 
-from Interface import *
+from ..Interface import *
 
 _pt_placedVolNum = importFunc('pt_placedVolNum', type_sizet, [])
 _pt_printMesh = importFunc("pt_printMesh", type_voidp, [])

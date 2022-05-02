@@ -20,7 +20,7 @@
 ##                                                                            ##
 ################################################################################
 
-from Interface import *
+from Cinema.Interface import *
 import numpy as np
 
 eKin2k = importFunc('pt_eKin2k', type_dbl, [type_dbl] )

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 import numpy as np
-from PiXiu.PhononCalc import MeshCell
-
+from Cinema.PiXiu.PhononCalc import MeshCell
+from Cinema.Interface.Utils import findData
 kt =0.0253 #temperature in kelvin
 #fixme: finddata pacakge
-calc = MeshCell('../data/Al/mesh.hdf5', '../data/Al/cell.json', kt)
+calc = MeshCell(findData('Al/mesh.hdf5'), findData('Al/cell.json'), kt)
 
 enSize=3
 QSize=3
