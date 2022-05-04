@@ -36,10 +36,10 @@ type_npdbl3d=np.ctypeslib.ndpointer(dtype=np.float64,ndim=3,flags='C_CONTIGUOUS'
 type_npszt1d=np.ctypeslib.ndpointer(dtype=ctypes.c_size_t,ndim=1,flags='C_CONTIGUOUS')
 
 def _getPromptLib():
-    _ptpath = os.getenv('PTPATH')
+    _ptpath = os.getenv('CINEMAPATH')
     if _ptpath is None:
-        raise IOError('PTPATH enviroment is not set')
-    libfile = glob.glob(_ptpath +'/promptbin/src/cxx/libprompt_core.so')[0]
+        raise IOError('CINEMAPATH enviroment is not set')
+    libfile = glob.glob(_ptpath +'/cinemabin/src/cxx/libprompt_core.so')[0]
     return ctypes.CDLL(libfile), _ptpath
 
 _taklib, _ptpath = _getPromptLib()

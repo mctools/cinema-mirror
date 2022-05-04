@@ -2,7 +2,7 @@
 
 USAGE="Usage: $0 -t for unit test"
 
-.  $PTPATH/external/ncrystal/install/setup.sh
+.  $CINEMAPATH/external/ncrystal/install/setup.sh
 while getopts ti:d option
   do
     case "${option}"
@@ -14,7 +14,7 @@ while getopts ti:d option
 done
 
 
-cd $PTPATH/promptbin
+cd $CINEMAPATH/cinemabin
 cmake ..
 make -j
 

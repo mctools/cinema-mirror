@@ -1,8 +1,8 @@
 build*
 __pycache__
 #gdml
-ptvirenv
-promptbin
+*virenv
+cinemabin
 external
 rundir
 

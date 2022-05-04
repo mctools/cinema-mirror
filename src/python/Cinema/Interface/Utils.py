@@ -27,7 +27,7 @@ def findData(fn, absPath=False):
     if len(fs)!=2:
         raise RuntimeError('findData input should be something like Al/cell.json')
     # if not absPath:
-    pxpath = os.getenv('PTPATH')+ '/data/' + fs[0]+'/'
+    pxpath = os.getenv('CINEMAPATH')+ '/data/' + fs[0]+'/'
     fnlist=[]
     for root, dirs, files in os.walk(pxpath):
         if fs[1] in files:
