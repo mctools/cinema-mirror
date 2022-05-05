@@ -134,6 +134,7 @@ else
     mkdir SSSP_precision_pseudos
     tar -xzvf SSSP_precision_pseudos.tar.gz --directory SSSP_precision_pseudos
     cd -
+    export PIXIUSSSP=$CINEMAPATH/external/pixiusssp
   fi
 fi
 
