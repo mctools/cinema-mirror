@@ -8,7 +8,7 @@ if __name__ == '__main__':
     input='Use -i option to define input'
     kpt=[4,4,4]
     dim=[2,2,2]
-    unitcell_sim="POSCAR"
+    unitcell_sim="unitcell.in"
     pcell = True
     ismetal = False
 
