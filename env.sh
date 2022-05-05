@@ -121,7 +121,21 @@ else
 fi
 
 #SSSP
-export PIXIUSSSP=/home/caixx/git/cinema/external/pixiusssp
+if [ -f $CINEMAPATH/external/pixiusssp/sssp_efficiency.json ]; then
+  export PIXIUSSSP=$CINEMAPATH/external/pixiusssp
+else
+  read -r -p "Do you want install the SSSP DFT pseudopotential into $CINEMAPATH/external? [y/N] " response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    cd  $CINEMAPATH/external/
+    git clone https://gitlab.com/xxcai1/pixiusssp.git
+    cd -
+    cd $CINEMAPATH/external/pixiusssp
+    tar -xzvf SSSP_efficiency_pseudos.tar.gz
+    mkdir SSSP_precision_pseudos
+    tar -xzvf SSSP_precision_pseudos.tar.gz --directory SSSP_precision_pseudos
+    cd -
+  fi
+fi
 
 # ln -s
 echo -e "Enjoy!"
