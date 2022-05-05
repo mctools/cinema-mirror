@@ -1,7 +1,7 @@
 
 
 # z number, atomic mass, bound coherent scl, incoherent xs, absorption xs
-ncrystalSCLv0_9_18={"H": [ 1, 1.00794, -0.37409, 80.26, 0.3326],
+_ncrystalSCLv0_9_18={"H": [ 1, 1.00794, -0.37409, 80.26, 0.3326],
   "He": [ 2, 4.002602, 0.326, 0.0, 0.00747],
   "Li": [ 3, 6.941, -0.19, 0.92, 70.5],
   "Be": [ 4, 9.012182, 0.779, 0.0018, 0.0076],
@@ -89,5 +89,5 @@ ncrystalSCLv0_9_18={"H": [ 1, 1.00794, -0.37409, 80.26, 0.3326],
   "U": [ 92, 238.02891, 0.8417, 0.005, 7.57]}
 
 def getAtomMassBC(element):
-    info = ncrystalSCLv0_9_18[element]
+    info = _ncrystalSCLv0_9_18[element]
     return info[1], info[2]

@@ -120,6 +120,8 @@ else
   fi
 fi
 
+#SSSP
+export PIXIUSSSP=/home/caixx/git/cinema/external/pixiusssp
 
 # ln -s
 echo -e "Enjoy!"

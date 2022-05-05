@@ -6,3 +6,7 @@ matplotlib
 #required packages for post-analysis
 scipy
 h5py
+
+#PiXiu
+phonopy
+spglib
