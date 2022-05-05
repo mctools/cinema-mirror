@@ -46,6 +46,6 @@ foreach(TS ${TESTFILES})
 	get_filename_component(EXCNAME  ${TS}  NAME_WE)
 	add_test (NAME python-${EXCNAME}
 	  COMMAND ${Python_EXECUTABLE} ${TS}
-	  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/promptbin #fixme find a temp dir defined in the enviroment
+	  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/cinemabin #fixme find a temp dir defined in the enviroment
 	)
 endforeach(TS ${TESTFILES})

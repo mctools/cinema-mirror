@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
-from Cinema.PiXiu import getAtomMassBC, Pseudo
+from Cinema.PiXiu import getAtomMassBC, Pseudo, QEType
 import os,sys, getopt
 
 if __name__ == '__main__':
@@ -55,4 +55,4 @@ if __name__ == '__main__':
             sys.exit()
     ps = Pseudo()
     print('pcell is ', pcell)
-    ps.qems(input, unitcell_sim, dim, kpt, usePrimitiveCell=pcell, isMetal=ismetal )
+    ps.qems(input, unitcell_sim, dim, kpt, QEType.Scf, usePrimitiveCell=pcell, isMetal=ismetal )
