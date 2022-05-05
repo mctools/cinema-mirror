@@ -3,7 +3,7 @@ import numpy as np
 import json
 
 from .Hdf5Mesh import Hdf5Mesh
-from ..Common.AtomInfo import getAtomMassBC
+from ..AtomInfo import getAtomMassBC
 
 class MeshCell(Hdf5Mesh):
     def __init__(self, h5FileName, cellName, kt):

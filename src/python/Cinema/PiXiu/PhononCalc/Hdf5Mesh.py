@@ -1,7 +1,7 @@
 import h5py
 import numpy as np
 from .CalcBase import CalcBase
-from ..Common.Units import *
+from ..Units import *
 
 class Hdf5Mesh(CalcBase):
     def __init__(self, lattice, mass, pos, bc, kt, fileName):
