@@ -35,7 +35,7 @@ export CINEMAPATH="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #install ncrystal
 
 if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
-  read -r -p "Do you want to install NCrysta into $CINEMAPATH/external? [y/N] " response
+  read -r -p "Do you want to install NCrystal into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       if [ ! -d $CINEMAPATH/external ]; then
         mkdir $CINEMAPATH/external
