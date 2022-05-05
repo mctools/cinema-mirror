@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from Prompt import Launcher, Visualiser
+from Cinema.Prompt import Launcher, Visualiser
 import matplotlib.pyplot as plt
 import numpy as np
 
