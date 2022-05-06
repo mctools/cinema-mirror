@@ -55,6 +55,8 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
       echo "Found ncrystal"
     fi
     .  $CINEMAPATH/external/ncrystal/install/setup.sh
+  else
+    .  $CINEMAPATH/external/ncrystal/install/setup.sh
   fi
 
 
@@ -74,7 +76,7 @@ if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
     cd -
     mkdir $CINEMAPATH/external/VecGeom/build && cd $CINEMAPATH/external/VecGeom/build
     cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/VecGeom/install -DGDML=On -DUSE_NAVINDEX=On  ..
-    make -j ${NUMCPU} && make install
+    make -j${NUMCPU} && make install
     cd -
     echo "installed  VecGeom"
   else
@@ -94,7 +96,7 @@ if [ ! -d $CINEMAPATH/cinemabin ]; then
   mkdir $CINEMAPATH/cinemabin
   cd $CINEMAPATH/cinemabin
   cmake ..
-  make -j8
+  make -j${NUMCPU}
   cd -
 fi
 
@@ -134,6 +136,7 @@ else
     mkdir SSSP_precision_pseudos
     tar -xzvf SSSP_precision_pseudos.tar.gz --directory SSSP_precision_pseudos
     cd -
+    export PIXIUSSSP=$CINEMAPATH/external/pixiusssp
   fi
 fi
 
