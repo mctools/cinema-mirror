@@ -55,6 +55,8 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
       echo "Found ncrystal"
     fi
     .  $CINEMAPATH/external/ncrystal/install/setup.sh
+  else
+    .  $CINEMAPATH/external/ncrystal/install/setup.sh
   fi
 
 
