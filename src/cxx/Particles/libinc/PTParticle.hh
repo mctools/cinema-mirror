@@ -37,13 +37,16 @@ namespace Prompt {
     Particle(double ekin, const Vector& dir, const Vector& pos);
     virtual ~Particle(){};
 
-    virtual void moveForward(double length);
+    virtual void moveForward(double length); //fixme PTTrack is not used, so this virtual function may not be useful
 
     virtual void setDirection(const Vector& dir);
     const Vector &getDirection() { return m_dir; }
 
     void setPosition(const Vector& pos);
     const Vector &getPosition() { return m_pos; }
+
+    void setLocalPosition(const Vector& pos) { m_localpos=pos; }
+    const Vector &getLocalPosition() { return m_localpos; }
 
     double getTime() { return m_time; }
     void setEKin(double ekin);
