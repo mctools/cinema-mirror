@@ -168,8 +168,8 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   if(!particle.isAlive())
     return false;
 
-  Vector &p = particle.getPosition();
-  Vector &dir = particle.getDirection();
+  const Vector &p = particle.getPosition();
+  const Vector &dir = particle.getDirection();
   if (verbose) {
     std::cout << m_currPV->GetLogicalVolume()->GetName() << ", id " << m_currPV->GetLogicalVolume()->id() << std::endl;
     std::cout << "initial conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << std::endl;

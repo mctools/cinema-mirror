@@ -36,7 +36,7 @@ auto hist = std::make_unique<pt::Hist1D>(0.0001, 180 , 100, false);
   for(unsigned i=0;i<num;i++)
   {
     auto p = gun.generate();
-    pt::Vector& direction = p.getDirection();
+    const pt::Vector& direction = p.getDirection();
     double theta = direction.angle(pt::Vector(0.,0.,1))*180/M_PI;
     sum_theta += theta;
 

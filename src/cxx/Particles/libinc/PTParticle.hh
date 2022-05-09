@@ -38,13 +38,15 @@ namespace Prompt {
     virtual ~Particle(){};
 
     virtual void moveForward(double length);
-    virtual void setDirection(const Vector& dir);
 
-    void setEKin(double ekin);
+    virtual void setDirection(const Vector& dir);
+    const Vector &getDirection() { return m_dir; }
+
     void setPosition(const Vector& pos);
-    Vector &getDirection() { return m_dir; }
-    Vector &getPosition() { return m_pos; }
+    const Vector &getPosition() { return m_pos; }
+
     double getTime() { return m_time; }
+    void setEKin(double ekin);
     double getEKin() { return m_ekin; }
     double getEKin0() { return m_ekin0; }
     double getWeight() { return m_weight; }
@@ -59,7 +61,7 @@ namespace Prompt {
   protected:
     friend class DeltaParticle;
     double m_ekin0, m_ekin, m_time;
-    Vector m_dir, m_pos;
+    Vector m_dir, m_pos, m_localpos;
     unsigned m_pgd;
     double m_weight;
     double m_rest_mass;
