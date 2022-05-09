@@ -33,9 +33,7 @@ namespace Prompt {
       double sourceSampleDist, double qmin, double qmax, unsigned numbin,
       ScororType styp=Scoror::ENTRY, bool linear=true);
     virtual ~ScororNeutronSq();
-    virtual void scoreLocal(const Vector &vec, double w) override;
     virtual void score(Particle &particle) override;
-    virtual void score(Particle &particle, const DeltaParticle &dltpar) override;
   private:
     const Vector m_samplePos, m_refDir;
     const double m_sourceSampleDist;

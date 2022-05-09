@@ -26,19 +26,8 @@ Prompt::ScororVolFlux::ScororVolFlux(const std::string &name, double xmin, doubl
 
 Prompt::ScororVolFlux::~ScororVolFlux() {}
 
-
-void Prompt::ScororVolFlux::scoreLocal(const Vector &vec, double w)
-{
-  PROMPT_THROW2(BadInput, m_name << " does not support scoreLocal()");
-}
-
 void Prompt::ScororVolFlux::score(Particle &particle)
 {
   PROMPT_THROW2(BadInput, m_name << " does not support score(Particle &particle)");
-}
-
-void Prompt::ScororVolFlux::score(Particle &particle, const DeltaParticle &dltpar)
-{
-  //w=m_iVol*dltpar.dlt_pos.mag()*particle.getWeight()
-  m_hist->fill(particle.getEKin()-dltpar.dlt_ekin, m_iVol*dltpar.dlt_pos.mag());
+  // m_hist->fill(particle.getEKin()-dltpar.dlt_ekin, m_iVol*dltpar.dlt_pos.mag());
 }

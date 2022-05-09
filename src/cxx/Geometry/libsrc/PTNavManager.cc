@@ -111,14 +111,16 @@ void Prompt::NavManager::scoreEntry(Prompt::Particle &particle)
   }
 }
 
-void Prompt::NavManager::scoreSurface(const Vector &pos, double w)
+void Prompt::NavManager::scoreSurface(Prompt::Particle &particle)
 {
+  auto localposition = particle.getPosition();
   if(m_matphysscor->surface_scorors.size())
   {
-    auto loc = m_currState->GlobalToLocal({pos.x(), pos.y(), pos.z()});
+    auto loc = m_currState->GlobalToLocal({localposition.x(), localposition.y(), localposition.z()});
+    particle.setLocalPosition(Prompt::Vector(loc[0], loc[1], loc[2]));
     for(auto &v:m_matphysscor->surface_scorors)
     {
-      v->scoreLocal(Vector{loc[0], loc[1], loc[2]}, w);
+      v->score(particle);
     }
   }
 }
@@ -137,13 +139,13 @@ void Prompt::NavManager::scoreAbsorb(Prompt::Particle &particle)
 
 
 
-void Prompt::NavManager::scorePropagate(Prompt::Particle &particle, const DeltaParticle &dltpar)
+void Prompt::NavManager::scorePropagate(Prompt::Particle &particle)
 {
   if(m_matphysscor->propagate_scorors.size())
   {
     for(auto &v:m_matphysscor->propagate_scorors)
     {
-      v->score(particle, dltpar);
+      v->score(particle);
     }
   }
 }

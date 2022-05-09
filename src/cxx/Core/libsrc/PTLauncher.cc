@@ -118,7 +118,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       //! first step of a particle in a volume
       // std::cout << navman.getVolumeName() << " " << particle.getPosition() << std::endl;
       navman.setupVolumePhysics();
-      navman.scoreSurface(particle.getPosition(), particle.getWeight());
+      navman.scoreSurface(particle);
 
       //if reflected
       if(navman.surfacePhysics(particle))
@@ -133,8 +133,8 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
         // score if any scoror is available
         if(navman.hasPropagateScoror())
         {
-          dltpar.calcDeltaParticle(particle);
-          navman.scorePropagate(particle, dltpar);
+          // dltpar.calcDeltaParticle(particle); //fixme: delta?
+          navman.scorePropagate(particle);
         }
         if(recordTrj)
           m_trajectory.push_back(particle.getPosition());

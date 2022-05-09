@@ -29,24 +29,15 @@ Prompt::ScororPSD::ScororPSD(const std::string &name, double xmin, double xmax,
 
 Prompt::ScororPSD::~ScororPSD() {}
 
-void Prompt::ScororPSD::scoreLocal(const Vector &vec, double w)
-{
-  if (m_type==XY)
-    m_hist->fill(vec.x(), vec.y(), w);
-  else if (m_type==YZ)
-    m_hist->fill(vec.y(), vec.z(), w);
-  else if (m_type==XZ)
-    m_hist->fill(vec.x(), vec.z(), w);
-  else
-    PROMPT_THROW2(BadInput, m_name << " not support type");
-}
-
 void Prompt::ScororPSD::score(Prompt::Particle &particle)
 {
-  PROMPT_THROW2(BadInput, m_name << " does not support score()");
-}
-
-void Prompt::ScororPSD::score(Prompt::Particle &particle, const DeltaParticle &dltpar)
-{
-  PROMPT_THROW2(BadInput, m_name << " does not support score()");
+  const Vector &vec = particle.getLocalPosition();
+  if (m_type==XY)
+    m_hist->fill(vec.x(), vec.y(), particle.getWeight() );
+  else if (m_type==YZ)
+    m_hist->fill(vec.y(), vec.z(), particle.getWeight() );
+  else if (m_type==XZ)
+    m_hist->fill(vec.x(), vec.z(), particle.getWeight() );
+  else
+    PROMPT_THROW2(BadInput, m_name << " not support type");
 }

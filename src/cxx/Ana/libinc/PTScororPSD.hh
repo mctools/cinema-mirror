@@ -33,9 +33,7 @@ namespace Prompt {
     ScororPSD(const std::string &name, double xmin, double xmax, unsigned nxbins,
       double ymin, double ymax, unsigned nybins, ScororType type=XY);
     virtual ~ScororPSD();
-    virtual void scoreLocal(const Vector &vec, double w) override;
     virtual void score(Particle &particle) override;
-    virtual void score(Particle &particle, const DeltaParticle &dltpar) override;
   private:
     ScororType m_type;
   };

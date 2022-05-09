@@ -41,11 +41,6 @@ Prompt::ScororNeutronSq::~ScororNeutronSq()
   m_dataout.close();
 }
 
-void Prompt::ScororNeutronSq::scoreLocal(const Vector &, double)
-{
-  PROMPT_THROW2(BadInput, m_name << " does not support scoreLocal()");
-}
-
 
 void Prompt::ScororNeutronSq::score(Prompt::Particle &particle)
 {
@@ -76,9 +71,4 @@ void Prompt::ScororNeutronSq::score(Prompt::Particle &particle)
   m_hist->fill(q, particle.getWeight());
   if(m_kill)
     particle.kill(Particle::SCORE);
-}
-
-void Prompt::ScororNeutronSq::score(Prompt::Particle &particle, const DeltaParticle &dltpar)
-{
-  score(particle);
 }
