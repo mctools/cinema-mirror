@@ -12,6 +12,13 @@ then
     return
 fi
 
+if ! hash pw.x 2>/dev/null
+then
+    echo "pw.x is required to continue the installation of Cinema"
+    return
+fi
+
+
 NUMCPU=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
 
 #remove previously sourced env
