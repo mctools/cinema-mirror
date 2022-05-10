@@ -96,15 +96,11 @@ class Pseudo():
 
 
 
-    def qems(self, filename, simname, dim, kpt, qeType=QEType.Scf, usePrimitiveCell=True, isMetal=False):
-        metal_str="occupations='fixed'"
-        if isMetal:
-            metal_str="occupations='smearing'"
+    def qems(self, cell, simname, dim, kpt, qeType=QEType.Scf, usePrimitiveCell=True):
+        metal_str="occupations='smearing'"
 
         qe_control=self.qe_input(qeType)
         atom_spec ="ATOMIC_SPECIES\n{}"
-
-        cell = read_vasp(filename)
 
         lattice , positions, numbers_p = standardize_cell(cell, to_primitive=usePrimitiveCell, no_idealize=0, symprec=0.1)
 
@@ -138,7 +134,7 @@ class Pseudo():
         max_ecutrho=0
 
         for ele in elements:
-            mass, _ = getAtomMassBC(ele)
+            mass, _, _ = getAtomMassBC(ele)
             element_mass.append(mass)
 
             ecutwfc, ecutrho, pseudo = self.getPseudo(ele)
