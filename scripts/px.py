@@ -9,6 +9,15 @@ import json, copy
 def lastGoodNumber(n):
     return int(2**np.floor(np.log2(n)))
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--input', action='store', type=str, default='mp-13_Fe.json',
+                    dest='input', help='input json file')
+
+args = parser.parse_args()
+inputfile=args.input
+
+
 cores=lastGoodNumber(os.cpu_count()//2)
 
 ps = Pseudo()
@@ -16,7 +25,7 @@ ps = Pseudo()
 pcell = True
 unitcell_sim="unitcell.in"
 
-c = JsonCell('mp-1271562_Fe.json')
+c = JsonCell(inputfile)
 dim = c.estSupercellDim()
 kpt_relax = c.estRelaxKpoint()
 kpt = c.estSupercellKpoint()
