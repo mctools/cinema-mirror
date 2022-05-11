@@ -2,6 +2,7 @@ import os
 import json
 from pathlib import Path
 import requests
+import random
 from zipfile import ZipFile
 from io import BytesIO
 from enum import Enum, unique
@@ -23,6 +24,17 @@ class MPHelper:
         self.api_key = api_key
         self.timeout = timeout
         self.data_dir = data_dir
+        self.user_agent = ['Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36',
+                           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36',
+                           'Mozilla/5.0 (X11; CrOS x86_64 10066.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36',
+                           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:70.0) Gecko/20100101 Firefox/70.0',
+                           'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:70.0) Gecko/20100101 Firefox/70.0',
+                           'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0',
+                           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36 OPR/65.0.3467.48',
+                           'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36 OPR/65.0.3467.48',
+                           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Safari/605.1.15',
+                           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36 Edg/101.0.100.0',
+                           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/604.1 Edg/101.0.100.0']
         if self.data_dir is not None:
             #os.makedirs(self.data_dir, exist_ok=True)
             Path(self.data_dir).mkdir(parents=True, exist_ok=True)
@@ -35,7 +47,10 @@ class MPHelper:
         if material is None or len(material.strip()) == 0:
             raise Exception('material is required.') 
         url = self.mids_url.replace('$QUERYSTR$', material.strip())
-        response = requests.request("GET", url, timeout=self.timeout)
+        headers = {
+            'User-Agent': (self.user_agent)[random.randint(0, len(self.user_agent) - 1)]
+        }
+        response = requests.request("GET", url, headers=headers, timeout=self.timeout)
         if response.status_code != requests.codes.ok:
             raise IOError(f'Query mids failed: {response.status_code}')
         
@@ -69,7 +84,7 @@ class MPHelper:
         
         headers = {
             'X-API-KEY': self.api_key,
-            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0'
+            'User-Agent': (self.user_agent)[random.randint(0, len(self.user_agent) - 1)]
         }
         payload = {'criteria': json.dumps(criteria), 'properties': json.dumps(properties)}
         response = requests.request("POST", self.query_url, headers=headers, data=payload, timeout=self.timeout)
@@ -94,7 +109,7 @@ class MPHelper:
             #'X-API-KEY': self.api_key,
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept-Encoding': 'gzip, deflate, br',
-            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0'
+            'User-Agent': (self.user_agent)[random.randint(0, len(self.user_agent) - 1)]
         }
 
         response = requests.request("POST", self.download_url, headers=headers, data=payload, timeout=self.timeout)
