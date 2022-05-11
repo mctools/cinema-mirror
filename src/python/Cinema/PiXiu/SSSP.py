@@ -171,7 +171,6 @@ class Pseudo():
                 f=open(sucl,'r+')
                 content = f.read()
                 f.seek(0,0)
-                f.write('! input structure file ' + filename + '\n')
                 if usePrimitiveCell:
                     f.write('! primitive cell\n')
                 else:
