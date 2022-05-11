@@ -52,7 +52,7 @@ print('mesh', mesh)
 fs=glob.glob('supercell-*.in')
 fs=sorted(fs)
 for f in fs:
-    if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {f} | tee {f[0:-3]}.out' ):
+    if os.system(f'mpirun -np {cores} pw.x -inp {f} | tee {f[0:-3]}.out' ):
         raise IOError("SCF pw.x fail")
 
 if os.system('phonopy -f supercell-*.out' ):
