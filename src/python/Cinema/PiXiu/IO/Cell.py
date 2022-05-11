@@ -11,7 +11,7 @@ class CellBase():
         self.position=[]
         self.num=[]
 
-    def estSupercellDim(self, size=8.):
+    def estSupercellDim(self, size=10.):
         return (size//self.abc).astype(int)
 
     def estRelaxKpoint(self, size=20.):
@@ -20,7 +20,7 @@ class CellBase():
     def estMesh(self, size=200.):
             return (size//self.abc).astype(int)
 
-    def estSupercellKpoint(self, size=20., supercellDim=None):
+    def estSupercellKpoint(self, size=30., supercellDim=None):
         if supercellDim is None:
             return (size//(self.abc*self.estSupercellDim())).astype(int)
         else:

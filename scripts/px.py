@@ -12,12 +12,12 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', action='store', type=str, default='mp-13_Fe.json',
                     dest='input', help='input json file')
+parser.add_argument('-n', '--numcpu', action='store', type=int, default=lastGoodNumber(os.cpu_count()//2),
+                    dest='numcpu', help='number of CPU')
 
 args = parser.parse_args()
 inputfile=args.input
-
-
-cores=lastGoodNumber(os.cpu_count()//2)
+cores=args.numcpu
 
 ps = Pseudo()
 
@@ -58,11 +58,11 @@ for f in fs:
 
 if os.system('phonopy --qe -f supercell-*.out' ):
     raise IOError("force fail")
-#
-# #density of states
-# if os.system(f'phonopy -v --qe -c unit_cell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}   --nowritemesh -p '):
-#     raise IOError("dos fail")
-#
+
+#density of states
+if os.system(f'phonopy -v --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}   --nowritemesh -p '):
+    raise IOError("dos fail")
+
 # #mesh
-# if os.system(f'phonopy --qe -c unit_cell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym'):
+# if os.system(f'phonopy --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym'):
 #     raise IOError("mesh fail")
