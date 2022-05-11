@@ -3,8 +3,7 @@
 from Cinema.PiXiu import getAtomMassBC, Pseudo, QEType
 from Cinema.PiXiu.IO import JsonCell, XmlCell
 import numpy as np
-import os, sys, os
-import json, copy
+import os, sys, glob
 
 def lastGoodNumber(n):
     return int(2**np.floor(np.log2(n)))
@@ -51,14 +50,14 @@ print('mesh', mesh)
 print('kpt', kpt)
 print('dim', dim)
 
-# fs=glob.glob('supercell-*.in')
-# fs=sorted(fs)
-# for f in fs:
-#     if os.system(f'mpirun -np {cores} pw.x -inp {f} | tee {f[0:-3]}.out' ):
-#         raise IOError("SCF pw.x fail")
-#
-# if os.system('phonopy --qe -f supercell-*.out' ):
-#     raise IOError("force fail")
+fs=glob.glob('supercell-*.in')
+fs=sorted(fs)
+for f in fs:
+    if os.system(f'mpirun -np {cores} pw.x -inp {f} | tee {f[0:-3]}.out' ):
+        raise IOError("SCF pw.x fail")
+
+if os.system('phonopy --qe -f supercell-*.out' ):
+    raise IOError("force fail")
 #
 # #density of states
 # if os.system(f'phonopy -v --qe -c unit_cell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}   --nowritemesh -p '):
