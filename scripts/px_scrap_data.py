@@ -54,7 +54,7 @@ def save_completed_mids(mids_list, dir):
 def save_completed_materials(m_list, dir):
     _list = sorted(set(m_list))
     try: 
-        with open(dir.joinpath('mids_completed.txt'), 'w') as fp:
+        with open(dir.joinpath('m_completed.txt'), 'w') as fp:
             for _item in _list:
                 fp.write(str(_item) + '\n')
     except Exception as ex:
@@ -103,8 +103,15 @@ def run():
         if _m in m_completed_list:
             print(f'{_m} already processed, skip')
             continue
-    
-        _r = helper.query_mids(_m)
+        
+        _r = []
+        try:
+            time.sleep(random.randint(3, 10))
+            _r = helper.query_mids(_m)
+        except Exception as ex:
+            print(ex)
+            continue
+        
         _c = 0
         _has_new = False
         for id in _r:
@@ -122,23 +129,22 @@ def run():
                 mp_id_list.append(id)
                 _c += 1
                 _has_new = True
-                print(f'download successfully: {id}')
+                print(f'download success: {id}')
             except Exception as ex:
                 print(ex)
             
             if _has_new and _c//10 > 0:
-                save_completed_mids(mp_id_list, data_dir)    
+                save_completed_mids(mp_id_list, data_dir)
+                    
             time.sleep(random.randint(3, 10))
         
         if _c == len(_r):
             m_completed_list.append(_m)
             save_completed_materials(m_completed_list, data_dir)
-        
-        time.sleep(random.randint(3, 10))
-    
+             
     if __STOPRUN__:
         save_completed_mids(mp_id_list, data_dir)
-        save_completed_materials(m_completed_list, data_dir)
+        #save_completed_materials(m_completed_list, data_dir)
     
     #r = helper.query( {"elements": {"$in": ["Li", "Na", "K"], "$all": ["O"]}, "nelements": 2}, None)
     #print(r)
