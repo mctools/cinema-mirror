@@ -55,7 +55,12 @@ class XmlCell(CellBase):
             raise RuntimeError('./output/atomic_structure is not unique')
         internal(info[0])
         self.abc = np.linalg.norm(self.lattice, axis=1)
-
+        invlatt = np.linalg.inv(self.lattice).T
+        self.position = np.array(self.position)*au2Aa
+        print(self.position)
+        for i in range(self.position.shape[0]):
+            self.position[i] = invlatt.dot(self.position[i])
+        print(self.position)
 
 
 class JsonCell(CellBase):
