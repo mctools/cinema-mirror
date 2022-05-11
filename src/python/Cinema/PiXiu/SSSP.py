@@ -38,6 +38,7 @@ class Pseudo():
                 tprnfor = .true.
                 max_seconds = 2570400.0
                 pseudo_dir = {ppath}
+                disk_io = 'nowf'
                 prefix='out'
              /
              &system
@@ -72,6 +73,7 @@ class Pseudo():
                 tprnfor = .true.
                 max_seconds = 2570400.0
                 pseudo_dir = {ppath}
+                disk_io = 'nowf'
                 prefix='out'
              /
              &system

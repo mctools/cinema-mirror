@@ -6,7 +6,11 @@ import numpy as np
 import os, sys, os
 import json, copy
 
-cores=os.cpu_count()//2
+def lastGoodNumber(n):
+    return int(2**np.floor(np.log2(n)))
+
+cores=lastGoodNumber(os.cpu_count()//2)
+
 ps = Pseudo()
 
 pcell = True
@@ -36,9 +40,11 @@ ps.qems(cell, unitcell_sim, dim, kpt, QEType.Scf, usePrimitiveCell=pcell )
 
 print('mesh', mesh)
 
-
-if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {f} | tee {f[0:-3]}.out' ):
-    raise IOError("SCF pw.x fail")
+fs=glob.glob('supercell-*.in')
+fs=sorted(fs)
+for f in fs:
+    if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {f} | tee {f[0:-3]}.out' ):
+        raise IOError("SCF pw.x fail")
 
 if os.system('phonopy -f supercell-*.out' ):
     raise IOError("force fail")
