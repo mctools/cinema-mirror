@@ -130,18 +130,19 @@ else
 fi
 
 #SSSP
-if [ -f $CINEMAPATH/external/pixiusssp/sssp_efficiency.json ]; then
+if [ -f $CINEMAPATH/external/pixiusssp/SSSP_precision_pseudos/Cu.pbe-dn-kjpaw_psl.1.0.0.UPF ]; then
   export PIXIUSSSP=$CINEMAPATH/external/pixiusssp
 else
-  read -r -p "Do you want install the SSSP DFT pseudopotential into $CINEMAPATH/external? [y/N] " response
+  read -r -p "Do you want (re)install the SSSP DFT pseudopotential into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     cd  $CINEMAPATH/external/
     git clone https://gitlab.com/xxcai1/pixiusssp.git
     cd -
     cd $CINEMAPATH/external/pixiusssp
-    tar -xzvf SSSP_efficiency_pseudos.tar.gz
     mkdir SSSP_precision_pseudos
-    tar -xzvf SSSP_precision_pseudos.tar.gz --directory SSSP_precision_pseudos
+    tar -xzvf SSSP_1.1.2_PBE_precision.tar.gz --directory SSSP_precision_pseudos
+    cp Cu.pbe-dn-kjpaw_psl.1.0.0.UPF SSSP_precision_pseudos/
+    rm SSSP_precision_pseudos/Cu_ONCV_PBE-1.0.oncvpsp.upf
     cd -
     export PIXIUSSSP=$CINEMAPATH/external/pixiusssp
   fi

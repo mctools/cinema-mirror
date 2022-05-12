@@ -14,15 +14,18 @@ parser.add_argument('-i', '--input', action='store', type=str, default='mp-13_Fe
                     dest='input', help='input json file')
 parser.add_argument('-n', '--numcpu', action='store', type=int, default=lastGoodNumber(os.cpu_count()//2),
                     dest='numcpu', help='number of CPU')
+parser.add_argument('-r', '--rundft', action='store_true', dest='rundft', help='run DFT')
 
 args = parser.parse_args()
 inputfile=args.input
 cores=args.numcpu
+rundft=args.rundft
 
 ps = Pseudo()
 
 pcell = True
 unitcell_sim="unitcell.in"
+unitcellrelex_sim="unitcell_rl.in"
 
 c = JsonCell(inputfile)
 dim = c.estSupercellDim()
@@ -30,11 +33,11 @@ kpt_relax = c.estRelaxKpoint()
 kpt = c.estSupercellKpoint()
 cell = c.getCell()
 
-ps.qems(cell, unitcell_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell )
+ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell )
 
-
-if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {unitcell_sim}' ):
-    raise IOError("Relax pw.x fail")
+if not os.path.isfile('out.xml'):
+    if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {unitcellrelex_sim}' ):
+        raise IOError("Relax pw.x fail")
 
 
 relexed_cell = XmlCell('out.xml')
@@ -43,26 +46,28 @@ kpt = relexed_cell.estSupercellKpoint()
 cell = relexed_cell.getCell()
 mesh =  relexed_cell.estMesh()
 
-ps.qems(cell, unitcell_sim, dim, kpt, QEType.Scf, usePrimitiveCell=pcell )
+spacegroup, lattice , positions, elements = ps.qems(cell, unitcell_sim, dim, kpt, QEType.Scf, usePrimitiveCell=pcell )
 
+print(spacegroup, lattice , positions, elements)
 print('cell', cell)
 print('mesh', mesh)
 print('kpt', kpt)
 print('dim', dim)
 
-fs=glob.glob('supercell-*.in')
-fs=sorted(fs)
-for f in fs:
-    if os.system(f'mpirun -np {cores} pw.x -inp {f} | tee {f[0:-3]}.out' ):
-        raise IOError("SCF pw.x fail")
+if rundft:
+    fs=glob.glob('supercell-*.in')
+    fs=sorted(fs)
+    for f in fs:
+        if os.system(f'mpirun -np {cores} pw.x -inp {f} | tee {f[0:-3]}.out' ):
+            raise IOError("SCF pw.x fail")
 
-if os.system('phonopy --qe -f supercell-*.out' ):
-    raise IOError("force fail")
+    if os.system('phonopy --qe -f supercell-*.out' ):
+        raise IOError("force fail")
 
-#density of states
-if os.system(f'phonopy -v --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}   --nowritemesh '): # -p
-    raise IOError("dos fail")
+    #density of states
+    if os.system(f'phonopy -v --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}   --nowritemesh '): # -p
+        raise IOError("dos fail")
 
-#mesh
-if os.system(f'phonopy --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym'):
-    raise IOError("mesh fail")
+    #mesh
+    if os.system(f'phonopy --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym'):
+        raise IOError("mesh fail")

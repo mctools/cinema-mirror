@@ -1,5 +1,5 @@
 import os, json
-from  spglib import find_primitive,standardize_cell
+from  spglib import get_spacegroup,standardize_cell
 from phonopy.interface.vasp import read_vasp
 from phonopy.structure.atoms import atom_data
 import glob
@@ -12,21 +12,17 @@ class QEType(Enum):
     Scf = 1
 
 class Pseudo():
-    def __init__(self, accurate=True):
+    def __init__(self):
         self.libpath=os.environ['PIXIUSSSP']
         if self.libpath is None:
             raise IOError('PIXIUSSSP enviroment is not set')
-        if accurate:
-            self.pseudoinfo = json.load( open(self.libpath+'/sssp_precision.json'))
-            self.libpath += '/SSSP_precision_pseudos'
-        else:
-            self.pseudoinfo = json.load( open(self.libpath+'/sssp_efficiency.json'))
-            self.libpath += '/SSSP_efficiency_pseudos'
+        self.pseudoinfo = json.load( open(self.libpath+'/SSSP_1.2.0_PBE_precision.json'))
+        self.libpath += '/SSSP_precision_pseudos'
 
 
     def getPseudo(self, elementName, copyTo = None):
-        ecutwfc=self.pseudoinfo[elementName]['cutoff']
-        ecutrho=self.pseudoinfo[elementName]['rho_cutoff']
+        ecutwfc=self.pseudoinfo[elementName]['cutoff_wfc']
+        ecutrho=self.pseudoinfo[elementName]['cutoff_rho']
         pseudoName = self.pseudoinfo[elementName]['filename']
         return ecutwfc, ecutrho, pseudoName
 
@@ -106,6 +102,8 @@ class Pseudo():
 
         lattice , positions, numbers_p = standardize_cell(cell, to_primitive=usePrimitiveCell, no_idealize=0, symprec=0.1)
 
+        spacegroup = get_spacegroup((lattice , positions, numbers_p), symprec=1e-5)
+
         elements=[]
         ele_num=[]
         tot_ele_num =0
@@ -183,4 +181,4 @@ class Pseudo():
         ,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho) + content)
                 f.close()
 
-        return suclfiles, lattice , positions, elements, tot_ele_num*dim[0]*dim[1]*dim[2]
+        return spacegroup, lattice , positions, elements
