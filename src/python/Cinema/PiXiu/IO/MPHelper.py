@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import requests
 import random
+import re
 from zipfile import ZipFile
 from io import BytesIO
 from enum import Enum, unique
@@ -21,6 +22,7 @@ class MPHelper:
         self.download_url = 'https://materialsproject.org/materials/download'
         self.mids_url = 'https://materialsproject.org/rest/v2/materials/$QUERYSTR$/mids'
         self.query_url = 'https://materialsproject.org/rest/v2/query'
+        self.optimade_url = 'https://optimade.materialsproject.org/v1/'
         self.api_key = api_key
         self.timeout = timeout
         self.data_dir = data_dir
@@ -128,3 +130,44 @@ class MPHelper:
         with BytesIO(response.content) as buffer:
             with ZipFile(buffer) as z:
                 z.extractall(path=self.data_dir)
+                
+    def get_structures_by_optimade(self, page_offset=0, page_limit=20, save_data=True):
+        if page_offset < 0:
+            page_offset = 0
+        if page_limit < 1 or page_limit > 500:
+            page_limit = 20
+            
+        url = self.optimade_url + f'/structures?page_offset={page_offset}&page_limit={page_limit}'
+        headers = {
+            'User-Agent': (self.user_agent)[random.randint(0, len(self.user_agent) - 1)]
+        }
+        response = requests.request("GET", url, headers=headers, timeout=self.timeout)
+        if response.status_code != requests.codes.ok:
+            raise IOError(f'Query mids failed: {response.status_code}')
+        
+        if response.headers['Content-Type'] != 'application/json':
+            raise IOError(f"response is not json: {response.headers['Content-Type']}")
+        
+        _r = response.json()
+        if save_data:
+            _p = Path(self.data_dir).joinpath('optimade')
+            _p.mkdir(parents=True, exist_ok=True)
+            _f = _p.joinpath(f'structures_{page_offset}_{page_limit}.json')
+            with open(_f, 'w') as _fp:
+                json.dump(_r, _fp)
+                
+        _n_url = _r['links']['next']
+        if _n_url is None:
+            return
+        
+        _t = re.findall(r"(page_offset=\d+|page_limit=\d+)", _n_url)
+        for _i in _t:
+            _p = _i.split('=')
+            if _p[0] == 'page_offset':
+                page_offset = int(_p[1])
+            elif _p[0] == 'page_limit':
+                page_limit = int(_p[1])
+            else:
+                pass
+        print(f'Continue with {_n_url}')
+        self.get_structures_by_optimade(page_offset, page_limit, save_data)
