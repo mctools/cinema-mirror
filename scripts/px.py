@@ -62,7 +62,7 @@ if sgnum != qxsg:
     sys.exit()
 
 if not os.path.isfile('out.xml'):
-    if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim}[:-3].out' ):
+    if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]}.out' ):
         raise IOError("Relax pw.x fail")
 
 
@@ -78,7 +78,7 @@ spacegroup, lattice , positions, elements = ps.qems(cell, unitcell_sim, dim, kpt
 qxsgsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
 
 if sgnum != qxsgsg:
-    logger.critical(f'space group in the origianl input is inconsistent with that of idealised supercell by PX')
+    logger.critical(f'space group in the origianl input{sgnum} is inconsistent with that of idealised supercell {qxsgsg} by PX')
     sys.exit()
 
 logger.info(f'supercell info {cell}, mesh {mesh}, kpt {kpt}, dim {dim}')
