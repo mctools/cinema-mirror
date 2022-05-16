@@ -143,7 +143,7 @@ class MPHelper:
         }
         response = requests.request("GET", url, headers=headers, timeout=self.timeout)
         if response.status_code != requests.codes.ok:
-            raise IOError(f'Query mids failed: {response.status_code}')
+            raise IOError(f'Query structures failed: {response.status_code}')
         
         if response.headers['Content-Type'] != 'application/json':
             raise IOError(f"response is not json: {response.headers['Content-Type']}")
