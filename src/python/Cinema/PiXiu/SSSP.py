@@ -62,6 +62,7 @@ class Pseudo():
             K_POINTS automatic
             {kp0} {kp1} {kp2} 0 0 0\n"""
             return qe_control
+
         elif qeType==QEType.Scf:
             qe_control= """ &control
                 calculation = 'scf'
@@ -100,7 +101,11 @@ class Pseudo():
         qe_control=self.qe_input(qeType)
         atom_spec ="ATOMIC_SPECIES\n{}"
 
-        lattice , positions, numbers_p = standardize_cell(cell, to_primitive=usePrimitiveCell, no_idealize=0, symprec=0.1)
+
+        if qeType ==  QEType.Relax:
+            lattice , positions, numbers_p = standardize_cell(cell, to_primitive=usePrimitiveCell, no_idealize=0, symprec=0.1)
+        elif qeType == QEType.Scf:
+            lattice , positions, numbers_p = cell
 
         spacegroup = get_spacegroup((lattice , positions, numbers_p), symprec=1e-5)
 
@@ -118,8 +123,6 @@ class Pseudo():
                 ele_num[idx] += 1
 
         unit_vec = ' '.join(map(str, lattice[0])) + '\n'+ ' '.join(map(str, lattice[1])) + '\n'+' '.join(map(str, lattice[2])) + '\n'
-        print (unit_vec)
-        print (tot_ele_num)
 
         pos=''
         for i in range(tot_ele_num):

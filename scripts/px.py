@@ -55,7 +55,7 @@ logger.info(f'original cell {cell}, kpoint for relax {kpt_relax}')
 
 spacegroup, lattice , positions, elements = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell )
 qxsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
-logger.info(f'space group {spacegroup}')
+logger.info(f'space group after standardize_cell before relaxing {spacegroup}')
 
 if sgnum != qxsg:
     logger.critical(f'space group in the origianl input is inconsistent with that idealised by PX')
@@ -77,8 +77,10 @@ logger.info(f'cell after relax {cell}')
 spacegroup, lattice , positions, elements = ps.qems(cell, unitcell_sim, dim, kpt, QEType.Scf, usePrimitiveCell=pcell )
 qxsgsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
 
+logger.info(f'space group before SCF calculation {qxsgsg}')
+
 if sgnum != qxsgsg:
-    logger.critical(f'space group in the origianl input{sgnum} is inconsistent with that of idealised supercell {qxsgsg} by PX')
+    logger.critical(f'space group in the origianl input {sgnum} is inconsistent with that of idealised supercell {qxsgsg} by PX')
     sys.exit()
 
 logger.info(f'supercell info {cell}, mesh {mesh}, kpt {kpt}, dim {dim}')
