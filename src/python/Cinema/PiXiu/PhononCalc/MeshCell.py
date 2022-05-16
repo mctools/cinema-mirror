@@ -15,7 +15,7 @@ class MeshCell(Hdf5Mesh):
         pos=[]
         for id, data in cell['sites'].items():
             for k, v in data.items():
-                m, b =getAtomMassBC(k)
+                m, b, _ =getAtomMassBC(k)
                 mass.append(m)
                 bc.append(b)
                 pos.append(np.array(v))
