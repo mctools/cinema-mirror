@@ -62,7 +62,7 @@ if sgnum != qxsg:
     sys.exit()
 
 if not os.path.isfile('out.xml'):
-    if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]````}.out' ):
+    if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]}.out' ):
         raise IOError("Relax pw.x fail")
 
 
