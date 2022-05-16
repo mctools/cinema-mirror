@@ -44,12 +44,12 @@ sgnum = c.getSpacegourpNum()
 
 logger.info(f'total magnetization: {magn}, spacegroup: {sgnum}')
 
-if magn is None:
-    raise RuntimeError('total_magnetization field is not sepecified in the input json file')
-
-if magn>args.magcut:
-    logger.info(f'total magnetization: {magn}, cutoff: {magcut.magcut}, skipping this material')
-    sys.exit()
+if magn is not None:
+    if magn>args.magcut:
+        logger.info(f'total magnetization: {magn}, cutoff: {magcut.magcut}, skipping this material')
+        sys.exit()
+    else:
+        logger.warning('total_magnetization field is not sepecified in the input json file')
 
 logger.info(f'original cell {cell}, kpoint for relax {kpt_relax}')
 
@@ -62,7 +62,7 @@ if sgnum != qxsg:
     sys.exit()
 
 if not os.path.isfile('out.xml'):
-    if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]}.out' ):
+    if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]````}.out' ):
         raise IOError("Relax pw.x fail")
 
 
