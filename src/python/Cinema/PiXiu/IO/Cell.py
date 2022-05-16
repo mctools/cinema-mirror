@@ -74,6 +74,8 @@ class JsonCell(CellBase):
         super().__init__()
         with open(filename, 'r') as fp:
             mat_dict = json.load(fp)
+            self.totMagn = mat_dict.get('total_magnetization')
+            self.spacegroupnum =  mat_dict['spacegroup']['number']
             structure = mat_dict['structure']
             self.lattice = (structure['lattice']['matrix'])
             self.abc = np.linalg.norm(self.lattice, axis=1)
@@ -86,3 +88,9 @@ class JsonCell(CellBase):
                 self.position.append(site['abc'])
                 atominfo=getAtomMassBC(site['species'][0]['element'])
                 self.num.append(atominfo[2])
+
+    def getTotalMagnetic(self):
+        return self.totMagn
+
+    def getSpacegourpNum(self):
+        return self.spacegroupnum

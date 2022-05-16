@@ -11,3 +11,6 @@ h5py
 phonopy
 spglib
 requests
+
+#logging
+loguru
