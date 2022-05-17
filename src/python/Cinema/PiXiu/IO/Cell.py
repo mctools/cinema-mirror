@@ -68,6 +68,11 @@ class XmlCell(CellBase):
         for i in range(self.position.shape[0]):
             self.position[i] = invlatt.dot(self.position[i])
 
+        self.totmagn = float( (root.findall('./output/magnetization/total')[0]).text )
+
+
+
+
 
 class JsonCell(CellBase):
     def __init__(self, filename):

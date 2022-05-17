@@ -18,8 +18,6 @@ parser.add_argument('-i', '--input', action='store', type=str, default='mp-13_Fe
                     dest='input', help='input json file')
 parser.add_argument('-n', '--numcpu', action='store', type=int, default=lastGoodNumber(os.cpu_count()//2),
                     dest='numcpu', help='number of CPU')
-parser.add_argument('-m', '--magcut', action='store', type=float, default=1.0,
-                    dest='magcut', help='total magnetization')
 parser.add_argument('-r', '--rundft', action='store_true', dest='rundft', help='run DFT')
 
 args = parser.parse_args()
@@ -45,18 +43,13 @@ sgnum = c.getSpacegourpNum()
 logger.info(f'total magnetization: {magn}, spacegroup: {sgnum}')
 
 if magn is not None:
-    if magn>args.magcut:
-        logger.info(f'total magnetization: {magn}, cutoff: {args.magcut}, skipping this material')
-        sys.exit()
-    else:
-        logger.warning('total_magnetization field is not sepecified in the input json file')
+    logger.info(f'mp total magnetization: {magn}')
+else:
+    logger.info(f'mp info contains no total magnetization')
 
 logger.info(f'original cell {cell}, kpoint for relax {kpt_relax}')
 
-if magn is not None:
-    spacegroup, lattice , positions, elements = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell, tot_magnetization=magn )
-else:
-    spacegroup, lattice , positions, elements = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell)
+spacegroup, lattice , positions, elements = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell)
 qxsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
 logger.info(f'space group after standardize_cell before relaxing {spacegroup}')
 
@@ -75,7 +68,7 @@ kpt = relexed_cell.estSupercellKpoint()
 cell = relexed_cell.getCell()
 mesh =  relexed_cell.estMesh()
 
-logger.info(f'cell after relax {cell}')
+logger.info(f'cell after relax {cell}, total magnetisation {relexed_cell.totmagn}')
 
 spacegroup, lattice , positions, elements = ps.qems(cell, unitcell_sim, dim, kpt, QEType.Scf, usePrimitiveCell=pcell )
 qxsgsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
