@@ -53,7 +53,10 @@ if magn is not None:
 
 logger.info(f'original cell {cell}, kpoint for relax {kpt_relax}')
 
-spacegroup, lattice , positions, elements = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell )
+if magn is not None:
+    spacegroup, lattice , positions, elements = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell, tot_magnetization=magn )
+else:
+    spacegroup, lattice , positions, elements = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell)
 qxsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
 logger.info(f'space group after standardize_cell before relaxing {spacegroup}')
 
