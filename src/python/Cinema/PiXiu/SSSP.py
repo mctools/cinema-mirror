@@ -149,7 +149,7 @@ class Pseudo():
             defatom += elements[i]+' '+str(element_mass[i])+' '+pseudopotentials[i] + "\n"
 
         f=open(simname,'w')
-        f.write(qe_control.format(ppath="'"+self.libpath+"'", tot_magnetization=tot_magnetization nat=tot_ele_num,ntyp=len(elements),kp0=kpt[0]*2,kp1=kpt[1]*2,kp2=kpt[2]*2,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho))
+        f.write(qe_control.format(ppath="'"+self.libpath+"'", tot_magnetization=tot_magnetization, nat=tot_ele_num,ntyp=len(elements),kp0=kpt[0]*2,kp1=kpt[1]*2,kp2=kpt[2]*2,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho))
         f.write(atom_spec.format(defatom))
         f.write('ATOMIC_POSITIONS crystal\n')
         f.writelines(pos)
