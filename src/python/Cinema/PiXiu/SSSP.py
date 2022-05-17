@@ -42,6 +42,7 @@ class Pseudo():
                 nat = {nat}
                 ntyp = {ntyp}
                 nspin = 2
+                starting_magnetization(1)=1
                 smearing='mv', degauss=0.02
                 ecutwfc = {ecutwfc}, ecutrho={ecutrho}
                 !"vdw-df" "vdw-df2" "rvv10"
@@ -78,6 +79,7 @@ class Pseudo():
                 nat = {nat}
                 ntyp = {ntyp}
                 nspin = 2
+                starting_magnetization(1)=1
                 smearing='mv', degauss=0.02
                 ecutwfc = {ecutwfc}, ecutrho={ecutrho}
                 !"vdw-df" "vdw-df2" "rvv10"
