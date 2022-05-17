@@ -46,7 +46,7 @@ logger.info(f'total magnetization: {magn}, spacegroup: {sgnum}')
 
 if magn is not None:
     if magn>args.magcut:
-        logger.info(f'total magnetization: {magn}, cutoff: {magcut.magcut}, skipping this material')
+        logger.info(f'total magnetization: {magn}, cutoff: {args.magcut}, skipping this material')
         sys.exit()
     else:
         logger.warning('total_magnetization field is not sepecified in the input json file')

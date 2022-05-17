@@ -41,8 +41,7 @@ class Pseudo():
                 ibrav = 0
                 nat = {nat}
                 ntyp = {ntyp}
-                nspin = {nspin}
-                tot_magnetization = {tot_magnetization}
+                nspin = 2
                 smearing='mv', degauss=0.02
                 ecutwfc = {ecutwfc}, ecutrho={ecutrho}
                 !"vdw-df" "vdw-df2" "rvv10"
@@ -78,7 +77,7 @@ class Pseudo():
                 ibrav = 0
                 nat = {nat}
                 ntyp = {ntyp}
-                {metal}
+                nspin = 2
                 smearing='mv', degauss=0.02
                 ecutwfc = {ecutwfc}, ecutrho={ecutrho}
                 !"vdw-df" "vdw-df2" "rvv10"
@@ -129,8 +128,6 @@ class Pseudo():
         for i in range(tot_ele_num):
             pos+=atom_data[numbers_p[i]][1] + ' ' + ' '.join(map(str, positions[i])) + '\n'
 
-
-
         #build input
         element_mass = []
         pseudopotentials=[]
@@ -152,7 +149,7 @@ class Pseudo():
             defatom += elements[i]+' '+str(element_mass[i])+' '+pseudopotentials[i] + "\n"
 
         f=open(simname,'w')
-        f.write(qe_control.format(ppath="'"+self.libpath+"'", nspin=2, tot_magnetization=tot_magnetization, nat=tot_ele_num,ntyp=len(elements),kp0=kpt[0]*2,kp1=kpt[1]*2,kp2=kpt[2]*2,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho))
+        f.write(qe_control.format(ppath="'"+self.libpath+"'", nat=tot_ele_num,ntyp=len(elements),kp0=kpt[0]*2,kp1=kpt[1]*2,kp2=kpt[2]*2,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho))
         f.write(atom_spec.format(defatom))
         f.write('ATOMIC_POSITIONS crystal\n')
         f.writelines(pos)
@@ -181,7 +178,7 @@ class Pseudo():
                     f.write('! conventional cell\n')
                 f.write("! supercell {dim1} {dim2} {dim3}\n".format(dim1=dim[0],dim2=dim[1],dim3=dim[2]) )
                 f.write(f'! kt {kpt[0]} {kpt[1]} {kpt[2]} \n')
-                f.write(qe_control.format(ppath="'"+self.libpath+"'",metal=metal_str,nat=tot_ele_num*dim[0]*dim[1]*dim[2],ntyp=len(elements),kp0=kpt[0],kp1=kpt[1],kp2=kpt[2],atom=defatom
+                f.write(qe_control.format(ppath="'"+self.libpath+"'", nat=tot_ele_num*dim[0]*dim[1]*dim[2],ntyp=len(elements),kp0=kpt[0],kp1=kpt[1],kp2=kpt[2],atom=defatom
         ,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho) + content)
                 f.close()
 
