@@ -11,6 +11,7 @@ h5py
 phonopy
 spglib
 requests
+seekpath
 
 #logging
 loguru
