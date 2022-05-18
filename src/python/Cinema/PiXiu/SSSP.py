@@ -80,7 +80,9 @@ class Pseudo():
                 ibrav = 0
                 nat = {nat}
                 ntyp = {ntyp}
-                smearing='mv', degauss=0.02
+                occupations='smearing'
+                smearing='gauss'
+                degauss=0.02
                 ecutwfc = {ecutwfc}, ecutrho={ecutrho}
                 !"vdw-df" "vdw-df2" "rvv10"
                 !input_dft  = 'vdw-df2'
@@ -184,4 +186,4 @@ class Pseudo():
         ,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho) + content)
                 f.close()
 
-        return spacegroup, lattice , positions, elements
+        return spacegroup, lattice , positions, elements, numbers_p
