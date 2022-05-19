@@ -124,7 +124,8 @@ if rundft and not os.path.isfile('FORCE_SETS'):
         raise IOError("force fail")
 
 #band
-cor, label = getPath(path['path'])
+pcor, label = getPath(path['path'])
+logger.info(f'band {" ".join(map(str,pcor))}; {" ".join(map(str,label))}')
 if os.system(f'phonopy --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" -p -s'): # -p
     logger.info(f'band fail')
     raise IOError("band fail")
