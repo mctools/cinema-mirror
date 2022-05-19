@@ -28,7 +28,7 @@ def getPath(path):
 
 
 logger.add(sys.stdout, colorize=True, format="<green>{time}</green> <level>{message}</level>", backtrace=True, level="INFO")
-logger.add("file.log", rotation="12:00")
+logger.add("pixiu.log", rotation="12:00")
 
 def lastGoodNumber(n):
     return int(2**np.floor(np.log2(n)))
@@ -120,12 +120,14 @@ if rundft and not os.path.isfile('FORCE_SETS'):
 #band
 pcor, label = getPath(path)
 logger.info(f'band {" ".join(map(str,pcor))}; {" ".join(map(str,label))}')
-if os.system(f'phonopy --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" -p -s'): # -p
+if os.system(f'phonopy --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" --hdf5 --eigvecs -p -s'): # -p
     logger.info(f'band fail')
     raise IOError("band fail")
+else:
+    os.rename('mesh.hdf5', 'band.hdf5')
 
 #density of states
-if os.system(f'phonopy -v --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}   --nowritemesh -p -s'): # -p
+if os.system(f'phonopy -v --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}  --nowritemesh -p -s'): # -p
     logger.info(f'dos fail')
     raise IOError("dos fail")
 
