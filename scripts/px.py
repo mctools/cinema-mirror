@@ -14,17 +14,11 @@ def getPath(path):
     for p in path['path']:
         begin = p[0]
         end = p[1]
-        print(begin, end)
-        print(cor[begin], cor[end])
         pcor.append(cor[begin])
         pcor.append(cor[end])
         label.append(begin)
         label.append(end)
-
     pcor=np.array(pcor).flatten()
-    print(pcor)
-    print(end)
-
     for i in range(len(label)):
         if label[i]=='GAMMA':
             label[i] = '$\Gamma$'
@@ -124,7 +118,7 @@ if rundft and not os.path.isfile('FORCE_SETS'):
         raise IOError("force fail")
 
 #band
-pcor, label = getPath(path['path'])
+pcor, label = getPath(path)
 logger.info(f'band {" ".join(map(str,pcor))}; {" ".join(map(str,label))}')
 if os.system(f'phonopy --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" -p -s'): # -p
     logger.info(f'band fail')
