@@ -5,6 +5,33 @@ from Cinema.PiXiu.IO import JsonCell, XmlCell
 import numpy as np
 import os, sys, glob, re
 from loguru import logger
+import seekpath
+
+def getPath(path):
+    cor = path['point_coords']
+    pcor=[]
+    label=[]
+    for p in path['path']:
+        begin = p[0]
+        end = p[1]
+        print(begin, end)
+        print(cor[begin], cor[end])
+        pcor.append(cor[begin])
+        pcor.append(cor[end])
+        label.append(begin)
+        label.append(end)
+
+    pcor=np.array(pcor).flatten()
+    print(pcor)
+    print(end)
+
+    for i in range(len(label)):
+        if label[i]=='GAMMA':
+            label[i] = '$\Gamma$'
+        # elif '_' in label[i]:
+        #     label[i] = '$'+str(label[i]) + '$'
+    return pcor, label
+
 
 logger.add(sys.stdout, colorize=True, format="<green>{time}</green> <level>{message}</level>", backtrace=True, level="INFO")
 logger.add("file.log", rotation="12:00")
@@ -49,7 +76,7 @@ else:
 
 logger.info(f'original cell {cell}, kpoint for relax {kpt_relax}')
 
-spacegroup, lattice , positions, elements = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell)
+spacegroup, lattice , positions, elements, numbers = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell)
 qxsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
 logger.info(f'space group after standardize_cell before relaxing {spacegroup}')
 
@@ -70,9 +97,12 @@ mesh =  relexed_cell.estMesh()
 
 logger.info(f'cell after relax {cell}, total magnetisation {relexed_cell.totmagn}')
 
-spacegroup, lattice , positions, elements = ps.qems(cell, unitcell_sim, dim, kpt, QEType.Scf, usePrimitiveCell=pcell )
+spacegroup, lattice , positions, elements, numbers = ps.qems(cell, unitcell_sim, dim, kpt, QEType.Scf, usePrimitiveCell=pcell )
 qxsgsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
 
+
+path = seekpath.get_path((lattice , positions, numbers), with_time_reversal=1)
+logger.info(f'path {path}')
 logger.info(f'space group before SCF calculation {qxsgsg}')
 
 if sgnum != qxsgsg:
@@ -81,22 +111,32 @@ if sgnum != qxsgsg:
 
 logger.info(f'supercell info {cell}, mesh {mesh}, kpt {kpt}, dim {dim}')
 
-if rundft:
+if rundft and not os.path.isfile('FORCE_SETS'):
     fs=glob.glob('supercell-*.in')
     fs=sorted(fs)
     for f in fs:
         if os.system(f'mpirun -np {cores} pw.x -inp {f} | tee {f[0:-3]}.out' ):
+            logger.info(f'SCF pw.x fail')
             raise IOError("SCF pw.x fail")
 
     if os.system('phonopy --qe -f supercell-*.out' ):
+        logger.info(f'force fail')
         raise IOError("force fail")
 
-    #density of states
-    if os.system(f'phonopy -v --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}   --nowritemesh '): # -p
-        raise IOError("dos fail")
+#band
+cor, label = getPath(path['path'])
+if os.system(f'phonopy --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" -p -s'): # -p
+    logger.info(f'band fail')
+    raise IOError("band fail")
 
-    #mesh
-    if os.system(f'phonopy --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym'):
-        raise IOError("mesh fail")
+#density of states
+if os.system(f'phonopy -v --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}   --nowritemesh -p -s'): # -p
+    logger.info(f'dos fail')
+    raise IOError("dos fail")
+
+#mesh
+if os.system(f'phonopy --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym'):
+    logger.info(f'mesh fail')
+    raise IOError("mesh fail")
 
 logger.info(f'Calculation completed!')
