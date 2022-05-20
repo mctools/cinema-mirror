@@ -2,8 +2,7 @@
 #include "Filon.hh"
 #include <vector>
 #include <iostream>
-//#define _USE_MATH_DEFINES
-//#include <math.h>
+#include <iomanip> //setprecision
 #include "PTMath.hh"
 
 namespace pt = Prompt;
@@ -16,7 +15,7 @@ TEST_CASE("sin_integral_single")
   int t_length=tp.size();
   double * sinRes = new double[t_length];
   double * calRes = new double[t_length];
-  int len=111;
+  int len=11;
   double a=0.0;
   double b=1.0;
   double step=(b-a)/(len-1);
@@ -32,7 +31,7 @@ TEST_CASE("sin_integral_single")
       double t=tp[i];
       calRes[i]=1./t*(-cos(b*t)+cos(a*t));
       sin_integral_single((len-1)/2,omega,fx,t,sinRes[i]);
-      std::cout<<sinRes[i]<<"||"<<calRes[i]<<std::endl;
+      std::cout << std::setprecision(15)<<sinRes[i]<<"||"<<calRes[i]<<std::endl;
       CHECK(pt::floateq(sinRes[i], calRes[i], 1e-12, 1e-12)); //fixme: the accuratcy of sin_integral_single is not as good as the cos_integral_single
   }
 
