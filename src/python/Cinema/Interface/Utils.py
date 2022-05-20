@@ -37,4 +37,4 @@ def findData(fn, absPath=False):
     return fnlist[0]
 
 
-findData('Al/cell.json')
+#example findData('Al/cell.json')
