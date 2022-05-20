@@ -52,12 +52,17 @@ class CalcBase:
         self.bose=self.nplus1(self.en)
         self.msd=self.isoMsd() #fixme: calmsd method returns unequal msd even for cubic lattice, bug to be fixed use isotropic model for now.
 
-        # print('isotropic', self.isoMsd())
-        # print('method 1', self.calmsd())
-        # print('method 2', self.calmsd2())
-        # raise ValueError('stop')
         if not math.isclose(self.qweight.sum(), 1.0, rel_tol=1e-10):
             raise ValueError('phonon total qweight is not unity {}'.format( self.qweight.sum() ) )
+
+    #<n+1>, omega >0, downscattering
+    def nplus1(self, en): #fixme: nan
+        return 1./(1- np.exp(-en/self.kt))
+
+    def oneplus2n(self, en):#fixme: nan
+        invkt = 1./self.kt
+        return 1/np.tanh(0.5*en*invkt)
+
 
     def calmsd2(self):
         msd=np.zeros([3,3])
@@ -97,14 +102,16 @@ class CalcBase:
         en, rho = self.dos()
         return np.trapz( (1./(np.tanh(en/(2*self.kt) ) * en )* rho), en)*0.5*hbar*hbar/self.mass[0]
 
+    def calcFormFact(self, Q, eigvecs):
+        Qmag=np.linalg.norm(Q)
+        F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1)
+        #fixme isotropic approximation at the moment
+        #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
+        return F
 
-    #<n+1>, omega >0, downscattering
-    def nplus1(self, en): #fixme: nan
-        return 1./(1- np.exp(-en/self.kt))
-
-    def oneplus2n(self, en):#fixme: nan
-        invkt = 1./self.kt
-        return 1/np.tanh(0.5*en*invkt)
+class CalcPowder(CalcBase):
+    def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, kt ):
+        super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, kt)
 
     def calcPowder(self, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001, jump=1):
         qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
@@ -144,21 +151,6 @@ class CalcBase:
             Qmag=np.linalg.norm(Q)
             if Qmag > hist.xmax:
                 continue
-            F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
-            #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
-            Smag=(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar*modeWeight/self.en[i]
+            F = self.calcFormFact(Q, self.eigv[i])
+            Smag=modeWeight*(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar/self.en[i]
             hist.fillmany(np.repeat(Qmag,self.nAtom*3), self.en[i], Smag*hklweight)
-
-    def show(self, H, xedges, yedges):
-        import matplotlib.pyplot as plt
-        fig=plt.figure()
-        ax = fig.add_subplot(111)
-        H = H.T
-
-        X, Y = np.meshgrid(xedges, yedges)
-        import matplotlib.colors as colors
-        pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet,  norm=colors.LogNorm(vmin=H.max()*1e-4, vmax=H.max()),)
-        fig.colorbar(pcm, ax=ax)
-        plt.xlabel('Q, Aa^-1')
-        plt.ylabel('energy, eV')
-        plt.show()

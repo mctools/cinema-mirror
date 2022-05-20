@@ -1,9 +1,9 @@
 import h5py
 import numpy as np
-from .CalcBase import CalcBase
+from .CalcBase import CalcPowder
 from ..Units import *
 
-class Hdf5Mesh(CalcBase):
+class Hdf5Mesh(CalcPowder):
     def __init__(self, lattice, mass, pos, bc, kt, fileName):
         hf = h5py.File(fileName,'r')
         en=hf['frequency'][()]*THz*2*np.pi*hbar
