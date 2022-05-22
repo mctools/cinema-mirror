@@ -21,6 +21,7 @@ make -j
 if [ -z ${TESTFLAG} ]; then
   echo "Skipped unittest";
 else
-  make -j test
+  make -j
+  ctest -j8
 fi
 cd -
