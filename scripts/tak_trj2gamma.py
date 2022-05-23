@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from numba import jit
+from numba import jit, objmode
 import numpy as np
 import time, h5py
 import argparse
@@ -34,6 +34,18 @@ def corr(trj, L, nAtom, trjold=None):
                 if np.abs(trj[iA, idim]-trjold[iA, idim]) > halfL[idim]:
                     raise RuntimeError('Correction wrong')
 
+@jit(nopython=True)
+def vdosfft(atomictrj, fftsize, atomoffset, totAtom):
+    b=np.zeros(fftsize)
+    for i in range(3):
+        for x in range(atomoffset, totAtom, 3):
+            h = atomictrj[x,i]
+            with objmode(a='complex128[:]'):
+                hdiff = np.diff(h)
+                a = np.fft.fft(hdiff, n=fftsize)
+            b += np.abs(a*a.conjugate())
+    return b
+
 class Hdf5Trj():
     def __init__(self, inputfile):
         hf = h5py.File(inputfile, 'r')
@@ -50,15 +62,15 @@ class Hdf5Trj():
         print(self.time.shape)
         hf.close()
 
-        # start = time.time()
-        # self.unwrap()
-        # end = time.time()
-        # print("Elapsed (after compilation) = %s" % (end - start))
-
         start = time.time()
         self.unwrap()
         end = time.time()
-        print("Elapsed (after compilation) = %s" % (end - start))
+        print("unwrap elapsed = %s" % (end - start))
+
+        #swap axes from frameid, atomid, pos to atomid, frameid, pos
+        self.atomictrj = np.swapaxes(self.trj, 0, 1)
+        #swap axes from atomid, frameid, pos to atomid, pos, frameid
+        self.atomictrj = np.swapaxes(self.atomictrj, 1, 2)
 
     def unwrap(self):
         #find atoms outside the box in the first frame
@@ -68,9 +80,19 @@ class Hdf5Trj():
         for i in range(1, self.nFrame):
             corr(self.trj[i], self.box[i], self.nAtom, self.trj[i-1])
 
+    def vdos(self):
+        fftsize = self.nFrame * 2
+        atomoffset = 1
+        totAtom = self.nAtom
+        atomictrj = self.atomictrj
+        start = time.time()
+        b = vdosfft(atomictrj, fftsize, atomoffset, totAtom)
+        end = time.time()
+        print("unwrap elapsed = %s" % (end - start))
 
+        import matplotlib.pyplot as plt
+        plt.plot(np.abs(b))
+        plt.show()
 
-
-
-
-Hdf5Trj(inputfile)
+t = Hdf5Trj(inputfile)
+t.vdos()

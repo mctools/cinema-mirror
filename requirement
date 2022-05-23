@@ -15,3 +15,6 @@ seekpath
 
 #logging
 loguru
+
+#Tak
+numba
