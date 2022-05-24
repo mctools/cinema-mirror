@@ -207,7 +207,7 @@ def run():
         if _c % 20 == 0:
             save_completed_mids(mp_id_completed_list, data_dir)
                 
-        time.sleep(random.randint(3, 10))
+        time.sleep(random.randint(1, 5))
              
 
     mp_id_todo_list = reduce_list(mp_id_todo_list, mp_id_completed_list)

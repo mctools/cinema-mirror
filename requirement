@@ -18,3 +18,10 @@ loguru
 
 #Tak
 numba
+
+# Crawler
+#mp-api
+
+# Database
+pymongo  #synchronous
+#motor  #asynchronous
