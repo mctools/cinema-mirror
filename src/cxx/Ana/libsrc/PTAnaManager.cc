@@ -22,6 +22,8 @@
 #include "PTUtils.hh"
 #include "PTScororNeutronSq.hh"
 #include "PTScororPSD.hh"
+#include "PTScororESD.hh"
+#include "PTScororTOF.hh"
 #include "PTScororVolFlux.hh"
 
 Prompt::AnaManager::AnaManager()
@@ -73,7 +75,15 @@ std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::stri
       PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScororPSD");
       return std::make_shared<ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
                                         std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScororPSD::YZ );
-    }
+    } 
+  }
+  else if(words[0]=="ESD")
+  {
+    return std::make_shared<ScororESD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) );
+  }
+  else if(words[0]=="TOF")
+  {
+    return std::make_shared<ScororTOF>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) );
   }
   else if(words[0]=="VolFlux")
   {
