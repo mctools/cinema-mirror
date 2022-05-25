@@ -49,3 +49,77 @@ std::vector<double>  Prompt::linspace(double start, double stop, unsigned num)
   v.back() = stop;
   return v;
 }
+
+#include "omp.h"
+#include <complex>
+#include "fftw3.h"
+#include <chrono>
+
+void correlation(const double *in1, double *out, size_t start_x, size_t end_x,
+                 size_t spacing_x, size_t y, size_t fftSize, size_t numcpu)
+{
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
+  omp_set_num_threads(numcpu);
+  double add(0.), mul(0.), fma(0.);
+  std::fill(out, out+ fftSize, 0.); //padding with zero
+
+
+  #pragma omp parallel default(none) shared(in1) firstprivate(y, fftSize, start_x, end_x, spacing_x) reduction (+ : out[:fftSize], add, mul, fma)
+  {
+    fftw_plan fftPlan_r2c;
+    fftw_complex *fftwComplexBuffer = (fftw_complex*)fftw_malloc(sizeof(fftw_complex)*fftSize);
+    double *realBuffer  = (double *)fftw_malloc(sizeof(double)*fftSize);
+
+    // create FFTW plan
+    #pragma omp critical
+    {
+      fftPlan_r2c = fftw_plan_dft_r2c_1d(fftSize, realBuffer, fftwComplexBuffer, FFTW_ESTIMATE |  FFTW_PATIENT);
+      // if(!Q.empty())
+      //   fftPlan_c2c = fftw_plan_dft_1d(fftSize, sqwfftwComplexBuffer, sqwfftwComplexBuffer_out, FFTW_FORWARD, FFTW_ESTIMATE  |  FFTW_PATIENT);
+    }
+
+    double tadd(0.), tmul(0.), tfma(0.);
+    #pragma omp for simd
+    for(size_t ix=start_x ; ix < end_x ; ix+=spacing_x)
+    {
+      std::fill(realBuffer, realBuffer+ fftSize, 0.); //padding with zero
+      printf("%d\n", ix);
+
+      for(size_t i=0;i<y;i++)
+      {
+        realBuffer[i] = in1[i+y*ix];
+      }
+      fftw_execute(fftPlan_r2c);
+      fftw_flops(fftPlan_r2c, &tadd, &tmul, &tfma);
+      add += tadd;
+      mul += tmul;
+      fma += tfma;
+
+      for(size_t j=0;j<fftSize;j++)
+      {
+        out[j]+=fftwComplexBuffer[j][0]*fftwComplexBuffer[j][0]+fftwComplexBuffer[j][1]*fftwComplexBuffer[j][1] ;
+      }
+    }
+
+    #pragma omp critical
+    {
+      fftw_cleanup();
+      fftw_destroy_plan(fftPlan_r2c);
+    }
+
+    // clean up
+    fftw_free(realBuffer);
+    fftw_free(fftwComplexBuffer);
+  }
+
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+  std::cout << "Number of FFT math operations: additions " << add
+        << ", multiplications "<< mul
+        << ", multiply-add operations " << fma << std::endl;
+
+  std::cout << "Elapsed time "
+        << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+        << "[ms]" << std::endl << std::endl;
+
+}

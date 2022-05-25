@@ -50,5 +50,17 @@ namespace Prompt {
   };
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+//loopSize * fftSize = size(int1)
+void correlation(const double *in1, double *out, size_t start_x, size_t end_x,
+                 size_t spacing_x, size_t y, size_t fftSize, size_t numcpu);
+#ifdef __cplusplus
+}
+#endif
+
+
 #include "PTMath.icc"
 #endif
