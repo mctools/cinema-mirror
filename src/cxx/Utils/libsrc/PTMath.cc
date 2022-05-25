@@ -84,8 +84,6 @@ void correlation(const double *in1, double *out, size_t start_x, size_t end_x,
     for(size_t ix=start_x ; ix < end_x ; ix+=spacing_x)
     {
       std::fill(realBuffer, realBuffer+ fftSize, 0.); //padding with zero
-      printf("%d\n", ix);
-
       for(size_t i=0;i<y;i++)
       {
         realBuffer[i] = in1[i+y*ix];
