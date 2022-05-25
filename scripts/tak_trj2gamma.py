@@ -12,7 +12,7 @@ args = parser.parse_args()
 
 inputfile=args.input
 
-@jit(nopython=True, fastmath=True)
+@jit(nopython=True, fastmath=True, inline='always')
 def corr(trj, L, nAtom, trjold=None):
     if trjold is None:
         for iA in prange(nAtom):
@@ -46,20 +46,28 @@ def vdosfft(atomictrj, fftsize, atomoffset, totAtom):
             b += np.abs(a*a.conjugate())
     return b
 
-@jit(nopython=True, fastmath=True)
+
+@jit(nopython=True, fastmath=True, inline='always')
+def diff(arr):
+    sz = arr.size
+    res = np.zeros(sz-1)
+    for i in range(sz-1):
+        res[i] = arr[i+1]-arr[i]
+    return res
+
+# @jit(nopython=True, fastmath=True)
 def trjdiff(atomictrj, atomoffset, atomPerMolecule):
-    if atomoffset > atomPerMolecule:
-        raise RuntimeError('atomoffset > atomPerMolecule')
+    # if atomoffset > atomPerMolecule:
+    #     raise RuntimeError('atomoffset > atomPerMolecule')
     totframe = atomictrj.shape[2]
     totAtom = atomictrj.shape[0]
     loopSize =  totAtom//atomPerMolecule
     print(f'loopSize {loopSize}')
     res = np.zeros((loopSize*3, totframe-1))
     idx=0
-    for iAtom in prange(atomoffset, totAtom, atomPerMolecule):
+    for iAtom in range(atomoffset, totAtom, atomPerMolecule):
         for iDim in range(3):
-            a = np.ascontiguousarray(atomictrj[iAtom, iDim])
-            res[idx, :] = np.diff(a)
+            res[idx, :] = diff(atomictrj[iAtom, iDim])
             idx += 1
     return res
 
