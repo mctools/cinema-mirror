@@ -565,18 +565,21 @@ void Trajectory::unwrap(std::vector<double> &atomtrj) const
 
 
   //find atoms outside the box in the first frame
-  for(size_t i=0;i<3;++i)
+  for(size_t i=0;i<m_nFrame;++i)
   {
-    if(atomtrj[i] < 0.)
+    for(size_t dim=0;dim<3;dim++)
     {
-      atomtrj[i] += m_box.vec[i];
+      if(atomtrj[i*3 + dim] < 0.)
+      {
+        atomtrj[i*3 + dim] += m_box.vec[dim];
+      }
+      else if(atomtrj[i*3 + dim] > L)
+      {
+        atomtrj[i*3 + dim] -= m_box.vec[dim];
+      }
+      if(atomtrj[i*3 + dim] < 0. || atomtrj[i*3 + dim] > L)
+        throw std::runtime_error ("Corrected postion is still outside the box");
     }
-    else if(atomtrj[i] > L)
-    {
-      atomtrj[i] -= m_box.vec[i];
-    }
-    if(atomtrj[i] < 0. || atomtrj[i] > L)
-      throw std::runtime_error ("Corrected postion is still outside the box");
   }
 
   const double i_L = 1./L;
