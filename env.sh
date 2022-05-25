@@ -125,7 +125,7 @@ else
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     python3 -m venv $CINEMAPATH/cinemavirenv
     . $CINEMAPATH/cinemavirenv/bin/activate
-    pip install -r $CINEMAPATH/requirement
+    pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r $CINEMAPATH/requirement
   fi
 fi
 
