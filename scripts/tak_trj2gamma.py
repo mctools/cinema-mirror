@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from numba import jit, objmode
+from numba import jit, objmode, prange
 import numpy as np
 import time, h5py
 import argparse
@@ -12,10 +12,10 @@ args = parser.parse_args()
 
 inputfile=args.input
 
-@jit(nopython=True)
+@jit(nopython=True, fastmath=True)
 def corr(trj, L, nAtom, trjold=None):
     if trjold is None:
-        for iA in range(nAtom):
+        for iA in prange(nAtom):
             for idim in range(3):
                 if trj[iA, idim] < 0.:
                     trj[iA, idim] += L[idim]
@@ -26,7 +26,7 @@ def corr(trj, L, nAtom, trjold=None):
     else:
         halfL = 0.5*L
         i_L = 1./L
-        for iA in range(nAtom):
+        for iA in prange(nAtom):
             for idim in range(3):
                 diff = trj[iA, idim]-trjold[iA, idim]
                 if np.abs(diff) > halfL[idim]:
@@ -34,17 +34,34 @@ def corr(trj, L, nAtom, trjold=None):
                 if np.abs(trj[iA, idim]-trjold[iA, idim]) > halfL[idim]:
                     raise RuntimeError('Correction wrong')
 
-@jit(nopython=True)
+@jit(nopython=True, fastmath=True)
 def vdosfft(atomictrj, fftsize, atomoffset, totAtom):
     b=np.zeros(fftsize)
-    for i in range(3):
-        for x in range(atomoffset, totAtom, 3):
+    for x in prange(atomoffset, totAtom, 3):
+        for i in range(3):
             h = atomictrj[x,i]
             with objmode(a='complex128[:]'):
                 hdiff = np.diff(h)
                 a = np.fft.fft(hdiff, n=fftsize)
             b += np.abs(a*a.conjugate())
     return b
+
+@jit(nopython=True, fastmath=True)
+def trjdiff(atomictrj, atomoffset, atomPerMolecule):
+    if atomoffset > atomPerMolecule:
+        raise RuntimeError('atomoffset > atomPerMolecule')
+    totframe = atomictrj.shape[2]
+    totAtom = atomictrj.shape[0]
+    loopSize =  totAtom//atomPerMolecule
+    print(f'loopSize {loopSize}')
+    res = np.zeros((loopSize*3, totframe-1))
+    idx=0
+    for iAtom in prange(atomoffset, totAtom, atomPerMolecule):
+        for iDim in range(3):
+            a = np.ascontiguousarray(atomictrj[iAtom, iDim])
+            res[idx, :] = np.diff(a)
+            idx += 1
+    return res
 
 class Hdf5Trj():
     def __init__(self, inputfile):
@@ -69,6 +86,7 @@ class Hdf5Trj():
 
         #swap axes from frameid, atomid, pos to atomid, frameid, pos
         self.atomictrj = np.swapaxes(self.trj, 0, 1)
+        del self.trj
         #swap axes from atomid, frameid, pos to atomid, pos, frameid
         self.atomictrj = np.swapaxes(self.atomictrj, 1, 2)
 
@@ -81,18 +99,20 @@ class Hdf5Trj():
             corr(self.trj[i], self.box[i], self.nAtom, self.trj[i-1])
 
     def vdos(self):
-        fftsize = self.nFrame * 2
+        fftsize = self.nFrame
         atomoffset = 1
         totAtom = self.nAtom
         atomictrj = self.atomictrj
+        atomPerMolecule=3
         start = time.time()
-        b = vdosfft(atomictrj, fftsize, atomoffset, totAtom)
+        # b = vdosfft(atomictrj, fftsize, atomoffset, totAtom)
+        diff = trjdiff(atomictrj,atomoffset,atomPerMolecule)
         end = time.time()
-        print("unwrap elapsed = %s" % (end - start))
+        print("vdos elapsed = %s" % (end - start))
 
-        import matplotlib.pyplot as plt
-        plt.plot(np.abs(b))
-        plt.show()
+        # import matplotlib.pyplot as plt
+        # plt.plot(np.abs(b))
+        # plt.show()
 
 t = Hdf5Trj(inputfile)
 t.vdos()
