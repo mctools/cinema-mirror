@@ -38,6 +38,7 @@ def diff(arr):
         res[i] = arr[i+1]-arr[i]
     return res
 
+@jit(nopython=True)
 def trjdiff(atomictrj, atomoffset, atomPerMolecule):
     if atomoffset > atomPerMolecule:
         raise RuntimeError('atomoffset > atomPerMolecule')
@@ -54,7 +55,7 @@ def trjdiff(atomictrj, atomoffset, atomPerMolecule):
             idx += 1
     return res
 
-class AnaVDOS():
+class Trj():
     def __init__(self, inputfile):
         hf = h5py.File(inputfile, 'r')
         self.species = hf["particles/all/species/value"][()]
@@ -75,18 +76,27 @@ class AnaVDOS():
         end = time.time()
         print("unwrap elapsed = %s" % (end - start))
 
-        #swap axes from frameid, atomid, pos_dim to atomid, frameid, pos_dim
-        self.atomictrj = np.swapaxes(self.trj, 0, 1)
-        del self.trj
-        #swap axes from atomid, frameid, pos_dim to atomid, pos_dim, frameid
-        self.atomictrj = np.swapaxes(self.atomictrj, 1, 2)
-
     def unwrap(self):
         #find atoms outside the box in the first frame
         corrFirstFrame(self.trj[0], self.box[0], self.nAtom)
         #unwrap the rest
         for i in range(1, self.nFrame):
             corr(self.trj[i], self.box[i], self.nAtom, self.trj[i-1])
+
+    def saveTrj(self, fileName):
+        hf = h5py.File(fileName, 'w')
+        hf['trj'] = self.trj
+        hf.close()
+
+
+class AnaVDOS(Trj):
+    def __init__(self, inputfile):
+        super().__init__(inputfile)
+        #swap axes from frameid, atomid, pos_dim to atomid, frameid, pos_dim
+        self.atomictrj = self.trj
+        self.atomictrj = np.swapaxes(self.atomictrj, 0, 1)
+        #swap axes from atomid, frameid, pos_dim to atomid, pos_dim, frameid
+        self.atomictrj = np.swapaxes(self.atomictrj, 1, 2)
 
     def vdos_python(self): #this method is for unittest only
         fftsize = self.nFrame*2
@@ -107,10 +117,9 @@ class AnaVDOS():
         for i in range(diff.shape[0]):
             temp = np.fft.fft(diff[i], n=fftsize)
             vdos += np.abs(temp)**2
-        print(f' diff.shape[0] { diff.shape[0]}')
         end = time.time()
         print("vdos_python fft elapsed = %s" % (end - start))
-        return vdos
+        return vdos[:self.nFrame]
 
 
     def vdos(self, numcpu=-1):
@@ -127,6 +136,6 @@ class AnaVDOS():
 
         vdos = np.zeros(fftsize)
         if numcpu==-1:
-            cores = os.cpu_count()//2
-        _correlation(diff, vdos, 0, diff.shape[0], 1, diff.shape[1], fftsize, cores)
-        return vdos
+            numcpu = os.cpu_count()//2
+        _correlation(diff, vdos, 0, diff.shape[0], 1, diff.shape[1], fftsize, numcpu)
+        return vdos[:self.nFrame]
