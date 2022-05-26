@@ -20,6 +20,9 @@
 ##                                                                            ##
 ################################################################################
 
+import json
+from Cinema.Interface.Utils import findData
+
 MPIRuns={}
 
 MPIRuns['D2O_NoAu'] = {'run': 'run17672', 'volume(ml)': 0.9, 'height_sample(mm)': 14.3376, 'dmin(mm)': 8.94, 'dmax(mm)': 9.53}
@@ -51,3 +54,8 @@ MPIRuns['D2O_NoAu_CCR05_ice'] = {'run': 'run17700', 'temperature': '213K±3K', '
 MPIRuns['D2O_NoAu_CCR06_roomtem'] = {'run': 'run17701', 'temperature': '302K±3K', 'volume(ml)': 0.9, 'height_sample(mm)': 14.3376, 'dmin(mm)': 8.94, 'dmax(mm)': 9.53}
 MPIRuns['D2O_NoAu_CCR06_ice1'] = {'run': 'run17702', 'temperature': '50K±3K', 'volume(ml)': 0.9, 'height_sample(mm)': 14.3376, 'dmin(mm)': 8.94, 'dmax(mm)': 9.53}
 MPIRuns['D2O_NoAu_CCR06_ice2'] = {'run': 'run17703', 'temperature': '12.8K±3K', 'volume(ml)': 0.9, 'height_sample(mm)': 14.3376, 'dmin(mm)': 8.94, 'dmax(mm)': 9.53}
+
+ModuleCorner_Exp={}
+with open('%s'%findData('MPI2022Exp/moduleCorner_Exp.json')) as jsonFile:
+    ModuleCorner_Exp=json.load(jsonFile)  
+# print(ModuleCorner_Exp['module10802']['left_bottom']['pos']) 
