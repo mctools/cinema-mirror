@@ -29,14 +29,14 @@ plt.plot(q, sq)
 
 
 anavdos = AnaSF2VD(s)
-vdos = anavdos.vdos(numcpu)
+vdos = anavdos.vdos(1, numcpu)
 if args.plot:
     plt.figure()
     plt.plot(np.abs(vdos), label='C++')
     plt.show()
 
 if args.test:
-    vdos_python = t.vdos_python()
+    vdos_python = anavdos.vdos_python(1)
     plt.figure()
     plt.plot(np.abs(vdos), label='C++')
     plt.plot(np.abs(vdos_python), label='python')
@@ -44,4 +44,4 @@ if args.test:
     plt.show()
 
 if args.output:
-    t.saveTrj(args.output)
+    anavdos.saveTrj(args.output)

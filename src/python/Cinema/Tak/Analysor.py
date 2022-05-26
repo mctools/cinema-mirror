@@ -38,10 +38,11 @@ def diff(arr):
         res[i] = arr[i+1]-arr[i]
     return res
 
-@jit(nopython=True)
 def trjdiff(atomictrj, atomoffset, atomPerMolecule):
     if atomoffset > atomPerMolecule:
         raise RuntimeError('atomoffset > atomPerMolecule')
+    elif atomoffset < 0:
+        raise RuntimeError('atomoffset < 0')
     totframe = atomictrj.shape[2]
     totAtom = atomictrj.shape[0]
     loopSize =  totAtom//atomPerMolecule
@@ -63,6 +64,12 @@ class Trj():
             self.nAtom = self.species.shape[1]
             self.nFrame = self.species.shape[0]
             print(self.nAtom, self.nFrame)
+
+            self.elements, counts = np.unique(self.species[0], return_counts=True)
+            print(self.elements, counts)
+            self.nMolecule = np.gcd.reduce(counts)
+            self.nAtomPerMole = self.nAtom//self.nMolecule;
+            print(f'self.elements {self.elements}, self.nMolecule {self.nMolecule}, self.nAtomPerMole {self.nAtomPerMole}')
 
             self.trj = hf["particles/all/position/value"][()]
             self.box = hf["particles/all/box/edges/value"][()]
@@ -122,18 +129,18 @@ class AnaVDOS(Trj):
         if inputfile:
             #swap axes from frameid, atomid, pos_dim to atomid, frameid, pos_dim
             self.atomictrj = self.trj
+            del self.trj #delete a reference pointed to the same resource
             self.atomictrj = np.swapaxes(self.atomictrj, 0, 1)
             #swap axes from atomid, frameid, pos_dim to atomid, pos_dim, frameid
             self.atomictrj = np.swapaxes(self.atomictrj, 1, 2)
 
-    def vdos_python(self, atomoffset=0,): #this method is for unittest only
+    def vdos_python(self, atomoffset=0): #this method is for unittest only
         fftsize = self.nFrame*2
         totAtom = self.nAtom
         atomictrj = self.atomictrj
-        atomPerMolecule=3
 
         start = time.time()
-        diff = trjdiff(atomictrj,atomoffset,atomPerMolecule)
+        diff = trjdiff(atomictrj, atomoffset, self.nAtomPerMole)
         end = time.time()
         print("vdos elapsed = %s" % (end - start))
 
@@ -144,19 +151,18 @@ class AnaVDOS(Trj):
             temp = np.fft.fft(diff[i], n=fftsize)
             vdos += np.abs(temp)**2
         end = time.time()
-        print("vdos_python fft elapsed = %s" % (end - start))
+        print("vdos_python diff elapsed = %s" % (end - start))
         return vdos[:self.nFrame]
 
     def vdos(self, atomoffset=0, numcpu=-1):
         fftsize = self.nFrame*2
         totAtom = self.nAtom
         atomictrj = self.atomictrj
-        atomPerMolecule=3
 
         start = time.time()
-        diff = trjdiff(atomictrj,atomoffset,atomPerMolecule)
+        diff = trjdiff(atomictrj, atomoffset, self.nAtomPerMole)
         end = time.time()
-        print("vdos elapsed = %s" % (end - start))
+        print("vdos diff elapsed = %s" % (end - start))
 
         vdos = np.zeros(fftsize)
         if numcpu==-1:
@@ -172,6 +178,8 @@ def AnaSF2VD(sf):
     vd.trj = sf.trj
     vd.box = sf.box
     vd.time = sf.time
+    vd.nMolecule = sf.nMolecule
+    vd.nAtomPerMole = sf.nMolecule
     vd.unwrap()
     vd.atomictrj = vd.trj
     vd.atomictrj = np.swapaxes(vd.atomictrj, 0, 1)
