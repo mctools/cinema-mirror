@@ -56,32 +56,34 @@ def trjdiff(atomictrj, atomoffset, atomPerMolecule):
     return res
 
 class Trj():
-    def __init__(self, inputfile):
-        hf = h5py.File(inputfile, 'r')
-        self.species = hf["particles/all/species/value"][()]
-        self.nAtom = self.species.shape[1]
-        self.nFrame = self.species.shape[0]
-        print(self.nAtom, self.nFrame)
+    def __init__(self, inputfile, unwrap=False):
+        if inputfile:
+            hf = h5py.File(inputfile, 'r')
+            self.species = hf["particles/all/species/value"][()]
+            self.nAtom = self.species.shape[1]
+            self.nFrame = self.species.shape[0]
+            print(self.nAtom, self.nFrame)
 
-        self.trj = hf["particles/all/position/value"][()]
-        self.box = hf["particles/all/box/edges/value"][()]
-        self.time = hf["particles/all/species/time"][()]
-        print(self.trj.shape)
-        print(self.box.shape)
-        print(self.time.shape)
-        hf.close()
+            self.trj = hf["particles/all/position/value"][()]
+            self.box = hf["particles/all/box/edges/value"][()]
+            self.time = hf["particles/all/species/time"][()]
+            print(self.trj.shape)
+            print(self.box.shape)
+            print(self.time.shape)
+            hf.close()
 
-        start = time.time()
-        self.unwrap()
-        end = time.time()
-        print("unwrap elapsed = %s" % (end - start))
+            if unwrap:
+                self.unwrap()
 
     def unwrap(self):
+        start = time.time()
         #find atoms outside the box in the first frame
         corrFirstFrame(self.trj[0], self.box[0], self.nAtom)
         #unwrap the rest
         for i in range(1, self.nFrame):
             corr(self.trj[i], self.box[i], self.nAtom, self.trj[i-1])
+        end = time.time()
+        print("unwrap elapsed = %s" % (end - start))
 
     def saveTrj(self, fileName):
         hf = h5py.File(fileName, 'w')
@@ -91,7 +93,7 @@ class Trj():
 @jit(nopython=True, fastmath=True, parallel=True, cache=True)
 def sqf(upperQ, trj, box, nAtom, nFrame):
     sq = np.zeros(upperQ)
-    normFact = np.sqrt(1./(3* nAtom*nFrame));
+    normFact = 1./(3.* nAtom*nFrame)
     for iQ in prange(upperQ):
         for iFrame in range(nFrame):
             unitQ = 2*np.pi/box[iFrame]
@@ -100,56 +102,32 @@ def sqf(upperQ, trj, box, nAtom, nFrame):
             sum_cos_term = np.cos(dotprd).sum() #*scattering_length
             sum_sin_term = np.sin(dotprd).sum() #*scattering_length
             sq[iQ] += (sum_cos_term*sum_cos_term) + (sum_sin_term*sum_sin_term)
-    return sq*normFact
-
+    return (np.arange(upperQ)+1.)*2*np.pi/box.mean(), sq*normFact
 
 class AnaSFactor(Trj):
     def __init__(self, inputfile):
-        super().__init__(inputfile)
+        super().__init__(inputfile, unwrap=False)
 
     def getSq(self, upperQ):
         start = time.time()
-        sq = sqf(upperQ, self.trj, self.box, self.nAtom, self.nFrame)
+        q, sq = sqf(upperQ, self.trj, self.box, self.nAtom, self.nFrame)
         end = time.time()
         print("sq elapsed = %s" % (end - start))
-        return sq
-
-
-
-
-       # StableSum sum_cos_term, sum_sin_term;
-       # double  unitQ = m_fixed_box_size ? 2*M_PI/(m_box.vec[dim]):2*M_PI/(m_box.vec[frameID*3+dim]);
-       #
-       # for(unsigned n=0;n<m_nAtom;n++)
-       # {
-       #   double dotprd = (Qidx+1)*unitQ*(frame[n*3+dim]);
-       #   double scattering_length = scat_length[n%m_nAtomPerMole];
-       #   sum_cos_term.add(scattering_length*cos(dotprd));
-       #   sum_sin_term.add(scattering_length*sin(dotprd));
-       # }
-       # //update fourier pair density vector, of which the correlation to be calculated in the next loop
-       # double sum_cos = sum_cos_term.sum()*normFact;
-       # double sum_sin = sum_sin_term.sum()*normFact;
-       #
-       # fourierParDen[Qidx*m_nFrame+frameID][0] = sum_cos;
-       # fourierParDen[Qidx*m_nFrame+frameID][1] = sum_sin;
-       # //update structure factor
-       # double frameContribution = (sum_cos * sum_cos  + sum_sin * sum_sin );
-
+        return q, sq
 
 
 class AnaVDOS(Trj):
     def __init__(self, inputfile):
-        super().__init__(inputfile)
-        #swap axes from frameid, atomid, pos_dim to atomid, frameid, pos_dim
-        self.atomictrj = self.trj
-        self.atomictrj = np.swapaxes(self.atomictrj, 0, 1)
-        #swap axes from atomid, frameid, pos_dim to atomid, pos_dim, frameid
-        self.atomictrj = np.swapaxes(self.atomictrj, 1, 2)
+        super().__init__(inputfile, unwrap=True)
+        if inputfile:
+            #swap axes from frameid, atomid, pos_dim to atomid, frameid, pos_dim
+            self.atomictrj = self.trj
+            self.atomictrj = np.swapaxes(self.atomictrj, 0, 1)
+            #swap axes from atomid, frameid, pos_dim to atomid, pos_dim, frameid
+            self.atomictrj = np.swapaxes(self.atomictrj, 1, 2)
 
-    def vdos_python(self): #this method is for unittest only
+    def vdos_python(self, atomoffset=0,): #this method is for unittest only
         fftsize = self.nFrame*2
-        atomoffset = 1
         totAtom = self.nAtom
         atomictrj = self.atomictrj
         atomPerMolecule=3
@@ -160,7 +138,6 @@ class AnaVDOS(Trj):
         print("vdos elapsed = %s" % (end - start))
 
         vdos = np.zeros(fftsize)
-
         start = time.time()
         vdos = np.zeros(fftsize)
         for i in range(diff.shape[0]):
@@ -170,10 +147,8 @@ class AnaVDOS(Trj):
         print("vdos_python fft elapsed = %s" % (end - start))
         return vdos[:self.nFrame]
 
-
-    def vdos(self, numcpu=-1):
+    def vdos(self, atomoffset=0, numcpu=-1):
         fftsize = self.nFrame*2
-        atomoffset = 1
         totAtom = self.nAtom
         atomictrj = self.atomictrj
         atomPerMolecule=3
@@ -188,3 +163,18 @@ class AnaVDOS(Trj):
             numcpu = os.cpu_count()//2
         _correlation(diff, vdos, 0, diff.shape[0], 1, diff.shape[1], fftsize, numcpu)
         return vdos[:self.nFrame]
+
+def AnaSF2VD(sf):
+    vd = AnaVDOS('')
+    vd.species = sf.species
+    vd.nAtom = sf.nAtom
+    vd.nFrame = sf.nFrame
+    vd.trj = sf.trj
+    vd.box = sf.box
+    vd.time = sf.time
+    vd.unwrap()
+    vd.atomictrj = vd.trj
+    vd.atomictrj = np.swapaxes(vd.atomictrj, 0, 1)
+    #swap axes from atomid, frameid, pos_dim to atomid, pos_dim, frameid
+    vd.atomictrj = np.swapaxes(vd.atomictrj, 1, 2)
+    return vd

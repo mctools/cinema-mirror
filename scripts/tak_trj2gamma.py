@@ -2,7 +2,7 @@
 
 import numpy as np
 import argparse
-from Cinema.Tak.Analysor import AnaVDOS, AnaSFactor
+from Cinema.Tak.Analysor import AnaVDOS, AnaSFactor, AnaSF2VD
 import matplotlib.pyplot as plt
 
 #######################################################
@@ -11,25 +11,25 @@ parser.add_argument('-i', '--input', action='store', type=str, default='mp-13_Fe
                     dest='input', help='input json file')
 parser.add_argument('-c', '--numcpu', action='store', type=int, default=-1,
                     dest='numcpu', help='number of CPU')
+parser.add_argument('-q', '--numq', action='store', type=int, default=200,
+                    dest='numq', help='number of Qpoint')
 parser.add_argument('--test', action='store_true', dest='test', help='run test')
 parser.add_argument('-p','--plot', action='store_true', dest='plot', help='plot figure')
 parser.add_argument('-o', '--output', action='store', type=str, default='',
                     dest='output', help='output')
 
 args = parser.parse_args()
-
 inputfile=args.input
 numcpu=args.numcpu
 
-
 s = AnaSFactor(inputfile)
-sq = s.getSq(50)
+q, sq = s.getSq(args.numq)
 plt.figure()
-plt.plot(sq, label='C++')
-plt.show()
+plt.plot(q, sq)
 
-# t = AnaVDOS(inputfile)
-# vdos = t.vdos(numcpu)
+
+anavdos = AnaSF2VD(s)
+vdos = anavdos.vdos(numcpu)
 if args.plot:
     plt.figure()
     plt.plot(np.abs(vdos), label='C++')
