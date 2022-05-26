@@ -92,11 +92,6 @@ class Trj():
         end = time.time()
         print("unwrap elapsed = %s" % (end - start))
 
-    def saveTrj(self, fileName):
-        hf = h5py.File(fileName, 'w')
-        hf['trj'] = self.trj
-        hf.close()
-
 @jit(nopython=True, fastmath=True, parallel=True, cache=True)
 def sqf(upperQ, trj, box, nAtom, nFrame):
     sq = np.zeros(upperQ)
@@ -170,6 +165,12 @@ class AnaVDOS(Trj):
         _correlation(diff, vdos, 0, diff.shape[0], 1, diff.shape[1], fftsize, numcpu)
         return vdos[:self.nFrame]
 
+    def saveTrj(self, fileName):
+        hf = h5py.File(fileName, 'w')
+        hf['trj'] = self.atomictrj
+        hf.close()
+
+
 def AnaSF2VD(sf):
     vd = AnaVDOS('')
     vd.species = sf.species
@@ -182,6 +183,7 @@ def AnaSF2VD(sf):
     vd.nAtomPerMole = sf.nMolecule
     vd.unwrap()
     vd.atomictrj = vd.trj
+    del vd.trj
     vd.atomictrj = np.swapaxes(vd.atomictrj, 0, 1)
     #swap axes from atomid, frameid, pos_dim to atomid, pos_dim, frameid
     vd.atomictrj = np.swapaxes(vd.atomictrj, 1, 2)
