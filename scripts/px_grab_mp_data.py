@@ -5,6 +5,7 @@ import signal
 import time
 import json
 from Cinema.PiXiu.IO.MPHelper import MPHelper
+from element import ALL_ELEMENTS
 
 
 def find_mp_list_by_dir(dir):
@@ -152,17 +153,6 @@ def reduce_list(origin_list, reduce_elems):
         
     return origin_list
 
-all_elements = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al']
-all_elements += ['Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn']
-all_elements += ['Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr']
-all_elements += ['Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag']
-all_elements += ['Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba']
-all_elements += ['La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu']
-all_elements += ['Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po']
-all_elements += ['At', 'Rn', 'Fr', 'Ra']
-all_elements += ['Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr']
-all_elements += ['Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn']
-
 def run():
     global __STOPRUN__
     #api_key='SOME_KEY'        
@@ -183,7 +173,7 @@ def run():
     #mp_id_todo_list += parse_optimade_json(opd_dir)
  
     # Scrab mpids by components       
-    #mpids, m_completed_list = query_mpids_by_components(helper, all_elements, m_completed_list)        
+    #mpids, m_completed_list = query_mpids_by_components(helper, ALL_ELEMENTS, m_completed_list)        
     #save_completed_materials(m_completed_list, data_dir)
     #mp_id_todo_list += mpids
     #save_todo_mids(mp_id_todo_list, data_dir)    
