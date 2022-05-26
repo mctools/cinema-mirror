@@ -2,7 +2,7 @@
 
 import numpy as np
 import argparse
-from Cinema.Tak.Analysor import AnaVDOS
+from Cinema.Tak.Analysor import AnaVDOS, AnaSFactor
 import matplotlib.pyplot as plt
 
 #######################################################
@@ -22,8 +22,14 @@ inputfile=args.input
 numcpu=args.numcpu
 
 
-t = AnaVDOS(inputfile)
-vdos = t.vdos(numcpu)
+s = AnaSFactor(inputfile)
+sq = s.getSq(50)
+plt.figure()
+plt.plot(sq, label='C++')
+plt.show()
+
+# t = AnaVDOS(inputfile)
+# vdos = t.vdos(numcpu)
 if args.plot:
     plt.figure()
     plt.plot(np.abs(vdos), label='C++')

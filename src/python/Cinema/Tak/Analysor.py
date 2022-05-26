@@ -88,6 +88,55 @@ class Trj():
         hf['trj'] = self.trj
         hf.close()
 
+@jit(nopython=True, fastmath=True, parallel=True, cache=True)
+def sqf(upperQ, trj, box, nAtom, nFrame):
+    sq = np.zeros(upperQ)
+    normFact = np.sqrt(1./(3* nAtom*nFrame));
+    for iQ in prange(upperQ):
+        for iFrame in range(nFrame):
+            unitQ = 2*np.pi/box[iFrame]
+            #atomid, pos_dim
+            dotprd = unitQ*trj[iFrame]*(iQ+1)
+            sum_cos_term = np.cos(dotprd).sum() #*scattering_length
+            sum_sin_term = np.sin(dotprd).sum() #*scattering_length
+            sq[iQ] += (sum_cos_term*sum_cos_term) + (sum_sin_term*sum_sin_term)
+    return sq*normFact
+
+
+class AnaSFactor(Trj):
+    def __init__(self, inputfile):
+        super().__init__(inputfile)
+
+    def getSq(self, upperQ):
+        start = time.time()
+        sq = sqf(upperQ, self.trj, self.box, self.nAtom, self.nFrame)
+        end = time.time()
+        print("sq elapsed = %s" % (end - start))
+        return sq
+
+
+
+
+       # StableSum sum_cos_term, sum_sin_term;
+       # double  unitQ = m_fixed_box_size ? 2*M_PI/(m_box.vec[dim]):2*M_PI/(m_box.vec[frameID*3+dim]);
+       #
+       # for(unsigned n=0;n<m_nAtom;n++)
+       # {
+       #   double dotprd = (Qidx+1)*unitQ*(frame[n*3+dim]);
+       #   double scattering_length = scat_length[n%m_nAtomPerMole];
+       #   sum_cos_term.add(scattering_length*cos(dotprd));
+       #   sum_sin_term.add(scattering_length*sin(dotprd));
+       # }
+       # //update fourier pair density vector, of which the correlation to be calculated in the next loop
+       # double sum_cos = sum_cos_term.sum()*normFact;
+       # double sum_sin = sum_sin_term.sum()*normFact;
+       #
+       # fourierParDen[Qidx*m_nFrame+frameID][0] = sum_cos;
+       # fourierParDen[Qidx*m_nFrame+frameID][1] = sum_sin;
+       # //update structure factor
+       # double frameContribution = (sum_cos * sum_cos  + sum_sin * sum_sin );
+
+
 
 class AnaVDOS(Trj):
     def __init__(self, inputfile):
