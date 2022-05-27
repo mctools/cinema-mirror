@@ -47,7 +47,7 @@ class AflowHelper:
         if page_offset == 0:
             _paging = '$paging(0)'
         else:
-            _paging = f'$paging({page_offset}, {page_size})'
+            _paging = f'$paging({page_offset},{page_size})'
             
         _url = f'{self.api_url}/?{summons},{_paging},format(json)'
         headers = {
