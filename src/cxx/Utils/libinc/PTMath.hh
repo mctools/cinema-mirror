@@ -45,6 +45,7 @@ namespace Prompt {
     ~StableSum();
     void add(double x);
     double sum() const;
+    void clear() {m_sum=0; m_correction=0.;};
   private:
     double m_sum, m_correction;
   };
@@ -59,6 +60,10 @@ void autocorrelation(const double *in1, double *out, size_t start_x, size_t end_
 
 void parFFT(double _Complex *in1, double _Complex *out, size_t start_x, size_t end_x,
                  size_t spacing_x, size_t y, size_t fftSize, size_t numcpu);
+
+void coherent_stablesum(double _Complex *in1, double *out, size_t x, size_t y, size_t numcpu);
+
+
 #ifdef __cplusplus
 }
 #endif

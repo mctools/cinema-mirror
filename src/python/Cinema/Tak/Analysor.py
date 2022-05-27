@@ -219,3 +219,49 @@ def AnaSF2VD(sf):
     #swap axes from atomid, frameid, pos_dim to atomid, pos_dim, frameid
     vd.atomictrj = np.swapaxes(vd.atomictrj, 1, 2)
     return vd
+
+
+
+@jit(nopython=True, fastmath=True, parallel=True, cache=True)
+def scaleQ(exponent, factor):
+    return np.exp(-exponent*1j*factor)
+
+@jit(nopython=True, fastmath=True, parallel=True, cache=True)
+def incoherent(b):
+    return (b.real*b.real + b.imag*b.imag).sum(axis=0)
+
+@jit(nopython=True, fastmath=True, parallel=True, cache=True)
+def coherent(b):
+    return b.real.sum(axis=0)**2 + b.imag.sum(axis=0)**2
+
+_coherent_stablesum = importFunc('coherent_stablesum', type_voidp, [type_npcplx2d, type_npdbl1d, type_sizet, type_sizet, type_sizet] )
+
+def coherent_stable(inp, numcpu=8):
+    res = np.zeros(inp.shape[1])
+    _coherent_stablesum(inp, res,inp.shape[0], inp.shape[1], numcpu)
+    return res
+    
+
+class DynamicFactor():
+    def __init__(self, inputfile):
+        f=h5py.File(inputfile, 'r')
+        self.tr = f['reduced_trj'][()]
+        f.close()
+
+    def cal(self, Q):
+        fftSize = self.tr.shape[2]
+        b=np.zeros(fftSize)
+
+        start = time.time()
+        inp = scaleQ(self.tr, Q)
+        inp = inp.reshape(-1, inp.shape[2])
+        b = parFFT(inp)
+        inco = incoherent(b)
+        inco = np.fft.fftshift(inco)
+        coh = coherent(b)
+        coh = np.fft.fftshift(coh)
+        # coh2 = coherent_stable(b)
+        # coh2 = np.fft.fftshift(coh2)
+        end = time.time()
+        print("cal elapsed = %s" % (end - start))
+        return inco, coh

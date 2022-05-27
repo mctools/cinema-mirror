@@ -185,3 +185,31 @@ void parFFT(double _Complex *in1, double _Complex *out, size_t start_x, size_t e
         << "[ms]" << std::endl << std::endl;
 
 }
+
+// out: size y
+// in: size x, y
+void coherent_stablesum(double _Complex *in1, double *out, size_t x, size_t y, size_t numcpu)
+{
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+  omp_set_num_threads(numcpu);
+  Prompt::StableSum rsum, isum;
+  std::fill(out, out+y, 0.);
+  // #pragma omp for shared(in1, out) firstprivate(x, y)
+  for(size_t j=0;j<y;j++)
+  {
+    rsum.clear();
+    isum.clear();
+    for(size_t i=0;i<x;i++)
+    {
+      rsum.add(creal(in1[j+i*y]));
+      isum.add(cimag(in1[j+i*y]));
+    }
+    double totr = rsum.sum();
+    double toti = isum.sum();
+    out[j] = totr*totr + toti*toti;
+  }
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+  std::cout << "coherent_stablesum Elapsed time "
+        << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+        << "[ms]" << std::endl << std::endl;
+}
