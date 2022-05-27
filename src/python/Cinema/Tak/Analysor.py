@@ -5,6 +5,19 @@ from Cinema.Interface import *
 
 _autocorrelation = importFunc('autocorrelation', type_voidp, [type_npdbl2d, type_npdbl1d, type_sizet, type_sizet, type_sizet, type_sizet, type_sizet, type_sizet] )
 
+_parFFT = importFunc('parFFT', type_voidp, [type_npcplx2d, type_npcplx2d, type_sizet, type_sizet, type_sizet, type_sizet] )
+
+def parFFT(input, n=None, numcpu=-1):
+    dim1=input.shape[0]
+    if not n:
+        n = input.shape[1]
+    out = np.zeros((dim1, n), dtype=np.complex128)
+    if numcpu==-1:
+        numcpu = os.cpu_count()//2
+    _parFFT(input, out, input.shape[0], input.shape[1], n, numcpu)
+    return out
+
+
 @jit(nopython=True, fastmath=True, inline='always', cache=True)
 def corrFirstFrame(trj, L, nAtom):
     for iA in prange(nAtom):
@@ -165,6 +178,9 @@ class AnaVDOS(Trj):
         #atom trajectories are piecked by trjdiff already
         print(f'trj diff shape {diff.shape[0]} {diff.shape[1]} ')
         _autocorrelation(diff, vdos, 0, diff.shape[0], 1, diff.shape[1], fftsize, numcpu)
+
+        # aa = np.zeros((diff.shape[0], diff.shape[1]), dtype=np.complex128)
+        # _parFFT(aa, aa, diff.shape[0], diff.shape[1], fftsize, numcpu)
         return vdos[:self.nFrame//2]
 
     def saveTrj(self, fileName):

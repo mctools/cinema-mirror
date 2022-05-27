@@ -53,10 +53,11 @@ namespace Prompt {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-//loopSize * fftSize = size(int1)
+#include <complex.h>
 void autocorrelation(const double *in1, double *out, size_t start_x, size_t end_x,
                  size_t spacing_x, size_t y, size_t fftSize, size_t numcpu);
+
+void parFFT(double _Complex *in1, double _Complex *out, size_t x, size_t y, size_t fftSize, size_t numcpu);
 #ifdef __cplusplus
 }
 #endif

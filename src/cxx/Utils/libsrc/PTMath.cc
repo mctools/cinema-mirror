@@ -21,6 +21,7 @@
 #include <vector>
 #include "PTMath.hh"
 #include "PTException.hh"
+#include <cstring> //memcpy
 
 std::vector<double> Prompt::logspace(double start, double stop, unsigned num)
 {
@@ -76,7 +77,7 @@ void autocorrelation(const double *in1, double *out, size_t start_x, size_t end_
     {
       fftPlan_r2c = fftw_plan_dft_r2c_1d(fftSize, realBuffer, fftwComplexBuffer, FFTW_ESTIMATE |  FFTW_PATIENT);
       // if(!Q.empty())
-      //   fftPlan_c2c = fftw_plan_dft_1d(fftSize, sqwfftwComplexBuffer, sqwfftwComplexBuffer_out, FFTW_FORWARD, FFTW_ESTIMATE  |  FFTW_PATIENT);
+      //   fftPlan_c2c = fftw_plan_dft_1d(fftSize, sqwfftwComplexBuffer, fftwComplexBuffer_out, FFTW_FORWARD, FFTW_ESTIMATE  |  FFTW_PATIENT);
     }
 
     double tadd(0.), tmul(0.), tfma(0.);
@@ -112,7 +113,68 @@ void autocorrelation(const double *in1, double *out, size_t start_x, size_t end_
   }
 
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-  std::cout << "Number of FFT math operations: additions " << add
+  std::cout << "autocorrelation: Number of FFT math operations: additions " << add
+        << ", multiplications "<< mul
+        << ", multiply-add operations " << fma << std::endl;
+
+  std::cout << "Elapsed time "
+        << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+        << "[ms]" << std::endl << std::endl;
+
+}
+
+
+void parFFT(double _Complex *in1, double _Complex *out, size_t x, size_t y, size_t fftSize, size_t numcpu)
+{
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
+  omp_set_num_threads(numcpu);
+  double add(0.), mul(0.), fma(0.);
+  std::fill(out, out+ fftSize*x, 0.);
+
+
+  #pragma omp parallel default(none) shared(in1, out) firstprivate(y, fftSize, x) reduction (+ : add, mul, fma)
+  {
+    fftw_plan fftPlan_c2c;
+    fftw_complex *fftwComplexBuffer = (fftw_complex*)fftw_malloc(sizeof(fftw_complex)*fftSize);
+    fftw_complex *fftwComplexBuffer_out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex)*fftSize);
+    auto buffAsComplexVec = reinterpret_cast<std::complex<double>* > (fftwComplexBuffer);
+
+    // create FFTW plan
+    #pragma omp critical
+    {
+      fftPlan_c2c = fftw_plan_dft_1d(fftSize, fftwComplexBuffer, fftwComplexBuffer_out, FFTW_FORWARD, FFTW_ESTIMATE  |  FFTW_PATIENT);
+    }
+
+    double tadd(0.), tmul(0.), tfma(0.);
+    #pragma omp for simd
+    for(size_t ix=0 ; ix < x ; ix++)
+    {
+      if(fftSize>y) //where padding of zero is needed
+        std::fill(buffAsComplexVec, buffAsComplexVec+ fftSize, std::complex<double>(0.)); //padding with zero
+      memcpy(fftwComplexBuffer, in1+y*ix, y*sizeof(double _Complex));
+      fftw_execute(fftPlan_c2c);
+      fftw_flops(fftPlan_c2c, &tadd, &tmul, &tfma);
+      add += tadd;
+      mul += tmul;
+      fma += tfma;
+
+      memcpy(out+y*ix, fftwComplexBuffer_out, fftSize*sizeof(double _Complex));
+    }
+
+    #pragma omp critical
+    {
+      fftw_cleanup();
+      fftw_destroy_plan(fftPlan_c2c);
+    }
+
+    // clean up
+    fftw_free(fftwComplexBuffer_out);
+    fftw_free(fftwComplexBuffer);
+  }
+
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+  std::cout << "parFFT: Number of FFT math operations: additions " << add
         << ", multiplications "<< mul
         << ", multiply-add operations " << fma << std::endl;
 
