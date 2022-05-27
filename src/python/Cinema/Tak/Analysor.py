@@ -3,7 +3,7 @@ import h5py, time, os
 from numba import jit, objmode, prange
 from Cinema.Interface import *
 
-_correlation = importFunc('correlation', type_voidp, [type_npdbl2d, type_npdbl1d, type_sizet, type_sizet, type_sizet, type_sizet, type_sizet, type_sizet] )
+_autocorrelation = importFunc('autocorrelation', type_voidp, [type_npdbl2d, type_npdbl1d, type_sizet, type_sizet, type_sizet, type_sizet, type_sizet, type_sizet] )
 
 @jit(nopython=True, fastmath=True, inline='always', cache=True)
 def corrFirstFrame(trj, L, nAtom):
@@ -164,7 +164,7 @@ class AnaVDOS(Trj):
             numcpu = os.cpu_count()//2
         #atom trajectories are piecked by trjdiff already
         print(f'trj diff shape {diff.shape[0]} {diff.shape[1]} ')
-        _correlation(diff, vdos, 0, diff.shape[0], 1, diff.shape[1], fftsize, numcpu)
+        _autocorrelation(diff, vdos, 0, diff.shape[0], 1, diff.shape[1], fftsize, numcpu)
         return vdos[:self.nFrame//2]
 
     def saveTrj(self, fileName):

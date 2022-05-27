@@ -55,7 +55,7 @@ std::vector<double>  Prompt::linspace(double start, double stop, unsigned num)
 #include "fftw3.h"
 #include <chrono>
 
-void correlation(const double *in1, double *out, size_t start_x, size_t end_x,
+void autocorrelation(const double *in1, double *out, size_t start_x, size_t end_x,
                  size_t spacing_x, size_t y, size_t fftSize, size_t numcpu)
 {
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
