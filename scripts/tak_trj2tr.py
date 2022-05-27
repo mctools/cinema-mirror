@@ -17,6 +17,8 @@ parser.add_argument('--test', action='store_true', dest='test', help='run test')
 parser.add_argument('-p','--plot', action='store_true', dest='plot', help='plot figure')
 parser.add_argument('-o', '--output', action='store', type=str, default='',
                     dest='output', help='output')
+parser.add_argument('--atomoffset',  type=int, nargs='+', dest='atomoffset',
+                     help='the atom offset for vdos calculation')
 
 args = parser.parse_args()
 inputfile=args.input
@@ -38,11 +40,13 @@ if args.test:
     import sys
     sys.exit()
 
-vdos = anavdos.vdos(1, numcpu)
-if args.plot:
-    plt.figure()
-    plt.plot(np.abs(vdos), label='C++')
-    plt.show()
+if args.atomoffset:
+    for offset in args.atomoffset:
+        vdos = anavdos.vdos(offset, numcpu)
+        if args.plot:
+            plt.figure()
+            plt.plot(np.abs(vdos), label='C++')
+            plt.show()
 
 if args.output:
     anavdos.saveTrj(args.output)
