@@ -130,7 +130,7 @@ class AnaVDOS(Trj):
             self.atomictrj = np.swapaxes(self.atomictrj, 1, 2)
 
     def vdos_python(self, atomoffset=0): #this method is for unittest only
-        fftsize = self.nFrame*2
+        fftsize = self.nFrame-1
         totAtom = self.nAtom
         atomictrj = self.atomictrj
 
@@ -147,10 +147,10 @@ class AnaVDOS(Trj):
             vdos += np.abs(temp)**2
         end = time.time()
         print("vdos_python diff elapsed = %s" % (end - start))
-        return vdos[:self.nFrame]
+        return vdos[:self.nFrame//2]
 
     def vdos(self, atomoffset=0, numcpu=-1):
-        fftsize = self.nFrame*2
+        fftsize = self.nFrame-1
         totAtom = self.nAtom
         atomictrj = self.atomictrj
 
@@ -162,8 +162,10 @@ class AnaVDOS(Trj):
         vdos = np.zeros(fftsize)
         if numcpu==-1:
             numcpu = os.cpu_count()//2
+        #atom trajectories are piecked by trjdiff already
+        print(f'trj diff shape {diff.shape[0]} {diff.shape[1]} ')
         _correlation(diff, vdos, 0, diff.shape[0], 1, diff.shape[1], fftsize, numcpu)
-        return vdos[:self.nFrame]
+        return vdos[:self.nFrame//2]
 
     def saveTrj(self, fileName):
         hf = h5py.File(fileName, 'w')
@@ -180,7 +182,7 @@ def AnaSF2VD(sf):
     vd.box = sf.box
     vd.time = sf.time
     vd.nMolecule = sf.nMolecule
-    vd.nAtomPerMole = sf.nMolecule
+    vd.nAtomPerMole = sf.nAtomPerMole
     vd.unwrap()
     vd.atomictrj = vd.trj
     del vd.trj
