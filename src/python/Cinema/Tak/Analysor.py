@@ -195,7 +195,10 @@ class AnaVDOS(Trj):
 
     def saveTrj(self, fileName):
         hf = h5py.File(fileName, 'w')
-        hf['trj'] = self.atomictrj
+        # atomid, pos_dim, frameid
+        # self.box: frameid, pos_dim
+        abox = np.swapaxes(self.box, 0, 1)
+        hf['reduced_trj'] = self.atomictrj*2*np.pi/abox
         hf.close()
 
 
