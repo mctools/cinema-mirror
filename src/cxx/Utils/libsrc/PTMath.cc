@@ -124,16 +124,17 @@ void autocorrelation(const double *in1, double *out, size_t start_x, size_t end_
 }
 
 
-void parFFT(double _Complex *in1, double _Complex *out, size_t x, size_t y, size_t fftSize, size_t numcpu)
+void parFFT(double _Complex *in1, double _Complex *out, size_t start_x, size_t end_x,
+                 size_t spacing_x, size_t y, size_t fftSize, size_t numcpu)
 {
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
   omp_set_num_threads(numcpu);
   double add(0.), mul(0.), fma(0.);
+  size_t x = 1 + ((end_x-1)-start_x)/spacing_x;
   std::fill(out, out+ fftSize*x, 0.);
 
-
-  #pragma omp parallel default(none) shared(in1, out) firstprivate(y, fftSize, x) reduction (+ : add, mul, fma)
+  #pragma omp parallel default(none) shared(in1, out) firstprivate(y, fftSize, x, start_x, end_x, spacing_x) reduction (+ : add, mul, fma)
   {
     fftw_plan fftPlan_c2c;
     fftw_complex *fftwComplexBuffer = (fftw_complex*)fftw_malloc(sizeof(fftw_complex)*fftSize);
@@ -148,7 +149,7 @@ void parFFT(double _Complex *in1, double _Complex *out, size_t x, size_t y, size
 
     double tadd(0.), tmul(0.), tfma(0.);
     #pragma omp for simd
-    for(size_t ix=0 ; ix < x ; ix++)
+    for(size_t ix=start_x; ix < end_x ; ix+=spacing_x)
     {
       if(fftSize>y) //where padding of zero is needed
         std::fill(buffAsComplexVec, buffAsComplexVec+ fftSize, std::complex<double>(0.)); //padding with zero
@@ -159,7 +160,8 @@ void parFFT(double _Complex *in1, double _Complex *out, size_t x, size_t y, size
       mul += tmul;
       fma += tfma;
 
-      memcpy(out+y*ix, fftwComplexBuffer_out, fftSize*sizeof(double _Complex));
+      size_t idx =  ((end_x-1)-ix)/spacing_x;
+      memcpy(out+y*(x-1-idx), fftwComplexBuffer_out, fftSize*sizeof(double _Complex));
     }
 
     #pragma omp critical

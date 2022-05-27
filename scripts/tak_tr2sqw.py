@@ -2,7 +2,7 @@
 
 import numpy as np
 import argparse, scipy.fft, time
-from Cinema.Tak.Analysor import AnaVDOS, AnaSFactor, AnaSF2VD
+from Cinema.Tak.Analysor import AnaVDOS, AnaSFactor, AnaSF2VD, parFFT
 import matplotlib.pyplot as plt
 
 #######################################################
@@ -28,15 +28,12 @@ a=np.zeros(fftSize, dtype=np.complex128)
 b=np.zeros(fftSize)
 start = time.time()
 
-temp = scipy.fft.fft(np.exp(-tr*1j), n=fftSize, axis=2, workers=4)
-
-#
-# for i in range(1, tr.shape[0], 3):
-#     # print(i)
-#     for dim in range(3):
-#         temp = np.fft.fftshift(np.fft.fft(np.exp(-tr[i,dim,:]*1j), n=fftSize))
-#         a += temp
-#         b += temp.real*temp.real+temp.imag*temp.imag
+for i in range(1, tr.shape[0], 3):
+    # print(i)
+    for dim in range(3):
+        temp = np.fft.fftshift(np.fft.fft(np.exp(-tr[i,dim,:]*1j), n=fftSize))
+        a += temp
+        b += temp.real*temp.real+temp.imag*temp.imag
 
 end = time.time()
 print("cal elapsed = %s" % (end - start))

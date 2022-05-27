@@ -5,7 +5,7 @@ from Cinema.Interface import *
 
 _autocorrelation = importFunc('autocorrelation', type_voidp, [type_npdbl2d, type_npdbl1d, type_sizet, type_sizet, type_sizet, type_sizet, type_sizet, type_sizet] )
 
-_parFFT = importFunc('parFFT', type_voidp, [type_npcplx2d, type_npcplx2d, type_sizet, type_sizet, type_sizet, type_sizet] )
+_parFFT = importFunc('parFFT', type_voidp, [type_npcplx2d, type_npcplx2d, type_sizet, type_sizet, type_sizet, type_sizet, type_sizet, type_sizet] )
 
 def parFFT(input, n=None, numcpu=-1):
     dim1=input.shape[0]
@@ -14,7 +14,17 @@ def parFFT(input, n=None, numcpu=-1):
     out = np.zeros((dim1, n), dtype=np.complex128)
     if numcpu==-1:
         numcpu = os.cpu_count()//2
-    _parFFT(input, out, input.shape[0], input.shape[1], n, numcpu)
+    _parFFT(input, out, 0, input.shape[0], 1, input.shape[1], n, numcpu)
+    return out
+
+def parFFTs(input, offset, spacing, n=None, numcpu=-1):
+    dim1=input.shape[0]
+    if not n:
+        n = input.shape[1]
+    out = np.zeros(((dim1-1)//spacing+1, n), dtype=np.complex128)
+    if numcpu==-1:
+        numcpu = os.cpu_count()//2
+    _parFFT(input, out, offset, input.shape[0], spacing, input.shape[1], n, numcpu)
     return out
 
 
