@@ -240,7 +240,7 @@ def coherent_stable(inp, numcpu=8):
     res = np.zeros(inp.shape[1])
     _coherent_stablesum(inp, res,inp.shape[0], inp.shape[1], numcpu)
     return res
-    
+
 
 class DynamicFactor():
     def __init__(self, inputfile):
@@ -248,7 +248,21 @@ class DynamicFactor():
         self.tr = f['reduced_trj'][()]
         f.close()
 
-    def cal(self, Q):
+    def calCoherent(self, Q):
+        fftSize = self.tr.shape[2]
+        b=np.zeros(fftSize)
+
+        start = time.time()
+        inp = scaleQ(self.tr, Q)
+        inp = inp.reshape(-1, inp.shape[2])
+        b = parFFT(inp)
+        coh = coherent(b)
+        coh = np.fft.fftshift(coh)
+        end = time.time()
+        print("calCoherent elapsed = %s" % (end - start))
+        return coh
+
+    def calIncoherent(self, Q):
         fftSize = self.tr.shape[2]
         b=np.zeros(fftSize)
 
@@ -258,10 +272,6 @@ class DynamicFactor():
         b = parFFT(inp)
         inco = incoherent(b)
         inco = np.fft.fftshift(inco)
-        coh = coherent(b)
-        coh = np.fft.fftshift(coh)
-        # coh2 = coherent_stable(b)
-        # coh2 = np.fft.fftshift(coh2)
         end = time.time()
-        print("cal elapsed = %s" % (end - start))
-        return inco, coh
+        print("calIncoherent elapsed = %s" % (end - start))
+        return inco
