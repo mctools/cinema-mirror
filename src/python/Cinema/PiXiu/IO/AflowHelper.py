@@ -69,6 +69,10 @@ class AflowHelper:
             'User-Agent': (self.user_agent)[random.randint(0, len(self.user_agent) - 1)]
         }
         response = requests.request("GET", _url, headers=headers, timeout=self.timeout)
+        if response.status_code == requests.codes.not_found:    # For old materials
+            _url = _url.replace(r'https://aflowlib.duke.edu', r'http://materials.duke.edu', 1)
+            print(f'Try {_url} ...')
+            response = requests.request("GET", _url, headers=headers, timeout=self.timeout)
         if response.status_code != requests.codes.ok:
             raise IOError(f'Download failed: {response.status_code}')
 
