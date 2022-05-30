@@ -20,7 +20,7 @@
 ##                                                                            ##
 ################################################################################
 
-from Interface import *
+from Cinema.Interface import *
 
 #!/usr/bin/env python3
 import numpy as np
