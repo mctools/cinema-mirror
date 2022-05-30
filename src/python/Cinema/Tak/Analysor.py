@@ -92,6 +92,7 @@ class Trj():
             print(self.elements, counts)
             self.nMolecule = np.gcd.reduce(counts)
             self.nAtomPerMole = self.nAtom//self.nMolecule;
+            self.atomid = self.species[0,:self.nAtomPerMole]
             print(f'self.elements {self.elements}, self.nMolecule {self.nMolecule}, self.nAtomPerMole {self.nAtomPerMole}')
 
             self.trj = hf["particles/all/position/value"][()]
@@ -199,6 +200,10 @@ class AnaVDOS(Trj):
         # self.box: frameid, pos_dim
         abox = np.swapaxes(self.box, 0, 1)
         hf['reduced_trj'] = self.atomictrj*2*np.pi/abox
+        hf['Q_unit'] = 2*np.pi/self.box.mean()
+        hf['dt'] = np.diff(self.time).mean()*1e-12
+        hf['atomid'] = self.atomid
+        hf['atominfo']=np.array([self.nAtom, self.nFrame, self.nMolecule, self.nAtomPerMole], dtype=int)
         hf.close()
 
 
@@ -212,6 +217,8 @@ def AnaSF2VD(sf):
     vd.time = sf.time
     vd.nMolecule = sf.nMolecule
     vd.nAtomPerMole = sf.nAtomPerMole
+    vd.elements = sf.elements
+    vd.atomid = sf.atomid
     vd.unwrap()
     vd.atomictrj = vd.trj
     del vd.trj
@@ -223,8 +230,12 @@ def AnaSF2VD(sf):
 
 
 @jit(nopython=True, fastmath=True, parallel=True, cache=True)
-def scaleQ(exponent, factor):
-    return np.exp(-exponent*1j*factor)
+def scaleQ(exponent, factor, window):
+    if window:
+        return np.exp(-exponent*1j*factor)*np.kaiser(exponent.shape[2], 20) #*np.hanning(exponent.shape[2])
+    else:
+        return np.exp(-exponent*1j*factor)
+
 
 @jit(nopython=True, fastmath=True, parallel=True, cache=True)
 def incoherent(b):
@@ -246,14 +257,18 @@ class DynamicFactor():
     def __init__(self, inputfile):
         f=h5py.File(inputfile, 'r')
         self.tr = f['reduced_trj'][()]
+        self.Q_unit = f['Q_unit'][()]
+        self.dt = f['dt'][()]
+        self.nAtom, self.nFrame, self.nMolecule, self.nAtomPerMole = f['atominfo'][()]
+        self.atomid = f['atomid'][()]
+        print(f'self.atomid {self.atomid}, self.tr.shape {self.tr.shape}')
         f.close()
 
-    def calCoherent(self, Q):
+    def calCoherent(self, Q, window=False):
         fftSize = self.tr.shape[2]
         b=np.zeros(fftSize)
-
         start = time.time()
-        inp = scaleQ(self.tr, Q)
+        inp = scaleQ(self.tr, Q, window)
         inp = inp.reshape(-1, inp.shape[2])
         b = parFFT(inp)
         coh = coherent(b)
@@ -262,12 +277,12 @@ class DynamicFactor():
         print("calCoherent elapsed = %s" % (end - start))
         return coh
 
-    def calIncoherent(self, Q):
+    def calIncoherent(self, Q, window=False):
         fftSize = self.tr.shape[2]
         b=np.zeros(fftSize)
 
         start = time.time()
-        inp = scaleQ(self.tr, Q)
+        inp = scaleQ(self.tr, Q, window)
         inp = inp.reshape(-1, inp.shape[2])
         b = parFFT(inp)
         inco = incoherent(b)

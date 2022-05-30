@@ -14,9 +14,17 @@ args = parser.parse_args()
 inputfile=args.input
 df = DynamicFactor(inputfile)
 
-Q=0.01
+Q=1
+
+# coh = df.calCoherent(Q)
+# plt.semilogy(coh, label='coh')
+
 inco = df.calIncoherent(Q)
 plt.semilogy(inco, label='inco')
+
+inco = df.calIncoherent(Q, True)
+plt.semilogy(inco, label='inco windowed')
+
 plt.legend()
 plt.show()
 
