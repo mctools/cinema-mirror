@@ -4,6 +4,7 @@ import numpy as np
 import argparse
 from Cinema.Tak.Analysor import AnaVDOS, AnaSFactor, AnaSF2VD
 import matplotlib.pyplot as plt
+from Cinema.Interface import units
 
 #######################################################
 parser = argparse.ArgumentParser()
@@ -43,10 +44,10 @@ if args.test:
 
 if args.atomoffset:
     for offset in args.atomoffset:
-        vdos = anavdos.vdos(offset, numcpu)
+        fre, vdos = anavdos.vdos(offset, numcpu)
         if args.plot:
             plt.figure()
-            plt.plot(np.abs(vdos), label='C++')
+            plt.plot(fre*units.hbar, np.abs(vdos), label='C++')
             plt.show()
 
 if args.output:

@@ -4,7 +4,7 @@ import time
 from  Cinema.Prompt.Math.Hist import Hist2D
 
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from Cinema.Interface.Units import *
+from Cinema.Interface.units import *
 
 # lattice (Aa), mass (atomic mass), pos (fractional coordinate), bc (sqrt(barn))
 # qpoints(reduced coordinate), energy(eV ), eigv (unity magnitude), qweight (dimensionless), kt(eV)

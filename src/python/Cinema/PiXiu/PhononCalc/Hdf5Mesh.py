@@ -1,7 +1,7 @@
 import h5py
 import numpy as np
 from .CalcBase import CalcPowder
-from Cinema.Interface.Units import *
+from Cinema.Interface.units import *
 
 class Hdf5Mesh(CalcPowder):
     def __init__(self, lattice, mass, pos, bc, kt, fileName):

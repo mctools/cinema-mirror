@@ -5,6 +5,7 @@ import argparse, scipy.fft, time
 from Cinema.Tak.Analysor import DynamicFactor
 import matplotlib.pyplot as plt
 import h5py
+from Cinema.Interface import units
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', action='store', type=str, default='',
@@ -15,15 +16,16 @@ inputfile=args.input
 df = DynamicFactor(inputfile)
 
 Q=1
+plt.figure(figsize=(8, 6))
 
-# coh = df.calCoherent(Q)
-# plt.semilogy(coh, label='coh')
+fre, coh = df.calCoherent(Q, True)
+plt.semilogy(fre*Units.hbar, coh, label='coh')
 
-inco = df.calIncoherent(Q)
-plt.semilogy(inco, label='inco')
+fre, inco = df.calIncoherent(Q)
+plt.semilogy(fre*Units.hbar, inco, label='inco')
 
-inco = df.calIncoherent(Q, True)
-plt.semilogy(inco, label='inco windowed')
+fre, inco = df.calIncoherent(Q, True)
+plt.semilogy(fre*Units.hbar, inco, label='inco windowed')
 
 plt.legend()
 plt.show()

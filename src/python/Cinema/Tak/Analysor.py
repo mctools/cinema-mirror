@@ -98,6 +98,7 @@ class Trj():
             self.trj = hf["particles/all/position/value"][()]
             self.box = hf["particles/all/box/edges/value"][()]
             self.time = hf["particles/all/species/time"][()]
+            self.dt = np.diff(self.time).mean()*1e-15
             print(self.trj.shape)
             print(self.box.shape)
             print(self.time.shape)
@@ -190,9 +191,8 @@ class AnaVDOS(Trj):
         print(f'trj diff shape {diff.shape[0]} {diff.shape[1]} ')
         _autocorrelation(diff, vdos, 0, diff.shape[0], 1, diff.shape[1], fftsize, numcpu)
 
-        # aa = np.zeros((diff.shape[0], diff.shape[1]), dtype=np.complex128)
-        # _parFFT(aa, aa, diff.shape[0], diff.shape[1], fftsize, numcpu)
-        return vdos[:self.nFrame//2]
+        fre = np.fft.fftfreq(vdos.size, self.dt)*2*np.pi
+        return fre[:self.nFrame//2], vdos[:self.nFrame//2]
 
     def saveTrj(self, fileName):
         hf = h5py.File(fileName, 'w')
@@ -201,7 +201,7 @@ class AnaVDOS(Trj):
         abox = np.swapaxes(self.box, 0, 1)
         hf['reduced_trj'] = self.atomictrj*2*np.pi/abox
         hf['Q_unit'] = 2*np.pi/self.box.mean()
-        hf['dt'] = np.diff(self.time).mean()*1e-12
+        hf['dt'] = self.dt
         hf['atomid'] = self.atomid
         hf['atominfo']=np.array([self.nAtom, self.nFrame, self.nMolecule, self.nAtomPerMole], dtype=int)
         hf.close()
@@ -215,6 +215,7 @@ def AnaSF2VD(sf):
     vd.trj = sf.trj
     vd.box = sf.box
     vd.time = sf.time
+    vd.dt = sf.dt
     vd.nMolecule = sf.nMolecule
     vd.nAtomPerMole = sf.nAtomPerMole
     vd.elements = sf.elements
@@ -275,7 +276,8 @@ class DynamicFactor():
         coh = np.fft.fftshift(coh)
         end = time.time()
         print("calCoherent elapsed = %s" % (end - start))
-        return coh
+        fre = np.fft.fftshift(np.fft.fftfreq(coh.size, self.dt))*2*np.pi
+        return fre, coh
 
     def calIncoherent(self, Q, window=False):
         fftSize = self.tr.shape[2]
@@ -289,4 +291,5 @@ class DynamicFactor():
         inco = np.fft.fftshift(inco)
         end = time.time()
         print("calIncoherent elapsed = %s" % (end - start))
-        return inco
+        fre = np.fft.fftshift(np.fft.fftfreq(inco.size, self.dt))*2*np.pi
+        return fre, inco
