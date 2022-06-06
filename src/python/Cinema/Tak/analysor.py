@@ -53,15 +53,15 @@ def corr(trj, L, nAtom, trjold):
                 raise RuntimeError('Correction wrong')
 
 
-@jit(nopython=True, fastmath=True, inline='always', cache=True)
+@jit(nopython=True, fastmath=True, parallel=True, inline='always', cache=True)
 def diff(arr):
-    sz = arr.size
-    res = np.zeros(sz-1)
-    for i in prange(sz-1):
-        res[i] = arr[i+1]-arr[i]
-    return res
+    return arr[:, 1:] - arr[:, :-1]
 
-def trjdiff(atomictrj, atomoffset, atomPerMolecule):
+@jit(nopython=True, fastmath=True, parallel=True, inline='always', cache=True)
+def msd(arr):
+    return (arr[:, 1:].T - arr[:, 0]).T
+
+def trjdiff(atomictrj, atomoffset, atomPerMolecule, caltype='diff'):
     if atomoffset > atomPerMolecule:
         raise RuntimeError('atomoffset > atomPerMolecule')
     elif atomoffset < 0:
@@ -69,14 +69,14 @@ def trjdiff(atomictrj, atomoffset, atomPerMolecule):
     totframe = atomictrj.shape[2]
     totAtom = atomictrj.shape[0]
     loopSize =  totAtom//atomPerMolecule
-    fftsize = totframe*2
-    vdos = np.zeros(fftsize, dtype=np.complex128)
     res = np.zeros((loopSize*3, totframe-1))
     idx = 0
     for iAtom in range(atomoffset, totAtom, atomPerMolecule):
-        for iDim in range(3):
-            res[idx, :] = diff(atomictrj[iAtom, iDim])
-            idx += 1
+        if caltype=='diff':
+            res[idx:(idx+3), :] = diff(atomictrj[iAtom])
+        elif caltype=='msd':
+            res[idx:(idx+3), :] = msd(atomictrj[iAtom])
+        idx += 3
     return res
 
 class Trj():
@@ -142,6 +142,62 @@ class AnaSFactor(Trj):
         print("sq elapsed = %s" % (end - start))
         return q, sq
 
+def correlation(x, y=None, axis=0, sumOverAxis=None, average=None):
+    import numpy
+    """Returns the numerical correlation between two signals.
+
+    :param x: the first signal.
+    :type x: NumPy array
+
+    :param y: if not None, the correlation is performed between `x` and `y`. If None, the autocorrelation of `x` will be computed.
+    :type y: NumPy array or None
+
+    :param axis: the axis along which the correlation will be computed.
+    :type axis: int
+
+    :param sumOverAxis: if not None, the computed correlations will be sum over a given axis.
+    :type sumOverAxis: int or None
+
+    :param average: if not None, the computed correlations will be averaged over a given axis.
+    :type average: int or None
+
+    :return: the result of the numerical correlation.
+    :rtype: NumPy array
+
+    :note: The correlation is computed using the FCA algorithm.
+    """
+
+    x = numpy.array(x)
+
+    n = x.shape[axis]
+
+    X = numpy.fft.fft(x, 2*n,axis=axis)
+
+    if y is not None:
+        y = numpy.array(y)
+        Y = numpy.fft.fft(y, 2*n,axis=axis)
+    else:
+        Y = X
+
+    s = [slice(None)]*x.ndim
+
+    s[axis] = slice(0,x.shape[axis],1)
+
+    corr = numpy.real(numpy.fft.ifft(numpy.conjugate(X)*Y,axis=axis)[s])
+
+    norm = n - numpy.arange(n)
+
+    s = [numpy.newaxis]*x.ndim
+    s[axis] = slice(None)
+
+    corr = corr/norm[s]
+
+    if sumOverAxis is not None:
+        corr = numpy.sum(corr,axis=sumOverAxis)
+    elif average is not None:
+        corr = numpy.average(corr,axis=average)
+
+    return corr
 
 class AnaVDOS(Trj):
     def __init__(self, inputfile):
@@ -193,6 +249,46 @@ class AnaVDOS(Trj):
 
         fre = np.fft.fftfreq(vdos.size, self.dt)*2*np.pi
         return fre[:self.nFrame//2], vdos[:self.nFrame//2]
+
+    def msd(self, atomoffset=0, numcpu=-1):
+        fftsize = self.nFrame-1
+        totAtom = self.nAtom
+        atomictrj = self.atomictrj
+
+        #atomid , dim, frame
+        '''
+        Computes the mean square displacement of a set of coordinates
+        :param coords: the set of n coordinates.
+        :type coords: (n,3) numpy array
+        :return: the mean square displacement.
+        :rtype: float
+        '''
+        coords=np.swapaxes(self.atomictrj[1], 0, 1)
+
+        dsq = np.add.reduce(coords**2,1)
+
+        # sum_dsq1 is the cumulative sum of dsq
+        sum_dsq1 = np.add.accumulate(dsq)
+
+        # sum_dsq1 is the reversed cumulative sum of dsq
+        sum_dsq2 = np.add.accumulate(dsq[::-1])
+
+        # sumsq refers to SUMSQ in the published algorithm
+        sumsq = 2.0*sum_dsq1[-1]
+
+        # this line refers to the instruction SUMSQ <-- SUMSQ - DSQ(m-1) - DSQ(N - m) of the published algorithm
+        # In this case, msd is an array because the instruction is computed for each m ranging from 0 to len(traj) - 1
+        # So, this single instruction is performing the loop in the published algorithm
+        Saabb  = sumsq - np.concatenate(([0.0], sum_dsq1[:-1])) - np.concatenate(([0.0], sum_dsq2[:-1]))
+
+        # Saabb refers to SAA+BB/(N-m) in the published algorithm
+        # Sab refers to SAB(m)/(N-m) in the published algorithm
+        Saabb = Saabb / (len(dsq) - np.arange(len(dsq)))
+        Sab   = 2.0*correlation(coords, axis=0, sumOverAxis=1)
+
+        # The atomic MSD.
+        msd = Saabb - Sab
+        return np.arange(msd.size)*self.dt, msd
 
     def saveTrj(self, fileName):
         hf = h5py.File(fileName, 'w')
