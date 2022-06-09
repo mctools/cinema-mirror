@@ -62,8 +62,10 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
       echo "Found ncrystal"
     fi
     .  $CINEMAPATH/external/ncrystal/install/setup.sh
+    export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
   else
     .  $CINEMAPATH/external/ncrystal/install/setup.sh
+    export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
   fi
 
 
