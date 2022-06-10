@@ -18,165 +18,6 @@ constexpr double i_315=1./315;
 constexpr double i_45=1./45;
 
 
-void s2p_1_s2p(unsigned x_panels, double *xVec, double *yVec,
-              unsigned t_length, double *tVec, double *s2p_1_Vec, double *s2p_Vec)
-{
-    #pragma omp parallel for simd
-    for (auto i=0; i<t_length; i++)
-    {
-        double time = tVec[i];
-	      Prompt::StableSum sum1, sum2;
-        //double sum1=0.0;
-        //double sum2=0.0;
-        double part_2=-0.5*(yVec[0]*sin(time*xVec[0])+yVec[2*x_panels]*sin(time*xVec[2*x_panels]));
-        for (auto j=1; j<x_panels+1; j++)
-        {
-            sum1.add(yVec[2*j-1]*sin(time*xVec[2*j-1]));
-            sum2.add(yVec[2*(j-1)]*sin(time*xVec[2*(j-1)]));
-        }
-        sum2.add(yVec[2*x_panels]*sin(time*xVec[2*x_panels]));
-        s2p_1_Vec[i]=sum1.sum();
-        s2p_Vec[i]=sum2.sum()+part_2;
-    }
-}
-
-void c2p_1_c2p(unsigned x_panels, double *xVec, double *yVec,
-              unsigned t_length, double *tVec, double *c2p_1_Vec, double *c2p_Vec)
-{
-    #pragma omp parallel for simd
-    for (auto i=0; i<t_length; i++)
-    {
-        double time = tVec[i];
-	      Prompt::StableSum sum1, sum2;
-        //double sum1=0.0;
-        //double sum2=0.0;
-        double part_2=-0.5*(yVec[0]*cos(time*xVec[0])+yVec[2*x_panels]*cos(time*xVec[2*x_panels]));
-        for (auto j=1; j<x_panels+1;j++)
-        {
-            sum1.add(yVec[2*j-1]*cos(time*xVec[2*j-1]));
-            sum2.add(yVec[2*(j-1)]*cos(time*xVec[2*(j-1)]));
-        }
-        sum2.add(yVec[2*x_panels]*cos(time*xVec[2*x_panels]));
-        c2p_1_Vec[i]=sum1.sum();
-        c2p_Vec[i]=sum2.sum()+part_2;
-        //c2p_Vec[i]=sum2;
-      }
-}
-
-void alpha_beta_gamma(unsigned theta_length, double *thetaVec,
-                          double *alphaVec, double *betaVec, double *gammaVec)
-{
-    double theta=0.0;
-      #pragma omp parallel for simd
-    for (auto i=0;i<theta_length;i++)
-    {
-        theta = thetaVec[i];
-        double theta2=theta*theta;
-        double theta3=theta2*theta;
-        double theta4=theta3*theta;
-
-        double itheta3=1./theta3;
-        if (theta<0.0218)
-        {
-          betaVec[i]=-4.*theta4*i_105 + 2.*theta2*i_15 + beta_limit;
-        }
-        else {
-          double cos2_theta=cos(theta)*cos(theta);
-          double sin_2theta=sin(2*theta);
-          betaVec[i]=2*itheta3*(theta*(1+cos2_theta)-sin_2theta);
-        }
-        if (theta<0.0365)
-        {
-          gammaVec[i]=theta4*i_210 - 2.*theta2*i_15 + gamma_limit;
-        }
-        else {
-          gammaVec[i]=4.*itheta3*(sin(theta)-theta*cos(theta));
-        }
-        if (theta<0.086)
-        {
-          double theta7=theta3*theta4;
-          double theta5=theta4*theta;
-          alphaVec[i]=2.*theta7*i_4725 - 2.*theta5*i_315 + 2.*theta3*i_45;
-        }
-        else {
-          double sin_2theta=sin(2*theta);
-          double sin2_theta=sin(theta)*sin(theta);
-          alphaVec[i]=itheta3*(theta2+theta*sin_2theta*0.5-2*sin2_theta);
-        }
-    }
-}
-
-
-
-void sin_integral(unsigned x_panels,double *xVec,double *yVec,unsigned t_length, double *tVec, double *sinVec)
-{
-    double h=xVec[1]-xVec[0];
-    double *theta=new double [t_length];
-    for (auto i=0; i<t_length; i++)
-    {
-      theta[i]=tVec[i]*h;
-    }
-    double *alpha=new double [t_length];
-    double *beta=new double [t_length];
-    double *gamma=new double [t_length];
-    double *s2p_1=new double [t_length];
-    double *s2p=new double [t_length];
-
-    alpha_beta_gamma(t_length, theta,alpha, beta, gamma);
-    s2p_1_s2p(x_panels, xVec,yVec,t_length, tVec, s2p_1, s2p);
-
-    int lastIdx=2*x_panels;
-    #pragma omp parallel for simd
-    for (auto i=0; i<t_length; i++)
-    {
-        double part_1=alpha[i]*(yVec[0]*cos(tVec[i]*xVec[0])-yVec[lastIdx]*cos(tVec[i]*xVec[lastIdx]));
-        double part_2=beta[i]*s2p[i];
-        double part_3=(gamma[i])*s2p_1[i];
-        sinVec[i]=h*(part_1+part_2+part_3);
-    }
-    delete[] alpha;
-    delete[] beta;
-    delete[] gamma;
-    delete[] s2p_1;
-    delete[] s2p;
-}
-
-
-void cos_integral(unsigned x_panels,double *xVec,double *yVec,unsigned t_length, double *tVec, double *cosVec)
-{
-    double h=xVec[1]-xVec[0];
-    double *theta=new double [t_length];
-    for (auto i=0; i<t_length; i++)
-    {
-      theta[i]=tVec[i]*h;
-    }
-    double *alpha=new double [t_length];
-    double *beta=new double [t_length];
-    double *gamma=new double [t_length];
-    double *c2p_1=new double [t_length];
-    double *c2p=new double [t_length];
-
-    alpha_beta_gamma(t_length, theta,alpha, beta, gamma);
-    c2p_1_c2p(x_panels, xVec,yVec,t_length, tVec, c2p_1, c2p);
-
-    int lastIdx=2*x_panels;
-    #pragma omp parallel for simd
-    for (auto i=0; i<t_length; i++)
-    {
-        //std::cout<<alpha[i]<<";"<<beta[i]<<";"<<gamma[i]<<std::endl;
-        double part_1=alpha[i]*(yVec[lastIdx]*sin(tVec[i]*xVec[lastIdx])-yVec[0]*sin(tVec[i]*xVec[0]));
-        double part_2=beta[i]*c2p[i];
-        double part_3=abs(gamma[i])*c2p_1[i];
-        cosVec[i]=h*(part_1+part_2+part_3);
-    }
-    delete[] alpha;
-    delete[] beta;
-    delete[] gamma;
-    delete[] c2p_1;
-    delete[] c2p;
-}
-
-
 void alpha_beta_gamma_single(double theta, double &alpha, double &beta, double &gamma)
 {
   double theta2=theta*theta;
@@ -218,15 +59,21 @@ void s2p_1_s2p_single(unsigned x_panels, double *xVec, double *yVec,
   //std::cout<<"start s2p_single"<<std::endl;
   double sum1=0.0;
   double sum2=0.0;
-  double part_2=-0.5*(yVec[0]*sin(time*xVec[0])+yVec[2*x_panels]*sin(time*xVec[2*x_panels]));
+  std::vector<double> sinval(0);
+  sinval.resize(2*x_panels+1);
+  for(size_t i=0;i<sinval.size();i++)
+  {
+    sinval[i] = sin(time*xVec[i]);
+  }
+  double part_2=-0.5*(yVec[0]*sinval[0]+yVec[2*x_panels]*sinval[2*x_panels]);
   //std::cout<<"part_2"<<part_2<<std::endl;
   for (auto j=1; j<x_panels+1; j++)
   {
-      sum1+=yVec[2*j-1]*sin(time*xVec[2*j-1]);
-      sum2+=yVec[2*(j-1)]*sin(time*xVec[2*(j-1)]);
+      sum1+=yVec[2*j-1]*sinval[2*j-1];
+      sum2+=yVec[2*(j-1)]*sinval[2*(j-1)];
   }
 
-  sum2+=yVec[2*x_panels]*sin(time*xVec[2*x_panels]);
+  sum2+=yVec[2*x_panels]*sinval[2*x_panels];
   //std::cout<<"sum2 final:"<<sum2<<std::endl;
   s2p_1=sum1;
   s2p=sum2+part_2;
@@ -237,13 +84,20 @@ void c2p_1_c2p_single(unsigned x_panels, double *xVec, double *yVec,
 {
     double sum1=0.0;
     double sum2=0.0;
-    double part_2=-0.5*(yVec[0]*cos(time*xVec[0])+yVec[2*x_panels]*cos(time*xVec[2*x_panels]));
+    std::vector<double> cosval(0);
+    cosval.resize(2*x_panels+1);
+    for(size_t i=0;i<cosval.size();i++)
+    {
+      cosval[i] = cos(time*xVec[i]);
+    }
+
+    double part_2=-0.5*(yVec[0]*cosval[0]+yVec[2*x_panels]*cosval[2*x_panels]);
     for (auto j=1; j<x_panels+1;j++)
     {
-        sum1+=yVec[2*j-1]*cos(time*xVec[2*j-1]);
-        sum2+=yVec[2*(j-1)]*cos(time*xVec[2*(j-1)]);
+        sum1+=yVec[2*j-1]*cosval[2*j-1];
+        sum2+=yVec[2*(j-1)]*cosval[2*(j-1)];
     }
-    sum2+=yVec[2*x_panels]*cos(time*xVec[2*x_panels]);
+    sum2+=yVec[2*x_panels]*cosval[2*x_panels];
     c2p_1=sum1;
     c2p=sum2+part_2;
 }
@@ -327,13 +181,14 @@ void gamma_func(unsigned massNum,double temperature,unsigned x_panels,double *xV
   double i_mbeta=Prompt::const_boltzmann*temperature/(Prompt::const_neutron_mass_evc2*massNum);
   double hbar_m=Prompt::const_hbar/(Prompt::const_neutron_mass_evc2*massNum);
   double hbarbeta=Prompt::const_hbar/Prompt::const_boltzmann/temperature;
-  #pragma omp parallel for simd
+  //#pragma omp parallel for simd
   for (auto j=0; j<(2*x_panels+1);j++)
   {
       double i_omega_2=1./(xVec[j]*xVec[j]);
       long double omegat=xVec[j]*time;
-      fVec_cls[j]=4*i_mbeta*yVec[j]*i_omega_2*sin(omegat*0.5);
-      fVec_real[j]=hbar_m*yVec[j]/xVec[j]*1./tanh(hbarbeta*xVec[j]*0.5)*2*sin(omegat*0.5);
+      double sinoh = sin(omegat*0.5);
+      fVec_cls[j]=4*i_mbeta*yVec[j]*i_omega_2*sinoh;
+      fVec_real[j]=hbar_m*yVec[j]/xVec[j]*1./tanh(hbarbeta*xVec[j]*0.5)*2*sinoh;
       fVec_imag[j]=hbar_m*yVec[j]/xVec[j];
   }
 }
@@ -384,9 +239,9 @@ void cal_limit(double massNum, double temperature, double *xVec, double *yVec,
       double f0_real=f0_cls;
       double f0_imag=hbar_m*yVec[0]*timeVec[i];
 
-        long double t2=timeVec[i]*timeVec[i];
-        long double t3=t2*timeVec[i];
-        long double t5=t2*t3;
+      double t2=timeVec[i]*timeVec[i];
+      double t3=t2*timeVec[i];
+      double t5=t2*t3;
 
       double sinVal=sin(xVec[1]*timeVec[i]*0.5);
       double f1_cls=4*yVec[1]*i_mbeta/(xVec[1]*xVec[1])*sinVal*sinVal;

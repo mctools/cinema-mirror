@@ -5,16 +5,6 @@
 extern "C" {
 #endif
 
-/**
-void alpha_beta_gamma(unsigned x_length, double *xVec,
-                          double *alphaVec, double *betaVec, double *gammaVec);
-
-void sin_integral(unsigned x_panels,double *xVec,double *yVec,
-                        unsigned t_length, double *tVec, double *sinVec);
-
-void cos_integral(unsigned x_panels,double *xVec,double *yVec,
-                        unsigned t_length, double *tVec, double *cosVec);
-**/
 
 void sin_integral_single(unsigned x_panels,double *xVec,double *yVec,
                         double time, double &sin_single);
