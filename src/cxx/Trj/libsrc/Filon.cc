@@ -5,8 +5,8 @@
 #include "omp.h"
 #include "Utils.hh"
 #include "PTProgressMonitor.hh"
-//#include "FastConvolve.hh"
-//#include <complex>
+#include "PTUnitSystem.hh"
+#include "PTMath.hh"
 
 constexpr double i_105 = 1./105;
 constexpr double i_15 = 1./15;
@@ -16,18 +16,7 @@ constexpr double gamma_limit=4./3;
 constexpr double i_4725=1./4725;
 constexpr double i_315=1./315;
 constexpr double i_45=1./45;
-constexpr long double const_planck=4.13566769692386*pow(10,-15);
-constexpr long double const_hbar = const_planck*0.5/M_PI;
-constexpr long double const_neutron_mass_evc2 = 1.0454075098625835*pow(10,-28);
-constexpr double const_boltzmann = 8.6173303*pow(10,-5);
 
-
-//void fftconvolveCXX(double *a1, double *a2, double *y, double dt)
-//void fftconvolveCXX(const std::vector<double>& a1, const std::vector<double>& a2, std::vector<double>& y, double dt)
-//{
-//	auto f=FastConvolve();
-//	f.fftconv(a1,a2,y,dt);
-//}
 
 void s2p_1_s2p(unsigned x_panels, double *xVec, double *yVec,
               unsigned t_length, double *tVec, double *s2p_1_Vec, double *s2p_Vec)
@@ -36,7 +25,7 @@ void s2p_1_s2p(unsigned x_panels, double *xVec, double *yVec,
     for (auto i=0; i<t_length; i++)
     {
         double time = tVec[i];
-	StableSum sum1, sum2;
+	      Prompt::StableSum sum1, sum2;
         //double sum1=0.0;
         //double sum2=0.0;
         double part_2=-0.5*(yVec[0]*sin(time*xVec[0])+yVec[2*x_panels]*sin(time*xVec[2*x_panels]));
@@ -58,7 +47,7 @@ void c2p_1_c2p(unsigned x_panels, double *xVec, double *yVec,
     for (auto i=0; i<t_length; i++)
     {
         double time = tVec[i];
-	StableSum sum1, sum2;
+	      Prompt::StableSum sum1, sum2;
         //double sum1=0.0;
         //double sum2=0.0;
         double part_2=-0.5*(yVec[0]*cos(time*xVec[0])+yVec[2*x_panels]*cos(time*xVec[2*x_panels]));
@@ -231,8 +220,6 @@ void s2p_1_s2p_single(unsigned x_panels, double *xVec, double *yVec,
   double sum2=0.0;
   double part_2=-0.5*(yVec[0]*sin(time*xVec[0])+yVec[2*x_panels]*sin(time*xVec[2*x_panels]));
   //std::cout<<"part_2"<<part_2<<std::endl;
-  //#pragma omp parallel for simd
-  //this parallel effect the results
   for (auto j=1; j<x_panels+1; j++)
   {
       sum1+=yVec[2*j-1]*sin(time*xVec[2*j-1]);
@@ -251,7 +238,6 @@ void c2p_1_c2p_single(unsigned x_panels, double *xVec, double *yVec,
     double sum1=0.0;
     double sum2=0.0;
     double part_2=-0.5*(yVec[0]*cos(time*xVec[0])+yVec[2*x_panels]*cos(time*xVec[2*x_panels]));
-    //#pragma omp parallel for simd
     for (auto j=1; j<x_panels+1;j++)
     {
         sum1+=yVec[2*j-1]*cos(time*xVec[2*j-1]);
@@ -308,7 +294,6 @@ void cos_integral_single(unsigned x_panels,double *xVec,double *yVec,
 void gr_func(double rho, unsigned x_panels,double *xVec,double *yVec,
                 double r, double *fVec)
 {
-    //#pragma omp parallel for simd
     for (auto j=0; j<(2*x_panels+1);j++)
     {
         double qr = xVec[j]*r;
@@ -324,10 +309,7 @@ void cal_PDF(double rho, unsigned x_panels,double *xVec,double *yVec,
     for (auto i=0;i<r_length;i++)
     {
       gr_func(rho, x_panels, xVec, yVec, rVec[i],fVec);
-      //std::cout<<"fvec: "<<fVec[0]<<std::endl;
       sin_integral_single(x_panels,xVec,fVec,rVec[i],pdfVec[i]);
-      //std::cout<<"pdfvec: "<<pdfVec[0]<<std::endl;
-      //moni->OneTaskCompleted();
     }
     delete[] fVec;
 }
@@ -342,9 +324,9 @@ void gamma_func(unsigned massNum,double temperature,unsigned x_panels,double *xV
   quantum: hbar/mass*dos/omega*{coth(0.5*hbar*omage/kt)*(1-cos(omega*t)-sin(omega*t)j)}
   classic: 2/mass*kt*dos/omega^2*(1-cos(omage*t))
   ***/
-  double i_mbeta=const_boltzmann*temperature/(const_neutron_mass_evc2*massNum);
-  double hbar_m=const_hbar/(const_neutron_mass_evc2*massNum);
-  double hbarbeta=const_hbar/const_boltzmann/temperature;
+  double i_mbeta=Prompt::const_boltzmann*temperature/(Prompt::const_neutron_mass_evc2*massNum);
+  double hbar_m=Prompt::const_hbar/(Prompt::const_neutron_mass_evc2*massNum);
+  double hbarbeta=Prompt::const_hbar/Prompt::const_boltzmann/temperature;
   #pragma omp parallel for simd
   for (auto j=0; j<(2*x_panels+1);j++)
   {
@@ -356,7 +338,7 @@ void gamma_func(unsigned massNum,double temperature,unsigned x_panels,double *xV
   }
 }
 
-void cal_integral(unsigned massNum, double temperature, unsigned x_panels,double *xVec,double *yVec,
+void cal_integral(double massNum, double temperature, unsigned x_panels,double *xVec,double *yVec,
                       unsigned t_length, double *timeVec, double *gamma_classic,
                       double *gamma_quantum_real, double *gamma_quantum_imag)
 {
@@ -381,22 +363,21 @@ void cal_integral(unsigned massNum, double temperature, unsigned x_panels,double
 
 }
 
-void cal_limit(unsigned massNum, double temperature, double *xVec, double *yVec,
+void cal_limit(double massNum, double temperature, double *xVec, double *yVec,
                     unsigned t_length, double *timeVec, double *limit_value,
                     double *limit_value_real, double *limit_value_imag)
 {
   /***
   limit range: interal from omege[0] to omega[1]
   **/
-    double i_mbeta=const_boltzmann*temperature/(const_neutron_mass_evc2*massNum);
-    double hbar_m=const_hbar/(const_neutron_mass_evc2*massNum);
-    double hbarbeta=const_hbar/const_boltzmann/temperature;
+    double i_mbeta=Prompt::const_boltzmann*temperature/(Prompt::const_neutron_mass_evc2*massNum);
+    double hbar_m=Prompt::const_hbar/(Prompt::const_neutron_mass_evc2*massNum);
+    double hbarbeta=Prompt::const_hbar/Prompt::const_boltzmann/temperature;
     double step = xVec[1]-xVec[0];
 
     //size_t numPonit = 100;
     //std::vector<double> func(numPonit);
     //std::vector<double> omega(numPonit);
-    //#pragma omp parallel for simd
     for (auto i=0;i<t_length;i++)
     {
       double f0_cls=yVec[0]*i_mbeta*timeVec[i]*timeVec[i];
