@@ -68,6 +68,7 @@ namespace Prompt {
   constexpr double const_neutron_mass_amu = 1.00866491588; // [amu]
   constexpr double const_proton_mass_amu = 1.007276466621; // [amu]
   constexpr double const_planck = 4.135667662e-15*Unit::eV*Unit::s ;//[eV*s]
+  constexpr double const_hbar = const_planck*0.5/M_PI;  //[eV*s]6.582119569509068e-16
 
   //Derived values:
   constexpr double const_cc  = const_c*const_c;
