@@ -200,26 +200,21 @@ void tak_cal_integral(double massNum, double temperature, unsigned x_panels,doub
   /***
   integral range: omege[1:]
   **/
-  Prompt::ProgressMonitor* moni = new Prompt::ProgressMonitor("integralGamma", t_length, 0.01);
+  Prompt::ProgressMonitor moni("integralGamma", t_length, 0.01);
   #pragma omp parallel
   {
-    double *fVec_cls=new double [2*x_panels+1];
-    double *fVec_real=new double [2*x_panels+1];
-    double *fVec_imag=new double [2*x_panels+1];
+    size_t sectionSize = 2*x_panels+1;
+    double *data = new double [sectionSize*3];
     #pragma omp for
     for (auto i=0;i<t_length;i++)
     {
-
-      gamma_func(massNum,temperature, x_panels, xVec, yVec, timeVec[i],fVec_cls,fVec_real,fVec_imag);
-      tak_sin_integral_single(x_panels,xVec,fVec_cls,timeVec[i]*0.5,gamma_classic[i]);
-      tak_sin_integral_single(x_panels,xVec,fVec_real,timeVec[i]*0.5,gamma_quantum_real[i]);
-      tak_sin_integral_single(x_panels,xVec,fVec_imag,timeVec[i],gamma_quantum_imag[i]);
-
-      moni->OneTaskCompleted();
+      gamma_func(massNum,temperature, x_panels, xVec, yVec, timeVec[i], data, data+sectionSize, data+sectionSize*2);
+      tak_sin_integral_single(x_panels,xVec, data,timeVec[i]*0.5,gamma_classic[i]);
+      tak_sin_integral_single(x_panels,xVec, data+sectionSize,timeVec[i]*0.5,gamma_quantum_real[i]);
+      tak_sin_integral_single(x_panels,xVec, data+sectionSize*2,timeVec[i],gamma_quantum_imag[i]);
+      moni.OneTaskCompleted();
     }
-    delete[] fVec_cls;
-    delete[] fVec_real;
-    delete[] fVec_imag;
+    delete[] data;
   }
 }
 
