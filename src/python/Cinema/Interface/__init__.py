@@ -55,3 +55,24 @@ def importFunc(funcName, resType, argType):
     func.restype = resType
     func.argtypes = argType
     return func
+
+def plotStyle():
+    import matplotlib.style
+    import matplotlib, sys
+    import matplotlib.pyplot as plt
+
+    plt.rcParams.update({'font.size': 18})
+    matplotlib.rcParams['lines.linewidth'] = 2
+
+
+    _plt_legend_orig = plt.legend
+    def _plt_legend(*args,**kwargs):
+        notouchframelw = False
+        if 'notouchframelw' in kwargs:
+            notouchframelw = True
+            del kwargs['notouchframelw']
+        l = _plt_legend_orig(*args,**kwargs)
+        if not notouchframelw:
+            l.get_frame().set_linewidth(0.0)
+        return l
+    plt.legend=_plt_legend

@@ -181,7 +181,7 @@ void gamma_func(unsigned massNum,double temperature,unsigned x_panels,double *xV
   double i_mbeta=Prompt::const_boltzmann*temperature/(Prompt::const_neutron_mass_evc2*massNum);
   double hbar_m=Prompt::const_hbar/(Prompt::const_neutron_mass_evc2*massNum);
   double hbarbeta=Prompt::const_hbar/Prompt::const_boltzmann/temperature;
-  //#pragma omp parallel for simd
+  // #pragma omp parallel for simd
   for (auto j=0; j<(2*x_panels+1);j++)
   {
       double i_omega_2=1./(xVec[j]*xVec[j]);
@@ -201,22 +201,26 @@ void tak_cal_integral(double massNum, double temperature, unsigned x_panels,doub
   integral range: omege[1:]
   **/
   Prompt::ProgressMonitor* moni = new Prompt::ProgressMonitor("integralGamma", t_length, 0.01);
-  double *fVec_cls=new double [2*x_panels+1];
-  double *fVec_real=new double [2*x_panels+1];
-  double *fVec_imag=new double [2*x_panels+1];
-  #pragma omp parallel for simd
-  for (auto i=0;i<t_length;i++)
+  #pragma omp parallel
   {
-    gamma_func(massNum,temperature, x_panels, xVec, yVec, timeVec[i],fVec_cls,fVec_real,fVec_imag);
-    tak_sin_integral_single(x_panels,xVec,fVec_cls,timeVec[i]*0.5,gamma_classic[i]);
-    tak_sin_integral_single(x_panels,xVec,fVec_real,timeVec[i]*0.5,gamma_quantum_real[i]);
-    tak_sin_integral_single(x_panels,xVec,fVec_imag,timeVec[i],gamma_quantum_imag[i]);
-    moni->OneTaskCompleted();
-  }
-  delete[] fVec_cls;
-  delete[] fVec_real;
-  delete[] fVec_imag;
+    double *fVec_cls=new double [2*x_panels+1];
+    double *fVec_real=new double [2*x_panels+1];
+    double *fVec_imag=new double [2*x_panels+1];
+    #pragma omp for
+    for (auto i=0;i<t_length;i++)
+    {
 
+      gamma_func(massNum,temperature, x_panels, xVec, yVec, timeVec[i],fVec_cls,fVec_real,fVec_imag);
+      tak_sin_integral_single(x_panels,xVec,fVec_cls,timeVec[i]*0.5,gamma_classic[i]);
+      tak_sin_integral_single(x_panels,xVec,fVec_real,timeVec[i]*0.5,gamma_quantum_real[i]);
+      tak_sin_integral_single(x_panels,xVec,fVec_imag,timeVec[i],gamma_quantum_imag[i]);
+
+      moni->OneTaskCompleted();
+    }
+    delete[] fVec_cls;
+    delete[] fVec_real;
+    delete[] fVec_imag;
+  }
 }
 
 void tak_cal_limit(double massNum, double temperature, double *xVec, double *yVec,

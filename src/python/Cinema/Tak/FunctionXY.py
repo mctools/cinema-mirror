@@ -54,6 +54,8 @@ class Curve():
         self.__x = self.__x[idx1:idx2]
         self.__y = self.__y[idx1:idx2]
 
+    def plot(self, label=None):
+        plt.plot(self.__x, self.__y, label=label)
 
 class LinSpacedCurve(Curve):
     def __init__(self, x, y):
@@ -144,7 +146,6 @@ class FunctionXY(LinSpacedCurve):
         z = np.searchsorted(self.x, 0)
         np.testing.assert_almost_equal(self.x[z], 0., decimal = 13, err_msg='x axis should contain zero')
         return z
-
 
     def flipNeg2Pos(self):
         z = self.getZ()
