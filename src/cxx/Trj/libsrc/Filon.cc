@@ -185,11 +185,11 @@ void gamma_func(unsigned massNum,double temperature,unsigned x_panels,double *xV
   for (auto j=0; j<(2*x_panels+1);j++)
   {
       double i_omega_2=1./(xVec[j]*xVec[j]);
-      long double omegat=xVec[j]*time;
+      double omegat=xVec[j]*time;
       double sinoh = sin(omegat*0.5);
       fVec_cls[j]=4*i_mbeta*yVec[j]*i_omega_2*sinoh;
-      fVec_real[j]=hbar_m*yVec[j]/xVec[j]*1./tanh(hbarbeta*xVec[j]*0.5)*2*sinoh;
-      fVec_imag[j]=hbar_m*yVec[j]/xVec[j];
+      fVec_imag[j] = hbar_m*yVec[j]/xVec[j];
+      fVec_real[j]=fVec_imag[j]/tanh(hbarbeta*xVec[j]*0.5)*2*sinoh;
   }
 }
 
@@ -204,6 +204,7 @@ void cal_integral(double massNum, double temperature, unsigned x_panels,double *
   double *fVec_cls=new double [2*x_panels+1];
   double *fVec_real=new double [2*x_panels+1];
   double *fVec_imag=new double [2*x_panels+1];
+  #pragma omp parallel for simd
   for (auto i=0;i<t_length;i++)
   {
     gamma_func(massNum,temperature, x_panels, xVec, yVec, timeVec[i],fVec_cls,fVec_real,fVec_imag);
