@@ -103,7 +103,7 @@ void c2p_1_c2p_single(unsigned x_panels, double *xVec, double *yVec,
 }
 
 
-void sin_integral_single(unsigned x_panels,double *xVec,double *yVec,
+void tak_sin_integral_single(unsigned x_panels,double *xVec,double *yVec,
                         double time, double &sin_single)
 {
     double h=xVec[1]-xVec[0];
@@ -125,7 +125,7 @@ void sin_integral_single(unsigned x_panels,double *xVec,double *yVec,
     sin_single=h*(part_1+part_2+part_3);
 }
 
-void cos_integral_single(unsigned x_panels,double *xVec,double *yVec,
+void tak_cos_integral_single(unsigned x_panels,double *xVec,double *yVec,
                         double time, double &cos_single)
 {
     double h=xVec[1]-xVec[0];
@@ -156,14 +156,14 @@ void gr_func(double rho, unsigned x_panels,double *xVec,double *yVec,
 }
 
 //cal g(r)-1
-void cal_PDF(double rho, unsigned x_panels,double *xVec,double *yVec,
+void tak_cal_PDF(double rho, unsigned x_panels,double *xVec,double *yVec,
               unsigned r_length, double *rVec, double* pdfVec)
 {
     double *fVec=new double [2*x_panels+1];
     for (auto i=0;i<r_length;i++)
     {
       gr_func(rho, x_panels, xVec, yVec, rVec[i],fVec);
-      sin_integral_single(x_panels,xVec,fVec,rVec[i],pdfVec[i]);
+      tak_sin_integral_single(x_panels,xVec,fVec,rVec[i],pdfVec[i]);
     }
     delete[] fVec;
 }
@@ -193,7 +193,7 @@ void gamma_func(unsigned massNum,double temperature,unsigned x_panels,double *xV
   }
 }
 
-void cal_integral(double massNum, double temperature, unsigned x_panels,double *xVec,double *yVec,
+void tak_cal_integral(double massNum, double temperature, unsigned x_panels,double *xVec,double *yVec,
                       unsigned t_length, double *timeVec, double *gamma_classic,
                       double *gamma_quantum_real, double *gamma_quantum_imag)
 {
@@ -208,9 +208,9 @@ void cal_integral(double massNum, double temperature, unsigned x_panels,double *
   for (auto i=0;i<t_length;i++)
   {
     gamma_func(massNum,temperature, x_panels, xVec, yVec, timeVec[i],fVec_cls,fVec_real,fVec_imag);
-    sin_integral_single(x_panels,xVec,fVec_cls,timeVec[i]*0.5,gamma_classic[i]);
-    sin_integral_single(x_panels,xVec,fVec_real,timeVec[i]*0.5,gamma_quantum_real[i]);
-    sin_integral_single(x_panels,xVec,fVec_imag,timeVec[i],gamma_quantum_imag[i]);
+    tak_sin_integral_single(x_panels,xVec,fVec_cls,timeVec[i]*0.5,gamma_classic[i]);
+    tak_sin_integral_single(x_panels,xVec,fVec_real,timeVec[i]*0.5,gamma_quantum_real[i]);
+    tak_sin_integral_single(x_panels,xVec,fVec_imag,timeVec[i],gamma_quantum_imag[i]);
     moni->OneTaskCompleted();
   }
   delete[] fVec_cls;
@@ -219,7 +219,7 @@ void cal_integral(double massNum, double temperature, unsigned x_panels,double *
 
 }
 
-void cal_limit(double massNum, double temperature, double *xVec, double *yVec,
+void tak_cal_limit(double massNum, double temperature, double *xVec, double *yVec,
                     unsigned t_length, double *timeVec, double *limit_value,
                     double *limit_value_real, double *limit_value_imag)
 {

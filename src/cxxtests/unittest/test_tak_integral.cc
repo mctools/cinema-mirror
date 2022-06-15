@@ -30,7 +30,7 @@ TEST_CASE("sin_integral_single")
   {
       double t=tp[i];
       calRes[i]=1./t*(-cos(b*t)+cos(a*t));
-      sin_integral_single((len-1)/2,omega,fx,t,sinRes[i]);
+      tak_sin_integral_single((len-1)/2,omega,fx,t,sinRes[i]);
       std::cout << std::setprecision(15)<<sinRes[i]<<"||"<<calRes[i]<<std::endl;
       CHECK(pt::floateq(sinRes[i], calRes[i], 1e-12, 1e-12)); //fixme: the accuratcy of sin_integral_single is not as good as the cos_integral_single
   }
@@ -58,7 +58,7 @@ TEST_CASE("cos_integral_single")
   {
       double t=tp[i];
       calRes[i]=1./t*(sin(b*t)-sin(a*t));
-      cos_integral_single((len-1)/2,omega,fx,t,cosRes[i]);
+      tak_cos_integral_single((len-1)/2,omega,fx,t,cosRes[i]);
       std::cout<<cosRes[i]<<"||"<<calRes[i]<<std::endl;
       CHECK(pt::floateq(cosRes[i], calRes[i]));
   }
