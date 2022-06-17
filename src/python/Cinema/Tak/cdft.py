@@ -25,6 +25,10 @@ class DensityOfState():
         idx = np.searchsorted(self.fre, fre)
         self.fre = self.fre[:idx]
         self.dos = self.dos[:idx]
+        self.dos -= self.dos[-1]
+        scale = np.trapz(self.dos,self.fre)
+        self.dos /= scale
+
 
     def plot(self):
         import matplotlib.pyplot as plt
@@ -140,25 +144,21 @@ class HDRFT():
         r0=np.interp(0., self.t, rt)
         f0=np.ones(self.t.size)
         f1=rt/r0
-        if window is not None:
-            if window=="kaiser":
-                f0*=np.kaiser(f0.size,20)
-                f1*=np.kaiser(f1.size,20)
-            if window=="hanning":
-                f0*=np.hanning(f0.size)
-                f1*=np.hanning(f1.size)
+        #         f0*=np.kaiser(f0.size,20)
+        #         f1*=np.kaiser(f1.size,20)
         g0=takfft(f0, self.dt)
         g1=takfft(f1, self.dt)
 
         deltaOmega = abs(self.freq[-1]-self.freq[0])/(self.freq.size-1)
-
         totalxy = FunctionXY(self.freq, np.abs(r0*g1+g0), distortFact,asymExponent, autodistort)
+
+        g1=takfft(f1*np.kaiser(f1.size,20), self.dt)
         g1xy = FunctionXY(self.freq, np.copy(g1), distortFact,asymExponent, autodistort)
         gnxy=FunctionXY(self.freq, np.copy(g1), distortFact, asymExponent, autodistort)
 
-        if isNormalise:
-            g1xy.normalise()
-            gnxy.normalise()
+        # if isNormalise:
+        g1xy.normalise()
+        gnxy.normalise()
 
         totalxy.crop(-firstOrderCutoff, firstOrderCutoff)
         g1xy.crop(-firstOrderCutoff, firstOrderCutoff)
@@ -177,10 +177,10 @@ class HDRFT():
             gnxy.flipNeg2Pos()
             gnxy.restort()
             # if isNormalise:
-            #     gnXYRecoveredAear = np.trapz(np.abs(gnxy.f), gnxy.x)
-            #     print(f'gnxy order {n}, recovered area {gnXYRecoveredAear}')
-            #     #making sure the area is always unity
-            #     gnxy.f *= 1./gnXYRecoveredAear
+            # gnXYRecoveredAear = np.trapz(np.abs(gnxy._Curve__y), gnxy.x)
+            # print(f'gnxy order {n}, recovered area {gnXYRecoveredAear}')
+            # #making sure the area is always unity
+            gnxy.normalise()
 
             gnXYRecovered=np.abs(gnxy.y)
             gnXYRecoveredAear = np.trapz(gnXYRecovered, gnxy.x)

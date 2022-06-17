@@ -41,7 +41,7 @@ class Curve():
         self.__y = self.__y*factor
 
     def normalise(self):
-        self.__y *= 1./np.trapz(self.__y, self.__x)
+        self.__y *= 1./np.trapz(np.abs(self.__y.real), self.__x)
 
     def crop(self, minX, maxX):
         idx1 = None
@@ -55,6 +55,7 @@ class Curve():
         self.__y = self.__y[idx1:idx2]
 
     def plot(self, label=None):
+        import matplotlib.pyplot as plt
         plt.plot(self.__x, self.__y, label=label)
 
 class LinSpacedCurve(Curve):
