@@ -144,8 +144,8 @@ class HDRFT():
         r0=np.interp(0., self.t, rt)
         f0=np.ones(self.t.size)
         f1=rt/r0
-        #         f0*=np.kaiser(f0.size,20)
-        #         f1*=np.kaiser(f1.size,20)
+        f0*=np.kaiser(f0.size,20)
+        f1*=np.kaiser(f1.size,20)
         g0=takfft(f0, self.dt)
         g1=takfft(f1, self.dt)
 

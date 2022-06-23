@@ -1,5 +1,5 @@
 import numpy as np
-from Cinema.Interface.Units import *
+from Cinema.Interface.units import *
 import time
 import multiprocessing
 import os
@@ -28,10 +28,10 @@ from scipy.signal import kaiserord, lfilter, firwin, freqz
 from scipy import interpolate
 
 def takfft(input, dt=1., fftsize=None, conversion=2*np.pi):
-    return fft.fftshift(fft.fft(fft.fftshift(input), n=fftsize))*dt/conversion
+    return fft.fftshift(fft.fft((input), n=fftsize))*dt/conversion
 
 def takifft(input, dt=1., fftsize=None, conversion=2*np.pi):
-    return fft.fftshift(fft.ifft(fft.fftshift(input), n=fftsize))/dt*conversion
+    return fft.fftshift(fft.ifft((input), n=fftsize))/dt*conversion
 
 def plotStyle():
     import matplotlib.style
