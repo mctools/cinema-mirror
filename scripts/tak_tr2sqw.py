@@ -15,17 +15,17 @@ args = parser.parse_args()
 inputfile=args.input
 df = DynamicFactor(inputfile)
 
-Q=1
+Q=10
 plt.figure(figsize=(8, 6))
 
 # fre, coh = df.calCoherent(Q, True)
 # plt.semilogy(fre*units.hbar, coh, label='coh')
 
 fre, inco = df.calIncoherent(Q)
-plt.semilogy(fre*units.hbar, inco, label='S(Q, $\omega$)')
+plt.semilogy(fre*units.hbar, inco/inco.max(), label='S(Q, $\omega$)')
 
 fre, inco = df.calIncoherent(Q, True)
-plt.semilogy(fre*units.hbar, inco, label='S(Q, $\omega$) windowed')
+plt.semilogy(fre*units.hbar, inco/inco.max(), label='S(Q, $\omega$) windowed')
 
 plt.legend()
 plt.show()

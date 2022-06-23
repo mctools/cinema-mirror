@@ -16,6 +16,9 @@ spglib
 requests
 seekpath
 
+#logging
+loguru
+
 # Crawler
 #mp-api
 
