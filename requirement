@@ -1,3 +1,6 @@
+#Tak
+numba
+
 #required packages for Prompt visualisation
 pyvista
 pyvistaqt
@@ -12,12 +15,6 @@ phonopy
 spglib
 requests
 seekpath
-
-#logging
-loguru
-
-#Tak
-numba
 
 # Crawler
 #mp-api
