@@ -1,5 +1,19 @@
 #!/bin/bash
 
+DOCKER=false
+while getopts hi:x:d option
+do
+case "${option}"
+in
+h) echo "$USAGE"
+   exit 0;;
+x) INPUT=${OPTARG};;
+i) ARGS=${OPTARG};;
+d) DOCKER=true;;
+esac
+done
+
+
 if ! hash cmake 2>/dev/null
 then
     echo "cmake is required to continue the installation of Cinema"
@@ -127,7 +141,12 @@ else
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     python3 -m venv $CINEMAPATH/cinemavirenv
     . $CINEMAPATH/cinemavirenv/bin/activate
-    pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r $CINEMAPATH/requirement
+    if [[ $DOCKER == false ]]; then
+      pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r $CINEMAPATH/requirement
+    else
+      echo "Python with Docker enviorment"
+      pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r $CINEMAPATH/requirement.docker
+    fi
   fi
 fi
 

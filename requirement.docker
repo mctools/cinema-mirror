@@ -1,0 +1,19 @@
+#Tak
+numba
+
+#required packages for post-analysis
+scipy
+h5py
+
+#PiXiu
+phonopy
+spglib
+requests
+seekpath
+
+# Crawler
+#mp-api
+
+# Database
+pymongo  #synchronous
+#motor  #asynchronous
