@@ -52,7 +52,7 @@ if args.plotpdf:
     plotflag='-p'
 
 qe_nk=''
-if cores<4:
+if cores>4:
     qe_nk = f'-nk {cores//4}'
 
 logger.info(f'px.py input {inputfile}, CPU {cores}, {rundft} run DFT')
