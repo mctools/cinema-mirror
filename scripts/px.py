@@ -51,6 +51,10 @@ plotflag=''
 if args.plotpdf:
     plotflag='-p'
 
+qe_nk=''
+if cores<4:
+    qe_nk = f'-nk {cores//4}'
+
 logger.info(f'px.py input {inputfile}, CPU {cores}, {rundft} run DFT')
 ps = Pseudo()
 
@@ -84,7 +88,7 @@ if sgnum != qxsg:
     sys.exit()
 
 if not os.path.isfile('out.xml'):
-    if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]}.out' ):
+    if os.system(f'mpirun -np {cores} pw.x {qe_nk} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]}.out' ):
         raise IOError("Relax pw.x fail")
 
 
