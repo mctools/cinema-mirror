@@ -48,7 +48,7 @@ cores=args.numcpu
 rundft=args.rundft
 
 plotflag=''
-if plotpdf=args.plotpdf:
+if args.plotpdf:
     plotflag='-p'
 
 logger.info(f'px.py input {inputfile}, CPU {cores}, {rundft} run DFT')
