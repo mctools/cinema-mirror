@@ -2,7 +2,7 @@
 
 import numpy as np
 import argparse, scipy.fft, time
-from Cinema.Tak.Analysor import DynamicFactor
+from Cinema.Tak.analysor import DynamicFactor
 import matplotlib.pyplot as plt
 import h5py
 from Cinema.Interface import units
@@ -15,17 +15,17 @@ args = parser.parse_args()
 inputfile=args.input
 df = DynamicFactor(inputfile)
 
-Q=1
+Q=10
 plt.figure(figsize=(8, 6))
 
-fre, coh = df.calCoherent(Q, True)
-plt.semilogy(fre*Units.hbar, coh, label='coh')
+# fre, coh = df.calCoherent(Q, True)
+# plt.semilogy(fre*units.hbar, coh, label='coh')
 
 fre, inco = df.calIncoherent(Q)
-plt.semilogy(fre*Units.hbar, inco, label='inco')
+plt.semilogy(fre*units.hbar, inco/inco.max(), label='S(Q, $\omega$)')
 
 fre, inco = df.calIncoherent(Q, True)
-plt.semilogy(fre*Units.hbar, inco, label='inco windowed')
+plt.semilogy(fre*units.hbar, inco/inco.max(), label='S(Q, $\omega$) windowed')
 
 plt.legend()
 plt.show()

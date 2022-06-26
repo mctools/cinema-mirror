@@ -2,7 +2,7 @@
 
 import numpy as np
 import scipy.fft
-from Cinema.Tak.Analysor import parFFT, parFFTs
+from Cinema.Tak.analysor import parFFT, parFFTs
 
 data = np.random.random((128,128)) + np.random.random((128,128))*1j
 out = parFFT(data, numcpu=1)

@@ -13,11 +13,11 @@
 
   <materials>
     <material name="Vacuum">
-      <atom value="../ncmat/vacuum.ncmat"/>
+      <atom value="vacuum.ncmat"/>
     </material>
 
     <material name="Air">
-      <atom value="../ncmat/ambient_air.ncmat"/>
+      <atom value="ambient_air.ncmat"/>
     </material>
 
     <material name="Water">
@@ -67,7 +67,7 @@
     <volume name="Detector">
       <materialref ref="Vacuum"/>
       <solidref ref="DetectorSolid"/>
-      <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;Sq;0,0,0;0,0,1;-100.;0.5004;49.9996;1000"/>
+      <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;Sq;0,0,0;0,0,1;-100.;0.5004;49.9996;1000;ABSORB"/>
       <auxiliary auxtype="Sensitive" auxvalue="PSD;NeutronHistMap;-250;250;100;-250;250;100;XY"/>
     </volume>
 

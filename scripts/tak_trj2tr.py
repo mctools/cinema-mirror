@@ -2,10 +2,10 @@
 
 import numpy as np
 import argparse
-from Cinema.Tak.Analysor import AnaVDOS, AnaSFactor, AnaSF2VD
+from Cinema.Tak.analysor import AnaVDOS, AnaSFactor, AnaSF2VD
 import matplotlib.pyplot as plt
-from Cinema.Interface import units
-
+from Cinema.Interface import units, plotStyle
+plotStyle()
 #######################################################
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', action='store', type=str, default='mp-13_Fe.json',
@@ -41,6 +41,12 @@ if args.test:
     print('pass!')
     import sys
     sys.exit()
+
+# t, msd = anavdos.msd(1, numcpu)
+# plt.figure()
+# plt.plot(t/1e-12, msd, label='C++')
+# plt.show()
+
 
 if args.atomoffset:
     for offset in args.atomoffset:

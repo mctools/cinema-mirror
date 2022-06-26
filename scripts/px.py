@@ -40,11 +40,20 @@ parser.add_argument('-i', '--input', action='store', type=str, default='mp-13_Fe
 parser.add_argument('-n', '--numcpu', action='store', type=int, default=lastGoodNumber(os.cpu_count()//2),
                     dest='numcpu', help='number of CPU')
 parser.add_argument('-r', '--rundft', action='store_true', dest='rundft', help='run DFT')
+parser.add_argument('-p', '--plotpdf', action='store_true', dest='plotpdf', help='generate pdf files')
 
 args = parser.parse_args()
 inputfile=args.input
 cores=args.numcpu
 rundft=args.rundft
+
+plotflag=''
+if args.plotpdf:
+    plotflag='-p'
+
+qe_nk=''
+if cores>4:
+    qe_nk = f'-nk {cores//4}'
 
 logger.info(f'px.py input {inputfile}, CPU {cores}, {rundft} run DFT')
 ps = Pseudo()
@@ -79,7 +88,7 @@ if sgnum != qxsg:
     sys.exit()
 
 if not os.path.isfile('out.xml'):
-    if os.system(f'mpirun -np {cores} pw.x -nk {cores//4} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]}.out' ):
+    if os.system(f'mpirun -np {cores} pw.x {qe_nk} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]}.out' ):
         raise IOError("Relax pw.x fail")
 
 
@@ -120,12 +129,12 @@ if rundft and not os.path.isfile('FORCE_SETS'):
 #band
 pcor, label = getPath(path)
 logger.info(f'band {" ".join(map(str,pcor))}; {" ".join(map(str,label))}')
-if os.system(f'phonopy --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" --hdf5 --eigvecs -p -s'): # -p
+if os.system(f'phonopy --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" --hdf5 --eigvecs {plotflag} -s'):
     logger.info(f'band fail')
     raise IOError("band fail")
 
 #density of states
-if os.system(f'phonopy -v --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}  --nowritemesh -p -s'): # -p
+if os.system(f'phonopy -v --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}  --nowritemesh {plotflag} -s'):
     logger.info(f'dos fail')
     raise IOError("dos fail")
 
