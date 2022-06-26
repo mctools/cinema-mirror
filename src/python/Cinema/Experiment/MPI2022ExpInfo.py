@@ -56,6 +56,6 @@ MPIRuns['D2O_NoAu_CCR06_ice1'] = {'run': 'run17702', 'temperature': '50K±3K', '
 MPIRuns['D2O_NoAu_CCR06_ice2'] = {'run': 'run17703', 'temperature': '12.8K±3K', 'volume(ml)': 0.9, 'height_sample(mm)': 14.3376, 'dmin(mm)': 8.94, 'dmax(mm)': 9.53}
 
 ModuleCorner_Exp={}
-with open('%s'%findData('MPI2022Exp/moduleCorner_Exp.json')) as jsonFile:
+with open('%s'%findData('MPI2022Exp/moduleCornerDetector_Exp.json')) as jsonFile:
     ModuleCorner_Exp=json.load(jsonFile)  
 # print(ModuleCorner_Exp['module10802']['left_bottom']['pos']) 
