@@ -154,3 +154,10 @@ class CalcPowder(CalcBase):
             F = self.calcFormFact(Q, self.eigv[i])
             Smag=modeWeight*(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar/self.en[i]
             hist.fillmany(np.repeat(Qmag,self.nAtom*3), self.en[i], Smag*hklweight)
+
+class CalcBand(CalcBase):
+    def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
+        super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature)
+
+    def calcBand(self):
+        pass

@@ -2,11 +2,11 @@ import h5py
 import numpy as np
 import json
 
-from .Hdf5Mesh import Hdf5Mesh
+from .calculator import Hdf5Powder
 from ..AtomInfo import getAtomMassBC
 from ..io.cell import XmlCell
 
-class MeshCell(Hdf5Mesh):
+class MeshCell(Hdf5Powder):
     def __init__(self, h5FileName, cellName, temperature):
         cell=json.load( open(cellName))
         self.name=cell['name']
@@ -26,7 +26,7 @@ class MeshCell(Hdf5Mesh):
         super().__init__(lattice, mass, pos, bc, temperature, h5FileName )
 
 
-class MeshQE(Hdf5Mesh):
+class MeshQE(Hdf5Powder):
     def __init__(self, h5FileName, qexml, temperature):
         qecell = XmlCell(qexml)
         self.name=qexml
@@ -34,7 +34,7 @@ class MeshQE(Hdf5Mesh):
         pos = qecell.position
         mass=[]
         bc=[] #bound coherent scattering length
-        for ele in self.element:
+        for ele in qecell.element:
             m, b, _ =getAtomMassBC(ele)
             mass.append(m)
             bc.append(b)

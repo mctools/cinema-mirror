@@ -28,9 +28,10 @@ numcpu=args.numcpu
 s = AnaSFactor(inputfile)
 if args.numq:
     q, sq = s.getSq(args.numq)
-    plt.figure()
-    plt.plot(q, sq)
-    plt.show()
+    if args.plot:
+        plt.figure()
+        plt.plot(q, sq)
+        plt.show()
 
 anavdos = AnaSF2VD(s)
 

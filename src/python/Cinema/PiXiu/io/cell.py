@@ -10,6 +10,7 @@ class CellBase():
         self.abc = None
         self.position=[]
         self.num=[]
+        self.element=[]
 
     def estSupercellDim(self, size=10.):
         res = (size//self.abc).astype(int)
@@ -70,6 +71,7 @@ class XmlCell(CellBase):
             self.position[i] = invlatt.dot(self.position[i])
 
         self.totmagn = float( (root.findall('./output/magnetization/total')[0]).text )
+        print(self.position, self.element)
 
 
 
