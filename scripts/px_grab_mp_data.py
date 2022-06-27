@@ -4,7 +4,7 @@ import sys
 import signal
 import time
 import json
-from Cinema.PiXiu.IO.MPHelper import MPHelper
+from Cinema.PiXiu.io.MPHelper import MPHelper
 from element import ALL_ELEMENTS
 
 
@@ -13,12 +13,12 @@ def find_mp_list_by_dir(dir):
     _fs = sorted(dir.glob('*.json'))
     for _item in _fs:
         _r.append(_item.stem.split('_')[0])
-    
+
     return _r
 
 def load_completed_materials(dir):
     _r = []
-    try: 
+    try:
         with open(dir.joinpath('m_completed.txt'), 'r') as fp:
             for _line in fp:
                 _line = _line.strip()
@@ -27,12 +27,12 @@ def load_completed_materials(dir):
                 _r.append(_line)
     except Exception as ex:
         print(ex)
-    
+
     return _r
 
 def load_completed_mids(dir):
     _r = []
-    try: 
+    try:
         with open(dir.joinpath('mids_completed.txt'), 'r') as fp:
             for _line in fp:
                 _line = _line.strip()
@@ -41,12 +41,12 @@ def load_completed_mids(dir):
                 _r.append(_line)
     except Exception as ex:
         print(ex)
-    
+
     return _r
 
 def load_todo_mids(dir):
     _r = []
-    try: 
+    try:
         with open(dir.joinpath('mids_todo.txt'), 'r') as fp:
             for _line in fp:
                 _line = _line.strip()
@@ -55,12 +55,12 @@ def load_todo_mids(dir):
                 _r.append(_line)
     except Exception as ex:
         print(ex)
-    
+
     return sorted(set(_r))
 
 def save_todo_mids(mids_list, dir):
     _list = sorted(set(mids_list))
-    try: 
+    try:
         with open(dir.joinpath('mids_todo.txt'), 'w') as fp:
             for _item in _list:
                 fp.write(str(_item) + '\n')
@@ -69,22 +69,22 @@ def save_todo_mids(mids_list, dir):
 
 def save_completed_mids(mids_list, dir):
     _list = sorted(set(mids_list))
-    try: 
+    try:
         with open(dir.joinpath('mids_completed.txt'), 'w') as fp:
             for _item in _list:
                 fp.write(str(_item) + '\n')
     except Exception as ex:
         print(ex)
-        
+
 def save_completed_materials(m_list, dir):
     _list = sorted(set(m_list))
-    try: 
+    try:
         with open(dir.joinpath('m_completed.txt'), 'w') as fp:
             for _item in _list:
                 fp.write(str(_item) + '\n')
     except Exception as ex:
         print(ex)
-        
+
 def sort_components(compstr):
     if compstr is None or len(compstr.strip()) == 0:
         return None
@@ -103,7 +103,7 @@ def scrab_mp_structures(mphelper, data_dir, page_offset=0, page_limit=500):
     page_offset = page_offset + page_limit
     print(f'start with: page_offset={page_offset}, page_limit={page_limit}')
     mphelper.get_structures_by_optimade(page_offset, page_limit)
-    
+
 def parse_optimade_json(data_dir):
     _mpids = []
     for _f in data_dir.glob('*.json'):
@@ -112,20 +112,20 @@ def parse_optimade_json(data_dir):
             _m = json.load(_fp)
             for _item in _m['data']:
                 _mpids.append(_item['id'])
-    
+
     _mpids = sorted(set(_mpids))
     print(f'total {len(_mpids)} found')
-    
+
     return _mpids
 
 def query_mpids_by_components(mphelper, component_list, m_completed_list=[]):
     global __STOPRUN__
     _mids = []
-    
+
     for _item in component_list:
         if __STOPRUN__:
             break
-        
+
         print(f'Process {_item} ...')
         _m = sort_components(_item)
         if _m is None:
@@ -133,15 +133,15 @@ def query_mpids_by_components(mphelper, component_list, m_completed_list=[]):
         if _m in m_completed_list:
             print(f'{_m} already processed, skip')
             continue
-        
-        
+
+
         try:
             time.sleep(random.randint(3, 10))
             _mids += mphelper.query_mids(_m)
             m_completed_list.append(_m)
         except Exception as ex:
             print(ex)
-    
+
     return _mids, m_completed_list
 
 def reduce_list(origin_list, reduce_elems):
@@ -150,41 +150,41 @@ def reduce_list(origin_list, reduce_elems):
             origin_list.remove(_v)
         except ValueError:
             pass
-        
+
     return origin_list
 
 def run():
     global __STOPRUN__
-    #api_key='SOME_KEY'        
+    #api_key='SOME_KEY'
     api_key = None
     data_dir = pathlib.Path.home().joinpath('mpdata')
-    
+
     mp_id_completed_list = load_completed_mids(data_dir)
     if len(mp_id_completed_list) == 0:
         mp_id_completed_list = find_mp_list_by_dir(data_dir)
     m_completed_list = load_completed_materials(data_dir)
     mp_id_todo_list = load_todo_mids(data_dir)
-    
+
     helper = MPHelper(api_key, data_dir=str(data_dir), timeout=5)
-    
+
     # Scrab structures through optimade. All data before 2021-3-18.
     #opd_dir = data_dir.joinpath('optimade')
     #scrab_mp_structures(helper, opd_dir)
     #mp_id_todo_list += parse_optimade_json(opd_dir)
- 
-    # Scrab mpids by components       
-    #mpids, m_completed_list = query_mpids_by_components(helper, ALL_ELEMENTS, m_completed_list)        
+
+    # Scrab mpids by components
+    #mpids, m_completed_list = query_mpids_by_components(helper, ALL_ELEMENTS, m_completed_list)
     #save_completed_materials(m_completed_list, data_dir)
     #mp_id_todo_list += mpids
-    #save_todo_mids(mp_id_todo_list, data_dir)    
-        
+    #save_todo_mids(mp_id_todo_list, data_dir)
+
     mp_id_todo_list = reduce_list(mp_id_todo_list, mp_id_completed_list)
     print(f'Total {len(mp_id_todo_list)} to be download.')
     _c = 1
     for id in mp_id_todo_list:
         if __STOPRUN__:
             break
-        
+
         try:
             print(f'download: {id} ...')
             helper.download(id)
@@ -193,12 +193,12 @@ def run():
             print(f'download success: {id}')
         except Exception as ex:
             print(ex)
-        
+
         if _c % 20 == 0:
             save_completed_mids(mp_id_completed_list, data_dir)
-                
+
         time.sleep(random.randint(1, 5))
-             
+
 
     mp_id_todo_list = reduce_list(mp_id_todo_list, mp_id_completed_list)
     save_completed_mids(mp_id_completed_list, data_dir)
@@ -212,7 +212,7 @@ def signal_handler(signum, frame):
     global __STOPRUN__
     __STOPRUN__ = True
     print('STOP signal received, will stop soon.')
-    
+
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     run()

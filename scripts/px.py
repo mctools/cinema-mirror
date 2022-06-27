@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from Cinema.PiXiu import getAtomMassBC, Pseudo, QEType
-from Cinema.PiXiu.IO import JsonCell, XmlCell
+from Cinema.PiXiu.io import JsonCell, XmlCell
 import numpy as np
 import os, sys, glob, re
 from loguru import logger
