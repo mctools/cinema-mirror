@@ -1,10 +1,10 @@
 # Docker
 
-## Prerequirements
+## Prerequisites
 - Docker (Docker Engine && Docker CLI / Docker Desktop)
 
 ## Build
-1. Clone cinema
+1. Clone Cinema
 
 2. run
 ~~~Bash
