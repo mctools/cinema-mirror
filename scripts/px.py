@@ -87,12 +87,14 @@ if sgnum != qxsg:
     logger.critical(f'space group in the origianl input is inconsistent with that idealised by PX')
     sys.exit()
 
-if not os.path.isfile('out.xml'):
+if not os.path.isfile('out_relax.xml'):
     if os.system(f'mpirun -np {cores} pw.x {qe_nk} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]}.out' ):
         raise IOError("Relax pw.x fail")
+    os.rename('out.xml', 'out_relax.xml')
 
-#out.xml containes the calculated results for the relaxed cell
-relexed_cell = XmlCell('out.xml')
+#out_relax.xml containes the calculated results for the relaxed cell
+
+relexed_cell = XmlCell('out_relax.xml')
 dim = relexed_cell.estSupercellDim()
 kpt = relexed_cell.estSupercellKpoint()
 cell = relexed_cell.getCell()
