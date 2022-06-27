@@ -4,7 +4,7 @@ from .CalcBase import CalcPowder
 from Cinema.Interface.units import *
 
 class Hdf5Mesh(CalcPowder):
-    def __init__(self, lattice, mass, pos, bc, kt, fileName):
+    def __init__(self, lattice, mass, pos, bc, temperature, fileName):
         hf = h5py.File(fileName,'r')
         en=hf['frequency'][()]*THz*2*np.pi*hbar
         eigv=hf['eigenvector'][()]
@@ -20,4 +20,4 @@ class Hdf5Mesh(CalcPowder):
         qpoint=hf['qpoint'][()]
         weight=hf['weight'][()]/(mesh[0]*mesh[1]*mesh[2])
         hf.close()
-        super().__init__(lattice, mass, pos, bc, qpoint, en, eigv, weight, kt)
+        super().__init__(lattice, mass, pos, bc, qpoint, en, eigv, weight, temperature)

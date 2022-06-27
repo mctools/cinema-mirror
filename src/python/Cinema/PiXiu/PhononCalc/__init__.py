@@ -1,3 +1,3 @@
 from .Hdf5Mesh import Hdf5Mesh
 from .CalcBase import CalcPowder
-from .MeshCell import MeshCell
+from .meshcell import MeshCell, MeshQE

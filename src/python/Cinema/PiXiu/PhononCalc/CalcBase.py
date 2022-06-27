@@ -7,10 +7,10 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from Cinema.Interface.units import *
 
 # lattice (Aa), mass (atomic mass), pos (fractional coordinate), bc (sqrt(barn))
-# qpoints(reduced coordinate), energy(eV ), eigv (unity magnitude), qweight (dimensionless), kt(eV)
+# qpoints(reduced coordinate), energy(eV ), eigv (unity magnitude), qweight (dimensionless), temperature(kelvin)
 
 class CalcBase:
-    def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, kt ):
+    def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
         if mass.ndim!=1:
             raise ValueError('Mass is not 1D array')
 
@@ -48,7 +48,7 @@ class CalcBase:
         self.maxEn = self.en.max()
         self.eigv=eigv
         self.qweight=qweight
-        self.kt=kt
+        self.kt=temperature*boltzmann
         self.bose=self.nplus1(self.en)
         self.msd=self.isoMsd() #fixme: calmsd method returns unequal msd even for cubic lattice, bug to be fixed use isotropic model for now.
 
@@ -110,8 +110,8 @@ class CalcBase:
         return F
 
 class CalcPowder(CalcBase):
-    def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, kt ):
-        super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, kt)
+    def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
+        super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature)
 
     def calcPowder(self, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001, jump=1):
         qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])

@@ -91,7 +91,7 @@ if not os.path.isfile('out.xml'):
     if os.system(f'mpirun -np {cores} pw.x {qe_nk} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]}.out' ):
         raise IOError("Relax pw.x fail")
 
-
+#out.xml containes the calculated results for the relaxed cell
 relexed_cell = XmlCell('out.xml')
 dim = relexed_cell.estSupercellDim()
 kpt = relexed_cell.estSupercellKpoint()

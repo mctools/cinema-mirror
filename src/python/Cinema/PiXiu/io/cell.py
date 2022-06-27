@@ -47,6 +47,7 @@ class XmlCell(CellBase):
                     if child.tag=='atom':
                         ele = child.attrib['name']
                         atominfo=getAtomMassBC(ele)
+                        self.element.append(ele)
                         self.num.append(atominfo[2])
                         self.position.append(np.fromstring(child.text, sep=' '))
                     elif child.tag=='a1':
@@ -91,7 +92,9 @@ class JsonCell(CellBase):
                     raise RuntimeError('occu is not unity')
                 # self.sites[i]={site['species'][0]['element']: site['abc'] }
                 self.position.append(site['abc'])
-                atominfo=getAtomMassBC(site['species'][0]['element'])
+                elename = site['species'][0]['element']
+                atominfo=getAtomMassBC(elename)
+                self.element.append(elename)
                 self.num.append(atominfo[2])
 
     def getTotalMagnetic(self):
