@@ -24,6 +24,6 @@ hist = calc.calcPowder(maxQ, enSize, QSize, jump=1)
 np.set_printoptions(precision=16)
 print(hist.getWeight())
 
-np.testing.assert_array_equal(reference, hist.getWeight())
+np.testing.assert_allclose(reference, hist.getWeight(), rtol=1e-15)
 
 #calc.show(hist.getWeight(), hist.xedge, hist.yedge)
