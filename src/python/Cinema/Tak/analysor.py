@@ -305,17 +305,9 @@ class AnaVDOS(Trj):
 
 def AnaSF2VD(sf):
     vd = AnaVDOS('')
-    vd.species = sf.species
-    vd.nAtom = sf.nAtom
-    vd.nFrame = sf.nFrame
-    vd.trj = sf.trj
-    vd.box = sf.box
-    vd.time = sf.time
-    vd.dt = sf.dt
-    vd.nMolecule = sf.nMolecule
-    vd.nAtomPerMole = sf.nAtomPerMole
-    vd.elements = sf.elements
-    vd.atomid = sf.atomid
+    temp = vars(sf)
+    for item in temp:
+        setattr(vd, item,  sf[item])
     vd.unwrap()
     vd.atomictrj = vd.trj
     del vd.trj
