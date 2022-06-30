@@ -307,7 +307,7 @@ def AnaSF2VD(sf):
     vd = AnaVDOS('')
     temp = vars(sf)
     for item in temp:
-        setattr(vd, item,  sf[item])
+        setattr(vd, item,  getattr(sf,item))
     vd.unwrap()
     vd.atomictrj = vd.trj
     del vd.trj
