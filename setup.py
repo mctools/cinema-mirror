@@ -35,19 +35,24 @@ class CMakeBuild(build_ext):
         temp = vars(ext)
         for item in temp:
             print(item, ':', temp[item])
+
         build_temp = os.path.join(self.build_temp, ext.name)
         if not os.path.exists(build_temp):
             os.makedirs(build_temp)
+
+        build_temp = os.path.abspath(build_temp)
+        print(f'build_temp {build_temp}')
 
         numcpu = os.cpu_count()//2
 
         if hasattr(ext,'git'):
             subprocess.check_call(['git', 'clone', ext.git, 'src'] , cwd=build_temp)
-            subprocess.check_call(['mkdir', 'build'] , cwd=build_temp)
+            subprocess.check_call(['mkdir', 'build'], cwd=build_temp)
             subprocess.check_call(['cmake', '-DCMAKE_INSTALL_PREFIX='+build_temp+'/install' , ext.build_args_extra, '../src'] , cwd=build_temp+'/build')
-            subprocess.check_call(['make', '-j'+str(numcpu)] , cwd=build_temp+'/build')
+            subprocess.check_call(['make', '-j'+str(numcpu)], cwd=build_temp+'/build' )
             subprocess.check_call(['make', 'install'] , cwd=build_temp+'/build')
-            print(f'{ext.name} installation completed.')
+            os.environ.setdefault(ext.name, build_temp+'/install')
+            print(f'{ext.name} is install into {build_temp+"/install"}')
 
         else:
             extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
@@ -56,16 +61,8 @@ class CMakeBuild(build_ext):
             if not extdir.endswith(os.path.sep):
                 extdir += os.path.sep
 
-            # Set Python_EXECUTABLE instead if you use PYBIND11_FINDPYTHON
-            # EXAMPLE_VERSION_INFO shows you how to pass a value into the C++ code
-            # from Python.
-            # cmake_args = [
-            #     f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
-            #     f"-DPYTHON_EXECUTABLE={sys.executable}",
-            #     f"-DCMAKE_BUILD_TYPE={cfg}",  # not used on MSVC, but no harm
-            # ]
-
-            subprocess.check_call(["cmake", ext.sourcedir, ext.build_args_extra] , cwd=build_temp+'/install')
+            subprocess.check_call(['mkdir', 'install'] , cwd=build_temp)
+            subprocess.check_call(["cmake", ext.sourcedir] , cwd=build_temp+'/install')
             subprocess.check_call(['make', '-j'+str(numcpu)] , cwd=build_temp+'/install')
 
 
@@ -164,8 +161,10 @@ setup(
    #  # 会生成 如 /usr/bin/foo.sh 和 如 /usr/bin/bar.py
    #  scripts=['bin/foo.sh', 'bar.py']
 
-    ext_modules=[CMakeExtension(name='ncrystal', git='https://gitlab.com/xxcai1/ncrystal.git'),
-                 CMakeExtension(name='vecgeom', git='https://gitlab.com/xxcai1/VecGeom.git', build_args_extra='-DGDML=On -DUSE_NAVINDEX=On'),
+    ext_modules=[CMakeExtension(name='NCrystal_ext', git='https://gitlab.com/xxcai1/ncrystal.git'),
+                 CMakeExtension(name='Vecgeom_ext', git='https://gitlab.com/xxcai1/VecGeom.git', build_args_extra='-DGDML=On -DUSE_NAVINDEX=On'),
                  CMakeExtension(name='cinema', sourcedir='')],
-    cmdclass={"build_ncrystal": CMakeBuild, "build_vecgeo": CMakeBuild, "build_cinema": CMakeBuild, },
+    cmdclass={"build_ncrystal": CMakeBuild,
+            "build_vecgeo": CMakeBuild,
+            "build_cinema": CMakeBuild, },
 )

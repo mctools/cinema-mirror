@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(cinema)
-
 find_package(HDF5 REQUIRED COMPONENTS C)
 
 # specify the C++ standard
@@ -11,7 +10,9 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 # VecGeom
-set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/VecGeom/install/")
+#set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/VecGeom/install/")
+message(STATUS "VecGeom CMAKE_PREFIX_PATH is set to $ENV{Vecgeom_ext}")
+set(CMAKE_PREFIX_PATH $ENV{Vecgeom_ext})
 set(VecGeom_VERSION 1.1.17)
 find_package(VecGeom ${VecGeom_VERSION} REQUIRED)
 message(STATUS "Using VecGeom version ${VecGeom_VERSION}")
@@ -23,7 +24,8 @@ if(NOT TARGET VecGeom::vgdml)
 endif()
 
 # NCrystal
-set(NCrystal_DIR ${CMAKE_SOURCE_DIR}/external/ncrystal/install/lib/cmake)
+message(STATUS "NCrystal_DIR=$ENV{NCrystal_ext}/lib/cmake")
+set(NCrystal_DIR  "$ENV{NCrystal_ext}/lib/cmake")
 find_package(NCrystal 3.0.0 REQUIRED)
 
 
