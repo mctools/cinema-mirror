@@ -64,11 +64,9 @@ class CMakeBuild(build_ext):
             #     f"-DPYTHON_EXECUTABLE={sys.executable}",
             #     f"-DCMAKE_BUILD_TYPE={cfg}",  # not used on MSVC, but no harm
             # ]
-            cmake_args = []
-            build_args = []
 
-            subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=build_temp)
-            subprocess.check_call(["cmake", "--build", "."] + build_args, cwd=build_temp)
+            subprocess.check_call(["cmake", ext.sourcedir, ext.build_args_extra] , cwd=build_temp+'/install')
+            subprocess.check_call(['make', '-j'+str(numcpu)] , cwd=build_temp+'/install')
 
 
 #template from https://zhuanlan.zhihu.com/p/276461821
