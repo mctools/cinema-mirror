@@ -291,6 +291,7 @@ class AnaVDOS(Trj):
         return np.arange(msd.size)*self.dt, msd
 
     def saveTrj(self, fileName):
+        #unwrapped trj
         hf = h5py.File(fileName, 'w')
         # atomid, pos_dim, frameid
         # self.box: frameid, pos_dim

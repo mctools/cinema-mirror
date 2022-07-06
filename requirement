@@ -1,9 +1,9 @@
 #Tak
-numba
+numba==0.55.1
 
 #required packages for Prompt visualisation
-pyvista
-pyvistaqt
+pyvista==0.34.1
+pyvistaqt==0.9.0
 matplotlib
 
 #required packages for post-analysis
@@ -11,10 +11,10 @@ scipy
 h5py
 
 #PiXiu
-phonopy
-spglib
+phonopy==2.14.0
+spglib==1.16.4
 requests
-seekpath
+seekpath==2.0.1
 
 #logging
 loguru
