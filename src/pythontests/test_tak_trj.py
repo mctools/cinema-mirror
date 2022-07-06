@@ -61,7 +61,8 @@ refco = np.array([1.4117563871926776e-03, 1.6265455501273752e-03, 2.148750314294
  3.2475146910638528e-03, 2.0230468514142071e-03, 1.5406878014335812e-03,
  1.3894959341432896e-03])
 np.testing.assert_allclose(co, refco, rtol=1e-15, atol=1e-15)
-
+import os
+os.remove(saveUnwrappedTrj)
 
 # import matplotlib.pyplot as plt
 # fre, inco = df.calIncoherent(Q)
