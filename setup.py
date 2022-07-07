@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 # https://github.com/pybind/cmake_example/blob/master/setup.py
 
 import os
+import shutil
 import re
 import subprocess
 import sys
@@ -39,31 +40,37 @@ class CMakeBuild(build_ext):
         build_temp = os.path.join(self.build_temp, ext.name)
         if not os.path.exists(build_temp):
             os.makedirs(build_temp)
+            
 
         build_temp = os.path.abspath(build_temp)
         print(f'build_temp {build_temp}')
 
         numcpu = os.cpu_count()//2
 
-        if hasattr(ext,'git'):
-            subprocess.check_call(['git', 'clone', ext.git, 'src'] , cwd=build_temp)
-            subprocess.check_call(['mkdir', 'build'], cwd=build_temp)
-            subprocess.check_call(['cmake', '-DCMAKE_INSTALL_PREFIX='+build_temp+'/install' , ext.build_args_extra, '../src'] , cwd=build_temp+'/build')
-            subprocess.check_call(['make', '-j'+str(numcpu)], cwd=build_temp+'/build' )
-            subprocess.check_call(['make', 'install'] , cwd=build_temp+'/build')
-            os.environ.setdefault(ext.name, build_temp+'/install')
-            print(f'{ext.name} is install into {build_temp+"/install"}')
+        try:
 
-        else:
-            extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+            if hasattr(ext,'git'):
+                subprocess.check_call(['git', 'clone', ext.git, 'src'] , cwd=build_temp)
+                subprocess.check_call(['mkdir', 'build'], cwd=build_temp)
+                subprocess.check_call(['cmake', '-DCMAKE_INSTALL_PREFIX='+build_temp+'/install' , ext.build_args_extra, '../src'] , cwd=build_temp+'/build')
+                subprocess.check_call(['make', '-j'+str(numcpu)], cwd=build_temp+'/build' )
+                subprocess.check_call(['make', 'install'] , cwd=build_temp+'/build')
+                os.environ.setdefault(ext.name, build_temp+'/install')
+                print(f'{ext.name} is install into {build_temp+"/install"}')
 
-            # required for auto-detection & inclusion of auxiliary "native" libs
-            if not extdir.endswith(os.path.sep):
-                extdir += os.path.sep
+            else:
+                extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
 
-            subprocess.check_call(['mkdir', 'install'] , cwd=build_temp)
-            subprocess.check_call(["cmake", ext.sourcedir] , cwd=build_temp+'/install')
-            subprocess.check_call(['make', '-j'+str(numcpu)] , cwd=build_temp+'/install')
+                # required for auto-detection & inclusion of auxiliary "native" libs
+                if not extdir.endswith(os.path.sep):
+                    extdir += os.path.sep
+
+                subprocess.check_call(['mkdir', 'install'] , cwd=build_temp)
+                subprocess.check_call(["cmake", ext.sourcedir] , cwd=build_temp+'/install')
+                subprocess.check_call(['make', '-j'+str(numcpu)] , cwd=build_temp+'/install')
+                
+        except:
+            shutil.rmtree(build_temp)
 
 
 #template from https://zhuanlan.zhihu.com/p/276461821
