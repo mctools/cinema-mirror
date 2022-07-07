@@ -13,7 +13,7 @@ find_package(Threads REQUIRED)
 #set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/VecGeom/install/")
 message(STATUS "VecGeom CMAKE_PREFIX_PATH is set to $ENV{Vecgeom_ext}")
 set(CMAKE_PREFIX_PATH $ENV{Vecgeom_ext})
-set(VecGeom_VERSION 1.1.17)
+set(VecGeom_VERSION 1.1.17...1.1.99)
 find_package(VecGeom ${VecGeom_VERSION} REQUIRED)
 message(STATUS "Using VecGeom version ${VecGeom_VERSION}")
 # make sure we import VecGeom architecture flags - is this needed?
