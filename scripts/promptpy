@@ -34,11 +34,11 @@ if args.visualize is True:
         myLcher.go(1, recordTrj=True)
         print(f'trajectory size {myLcher.getTrajSize()}')
         trj = myLcher.getTrajectory()
-    try:
-        v.addLine(trj)
-    except ValueError:
-        print("skip ValueError in File '/Prompt/scripts/promptpy', in <module>, v.addLine(trj)")
-    print(trj)
+        try:
+            v.addLine(trj)
+        except ValueError:
+            print("skip ValueError in File '/Prompt/scripts/promptpy', in <module>, v.addLine(trj)")
+        print(trj)
     v.show()
 else:
     print("Configured not to visualize.")
