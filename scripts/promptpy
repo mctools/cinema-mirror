@@ -3,28 +3,48 @@
 from Cinema.Prompt import Launcher, Visualiser
 import matplotlib.pyplot as plt
 import numpy as np
+import argparse
 
-l = Launcher()
-l.setSeed(100)
-l.loadGeometry("../gdml/totScat2022.gdml")
+parser = argparse.ArgumentParser()
+parser.add_argument('-g', '--gdml', action='store', type=str, default='',
+                    dest='gdml', help='input gdml file')
+parser.add_argument('-v', '--visualize', action='store', type=bool, default=True,
+                    dest='visualize', help='whether to visualize gdml model (bool)')
+parser.add_argument('-s', '--seed', action='store', type=int, default=100,
+                    dest='seed', help='random seed number')
+parser.add_argument('-n', '--neutronNum', action='store', type=int, default=100,
+                    dest='neutronNum', help='neutron number')
+
+args=parser.parse_args()
+inputfile=args.gdml
+rdseed=args.seed
+
+myLcher=Launcher()
+myLcher.setSeed(rdseed)
+myLcher.loadGeometry(inputfile)
 # l.loadGeometry("../gdml/mpi_detector.gdml");
 #l.loadGeometry("../gdml/guide_1.gdml");
 # l.loadGeometry("../gdml/first_geo.gdml");
 #l.loadGeometry("../gdml/simple_geo.gdml")
 #v = Visualiser(['DetectorSolid'], printWorld=True)
-v = Visualiser(['Tube300', 'Tube500', '300_L', '500_L'], printWorld=True)
-# v = Visualiser(['LV_Guider1', 'Tube500', '300_L', '500_L'], printWorld=True)
-
-for i in range(100):
-    print(f'trajectory size {l.getTrajSize()}')
-    l.go(1, recordTrj=True)
-    print(f'trajectory size {l.getTrajSize()}')
-    trj = l.getTrajectory()
+if args.visualize is True:
+    v = Visualiser(['Tube300', 'Tube500', '300_L', '500_L'], printWorld=True)
+    for i in range(args.neutronNum):
+        print(f'trajectory size {myLcher.getTrajSize()}')
+        myLcher.go(1, recordTrj=True)
+        print(f'trajectory size {myLcher.getTrajSize()}')
+        trj = myLcher.getTrajectory()
     try:
         v.addLine(trj)
     except ValueError:
         print("skip ValueError in File '/Prompt/scripts/promptpy', in <module>, v.addLine(trj)")
     print(trj)
+    v.show()
+else:
+    print("Configured not to visualize.")
+# v = Visualiser(['LV_Guider1', 'Tube500', '300_L', '500_L'], printWorld=True)
 
 
-v.show()
+
+
+
