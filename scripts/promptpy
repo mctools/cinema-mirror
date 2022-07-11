@@ -22,11 +22,7 @@ rdseed=args.seed
 myLcher=Launcher()
 myLcher.setSeed(rdseed)
 myLcher.loadGeometry(inputfile)
-# l.loadGeometry("../gdml/mpi_detector.gdml");
-#l.loadGeometry("../gdml/guide_1.gdml");
-# l.loadGeometry("../gdml/first_geo.gdml");
-#l.loadGeometry("../gdml/simple_geo.gdml")
-#v = Visualiser(['DetectorSolid'], printWorld=True)
+
 if args.visualize is True:
     v = Visualiser(['Tube300', 'Tube500', '300_L', '500_L'], printWorld=True)
     for i in range(args.neutronNum):
@@ -41,10 +37,4 @@ if args.visualize is True:
     print(trj)
     v.show()
 else:
-    print("Configured not to visualize.")
-# v = Visualiser(['LV_Guider1', 'Tube500', '300_L', '500_L'], printWorld=True)
-
-
-
-
-
+    myLcher.go(args.neutronNum, recordTrj=False)
