@@ -96,7 +96,8 @@ if [ ! -f $CINEMAPATH/external/xerces-c/install/lib/libxerces-c.a ]; then
       git clone -b v3.2.3 --single-branch https://gitlab.com/xxcai1/xerces-c.git
       cd -
       mkdir $CINEMAPATH/external/xerces-c/build && cd $CINEMAPATH/external/xerces-c/build
-      cmake -DBUILD_SHARED_LIBS=OFF -Dnetwork=OFF -Dextra-warnings=OFF  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/xerces-c/install ..
+      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/ncrystal/install ..
+      cmake -DBUILD_SHARED_LIBS=ON -Dnetwork=OFF -Dextra-warnings=OFF  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/xerces-c/install ..
       make -j ${NUMCPU} && make install
       cd -
       echo "installed  libxerces"
@@ -119,7 +120,7 @@ if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
     git clone https://gitlab.com/xxcai1/VecGeom.git
     cd -
     mkdir $CINEMAPATH/external/VecGeom/build && cd $CINEMAPATH/external/VecGeom/build
-    cmake -DXercesC_INCLUDE_DIR=$CINEMAPATH/external/xerces-c/install/include  -DXercesC_LIBRARY_RELEASE=$CINEMAPATH/external/xerces-c/install/lib/libxerces-c-3.2.so -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/VecGeom/install -DGDML=On -DUSE_NAVINDEX=On  ..
+    cmake -DXercesC_INCLUDE_DIR=$CINEMAPATH/external/xerces-c/install/include  -DXercesC_LIBRARY_RELEASE=$CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/VecGeom/install -DGDML=On -DUSE_NAVINDEX=On  ..
     make -j${NUMCPU} && make install
     cd -
     echo "installed  VecGeom"
