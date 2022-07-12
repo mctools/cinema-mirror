@@ -96,13 +96,27 @@ setup(
         # 目标 Python 版本
         'Programming Language :: Python :: 3.8',
     ],
-    name="cinema",
+    name="Ncinema",
     version="0.1",
     author="x.x. cai",
     author_email="wongbingming@163.com",
     description="China Spallation Neutron Source Monte Carlo System",
     url="",
-   #  packages=find_packages()
+    
+    packages=find_packages(
+        where = os.path.join("src", "python")),
+
+    package_dir=dict(
+        zip(
+            find_packages(where = os.path.join("src", "python")), 
+            [
+                os.path.join('.','src','python') + os.path.sep + str(i_dir).replace('.', os.path.sep) \
+                for i_dir in find_packages(where = os.path.join("src", "python"))
+                
+                ]
+            )
+        ),
+    
    #
    #  # 安装过程中，需要安装的静态文件，如配置文件、service文件、图片等
    #  data_files=[
@@ -110,11 +124,10 @@ setup(
    #      ('/usr/lib/systemd/system/', ['bin/*.service']),
    #             ],
    #
-   #  # 希望被打包的文件
-   #  package_data={
-   #      '':['*.txt'],
-   #      'bandwidth_reporter':['*.txt']
-   #             },
+    # 希望被打包的文件
+    # package_data={
+    #     './build/temp.linux-x86_64-cpython-38/NCrystal_ext':['*.so']
+    #            },
    #  # 不打包某些文件
    #  exclude_package_data={
    #      'bandwidth_reporter':['*.txt']
