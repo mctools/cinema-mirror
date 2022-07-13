@@ -291,6 +291,7 @@ class AnaVDOS(Trj):
         return np.arange(msd.size)*self.dt, msd
 
     def saveTrj(self, fileName):
+        #unwrapped trj
         hf = h5py.File(fileName, 'w')
         # atomid, pos_dim, frameid
         # self.box: frameid, pos_dim
@@ -305,17 +306,9 @@ class AnaVDOS(Trj):
 
 def AnaSF2VD(sf):
     vd = AnaVDOS('')
-    vd.species = sf.species
-    vd.nAtom = sf.nAtom
-    vd.nFrame = sf.nFrame
-    vd.trj = sf.trj
-    vd.box = sf.box
-    vd.time = sf.time
-    vd.dt = sf.dt
-    vd.nMolecule = sf.nMolecule
-    vd.nAtomPerMole = sf.nAtomPerMole
-    vd.elements = sf.elements
-    vd.atomid = sf.atomid
+    temp = vars(sf)
+    for item in temp:
+        setattr(vd, item,  getattr(sf,item))
     vd.unwrap()
     vd.atomictrj = vd.trj
     del vd.trj

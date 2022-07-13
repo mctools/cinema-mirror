@@ -38,7 +38,7 @@ anavdos = AnaSF2VD(s)
 if args.test:
     vdos = anavdos.vdos(0, numcpu)
     vdos_python = anavdos.vdos_python(0)
-    np.testing.assert_allclose(vdos_python, vdos)
+    np.testing.assert_allclose(vdos_python, vdos[1])
     print('pass!')
     import sys
     sys.exit()
