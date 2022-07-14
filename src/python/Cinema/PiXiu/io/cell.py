@@ -80,24 +80,28 @@ class XmlCell(CellBase):
 class JsonCell(CellBase):
     def __init__(self, filename):
         super().__init__()
-        with open(filename, 'r') as fp:
-            mat_dict = json.load(fp)
-            self.totMagn = mat_dict.get('total_magnetization')
-            self.spacegroupnum =  mat_dict['spacegroup']['number']
-            structure = mat_dict['structure']
-            self.lattice = (structure['lattice']['matrix'])
-            self.abc = np.linalg.norm(self.lattice, axis=1)
-            # self.sites={}
-            # sites
-            for i, site in enumerate(structure['sites']):
-                if len(site['species'])!=1:
-                    raise RuntimeError('occu is not unity')
-                # self.sites[i]={site['species'][0]['element']: site['abc'] }
-                self.position.append(site['abc'])
-                elename = site['species'][0]['element']
-                atominfo=getAtomMassBC(elename)
-                self.element.append(elename)
-                self.num.append(atominfo[2])
+        if isinstance(filename, dict):
+            mat_dict = filename
+        else:
+            with open(filename, 'r') as fp:
+                mat_dict = json.load(fp)
+
+        self.totMagn = mat_dict.get('total_magnetization')
+        self.spacegroupnum =  mat_dict['spacegroup']['number']
+        structure = mat_dict['structure']
+        self.lattice = (structure['lattice']['matrix'])
+        self.abc = np.linalg.norm(self.lattice, axis=1)
+        # self.sites={}
+        # sites
+        for i, site in enumerate(structure['sites']):
+            if len(site['species'])!=1:
+                raise RuntimeError('occu is not unity')
+            # self.sites[i]={site['species'][0]['element']: site['abc'] }
+            self.position.append(site['abc'])
+            elename = site['species'][0]['element']
+            atominfo=getAtomMassBC(elename)
+            self.element.append(elename)
+            self.num.append(atominfo[2])
 
     def getTotalMagnetic(self):
         return self.totMagn

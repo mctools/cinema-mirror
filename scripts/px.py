@@ -26,6 +26,13 @@ def getPath(path):
         #     label[i] = '$'+str(label[i]) + '$'
     return pcor, label
 
+def get_material_from_db(mp_id, db_url, db='cinema', coll='mp'):
+    import pymongo
+
+    client = pymongo.MongoClient(db_url)
+    mp = client[db][coll]
+
+    return mp.find_one({'mp_id': mp_id})
 
 logger.add(sys.stdout, colorize=True, format="<green>{time}</green> <level>{message}</level>", backtrace=True, level="INFO")
 logger.add("pixiu.log", rotation="12:00")
@@ -41,11 +48,34 @@ parser.add_argument('-n', '--numcpu', action='store', type=int, default=lastGood
                     dest='numcpu', help='number of CPU')
 parser.add_argument('-r', '--rundft', action='store_true', dest='rundft', help='run DFT')
 parser.add_argument('-p', '--plotpdf', action='store_true', dest='plotpdf', help='generate pdf files')
+parser.add_argument('-m', '--mp-id', action='store', type=str, default=None,
+                    dest='mpid', help='the Materials Project ID. This option will take precedence than --input. mp-149 for example.')
+parser.add_argument('-c', '--mongo-url', action='store', type=str, default=None,
+        dest='mongo_url', help='the MongoDB connection string. mongodb://user:pass@localhost:27017/ for example.')
+parser.add_argument('-s', '--use-spark', action='store_true', dest='use_spark', help='run in spark')
 
 args = parser.parse_args()
 inputfile=args.input
 cores=args.numcpu
 rundft=args.rundft
+mpid = args.mpid
+use_spark = args.use_spark
+mongo_url = args.mongo_url
+
+if mpid is not None and len(mpid.strip()) == 0:
+    logger.error('input mpid must not be empty.')
+    sys.exit(0)
+
+if mpid is not None:
+    if mongo_url is None or len(mongo_url.strip()) == 0:
+        logger.error('mongo url must be provided with mpid')
+        sys.exit(0)
+    else:
+        mp_doc = get_material_from_db(mpid, mongo_url)
+        if mp_doc is None:
+            logger.error(f'{mpid} not found in the database.')
+            sys.exit(0)
+        inputfile = mp_doc
 
 plotflag=''
 if args.plotpdf:
@@ -55,7 +85,11 @@ qe_nk=''
 if cores>4:
     qe_nk = f'-nk {cores//4}'
 
-logger.info(f'px.py input {inputfile}, CPU {cores}, {rundft} run DFT')
+if mpid is None:
+    logger.info(f'px.py input {inputfile}, CPU {cores}, {rundft} run DFT')
+else:
+    logger.info(f'px.py input {mpid}, CPU {cores}, {rundft} run DFT')
+
 ps = Pseudo()
 
 pcell = True
