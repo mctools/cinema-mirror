@@ -77,6 +77,18 @@ if mpid is not None:
             sys.exit(0)
         inputfile = mp_doc
 
+if use_spark:
+    logger.info('Run as Spark application')
+    import pyspark
+    from pyspark.sql import SparkSession
+
+    if mpid is None:
+        pf = os.path.basename(inputfile)
+    else:
+        pf = mpid
+    spark = SparkSession.builder.appName(f'DFT_Job_{pf}').getOrCreate()
+    #mode = spark.conf.get('spark.submit.deployMode')
+
 plotflag=''
 if args.plotpdf:
     plotflag='-p'
@@ -180,3 +192,7 @@ if os.system(f'phonopy --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --m
     raise IOError("mesh fail")
 
 logger.info(f'Calculation completed!')
+
+if use_spark:
+    logger.info('Stop Spark.')
+    spark.stop()
