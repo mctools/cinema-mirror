@@ -5,6 +5,7 @@ import matplotlib.colors as colors
 import numpy as np
 import periodictable as pt
 from scipy.interpolate import RectBivariateSpline
+import h5py
 
 
 #example for element_list
@@ -82,3 +83,9 @@ class Sqw:
         info+=f'Shape of Q {self.q.shape}, range [{self.q[0]}, {self.q[-1]}] Aa^-1\n'
         info+=f'Shape of Omega  {self.w.shape}, range [{self.w[0]*1e-12}, {self.w[-1]*1e-12}] THz\n'
         return info
+
+class H5Sqw(Sqw):
+    def __init__(self, filename, spath, qpath, wpath, temperature, expand_omega=None, element_list=None):
+        f=h5py.File(filename,'r')
+        super().__init__(f[spath][()], f[qpath][()], f[wpath][()], temperature, expand_omega, element_list)
+        f.close()
