@@ -59,6 +59,9 @@ void Prompt::Hist1D::save(const std::string &filename) const
   nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_content.npy", m_data, NumpyWriter::data_type::f8,
                    std::vector<uint64_t>{m_nbins});
 
+  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_hit.npy", m_hit, NumpyWriter::data_type::f8,
+                  std::vector<uint64_t>{m_nbins});
+
   nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_edge.npy", getEdge(), NumpyWriter::data_type::f8,
                    std::vector<uint64_t>{m_nbins+1});
 

@@ -35,8 +35,8 @@ _pt_Hist1D_fill_many = importFunc('pt_Hist1D_fillmany', None, [type_voidp, type_
 
 
 class Hist1D():
-    def __init__(self, xmin, ylim, num, linear=True):
-        self.cobj = _pt_Hist1D_new(xmin, ylim, num, linear)
+    def __init__(self, xmin, xmax, num, linear=True):
+        self.cobj = _pt_Hist1D_new(xmin, xmax, num, linear)
         self.numbin = num
 
     def __del__(self):
@@ -92,8 +92,8 @@ _pt_Est1D_delete = importFunc('pt_Est1D_delete', None, [type_voidp])
 _pt_Est1D_fill = importFunc('pt_Est1D_fill', None, [type_voidp, type_dbl, type_dbl, type_dbl])
 
 class Est1D(Hist1D):
-    def __init__(self, xmin, ylim, num, linear=True):
-        self.cobj = _pt_Est1D_new(xmin, ylim, num, linear)
+    def __init__(self, xmin, xmax, num, linear=True):
+        self.cobj = _pt_Est1D_new(xmin, xmax, num, linear)
         self.numbin = num
 
     def __del__(self):
@@ -122,9 +122,9 @@ class Est1D(Hist1D):
             print (e)
 
 class SpectrumEstimator(Hist1D):
-    def __init__(self, xmin, ylim, num, linear=True):
-        super().__init__(xmin, ylim, num, linear)
-        self.hitCounter = Hist1D(xmin, ylim, num, linear)
+    def __init__(self, xmin, xmax, num, linear=True):
+        super().__init__(xmin, xmax, num, linear)
+        self.hitCounter = Hist1D(xmin, xmax, num, linear)
 
     def fill(self, x, weight, hit):
         super().fill(x, weight)
