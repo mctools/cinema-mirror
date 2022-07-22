@@ -6,19 +6,6 @@ import numpy as np
 import periodictable as pt
 from scipy.interpolate import RectBivariateSpline
 
-def minMaxQ(enin_eV, enout_eV):
-    if enout_eV.min()<0:
-        raise RuntimeError('Negative energy')
-    ratio = enout_eV/enin_eV
-    k0=eKin2k(enin_eV)
-    qmin = k0*np.sqrt(1.+ ratio - 2*np.sqrt(ratio) )
-    qmax = k0*np.sqrt(1.+ ratio + 2*np.sqrt(ratio) )
-    return qmin, qmax
-
-def expand(input, axis=0, neg_factor=1., pos_factor=1.):
-    s = [slice(None)]*input.ndim
-    s[axis] = slice(-2,0,-1)
-    return np.concatenate((input[tuple(s)].conjugate()*neg_factor,input*pos_factor),axis=axis)
 
 #example for element_list
 #element_list=[{'name': 'H', 'type': 'total', 'number':2}]
