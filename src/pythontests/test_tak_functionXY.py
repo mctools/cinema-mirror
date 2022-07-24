@@ -12,8 +12,8 @@ class MainTest(unittest.TestCase):
         self.assertAlmostEqual(1.+1e-16, 1. , 14)
 
     def test_functionXY(self):
-        from Cinema.Tak.FunctionXY import FunctionXY
-        from Cinema.Tak.helper import getOmegaFromTime, takconv
+        from Cinema.Tak.FunctionXY import FunctionXY, takconv
+        from Cinema.Interface.helper import getOmegaFromTime
         # import matplotlib.pyplot as plt
         dt=0.2
         data1=FunctionXY(np.linspace(-1, -1+9*dt, 10), np.ones(10)*1.5)

@@ -83,7 +83,7 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
   fi
 
 #install libxerces
-if [ ! -f $CINEMAPATH/external/xerces-c/install/lib/libxerces-c.a ]; then
+if [ ! -f $CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so ]; then
   read -r -p "Do you want to install libxerces into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       if [ ! -d $CINEMAPATH/external ]; then

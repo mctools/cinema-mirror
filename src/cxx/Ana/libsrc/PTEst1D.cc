@@ -58,5 +58,5 @@ void Prompt::Est1D::fill(double val, double w, double error)
 
   unsigned i = m_linear ? floor((val-m_xmin)*m_binfactor) : floor((log10(val)-m_logxmin)*m_binfactor) ;
   m_data[i] += w;
-  m_hit[i] =  std::sqrt(error*error+m_hit[i]*m_hit[i]);
+  m_hit[i] =  std::sqrt(error*error+m_hit[i]*m_hit[i]); //fixme: should convert error back to hit
 }

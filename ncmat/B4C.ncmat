@@ -1,0 +1,16 @@
+NCMAT v4
+@DYNINFO
+  element  B
+  fraction 4/5
+  type     freegas
+
+@DYNINFO
+  element  C
+  fraction 1/5
+  type     freegas
+
+@DENSITY
+  2.7 g_per_cm3
+
+@ATOMDB
+  B is 0.95 B10 0.05 B11
