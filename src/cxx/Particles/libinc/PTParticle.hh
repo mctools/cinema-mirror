@@ -54,7 +54,7 @@ namespace Prompt {
     double getEKin0() { return m_ekin0; }
     double getWeight() { return m_weight; }
     void scaleWeight(double factor) { m_weight *= factor; }
-    unsigned getEventID() { return m_eventid; }
+    unsigned long long getEventID() { return m_eventid; }
     KillType getKillType() { return m_killtype; }
 
     void kill(KillType t);
@@ -69,7 +69,7 @@ namespace Prompt {
     double m_weight;
     double m_rest_mass;
     bool m_alive;
-    unsigned m_eventid, m_id, m_parentid;
+    unsigned long long m_eventid, m_id, m_parentid;
     KillType m_killtype;
   };
 
