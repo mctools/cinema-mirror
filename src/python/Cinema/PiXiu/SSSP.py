@@ -27,7 +27,7 @@ class Pseudo():
         return ecutwfc, ecutrho, pseudoName
 
     def linkvdWTable(self):
-        os.link(self.libpath+'/vdW_kernel_table', './vdW_kernel_table')
+        os.link(self.libpath+'/../vdW_kernel_table', './vdW_kernel_table')
 
     def qe_input(self, qeType):
         if qeType==QEType.Relax:
