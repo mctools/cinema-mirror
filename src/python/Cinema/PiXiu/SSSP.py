@@ -26,6 +26,9 @@ class Pseudo():
         pseudoName = self.pseudoinfo[elementName]['filename']
         return ecutwfc, ecutrho, pseudoName
 
+    def linkvdWTable(self):
+        os.link(self.libpath+'/vdW_kernel_table', './vdW_kernel_table')
+
     def qe_input(self, qeType):
         if qeType==QEType.Relax:
             qe_control= """ &control
@@ -104,6 +107,7 @@ class Pseudo():
         vdwOrmag=None
         if vdW:
             vdwOrmag = """input_dft  = 'vdw-df2'"""
+            self.linkvdWTable()
         else:
             vdwOrmag = """nspin = 2, starting_magnetization=1.0"""
 
