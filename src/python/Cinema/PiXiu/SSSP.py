@@ -41,14 +41,11 @@ class Pseudo():
                 ibrav = 0
                 nat = {nat}
                 ntyp = {ntyp}
-                nspin = 2
-                starting_magnetization=1.0
                 occupations='smearing'
                 smearing='gauss'
                 degauss=0.02
                 ecutwfc = {ecutwfc}, ecutrho={ecutrho}
-                !"vdw-df" "vdw-df2" "rvv10"
-                !input_dft  = 'vdw-df2'
+                {vdwOrmag}
              /
              &electrons
                 conv_thr = 1.0d-12
@@ -84,8 +81,8 @@ class Pseudo():
                 smearing='gauss'
                 degauss=0.02
                 ecutwfc = {ecutwfc}, ecutrho={ecutrho}
-                !"vdw-df" "vdw-df2" "rvv10"
                 !input_dft  = 'vdw-df2'
+                {vdwOrmag}
              /
              &electrons
                 conv_thr = 1.0d-12
@@ -98,12 +95,18 @@ class Pseudo():
             return qe_control
 
 
-
-    def qems(self, cell, simname, dim, kpt, qeType=QEType.Scf, usePrimitiveCell=True):
+    #quantum expresso make simple
+    def qems(self, cell, simname, dim, kpt, qeType=QEType.Scf, usePrimitiveCell=True, vdW=False):
         metal_str="occupations='smearing'"
 
         qe_control=self.qe_input(qeType)
         atom_spec ="ATOMIC_SPECIES\n{}"
+        vdwOrmag=None
+        if vdW:
+            vdwOrmag = """input_dft  = 'vdw-df2'"""
+        else:
+            vdwOrmag = """nspin = 2, starting_magnetization=1.0"""
+
 
 
         if qeType ==  QEType.Relax:
@@ -153,7 +156,8 @@ class Pseudo():
             defatom += elements[i]+' '+str(element_mass[i])+' '+pseudopotentials[i] + "\n"
 
         f=open(simname,'w')
-        f.write(qe_control.format(ppath="'"+self.libpath+"'", nat=tot_ele_num,ntyp=len(elements),kp0=kpt[0]*2,kp1=kpt[1]*2,kp2=kpt[2]*2,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho))
+        #relax
+        f.write(qe_control.format(ppath="'"+self.libpath+"'", vdwOrmag=vdwOrmag, nat=tot_ele_num,ntyp=len(elements),kp0=kpt[0]*2,kp1=kpt[1]*2,kp2=kpt[2]*2,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho))
         f.write(atom_spec.format(defatom))
         f.write('ATOMIC_POSITIONS crystal\n')
         f.writelines(pos)
@@ -182,8 +186,14 @@ class Pseudo():
                     f.write('! conventional cell\n')
                 f.write("! supercell {dim1} {dim2} {dim3}\n".format(dim1=dim[0],dim2=dim[1],dim3=dim[2]) )
                 f.write(f'! kt {kpt[0]} {kpt[1]} {kpt[2]} \n')
-                f.write(qe_control.format(ppath="'"+self.libpath+"'", nat=tot_ele_num*dim[0]*dim[1]*dim[2],ntyp=len(elements),kp0=kpt[0],kp1=kpt[1],kp2=kpt[2],atom=defatom
-        ,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho) + content)
+                #scf calculation
+                if vdW:
+                    f.write(qe_control.format(ppath="'"+self.libpath+"'", vdwOrmag=vdwOrmag, nat=tot_ele_num*dim[0]*dim[1]*dim[2],ntyp=len(elements),kp0=kpt[0],kp1=kpt[1],kp2=kpt[2],atom=defatom
+                        ,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho) + content)
+                else:
+                    #magnetisation calculation is too slow, disabled for now
+                    f.write(qe_control.format(ppath="'"+self.libpath+"'", vdwOrmag='' , nat=tot_ele_num*dim[0]*dim[1]*dim[2],ntyp=len(elements),kp0=kpt[0],kp1=kpt[1],kp2=kpt[2],atom=defatom
+                        ,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho) + content)
                 f.close()
 
         return spacegroup, lattice , positions, elements, numbers_p

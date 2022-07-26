@@ -53,12 +53,14 @@ parser.add_argument('-m', '--mp-id', action='store', type=str, default=None,
 parser.add_argument('-c', '--mongo-url', action='store', type=str, default=None,
         dest='mongo_url', help='the MongoDB connection string. mongodb://user:pass@localhost:27017/ for example.')
 parser.add_argument('-s', '--use-spark', action='store_true', dest='use_spark', help='run in spark')
+parser.add_argument('-v', '--vdW', action='store_true', dest='vdW', help='consider Van Der Waals forces in DFT')
 
 args = parser.parse_args()
 inputfile=args.input
 cores=args.numcpu
 rundft=args.rundft
 mpid = args.mpid
+vdW = args.vdW
 use_spark = args.use_spark
 mongo_url = args.mongo_url
 
@@ -125,7 +127,7 @@ else:
 
 logger.info(f'original cell {cell}, kpoint for relax {kpt_relax}')
 
-spacegroup, lattice , positions, elements, numbers = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell)
+spacegroup, lattice , positions, elements, numbers = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell, vdW=vdW)
 qxsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
 logger.info(f'space group after standardize_cell before relaxing {spacegroup}')
 
@@ -148,7 +150,7 @@ mesh =  relexed_cell.estMesh()
 
 logger.info(f'cell after relax {cell}, total magnetisation {relexed_cell.totmagn}')
 
-spacegroup, lattice , positions, elements, numbers = ps.qems(cell, unitcell_sim, dim, kpt, QEType.Scf, usePrimitiveCell=pcell )
+spacegroup, lattice , positions, elements, numbers = ps.qems(cell, unitcell_sim, dim, kpt, QEType.Scf, usePrimitiveCell=pcell, vdW=vdW )
 qxsgsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
 
 
