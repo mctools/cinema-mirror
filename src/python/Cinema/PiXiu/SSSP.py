@@ -36,7 +36,7 @@ class Pseudo():
                 calculation = 'vc-relax'
                 restart_mode='from_scratch'
                 tprnfor = .true.
-                max_seconds = 36000.0
+                ! max_seconds = 36000.0
                 pseudo_dir = {ppath}
                 disk_io = 'nowf'
                 prefix='out'
@@ -72,7 +72,7 @@ class Pseudo():
                 calculation = 'scf'
                 restart_mode='from_scratch'
                 tprnfor = .true.
-                max_seconds = 36000.0
+                ! max_seconds = 36000.0
                 pseudo_dir = {ppath}
                 disk_io = 'nowf'
                 prefix='out'
