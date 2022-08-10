@@ -16,10 +16,14 @@ scatAngle = 135
 #down scattering, as only calculated by px_inelastic_direct.py
 # omega should be negtive, however, it is positive in the calculatoin
 enout = 0.0363271
-enin = np.linspace(enout, 1, 1000)
-sqw.show(color_order=1e-4)
+enin = np.linspace(enout, 0.1, 1000)
+sqw.plot(color_order=1e-4)
+
+s, q, w=sqw.calXSAtFixedAngle( enin, enout, scatAngle)
 
 plt.figure()
-s=sqw.calXSAtFixedAngle( enin, enout, scatAngle)
+plt.plot(q, w)
+
+plt.figure()
 plt.plot((enin-enout)/0.00012, s)
 plt.show()

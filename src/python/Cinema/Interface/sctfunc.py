@@ -60,17 +60,10 @@ class Sqw:
     def calXSAtFixedAngle(self, enin, enout, angle):
         Q=angle2Q(angle, enin, enout)
         w=(enout-enin)/hbar
-        print(Q)
-        print(w)
-        return self.interp(Q,w)*hbar
+        return self.interp(Q,w)*hbar, Q, w
 
-    # def calXSOfCrystalAnalysor(self, energyTransfer, enout, scatAngle):
-    #     enin=enout-scatEnergy
-    #     Q=angle2Q(scatAngle, enin, enout)
-    #     w=(scatEnergy)/hbar
-    #     return self.interp(Q,w)*hbar
 
-    def show(self, color_order=1e-10, max_reduction=1.):
+    def plot(self, color_order=1e-10, max_reduction=1.):
         fig=plt.figure()
         ax = fig.add_subplot(111)
         H = self.s.T
