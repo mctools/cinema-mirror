@@ -68,7 +68,7 @@ void Prompt::ScororNeutronSq::score(Prompt::Particle &particle)
   // printf("%f, %f, %.02e, %.02e, %.02e;  %.02f; %.02f %.02f %.02f\n\n", q, qtrue, ekin, particle.getEKin0(), particle.getEKin(),
   // tof_us, particle.getPosition().x(), particle.getPosition().y(), particle.getPosition().z());
 
-  m_hist->fill(q, particle.getWeight());
+  m_hist->fill(qtrue, particle.getWeight());
   if(m_kill)
     particle.kill(Particle::SCORE);
 }

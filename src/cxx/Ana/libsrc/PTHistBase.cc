@@ -52,6 +52,8 @@ void Prompt::HistBase::reset()
   std::lock_guard<std::mutex> guard(m_hist_mutex);
 
   std::fill(m_data.begin(), m_data.begin()+m_nbins, 0.);
+  std::fill(m_hit.begin(), m_hit.begin()+m_nbins, 0.);
+
   m_sumW = 0.;
   m_underflow = 0.;
   m_overflow = 0.;

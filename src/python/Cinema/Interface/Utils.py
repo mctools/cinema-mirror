@@ -22,18 +22,18 @@
 
 import os
 
-def findData(fn, absPath=False):
+def findData(fn, dir='data'):
     fs=fn.split('/')
     if len(fs)!=2:
         raise RuntimeError('findData input should be something like Al/cell.json')
-    # if not absPath:
-    pxpath = os.getenv('CINEMAPATH')+ '/data/' + fs[0]+'/'
+    pxpath = os.getenv('CINEMAPATH')+ f'/{dir}/' + fs[0]+'/'
+    print(pxpath)
     fnlist=[]
     for root, dirs, files in os.walk(pxpath):
         if fs[1] in files:
             fnlist.append(os.path.join(root, fs[1]))
     if len(fnlist)!=1:
-        raise RuntimeError('file name error')
+        raise RuntimeError('file not found')
     return fnlist[0]
 
 

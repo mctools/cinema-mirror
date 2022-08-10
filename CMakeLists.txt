@@ -10,10 +10,8 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 # VecGeom
-#set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/VecGeom/install/")
-message(STATUS "VecGeom CMAKE_PREFIX_PATH is set to $ENV{Vecgeom_ext}")
-set(CMAKE_PREFIX_PATH $ENV{Vecgeom_ext})
-set(VecGeom_VERSION 1.1.17...1.1.99)
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/VecGeom/install/;${CMAKE_SOURCE_DIR}/external/xerces-c/install/")
+set(VecGeom_VERSION 1.1.17...1.1.18)
 find_package(VecGeom ${VecGeom_VERSION} REQUIRED)
 message(STATUS "Using VecGeom version ${VecGeom_VERSION}")
 # make sure we import VecGeom architecture flags - is this needed?
@@ -41,7 +39,7 @@ add_subdirectory(bin)
 enable_testing()
 add_subdirectory(src/cxxtests)
 
-find_package(Python REQUIRED COMPONENTS Interpreter Development)
+find_package(Python REQUIRED COMPONENTS Interpreter)
 
 file(GLOB TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontests/*.py")
 foreach(TS ${TESTFILES})

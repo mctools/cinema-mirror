@@ -6,7 +6,6 @@ import os
 from functools import partial
 import h5py
 import scipy
-from .FunctionXY import FunctionXY
 
 
 try:
@@ -342,31 +341,6 @@ def getOmegaFromTime(tsize, dt):
     fre = fft.fftshift(fft.fftfreq(tsize, dt))*2*np.pi
     return fre[1]-fre[0], fre
 
-def takconv(input1, input2, fast=True):
-    if input1.x.size > input2.x.size:
-        a1=input1
-        a2=input2
-    else:
-        a1=input2
-        a2=input1
-
-    deltaX1 = a1.getDeltaX()
-    deltaX2 = a2.getDeltaX()
-
-    if not (a1.distortFact==0. and a2.distortFact==0.):
-        np.testing.assert_almost_equal(a1.distortFact/a2.distortFact, 1.) #functions with different distortFact
-    if not (a1.asymExponent==0. and a2.asymExponent==0.):
-        np.testing.assert_almost_equal(a1.asymExponent/a2.asymExponent, 1.) #functions with different asymExponent
-    np.testing.assert_almost_equal(deltaX1/deltaX2, 1.) #functions with different spacing
-    if fast:
-        y= scipy.signal.convolve(a1.y, a2.y)*deltaX1
-    else:
-        y= np.convolve(a1.y, a2.y)*deltaX1
-    zOfY = a1.getZ()+a2.x.size-a2.getZ()-1
-    minx = -zOfY*deltaX1
-    maxx = minx + (y.size-1)*deltaX1
-    f = FunctionXY(np.linspace(minx, maxx, y.size), y, a1.distortFact, a1.asymExponent)
-    return f
 
 def saveArrInDat(fname,x,y):
     f=open(fname,"w")

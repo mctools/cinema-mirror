@@ -18,45 +18,36 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTEst1D.hh"
-#include "PTMath.hh"
+#include "PTScororMultiScat.hh"
 
-Prompt::Est1D::Est1D(double xmin, double xmax, unsigned nbins, bool linear)
-:Hist1D(xmin, xmax, nbins, linear)
+Prompt::ScororMultiScat::ScororMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear)
+:Scoror1D("ScororMultiScat_"+ name, Scoror::PROPAGATE, std::make_unique<Hist1D>(xmin, xmax, nxbins, linear)), m_lasteventid(0), counter(0), p_weight(0)
+{ }
+
+Prompt::ScororMultiScat::~ScororMultiScat() {}
+
+void Prompt::ScororMultiScat::score(Particle &particle)
 {
-}
-
-Prompt::Est1D::~Est1D()
-{
-}
-
-//Normal filling:
-void Prompt::Est1D::fill(double val)
-{
-  PROMPT_THROW2(BadInput, "Prompt::Est1D::fill(double val) is not implemented");
-}
-
-void Prompt::Est1D::fill(double val, double w)
-{
-  PROMPT_THROW2(BadInput, "Prompt::Est1D::fill(double val, double w) is not implemented");
-}
-
-
-void Prompt::Est1D::fill(double val, double w, double error)
-{
-  std::lock_guard<std::mutex> guard(m_hist_mutex);
-
-  m_sumW+=w;
-  if(val<m_xmin) {
-    m_underflow += w;
-    return;
+  if (m_lasteventid==particle.getEventID())
+  {
+    counter++;
+    p_weight=particle.getWeight();
+  } 
+  else
+  {
+    if(counter==0)
+    {
+      m_lasteventid=particle.getEventID();
+      counter=1;
+      p_weight=particle.getWeight();
+    }
+    else
+    {
+      m_hist->fill(counter, p_weight);
+      m_lasteventid=particle.getEventID();
+      counter=1;
+      p_weight=particle.getWeight();
+    }
   }
-  else if(val>m_xmax) {
-    m_overflow += w;
-    return;
-  }
-
-  unsigned i = m_linear ? floor((val-m_xmin)*m_binfactor) : floor((log10(val)-m_logxmin)*m_binfactor) ;
-  m_data[i] += w;
-  m_hit[i] =  std::sqrt(error*error+m_hit[i]*m_hit[i]); //fixme: should convert error back to hit
+    
 }

@@ -4,7 +4,8 @@ import h5py
 import matplotlib.pyplot as plt
 
 from Cinema.Interface import units
-from .helper import getOmegaFromTime, convOmT, takfft, takconv
+from Cinema.Interface.helper import getOmegaFromTime, convOmT, takfft
+from Tak import takconv
 from .FunctionXY import FunctionXY
 
 class DensityOfState():

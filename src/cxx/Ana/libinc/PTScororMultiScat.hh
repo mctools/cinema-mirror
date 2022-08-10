@@ -1,3 +1,6 @@
+#ifndef Prompt_ScororMultiScat_hh
+#define Prompt_ScororMultiScat_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,45 +21,20 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTEst1D.hh"
-#include "PTMath.hh"
+#include "PromptCore.hh"
+#include "PTScoror.hh"
 
-Prompt::Est1D::Est1D(double xmin, double xmax, unsigned nbins, bool linear)
-:Hist1D(xmin, xmax, nbins, linear)
-{
+namespace Prompt {
+
+  class ScororMultiScat : public Scoror1D {
+  public:
+    ScororMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear=true);
+    virtual ~ScororMultiScat();
+    virtual void score(Particle &particle) override;
+  private:
+    unsigned long long m_lasteventid;
+    int counter;
+    double p_weight;
+  };
 }
-
-Prompt::Est1D::~Est1D()
-{
-}
-
-//Normal filling:
-void Prompt::Est1D::fill(double val)
-{
-  PROMPT_THROW2(BadInput, "Prompt::Est1D::fill(double val) is not implemented");
-}
-
-void Prompt::Est1D::fill(double val, double w)
-{
-  PROMPT_THROW2(BadInput, "Prompt::Est1D::fill(double val, double w) is not implemented");
-}
-
-
-void Prompt::Est1D::fill(double val, double w, double error)
-{
-  std::lock_guard<std::mutex> guard(m_hist_mutex);
-
-  m_sumW+=w;
-  if(val<m_xmin) {
-    m_underflow += w;
-    return;
-  }
-  else if(val>m_xmax) {
-    m_overflow += w;
-    return;
-  }
-
-  unsigned i = m_linear ? floor((val-m_xmin)*m_binfactor) : floor((log10(val)-m_logxmin)*m_binfactor) ;
-  m_data[i] += w;
-  m_hit[i] =  std::sqrt(error*error+m_hit[i]*m_hit[i]); //fixme: should convert error back to hit
-}
+#endif

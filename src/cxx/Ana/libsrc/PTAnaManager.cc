@@ -25,6 +25,7 @@
 #include "PTScororESD.hh"
 #include "PTScororTOF.hh"
 #include "PTScororVolFlux.hh"
+#include "PTScororMultiScat.hh"
 
 Prompt::AnaManager::AnaManager()
 {}
@@ -84,6 +85,10 @@ std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::stri
   else if(words[0]=="TOF")
   {
     return std::make_shared<ScororTOF>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) );
+  }
+  else if(words[0]=="ScororMultiScat")
+  {
+    return std::make_shared<ScororMultiScat>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) );
   }
   else if(words[0]=="VolFlux")
   {
