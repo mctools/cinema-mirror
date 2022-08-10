@@ -100,31 +100,31 @@ def smoothVdos(vdos, omega, cut=0.):
 
 
 def angularFre2eKin(fre):
-    return fre*const_radpsec2eV
+    return fre*radpsec2eV
 
 def eKin2AngularFre(en):
-    return en*const_eV2radpsec
+    return en*eV2radpsec
 
 def eKin2k(eV):
-    return np.sqrt(eV*const_eV2kk)
+    return np.sqrt(eV*eV2kk)
 
 def k2eKin(wn):
-    return wn*wn/const_eV2kk
+    return wn*wn/eV2kk
 
 def q2Alpha(Q, kt):
-    return Q*Q/(kt*const_eV2kk)
+    return Q*Q/(kt*eV2kk)
 
 def alpha2Q(alpha,kt):
-    return np.sqrt(alpha*kt*const_eV2kk)
+    return np.sqrt(alpha*kt*eV2kk)
 
 def angle2Q(angle_deg, enin_eV, enout_eV):
     ratio = enout_eV/enin_eV
     k0=eKin2k(enin_eV)
-    scale = np.sqrt(1.+ ratio - 2*np.cos(angle_deg*const_deg2rad) *np.sqrt(ratio) )
+    scale = np.sqrt(1.+ ratio - 2*np.cos(angle_deg*deg2rad) *np.sqrt(ratio) )
     return k0*scale
 
 def angle2Alpha(angle, enin_eV, enout_eV, kt):
-   return (enin_eV + enout_eV - 2*np.sqrt(enin_eV * enout_eV)*np.cos(angle*const_deg2rad))/kt
+   return (enin_eV + enout_eV - 2*np.sqrt(enin_eV * enout_eV)*np.cos(angle*deg2rad))/kt
 
 def nextGoodNumber(n):
     return int(2**np.ceil(np.log2(n)))
@@ -259,9 +259,9 @@ def incoherentSqw2ncmat(fname, Q, fre, sqw, kt=0.0253, plot=False):
   """
 
     alpha = q2Alpha(Q, kt)
-    beta = (fre*const_hbar/kt)
+    beta = (fre*hbar/kt)
     # sqw *= np.exp(-beta*0.5)
-    knl = sqw.swapaxes(0,1)*0.5*kt*kt*const_eV2kk/(2*np.pi)
+    knl = sqw.swapaxes(0,1)*0.5*kt*kt*eV2kk/(2*np.pi)
     if plot:
         import matplotlib.pyplot as plt
         plt.figure()
@@ -309,7 +309,7 @@ def writeDynInfo(fo, element, alpha, beta,  fraction, temperature, knl):
     fo.write('\n')
 
 def gaussSqw2ncmat(fname, density, elements, Qs, fres, sqws, fractions, temperature=293., plot=False):
-    kt = temperature*const_boltzmann
+    kt = temperature*boltzmann
 
     density_str = """@DENSITY
       {density} atoms_per_aa3\n
@@ -320,8 +320,8 @@ def gaussSqw2ncmat(fname, density, elements, Qs, fres, sqws, fractions, temperat
 
     for Q, element, fre, sqw, fraction in zip(Qs, elements, fres, sqws, fractions):
         alpha = q2Alpha(Q, kt)
-        beta = (fre*const_hbar/kt)
-        knl = sqw.swapaxes(0,1)*0.5*kt*kt*const_eV2kk/(2*np.pi)
+        beta = (fre*hbar/kt)
+        knl = sqw.swapaxes(0,1)*0.5*kt*kt*eV2kk/(2*np.pi)
 
         if plot:
             import matplotlib.pyplot as plt

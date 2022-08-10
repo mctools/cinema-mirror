@@ -13,8 +13,9 @@ h5py
 #PiXiu
 phonopy==2.14.0
 spglib==1.16.4
-requests
 seekpath==2.0.1
+periodictable
+requests
 
 #logging
 loguru

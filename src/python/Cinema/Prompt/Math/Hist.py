@@ -230,9 +230,19 @@ class Hist2D():
         except Exception as e:
             print(e)
 
+    def save(self, fn):
+        import h5py
+        f0=h5py.File(fn,"w")
+        f0.create_dataset("q", data=self.xcenter, compression="gzip")
+        print(f'Q range {self.xcenter[0]} {self.xcenter[-1]}')
+        f0.create_dataset("omega", data=self.ycenter, compression="gzip")
+        X, Y = np.meshgrid(np.diff(self.yedge), np.diff(self.xedge))
+        f0.create_dataset("s", data=self.getWeight()/(X*Y), compression="gzip")
+        f0.close()
 
-# Class NumpyHist2D is written to validate Hist2D only. It shouldn't be
-# used in practice due to slow performance.
+
+
+# Class NumpyHist2D is written to validate the class Hist2D only. It shouldn't be used in practice due to its significantly slow performance.
 class NumpyHist2D():
     def __init__(self, xbin, ybin, range):
         range=np.array(range)

@@ -60,13 +60,15 @@ class Sqw:
     def calXSAtFixedAngle(self, enin, enout, angle):
         Q=angle2Q(angle, enin, enout)
         w=(enout-enin)/hbar
+        print(Q)
+        print(w)
         return self.interp(Q,w)*hbar
 
-    def calXSOfCrystalAnalysor(self, energyTransfer, enout, scatAngle):
-        enin=enout-scatEnergy
-        Q=angle2Q(scatAngle, enin, enout)
-        w=(scatEnergy)/hbar
-        return self.interp(Q,w)*hbar
+    # def calXSOfCrystalAnalysor(self, energyTransfer, enout, scatAngle):
+    #     enin=enout-scatEnergy
+    #     Q=angle2Q(scatAngle, enin, enout)
+    #     w=(scatEnergy)/hbar
+    #     return self.interp(Q,w)*hbar
 
     def show(self, color_order=1e-10, max_reduction=1.):
         fig=plt.figure()
@@ -94,3 +96,7 @@ class H5Sqw(Sqw):
         f=h5py.File(filename,'r')
         super().__init__(f[spath][()], f[qpath][()], f[wpath][()], temperature, expand_omega, element_list)
         f.close()
+
+class QeSqw(H5Sqw):
+    def __init__(self, filename, temperature):
+        super().__init__( filename, 's', 'q', 'omega', temperature)
