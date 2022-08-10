@@ -62,6 +62,11 @@ class Sqw:
         w=(enout-enin)/hbar
         return self.interp(Q,w)*hbar
 
+    def calXSOfCrystalAnalysor(self, energyTransfer, enout, scatAngle):
+        enin=enout-scatEnergy
+        Q=angle2Q(scatAngle, enin, enout)
+        w=(scatEnergy)/hbar
+        return self.interp(Q,w)*hbar
 
     def show(self, color_order=1e-10, max_reduction=1.):
         fig=plt.figure()
