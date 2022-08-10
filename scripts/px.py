@@ -107,13 +107,11 @@ else:
 ps = Pseudo()
 
 pcell = True
-unitcell_sim="unitcell.in"
-unitcellrelex_sim="unitcell_rl.in"
+scf_qeinput="unitcell.in"
+relex_qeinput="unitcell_rl.in"
 
 c = JsonCell(inputfile)
-dim = c.estSupercellDim()
-kpt_relax = c.estRelaxKpoint()
-kpt = c.estSupercellKpoint()
+logger.info(f'px.py read json cell info, abc: {c.abc}, lattice: {c.lattice}')
 cell = c.getCell()
 magn = c.getTotalMagnetic()
 sgnum = c.getSpacegourpNum()
@@ -125,9 +123,9 @@ if magn is not None:
 else:
     logger.info(f'mp info contains no total magnetization')
 
-logger.info(f'original cell {cell}, kpoint for relax {kpt_relax}')
+logger.info(f'original cell {cell}')
 
-spacegroup, lattice , positions, elements, numbers = ps.qems(cell, unitcellrelex_sim, dim, kpt, QEType.Relax, usePrimitiveCell=pcell, vdW=vdW)
+spacegroup, lattice , positions, elements, numbers = ps.qems(cell, relex_qeinput, QEType.Relax, usePrimitiveCell=pcell, vdW=vdW)
 qxsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
 logger.info(f'space group after standardize_cell before relaxing {spacegroup}')
 
@@ -136,7 +134,7 @@ if sgnum != qxsg:
     sys.exit()
 
 if not os.path.isfile('out_relax.xml'):
-    if os.system(f'mpirun -np {cores} pw.x {qe_nk} -inp {unitcellrelex_sim} | tee {unitcellrelex_sim[:-3]}.out' ):
+    if os.system(f'mpirun -np {cores} pw.x {qe_nk} -inp {relex_qeinput} | tee {relex_qeinput[:-3]}.out' ):
         raise IOError("Relax pw.x fail")
     os.rename('out.xml', 'out_relax.xml')
 
@@ -150,7 +148,7 @@ mesh =  relexed_cell.estMesh()
 
 logger.info(f'cell after relax {cell}, total magnetisation {relexed_cell.totmagn}')
 
-spacegroup, lattice , positions, elements, numbers = ps.qems(cell, unitcell_sim, dim, kpt, QEType.Scf, usePrimitiveCell=pcell, vdW=vdW )
+spacegroup, lattice , positions, elements, numbers = ps.qems(cell, scf_qeinput, QEType.Scf, usePrimitiveCell=pcell, vdW=vdW )
 qxsgsg = int(re.findall(r"\(\s*\+?(-?\d+)\s*\)", spacegroup)[0])
 
 

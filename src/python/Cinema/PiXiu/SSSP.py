@@ -5,6 +5,7 @@ from phonopy.structure.atoms import atom_data
 import glob
 from .AtomInfo import getAtomMassBC
 from enum import Enum, unique
+from .io.cell import CellBase
 
 @unique
 class QEType(Enum):
@@ -100,7 +101,7 @@ class Pseudo():
 
 
     #quantum expresso make simple
-    def qems(self, cell, simname, dim, kpt, qeType=QEType.Scf, usePrimitiveCell=True, vdW=False):
+    def qems(self, cell, simname, qeType=QEType.Scf, usePrimitiveCell=True, vdW=False):
         metal_str="occupations='smearing'"
 
         qe_control=self.qe_input(qeType)
@@ -115,9 +116,26 @@ class Pseudo():
 
 
         if qeType ==  QEType.Relax:
+            # Notice standardize_cell can swap lattice abc!
             lattice , positions, numbers_p = standardize_cell(cell, to_primitive=usePrimitiveCell, no_idealize=0, symprec=0.1)
+
         elif qeType == QEType.Scf:
             lattice , positions, numbers_p = cell
+
+        # # Notice standardize_cell can swap lattice abc!
+        # lattice , positions, numbers_p = standardize_cell(cell, to_primitive=usePrimitiveCell, no_idealize=0, symprec=0.1)
+
+        kpointCalculator=CellBase(lattice)
+
+        if qeType ==  QEType.Relax:
+            dim=[1,1,1]
+            kpt=kpointCalculator.estRelaxKpoint()
+        elif qeType == QEType.Scf:
+            dim=kpointCalculator.estSupercellDim()
+            kpt=kpointCalculator.estSupercellKpoint()
+
+
+
 
         spacegroup = get_spacegroup((lattice , positions, numbers_p), symprec=1e-5)
 
@@ -162,7 +180,7 @@ class Pseudo():
 
         f=open(simname,'w')
         #relax
-        f.write(qe_control.format(ppath="'"+self.libpath+"'", vdwOrmag=vdwOrmag, nat=tot_ele_num,ntyp=len(elements),kp0=kpt[0]*2,kp1=kpt[1]*2,kp2=kpt[2]*2,ecutwfc=max_ecutwfc, ecutrho=max_ecutrho))
+        f.write(qe_control.format(ppath="'"+self.libpath+"'", vdwOrmag=vdwOrmag, nat=tot_ele_num,ntyp=len(elements),kp0=kpt[0],kp1=kpt[1],kp2=kpt[2],ecutwfc=max_ecutwfc, ecutrho=max_ecutrho))
         f.write(atom_spec.format(defatom))
         f.write('ATOMIC_POSITIONS crystal\n')
         f.writelines(pos)

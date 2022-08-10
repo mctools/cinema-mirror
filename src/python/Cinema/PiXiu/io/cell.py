@@ -5,9 +5,15 @@ import xml.etree.ElementTree as ET
 from ..AtomInfo import getAtomMassBC
 
 class CellBase():
-    def __init__(self):
-        self.lattice = np.zeros([3, 3])
-        self.abc = None
+    def __init__(self, lattice=None):
+        if lattice is not None:
+            if lattice.shape != (3,3):
+                raise RuntimeError('wrong lattice shape')
+            self.lattice = lattice
+            self.abc = np.linalg.norm(self.lattice, axis=1)
+        else:
+            self.lattice = np.zeros([3, 3])
+            self.abc = None
         self.position=[]
         self.num=[]
         self.element=[]
@@ -17,9 +23,11 @@ class CellBase():
         res[np.where(res==0)]=1
         return res
 
-    def estRelaxKpoint(self, size=20.):
+    def estRelaxKpoint(self, size=20., forceOdd=False):
         res = (size//self.abc).astype(int)
         res[np.where(res==0)]=1
+        if forceOdd:
+            res[np.where(res%2==0)]+=1
         return res
 
     def estMesh(self, size=200.):
