@@ -114,16 +114,16 @@ class CalcPowder(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
         super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature)
 
-    def calcPowder(self, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001, jump=1):
+    def calcPowder(self, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001, step=1):
         qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
         maxhkl = np.int(maxQ/np.ceil(qmin1d))
 
         hist=Hist2D(0, maxQ + extraHistQranage, QSize, -(self.en.max()+extraHistEnrange)/hbar, 0, enSize ) #note negtive energy, for  downscattering, y-axis is in THz
 
-        for h in range(0,maxhkl+1,jump):  # half a space
-                for k in range(-maxhkl,maxhkl+1,jump):
+        for h in range(0,maxhkl+1,step):  # half a space
+                for k in range(-maxhkl,maxhkl+1,step):
                     hkllist=[]
-                    for l in range(-maxhkl,maxhkl+1,jump):
+                    for l in range(-maxhkl,maxhkl+1,step):
                         if h==0:
                             if k<0:
                                 continue #half a plane

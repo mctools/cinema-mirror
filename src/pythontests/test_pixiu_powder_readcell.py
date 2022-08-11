@@ -19,8 +19,8 @@ reference = np.array([[4.6228779711143628e+11, 1.8611751206224219e+11, 1.9983451
 
 
 # import profile
-# profile.run('calc.calcPowder(maxQ, enSize, QSize, jump=1)')
-hist = calc.calcPowder(maxQ, enSize, QSize, jump=1)
+# profile.run('calc.calcPowder(maxQ, enSize, QSize, step=1)')
+hist = calc.calcPowder(maxQ, enSize, QSize, step=1)
 np.set_printoptions(precision=16)
 print(hist.getWeight())
 
