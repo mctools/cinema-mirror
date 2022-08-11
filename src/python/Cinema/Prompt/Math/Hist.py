@@ -234,7 +234,6 @@ class Hist2D():
         import h5py
         f0=h5py.File(fn,"w")
         f0.create_dataset("q", data=self.xcenter, compression="gzip")
-        print(f'Q range {self.xcenter[0]} {self.xcenter[-1]}')
         f0.create_dataset("omega", data=self.ycenter, compression="gzip")
         X, Y = np.meshgrid(np.diff(self.yedge), np.diff(self.xedge))
         f0.create_dataset("s", data=self.getWeight()/(X*Y), compression="gzip")

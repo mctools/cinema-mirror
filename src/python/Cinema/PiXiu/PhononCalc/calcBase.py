@@ -2,6 +2,7 @@ import numpy as np
 import math #isclose
 import time
 from  Cinema.Prompt.Math.Hist import Hist2D
+from Cinema.Interface.units import hbar
 
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from Cinema.Interface.units import *
@@ -117,7 +118,7 @@ class CalcPowder(CalcBase):
         qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
         maxhkl = np.int(maxQ/np.ceil(qmin1d))
 
-        hist=Hist2D(0, maxQ + extraHistQranage, QSize, -(self.en.max()+extraHistEnrange), 0, enSize ) #not negtive energy, for  downscattering
+        hist=Hist2D(0, maxQ + extraHistQranage, QSize, -(self.en.max()+extraHistEnrange)/hbar, 0, enSize ) #note negtive energy, for  downscattering, y-axis is in THz
 
         for h in range(0,maxhkl+1,jump):  # half a space
                 for k in range(-maxhkl,maxhkl+1,jump):
@@ -153,7 +154,7 @@ class CalcPowder(CalcBase):
                 continue
             F = self.calcFormFact(Q, self.eigv[i])
             Smag=modeWeight*(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar/self.en[i]
-            hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i], Smag*hklweight) #negative energy for downscattering
+            hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i]/hbar, Smag*hklweight*hbar) #negative energy for downscattering, fill in angular frequency instead of energy
 
 class CalcBand(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):

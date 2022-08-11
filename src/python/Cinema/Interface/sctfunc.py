@@ -63,18 +63,23 @@ class Sqw:
         return self.interp(Q,w)*hbar, Q, w
 
 
-    def plot(self, color_order=1e-10, max_reduction=1.):
+    def plot(self, color_order=1e-10, color_max_scale=1., unitEV=False):
         fig=plt.figure()
         ax = fig.add_subplot(111)
-        H = self.s.T
+        if unitEV:
+            H = self.s.T/hbar
+            X, Y = np.meshgrid(self.q, self.w*hbar)
+            plt.ylabel('Energy, eV')
+        else:
+            H = self.s.T
+            X, Y = np.meshgrid(self.q, self.w)
+            plt.ylabel('Frequency, THz')
 
-        X, Y = np.meshgrid(self.q, self.w*hbar)
         import matplotlib.colors as colors
-        pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet,  norm=colors.LogNorm(vmin=H.max()*color_order*max_reduction, vmax=H.max()*max_reduction), shading='auto')
+        pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet,  norm=colors.LogNorm(vmin=H.max()*color_order*color_max_scale, vmax=H.max()*color_max_scale), shading='auto')
         fig.colorbar(pcm, ax=ax)
 
         plt.xlabel(r'Q ($\AA^{-1}$)')
-        plt.ylabel('Energy (eV)')
         plt.grid()
         # plt.show()
 
