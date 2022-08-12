@@ -4,6 +4,7 @@ import numpy as np
 from Cinema.PiXiu.PhononCalc import MeshCell
 from Cinema.Interface.Utils import findData
 from Cinema.Interface.units import *
+from Cinema.Interface.units import hbar
 
 temp =0.0253/boltzmann #temperature in kelvin
 
@@ -13,9 +14,9 @@ enSize=3
 QSize=3
 maxQ=1.
 
-reference = np.array([[4.6228779711143628e+11, 1.8611751206224219e+11, 1.9983451195870922e+09],
- [1.6770028159554180e+10, 6.5173703574206064e+12, 1.5761567004272585e+12],
- [0.0000000000000000e+00, 3.7111931199351382e+12, 2.8527382241319131e+12]])
+reference = np.array([[1.3153346518267138e-06, 1.2250477183732239e-04, 3.0428335561124263e-04],
+ [1.0374451862495118e-03, 4.2898110971316570e-03, 1.1038233053021969e-05],
+ [1.8777064091745220e-03, 2.4427516860952504e-03, 0.0000000000000000e+00]])
 
 
 # import profile
