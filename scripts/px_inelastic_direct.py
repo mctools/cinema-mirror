@@ -20,9 +20,9 @@ parser.add_argument('-u', '--upper-limit-Q', action='store', type=float, default
 parser.add_argument('-f', '--frequency-bin-size', action='store', type=int, default=200,
                     dest='freSize', help='frequency bin size for the histogram')
 parser.add_argument('-q', '--Q-bin-size', action='store', type=int, default=300,
-                    dest='QSize', help='Q bin size for the histogram')                    
+                    dest='QSize', help='Q bin size for the histogram')
 parser.add_argument('-s', '--step', action='store', type=int, default=1,
-                    dest='step', help='stepping for the hkl')   
+                    dest='step', help='stepping for the hkl')
 args=parser.parse_args()
 
 temp = args.temp #temperature in kelvin
@@ -37,6 +37,13 @@ calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp)
 hist = calc.calcPowder(maxQ, freSize, QSize, step)
 
 hist.save('qehist.h5')
+
+calc.lattice
+calc.reducedMass
+calc.pos
+#save temperature
+#info
+
 hist.plot()
 
 import matplotlib.pyplot as plt

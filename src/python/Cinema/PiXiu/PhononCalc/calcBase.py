@@ -36,8 +36,10 @@ class CalcBase:
         if eigv.shape!=(self.numQpoint, self.nAtom*3, self.nAtom, 3):
             raise ValueError('Expected shape of the eigenvector is {}, but it is {}'.format( (self.numQpoint, self.nAtom*3, self.nAtom, 3), (eigv.shape)))
 
+        self.lattice=lattice
         self.lattice_reci=np.linalg.inv(lattice)*2*np.pi
         self.mass=mass*umass
+        self.reducedMass=mass
         self.sqMass=np.sqrt(self.mass)
         self.pos=lattice.dot(pos.T).T
         self.bc=bc
