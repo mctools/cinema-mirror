@@ -33,7 +33,7 @@ temperature = args.temp
 scatAngle = args.scatAngle
 enout = args.enout
 
-sqw = QeSqw('qehist.h5', temperature)
+sqw = QeSqw('qehist.h5')
 enin = np.linspace(enout, enout+0.5, 1000)
 sqw.plot(color_order=1e-4)
 

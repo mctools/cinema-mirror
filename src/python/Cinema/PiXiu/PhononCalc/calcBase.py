@@ -7,7 +7,7 @@ from Cinema.Interface.units import hbar
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from Cinema.Interface.units import *
 
-# lattice (Aa), mass (atomic mass), pos (fractional coordinate), bc (sqrt(barn))
+# lattice (Aa), mass (molar mass), pos (fractional coordinate), bc (sqrt(barn))
 # qpoints(reduced coordinate), energy(eV ), eigv (unity magnitude), qweight (dimensionless), temperature(kelvin)
 
 class CalcBase:
@@ -39,7 +39,7 @@ class CalcBase:
         self.lattice=lattice
         self.lattice_reci=np.linalg.inv(lattice)*2*np.pi
         self.mass=mass*umass
-        self.reducedMass=mass
+        self.molarMass=mass
         self.sqMass=np.sqrt(self.mass)
         self.pos=lattice.dot(pos.T).T
         self.bc=bc
@@ -51,12 +51,20 @@ class CalcBase:
         self.maxEn = self.en.max()
         self.eigv=eigv
         self.qweight=qweight
+        self.temperature=temperature
         self.kt=temperature*boltzmann
         self.bose=self.nplus1(self.en)
         self.msd=self.isoMsd() #fixme: calmsd method returns unequal msd even for cubic lattice, bug to be fixed use isotropic model for now.
 
         if not math.isclose(self.qweight.sum(), 1.0, rel_tol=1e-10):
             raise ValueError('phonon total qweight is not unity {}'.format( self.qweight.sum() ) )
+
+        self.baseMetadataDict = {
+            'lattice': self.lattice, 
+            'molarMass': self.molarMass, 
+            'position': self.pos,
+            'temperature': self.temperature
+            }    #future: may provide API to customize
 
     #<n+1>, omega >0, downscattering
     def nplus1(self, en): #fixme: nan
@@ -120,7 +128,7 @@ class CalcPowder(CalcBase):
         qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
         maxhkl = np.int(maxQ/np.ceil(qmin1d))
 
-        hist=Hist2D(0, maxQ + extraHistQranage, QSize, -(self.en.max()+extraHistEnrange)/hbar, 0, enSize ) #note negtive energy, for  downscattering, y-axis is in THz
+        hist=Hist2D(0, maxQ + extraHistQranage, QSize, -(self.en.max()+extraHistEnrange)/hbar, 0, enSize, self.baseMetadataDict ) #note negtive energy, for  downscattering, y-axis is in THz
 
         for h in range(0,maxhkl+1,step):  # half a space
                 for k in range(-maxhkl,maxhkl+1,step):

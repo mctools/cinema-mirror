@@ -92,9 +92,9 @@ class Sqw:
 class H5Sqw(Sqw):
     def __init__(self, filename, spath, qpath, wpath, temperature, expand_omega=None, element_list=None):
         f=h5py.File(filename,'r')
-        super().__init__(f[spath][()], f[qpath][()], f[wpath][()], temperature, expand_omega, element_list)
+        super().__init__(f[spath][()], f[qpath][()], f[wpath][()], f['metadata'][temperature][()], expand_omega, element_list)
         f.close()
 
 class QeSqw(H5Sqw):
-    def __init__(self, filename, temperature):
-        super().__init__( filename, 's', 'q', 'omega', temperature)
+    def __init__(self, filename):
+        super().__init__( filename, 's', 'q', 'omega', 'temperature')

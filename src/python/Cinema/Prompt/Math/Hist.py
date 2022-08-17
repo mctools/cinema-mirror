@@ -164,7 +164,7 @@ _pt_Hist2D_fill = importFunc('pt_Hist2D_fill', None, [type_voidp, type_dbl, type
 _pt_Hist2D_fill_many = importFunc('pt_Hist2D_fillmany', None, [type_voidp, type_sizet, type_npdbl1d, type_npdbl1d, type_npdbl1d])
 
 class Hist2D():
-    def __init__(self, xmin, xmax, xnum, ymin, ymax, ynum):
+    def __init__(self, xmin, xmax, xnum, ymin, ymax, ynum, metadata):
         self.cobj = _pt_Hist2D_new(xmin, xmax, xnum, ymin, ymax, ynum)
         self.xedge = np.linspace(xmin, xmax, xnum+1)
         self.xcenter = self.xedge[:-1]+np.diff(self.xedge)*0.5
@@ -180,6 +180,8 @@ class Hist2D():
 
         self.ymin = ymin
         self.ymax = ymax
+
+        self.metadata = metadata
 
     def __del__(self):
         _pt_Hist2D_delete(self.cobj)
@@ -237,6 +239,9 @@ class Hist2D():
         f0.create_dataset("omega", data=self.ycenter, compression="gzip")
         X, Y = np.meshgrid(np.diff(self.yedge), np.diff(self.xedge))
         f0.create_dataset("s", data=self.getWeight()/(X*Y), compression="gzip")
+        mtd = f0.create_group('metadata')
+        for key, value in self.metadata.items():
+            mtd.create_dataset(key, data = value)
         f0.close()
 
 
