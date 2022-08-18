@@ -13,9 +13,9 @@ import argparse
 #Q bin size for the histogram, QSize, int
 #stepping for the hkl, int
 parser = argparse.ArgumentParser()
-parser.add_argument('-t', '--temperature', action='store', type=float, default='',
+parser.add_argument('-t', '--temperature', action='store', type=float,
                     dest='temp', help='temperature in kelvin', required=True)
-parser.add_argument('-u', '--upper-limit-Q', action='store', type=float, default='1',
+parser.add_argument('-u', '--upper-limit-Q', action='store', type=float, default=10.0,
                     dest='maxQ', help='upper limit for the Q')
 parser.add_argument('-f', '--frequency-bin-size', action='store', type=int, default=200,
                     dest='freSize', help='frequency bin size for the histogram')
