@@ -14,6 +14,7 @@ ybin=100
 ymin=0.
 ymax=1.
 
+#NumpyHist2D is an slow python implement, only use in the unittest
 hist=NumpyHist2D(xbin, ybin, [[xmin, xmax], [ymin, ymax]])
 histcpp=Hist2D(xmin, xmax, xbin, ymin, ymax, ybin)
 
@@ -22,7 +23,23 @@ for i in range(100):
     hist.fill(data[0], data[1])
     histcpp.fillmany(data[0], data[1])
 
-
 np.testing.assert_array_equal(hist.hist, histcpp.getWeight())
+
+#test merge
+hist1=Hist2D(0, 1, 10, 0, 1, 10)
+hist1.fill(0.1, 0.1)
+print(hist1.getHit())
+
+hist2=Hist2D(0, 1, 10, 0, 1, 10)
+hist2.fill(0.2, 0.2)
+print(hist2.getHit())
+
+hist1.merge(hist2)
+print(hist1.getHit())
+
+ref=np.zeros([10,10])
+ref[1,1]=1
+ref[2,2]=1
+np.testing.assert_array_equal(hist1.getHit(), ref)
 
 print('passed')

@@ -161,10 +161,11 @@ _pt_Hist2D_getWeight = importFunc('pt_Hist2D_getWeight', None, [type_voidp, type
 _pt_Hist2D_getHit = importFunc('pt_Hist2D_getHit', None, [type_voidp, type_npdbl2d])
 _pt_Hist2D_getDensity = importFunc('pt_Hist2D_getDensity', None, [type_voidp, type_npdbl2d])
 _pt_Hist2D_fill = importFunc('pt_Hist2D_fill', None, [type_voidp, type_dbl, type_dbl, type_dbl])
+_pt_Hist2D_merge = importFunc('pt_Hist2D_merge', None, [type_voidp, type_voidp])
 _pt_Hist2D_fill_many = importFunc('pt_Hist2D_fillmany', None, [type_voidp, type_sizet, type_npdbl1d, type_npdbl1d, type_npdbl1d])
 
 class Hist2D():
-    def __init__(self, xmin, xmax, xnum, ymin, ymax, ynum, metadata):
+    def __init__(self, xmin, xmax, xnum, ymin, ymax, ynum, metadata=None):
         self.cobj = _pt_Hist2D_new(xmin, xmax, xnum, ymin, ymax, ynum)
         self.xedge = np.linspace(xmin, xmax, xnum+1)
         self.xcenter = self.xedge[:-1]+np.diff(self.xedge)*0.5
@@ -243,6 +244,9 @@ class Hist2D():
         for key, value in self.metadata.items():
             mtd.create_dataset(key, data = value)
         f0.close()
+
+    def merge(self, hist2):
+        _pt_Hist2D_merge(self.cobj, hist2.cobj)
 
 
 
