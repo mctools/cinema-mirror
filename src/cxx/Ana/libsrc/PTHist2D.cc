@@ -115,3 +115,29 @@ void Prompt::Hist2D::fill(double xval, double yval, double w)
   std::lock_guard<std::mutex> guard(m_hist_mutex);
   fill_unguard(xval, yval, w);
 }
+
+void Prompt::Hist2D::merge(const Prompt::HistBase &hist)
+{
+  auto &ref = dynamic_cast<const Prompt::Hist2D&>(hist);
+
+  if(m_xbinfactor!=ref.m_xbinfactor)
+    PROMPT_THROW2(CalcError, "m_xbinfactor " << m_xbinfactor << " is different with the m_xbinfactor of another histogram " << ref.m_xbinfactor);
+
+  if(m_ybinfactor!=ref.m_ybinfactor)
+    PROMPT_THROW2(CalcError, "m_ybinfactor " << m_ybinfactor << " is different with the m_ybinfactor of another histogram " << ref.m_ybinfactor);
+
+  if(m_ymin!=ref.m_ymin)
+    PROMPT_THROW2(CalcError, "m_ymin " << m_ymin << " is different with the m_ymin of another histogram " << ref.m_ymin);
+
+  if(m_ymax!=ref.m_ymax)
+    PROMPT_THROW2(CalcError, "m_ymax " << m_ymax << " is different with the m_ymax of another histogram " << ref.m_ymax);
+
+  if(m_xnbins!=ref.m_xnbins)
+    PROMPT_THROW2(CalcError, "m_xnbins " << m_xnbins << " is different with the m_xnbins of another histogram " << ref.m_xnbins);
+
+  if(m_ynbins!=ref.m_ynbins)
+    PROMPT_THROW2(CalcError, "m_ynbins " << m_ynbins << " is different with the m_ynbins of another histogram " << ref.m_ynbins);
+
+  HistBase::merge(hist);
+
+}

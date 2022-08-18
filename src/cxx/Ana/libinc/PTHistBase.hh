@@ -36,6 +36,8 @@ namespace Prompt {
     explicit HistBase(unsigned nbins);
     virtual ~HistBase();
 
+    virtual void merge(const HistBase &);
+
     double getXMin() const {return m_xmin;}
     double getXMax() const {return m_xmax;}
     double getIntegral() const {return m_sumW;};

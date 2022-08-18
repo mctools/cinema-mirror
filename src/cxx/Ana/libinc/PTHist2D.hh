@@ -48,6 +48,8 @@ namespace Prompt {
     void fill_unguard(double xval, const std::vector<double>& yval, const std::vector<double>& weight);
     void fill_unguard(const std::vector<double>& xval, const std::vector<double>& yval, const std::vector<double>& weight);
 
+    void merge(const HistBase &) override;
+
   private:
     //there is no function to modify private mambers, so they are not const
     double m_xbinfactor, m_ybinfactor;

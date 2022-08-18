@@ -34,6 +34,30 @@ Prompt::HistBase::~HistBase()
 }
 
 
+void Prompt::HistBase::merge(const Prompt::HistBase &hist)
+{
+  if(m_xmin!=hist.m_xmin)
+    PROMPT_THROW2(CalcError, "m_xmin " << m_xmin << " is different with the m_xmin of another histogram " << hist.m_xmin);
+
+  if(m_xmax!=hist.m_xmax)
+    PROMPT_THROW2(CalcError, "m_xmax " << m_xmax << " is different with the m_xmax of another histogram " << hist.m_xmax);
+
+  if(m_nbins!=hist.m_nbins)
+      PROMPT_THROW2(CalcError, "m_nbins " << m_nbins << " is different with the m_nbins of another histogram " << hist.m_nbins);
+
+
+  for(size_t i=0;i<m_data.size();i++)
+  {
+    m_data[i] += hist.m_data[i];
+    m_hit[i] += hist.m_hit[i];
+  }
+
+  m_underflow += hist.m_underflow;
+  m_overflow += hist.m_overflow;
+  m_sumW += hist.m_sumW;
+
+}
+
 void Prompt::HistBase::scale(double scalefact)
 {
   std::lock_guard<std::mutex> guard(m_hist_mutex);
