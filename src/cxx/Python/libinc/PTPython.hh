@@ -71,6 +71,7 @@ void pt_Hist2D_getDensity(void* obj, double* d);
 void pt_Hist2D_getHit(void* obj, double* h);
 void pt_Hist2D_fill(void* obj, double xval, double yval, double weight);
 void pt_Hist2D_fillmany(void* obj, size_t n, double* xval, double* yval, double* weight);
+void pt_Hist2D_merge(void* obj, void* obj2);
 
 #ifdef __cplusplus
 }

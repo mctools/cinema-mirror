@@ -99,6 +99,12 @@ void pt_Hist2D_getWeight(void* obj, double* w)
   }
 }
 
+void pt_Hist2D_merge(void* obj, void* obj2)
+{
+  auto hist1 = static_cast<Prompt::Hist2D*>(obj);
+  hist1->merge(*static_cast<Prompt::HistBase*>(obj2));
+}
+
 void pt_Hist2D_fill(void* obj, double xval, double yval, double weight)
 {
   static_cast<pt::Hist2D *>(obj)->fill(xval, yval, weight);
