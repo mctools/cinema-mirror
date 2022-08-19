@@ -32,28 +32,6 @@ def takfft(input, dt=1., fftsize=None, conversion=2*np.pi):
 def takifft(input, dt=1., fftsize=None, conversion=2*np.pi):
     return fft.fftshift(fft.ifft((input), n=fftsize))/dt*conversion
 
-def plotStyle():
-    import matplotlib.style
-    import matplotlib, sys
-    import matplotlib.pyplot as plt
-
-    #matplotlib.style.use('classic')
-    matplotlib.rcParams['xtick.labelsize'] = 12*1.2 #was 'medium' (12pt)
-    matplotlib.rcParams['ytick.labelsize'] = 12*1.2 #was 'medium' (12pt)
-    matplotlib.rcParams['axes.labelsize'] = 12*1.4 #was 'medium' (12pt)
-    matplotlib.rcParams['lines.linewidth'] = 2
-    _plt_legend_orig = plt.legend
-    def _plt_legend(*args,**kwargs):
-        notouchframelw = False
-        if 'notouchframelw' in kwargs:
-            notouchframelw = True
-            del kwargs['notouchframelw']
-        l = _plt_legend_orig(*args,**kwargs)
-        if not notouchframelw:
-            l.get_frame().set_linewidth(0.0)
-        return l
-    plt.legend=_plt_legend
-
 def findData(fn, path='/', absPath=False):
     if not absPath:
         pxpath = os.getenv('TAKPATH')+ path

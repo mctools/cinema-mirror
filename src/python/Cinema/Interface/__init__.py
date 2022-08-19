@@ -56,12 +56,12 @@ def importFunc(funcName, resType, argType):
     func.argtypes = argType
     return func
 
-def plotStyle():
+def plotStyle(fontSize=16):
     import matplotlib.style
     import matplotlib, sys
     import matplotlib.pyplot as plt
 
-    plt.rcParams.update({'font.size': 18})
+    plt.rcParams.update({'font.size': fontSize})
     matplotlib.rcParams['lines.linewidth'] = 2
 
 
