@@ -81,7 +81,7 @@ void Prompt::Hist2D::save(const std::string &filename) const
   }
   ofs.close();
 
-  char buffer [500];
+  char buffer [1000];
   //fixme: add xy to dimansion
   int n =sprintf (buffer,
     "import numpy as np\n"
@@ -90,7 +90,8 @@ void Prompt::Hist2D::save(const std::string &filename) const
     "data=np.loadtxt('%s')\n"
     "fig=plt.figure()\n"
     "ax = fig.add_subplot(111)\n"
-    "pcm = ax.pcolormesh(data.T, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=data.max()*1e-10, vmax=data.max()), shading='auto')\n"
+    "pcm = ax.pcolormesh(data.T, cmap=plt.cm.jet,shading='auto')\n"
+    "#pcm = ax.pcolormesh(data.T, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=data.max()*1e-10, vmax=data.max()), shading='auto')\n"
     "fig.colorbar(pcm, ax=ax)\n"
     "count=np.loadtxt('%s')\n"
     "count=count.sum()-count.max()\n"

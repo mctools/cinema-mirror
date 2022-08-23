@@ -15,11 +15,11 @@
 
     <materials>
       <material name="Air">
-        <atom value="../ncmat/ambient_air.ncmat"/>
+        <atom value="ambient_air.ncmat"/>
       </material>
 
       <material name="Vaccum">
-        <atom value="../ncmat/vacuum.ncmat"/>
+        <atom value="vacuum.ncmat"/>
       </material>
 
       <material name="Water">
@@ -47,7 +47,7 @@
       </material>
 
       <material name="Cd">
-        <atom value="../ncmat/Cd.ncmat"/>
+        <atom value="Cd.ncmat"/>
       </material>
     </materials>
 
@@ -73,13 +73,13 @@
 
         <volume name="logMonitor1">
             <solidref ref="Monitor1Solid"/>
-            <auxiliary auxtype="Sensitive" auxvalue="PSD;Monitor1;-25;25;20;-25;25;20"/>
+            <auxiliary auxtype="Sensitive" auxvalue="PSD;Monitor1;-25;25;20;-25;25;20;XY"/>
             <materialref ref="Vaccum"/>
         </volume>
 
         <volume name="logMonitor2">
             <solidref ref="Monitor2Solid"/>
-            <auxiliary auxtype="Sensitive" auxvalue="PSD;Monitor2;-35;35;20;-35;35;20"/>
+            <auxiliary auxtype="Sensitive" auxvalue="PSD;Monitor2;-35;35;20;-35;35;20;XY"/>
             <materialref ref="Vaccum"/>
         </volume>
 
