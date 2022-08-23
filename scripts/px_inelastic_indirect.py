@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from Cinema.Interface.units import hbar
 import argparse
-from Cinema.Interface.helper import plotStyle
+from Cinema.Interface import plotStyle
 plotStyle()
 
 #parameters
 #scattering angle(scatAngle) in degree
 #energy out in eV
 parser = argparse.ArgumentParser()
-parser.add_argument('-a', '--scattering-angel', action='store', type=float, required=True,
+parser.add_argument('-a', '--scattering-angle', action='store', type=float, required=True,
                     dest='scatAngle', help='scattering angle(scatAngle) in degree')
 # 180-135
 # down scattering, as only calculated by px_inelastic_direct.py
