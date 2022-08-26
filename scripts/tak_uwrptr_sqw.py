@@ -15,7 +15,7 @@ args = parser.parse_args()
 inputfile=args.input
 df = DynamicFactor(inputfile)
 
-Q=10
+Q=1
 plt.figure(figsize=(8, 6))
 
 # fre, coh = df.calCoherent(Q, True)

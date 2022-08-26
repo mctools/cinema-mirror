@@ -199,6 +199,8 @@ def correlation(x, y=None, axis=0, sumOverAxis=None, average=None):
 
     return corr
 
+#Trj is changed in the constructor.
+#swap axes from atomid, frameid, pos_dim to atomid, pos_dim, frameid
 class AnaVDOS(Trj):
     def __init__(self, inputfile):
         super().__init__(inputfile, unwrap=True)
@@ -304,6 +306,7 @@ class AnaVDOS(Trj):
         hf.close()
 
 
+# swap axes from atomid, frameid, pos_dim to atomid, pos_dim, frameid to accumulate 1D incoherent analysis
 def AnaSF2VD(sf):
     vd = AnaVDOS('')
     temp = vars(sf)

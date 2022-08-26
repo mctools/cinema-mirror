@@ -25,6 +25,8 @@ args = parser.parse_args()
 inputfile=args.input
 numcpu=args.numcpu
 
+# the trajactory the coherent S(Q) does not need to be wrapped
+# calculate S(Q)
 s = AnaSFactor(inputfile)
 if args.numq:
     q, sq = s.getSq(args.numq)
@@ -33,6 +35,7 @@ if args.numq:
         plt.plot(q, sq)
         plt.show()
 
+# swap axes from atomid, frameid, pos_dim to atomid, pos_dim, frameid to accumulate 1D incoherent analysis
 anavdos = AnaSF2VD(s)
 
 if args.test:
