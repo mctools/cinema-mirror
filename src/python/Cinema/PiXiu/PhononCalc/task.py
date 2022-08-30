@@ -4,7 +4,7 @@ import json
 
 from .calculator import Hdf5Powder
 from ..AtomInfo import getAtomMassBC
-from ..io.cell import XmlCell
+from ..io.cell import QeXmlCell
 
 class MeshCell(Hdf5Powder):
     def __init__(self, h5FileName, cellName, temperature):
@@ -28,7 +28,7 @@ class MeshCell(Hdf5Powder):
 
 class MeshQE(Hdf5Powder):
     def __init__(self, h5FileName, qexml, temperature):
-        qecell = XmlCell(qexml)
+        qecell = QeXmlCell(qexml)
         self.name=qexml
         lattice=qecell.lattice
         pos = qecell.position

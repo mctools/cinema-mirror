@@ -47,7 +47,7 @@ class CellBase():
         return (self.lattice, self.position, self.num)
 
 
-class XmlCell(CellBase):
+class QeXmlCell(CellBase):
     def __init__(self, filename, au2Aa=0.529177248994098):
         super().__init__()
         def internal(subtree):
@@ -85,7 +85,7 @@ class XmlCell(CellBase):
 
 
 
-class JsonCell(CellBase):
+class MPCell(CellBase):
     def __init__(self, filename):
         super().__init__()
         if isinstance(filename, dict):

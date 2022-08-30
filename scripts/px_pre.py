@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from Cinema.PiXiu import getAtomMassBC, Pseudo, QEType
-from Cinema.PiXiu.io import JsonCell, XmlCell
+from Cinema.PiXiu.io import MPCell, QeXmlCell
 import numpy as np
 import os, sys, glob, re
 from loguru import logger
@@ -110,7 +110,7 @@ pcell = True
 scf_qeinput="unitcell.in"
 relex_qeinput="unitcell_rl.in"
 
-c = JsonCell(inputfile)
+c = MPCell(inputfile)
 logger.info(f'px.py read json cell info, abc: {c.abc}, lattice: {c.lattice}')
 cell = c.getCell()
 magn = c.getTotalMagnetic()
@@ -140,7 +140,7 @@ if not os.path.isfile('out_relax.xml'):
 
 #out_relax.xml containes the calculated results for the relaxed cell
 
-relexed_cell = XmlCell('out_relax.xml')
+relexed_cell = QeXmlCell('out_relax.xml')
 dim = relexed_cell.estSupercellDim()
 kpt = relexed_cell.estSupercellKpoint()
 cell = relexed_cell.getCell()
