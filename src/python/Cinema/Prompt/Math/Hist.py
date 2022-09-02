@@ -23,8 +23,6 @@
 from Cinema.Interface import *
 import numpy as np
 
-
-
 _pt_Hist1D_new = importFunc('pt_Hist1D_new', type_voidp, [type_dbl, type_dbl, type_uint, type_bool])
 _pt_Hist1D_delete = importFunc('pt_Hist1D_delete', None, [type_voidp])
 _pt_Hist1D_getEdge = importFunc('pt_Hist1D_getEdge', None, [type_voidp, type_npdbl1d])
@@ -32,7 +30,6 @@ _pt_Hist1D_getHit = importFunc('pt_Hist1D_getHit', None, [type_voidp, type_npdbl
 _pt_Hist1D_getWeight = importFunc('pt_Hist1D_getWeight', None, [type_voidp, type_npdbl1d])
 _pt_Hist1D_fill = importFunc('pt_Hist1D_fill', None, [type_voidp, type_dbl, type_dbl])
 _pt_Hist1D_fill_many = importFunc('pt_Hist1D_fillmany', None, [type_voidp, type_sizet, type_npdbl1d, type_npdbl1d])
-
 
 class Hist1D():
     def __init__(self, xmin, xmax, num, linear=True):
@@ -152,8 +149,6 @@ class SpectrumEstimator(Hist1D):
             print (e)
 
 
-
-
 # Prompt::Hist2D
 _pt_Hist2D_new = importFunc('pt_Hist2D_new', type_voidp, [type_dbl, type_dbl, type_uint, type_dbl, type_dbl, type_uint])
 _pt_Hist2D_delete = importFunc('pt_Hist2D_delete', None, [type_voidp])
@@ -164,9 +159,19 @@ _pt_Hist2D_fill = importFunc('pt_Hist2D_fill', None, [type_voidp, type_dbl, type
 _pt_Hist2D_merge = importFunc('pt_Hist2D_merge', None, [type_voidp, type_voidp])
 _pt_Hist2D_fill_many = importFunc('pt_Hist2D_fillmany', None, [type_voidp, type_sizet, type_npdbl1d, type_npdbl1d, type_npdbl1d])
 
+
+class CobjHist2(object):
+    def __init__(self, xmin, xmax, xnum, ymin, ymax, ynum):
+        super().__init__()
+        self.cobj =_pt_Hist2D_new(xmin, xmax, xnum, ymin, ymax, ynum)
+
+    def __del__(self):
+        _pt_Hist2D_delete(self.cobj)
+
+
 class Hist2D():
     def __init__(self, xmin, xmax, xnum, ymin, ymax, ynum, metadata=None):
-        self.cobj = _pt_Hist2D_new(xmin, xmax, xnum, ymin, ymax, ynum)
+        self.mcobj = CobjHist2(xmin, xmax, xnum, ymin, ymax, ynum)
         self.xedge = np.linspace(xmin, xmax, xnum+1)
         self.xcenter = self.xedge[:-1]+np.diff(self.xedge)*0.5
 
@@ -184,36 +189,34 @@ class Hist2D():
 
         self.metadata = metadata
 
-    def __del__(self):
-        _pt_Hist2D_delete(self.cobj)
 
     def getEdge(self):
         return self.xedge, self.yedge
 
     def getWeight(self):
         w = np.zeros([self.xNumBin, self.yNumBin])
-        _pt_Hist2D_getWeight(self.cobj, w)
+        _pt_Hist2D_getWeight(self.mcobj.cobj, w)
         return w
 
     def getHit(self):
         hit = np.zeros([self.xNumBin,self.yNumBin])
-        _pt_Hist2D_getHit(self.cobj, hit)
+        _pt_Hist2D_getHit(self.mcobj.cobj, hit)
         return hit
 
     def getDensity(self):
         d = np.zeros([self.xNumBin, self.yNumBin])
-        _pt_Hist2D_getWeight(self.cobj, d)
+        _pt_Hist2D_getWeight(self.mcobj.cobj, d)
         return d
 
     def fill(self, x, y, weight=1.):
-        _pt_Hist2D_fill(self.cobj, x, y, weight)
+        _pt_Hist2D_fill(self.mcobj.cobj, x, y, weight)
 
     def fillmany(self, x, y, weight=None):
         if weight is None:
             weight = np.ones(x.size)
         if x.size !=weight.size and x.size !=y.size:
             raise RunTimeError('fillnamy different size')
-        _pt_Hist2D_fill_many(self.cobj, x.size, x, y, weight )
+        _pt_Hist2D_fill_many(self.mcobj.cobj, x.size, x, y, weight )
 
     def plot(self, show=False):
         try:
@@ -246,7 +249,7 @@ class Hist2D():
         f0.close()
 
     def merge(self, hist2):
-        _pt_Hist2D_merge(self.cobj, hist2.cobj)
+        _pt_Hist2D_merge(self.mcobj.cobj, hist2.mcobj.cobj)
 
 
 

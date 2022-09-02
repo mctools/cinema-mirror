@@ -42,4 +42,8 @@ ref[1,1]=1
 ref[2,2]=1
 np.testing.assert_array_equal(hist1.getHit(), ref)
 
+import copy
+hist3=copy.copy(hist1)
+hist3.merge(hist2)
+
 print('passed')
