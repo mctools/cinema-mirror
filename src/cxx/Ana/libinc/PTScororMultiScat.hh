@@ -33,8 +33,8 @@ namespace Prompt {
     virtual void score(Particle &particle) override;
   private:
     unsigned long long m_lasteventid;
-    int counter;
-    double p_weight;
+    int m_p_counter;
+    double m_p_weight;
   };
 }
 #endif

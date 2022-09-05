@@ -55,6 +55,8 @@ namespace Prompt {
     double getWeight() { return m_weight; }
     void scaleWeight(double factor) { m_weight *= factor; }
     unsigned long long getEventID() { return m_eventid; }
+    void setNumScat(int counter);
+    int getNumScat() { return m_counter; }
     KillType getKillType() { return m_killtype; }
 
     void kill(KillType t);
@@ -70,6 +72,7 @@ namespace Prompt {
     double m_rest_mass;
     bool m_alive;
     unsigned long long m_eventid, m_id, m_parentid;
+    int m_counter;
     KillType m_killtype;
   };
 
@@ -97,12 +100,12 @@ namespace Prompt {
 
 inline Prompt::Particle::Particle()
   :m_ekin0(0.), m_ekin(0.), m_time(0.), m_dir(), m_pos(), m_pgd(0),
-  m_weight(1.), m_rest_mass(0.), m_alive(true), m_eventid(0), m_id(0), m_parentid(0)
+  m_weight(1.), m_rest_mass(0.), m_alive(true), m_eventid(0), m_id(0), m_parentid(0), m_counter(0)
 {}
 
 inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& pos)
   :m_ekin0(ekin), m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0),
-  m_weight(1.), m_rest_mass(0), m_alive(true), m_eventid(0), m_id(0), m_parentid(0)
+  m_weight(1.), m_rest_mass(0), m_alive(true), m_eventid(0), m_id(0), m_parentid(0), m_counter(0)
 {
   m_dir.normalise();
 }
@@ -132,6 +135,11 @@ inline void Prompt::Particle::setDirection(const Vector& dir)
 inline double Prompt::Particle::calcSpeed() const
 {
     return std::sqrt(2*m_ekin/m_rest_mass);
+}
+
+inline void Prompt::Particle::setNumScat(int counter)
+{
+  m_counter = counter;
 }
 
 #endif

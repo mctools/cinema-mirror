@@ -21,7 +21,7 @@
 #include "PTScororMultiScat.hh"
 
 Prompt::ScororMultiScat::ScororMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear)
-:Scoror1D("ScororMultiScat_"+ name, Scoror::PROPAGATE, std::make_unique<Hist1D>(xmin, xmax, nxbins, linear)), m_lasteventid(0), counter(0), p_weight(0)
+:Scoror1D("ScororMultiScat_"+ name, Scoror::PROPAGATE, std::make_unique<Hist1D>(xmin, xmax, nxbins, linear)), m_lasteventid(0), m_p_counter(0), m_p_weight(0)
 { }
 
 Prompt::ScororMultiScat::~ScororMultiScat() {}
@@ -30,23 +30,26 @@ void Prompt::ScororMultiScat::score(Particle &particle)
 {
   if (m_lasteventid==particle.getEventID())
   {
-    counter++;
-    p_weight=particle.getWeight();
+    m_p_counter++;
+    particle.setNumScat(m_p_counter);
+    m_p_weight=particle.getWeight();
   } 
   else
   {
-    if(counter==0)
+    if(m_p_counter==0)
     {
       m_lasteventid=particle.getEventID();
-      counter=1;
-      p_weight=particle.getWeight();
+      m_p_counter=1;
+      particle.setNumScat(m_p_counter);
+      m_p_weight=particle.getWeight();
     }
     else
     {
-      m_hist->fill(counter, p_weight);
+      m_hist->fill(m_p_counter, m_p_weight);
       m_lasteventid=particle.getEventID();
-      counter=1;
-      p_weight=particle.getWeight();
+      m_p_counter=1;
+      particle.setNumScat(m_p_counter);
+      m_p_weight=particle.getWeight();
     }
   }
     
