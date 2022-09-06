@@ -5,45 +5,14 @@
     </userinfo>
 
     <define>
-        <constant name="HALFPI" value="pi/2."/>
-        <constant name="PI" value="1.*pi"/>
-        <constant name="TWOPI" value="2.*pi"/>
         <position name="Monitor1Pos" x="0" y="0" z="1000.0" />
         <position name="GuidePos" x="0" y="0" z="1600.0" />
         <position name="Monitor2Pos" x="0" y="0" z="3100.0" />
     </define>
 
     <materials>
-      <material name="Air">
-        <atom value="ambient_air.ncmat"/>
-      </material>
-
       <material name="Vaccum">
         <atom value="vacuum.ncmat"/>
-      </material>
-
-      <material name="Water">
-        <atom value="LiquidWaterH2O_T293.6K.ncmat"/>
-      </material>
-
-      <material name="HeavyWater">
-        <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat"/>
-      </material>
-
-      <material name="Al">
-        <atom value="Al_sg225.ncmat"/>
-      </material>
-
-      <material name="V">
-        <atom value="V_sg229.ncmat"/>
-      </material>
-
-      <material name="Si">
-        <atom value="Si_sg227.ncmat;packfact=0.5"/>
-      </material>
-
-      <material name="Al2O3">
-        <atom value="Al2O3_sg167_Corundum.ncmat"/>
       </material>
 
       <material name="Cd">
@@ -67,7 +36,6 @@
         <volume name="LV_Guider1">
             <solidref ref="Guider1"/>
             <materialref ref="Cd"/>
-            <auxiliary auxtype="Color" auxvalue="#ffe4ff00"/>
             <auxiliary auxtype="MirrorPhysics" auxvalue="1.0"/>
         </volume>
 
