@@ -36,8 +36,6 @@ class Visualiser():
         if printWorld:
             self.worldMesh.printMesh()
         self.loadMesh()
-        import sys
-        sys.exit()
 
 
     def addLine(self, data):
@@ -51,8 +49,9 @@ class Visualiser():
     def loadMesh(self):
         for am in self.worldMesh:
             name = am.getMeshName()
-            if any(srchstr in name for srchstr in self.blacklist):
-                continue
+            if self.blacklist is not None:
+                if any(srchstr in name for srchstr in self.blacklist):
+                    continue
 
             print(f'loading mesh {name}')
             if name!='World':

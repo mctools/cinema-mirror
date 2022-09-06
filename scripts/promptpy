@@ -15,7 +15,7 @@ parser.add_argument('-s', '--seed', action='store', type=int, default=4096,
                     dest='seed', help='random seed number')
 parser.add_argument('-n', '--neutronNum', action='store', type=float, default=100,
                     dest='neutronNum', help='neutron number')
-parser.add_argument('-b', '--blacklist',  type=str, nargs='+', dest='blacklist', default = [''], help='solid mesh blacklist to inform the geometry mesh loader ')
+parser.add_argument('-b', '--blacklist',  type=str, nargs='+', dest='blacklist', help='solid mesh blacklist to inform the geometry mesh loader ')
 
 args=parser.parse_args()
 inputfile=args.gdml
