@@ -55,7 +55,7 @@ class Visualiser():
 
             print(f'loading mesh {name}')
             if name!='World':
-                name, points, faces = am.getMesh(100)
+                name, points, faces = am.getMesh(20)
                 if points.size==0:
                     continue
                 rcolor = random.choice(self.color)

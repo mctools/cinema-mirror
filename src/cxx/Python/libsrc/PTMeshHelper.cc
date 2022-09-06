@@ -26,11 +26,33 @@
 #include <VecGeom/navigation/BVHNavigator.h>
 #include <VecGeom/navigation/NewSimpleNavigator.h>
 #include <VecGeom/gdml/Frontend.h>
+#include <VecGeom/base/Transformation3D.h>
 
 size_t pt_placedVolNum()
 {
   auto &geoManager = vecgeom::GeoManager::Instance();
   return geoManager.GetPlacedVolumesCount();
+}
+
+size_t pt_numDaughters(size_t pvolID)
+{
+  auto &geoManager = vecgeom::GeoManager::Instance();
+  // const vgdml::VPlacedVolume
+  auto *vol = geoManager.Convert(pvolID);
+  return vol->GetDaughters().size();
+}
+
+void pt_getDaughterID(size_t pvolID, size_t dsize, unsigned *data)
+{
+  auto &geoManager = vecgeom::GeoManager::Instance();
+  // const vgdml::VPlacedVolume
+  auto *vol = geoManager.Convert(pvolID);
+  auto &dau = vol->GetDaughters();
+  if(dau.size() != dsize)
+    PROMPT_THROW(BadInput, "Wrong daughter size");
+
+  for(auto d: dau)
+    (*data++)=d->id();
 }
 
 void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlolygen, size_t &faceSize)
@@ -83,12 +105,15 @@ void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPoly
    if(mesh->GetPolygons().empty())
       PROMPT_THROW(BadInput, "empty mesh");
 
+   const vecgeom::Transformation3D *matrix = vol->GetTransformation();
 
+   // auto = Utils3D::vector_t<Utils3D::Polygon> const
    auto &polygens = mesh->GetPolygons();
    for(const auto &poly: polygens)
    {
      for(const auto &vert: poly.fVert)
      {
+       // auto vertTransformed = matrix->Transform(vert);
        *(points++)=vert[0];
        *(points++)=vert[1];
        *(points++)=vert[2];

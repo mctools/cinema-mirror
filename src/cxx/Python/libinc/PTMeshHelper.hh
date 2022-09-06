@@ -28,6 +28,9 @@ extern "C" {
 #endif
 
 size_t pt_placedVolNum();
+size_t pt_numDaughters(size_t pvolID);
+void pt_getDaughterID(size_t pvolID, size_t dsize, unsigned *data);
+
 const char* pt_getMeshName(size_t pvolID);
 void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlolygen, size_t &faceSize);
 void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPolygonPoints, size_t *faces);

@@ -28,6 +28,8 @@ _pt_meshInfo = importFunc("pt_meshInfo", None,  [type_sizet, type_sizet, type_si
 _pt_getMeshName = importFunc("pt_getMeshName", type_cstr,  [type_sizet])
 _pt_getMesh = importFunc("pt_getMesh", None,  [type_sizet, type_sizet, type_npdbl2d, type_npszt1d, type_npszt1d])
 
+_pt_numDaughters = importFunc("pt_numDaughters", type_sizet, [type_sizet])
+_pt_getDaughterID = importFunc("pt_getDaughterID", None,  [type_sizet, type_sizet, type_npuint1d])
 class Mesh():
     def __init__(self):
         self.nMax=self.placedVolNum()
@@ -35,6 +37,12 @@ class Mesh():
 
     def placedVolNum(self):
         return _pt_placedVolNum()
+
+    def getDaughterID(self, volid):
+        num = _pt_numDaughters(volid)
+        dauvec = np.zeros(num, dtype='uint32')
+        _pt_getDaughterID(volid, num, dauvec)
+        return dauvec
 
     def printMesh(self):
         _pt_printMesh()
