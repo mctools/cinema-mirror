@@ -15,6 +15,7 @@ parser.add_argument('-s', '--seed', action='store', type=int, default=4096,
                     dest='seed', help='random seed number')
 parser.add_argument('-n', '--neutronNum', action='store', type=float, default=100,
                     dest='neutronNum', help='neutron number')
+parser.add_argument('-b', '--blacklist',  type=str, nargs='+', dest='blacklist', default = [''], help='solid mesh blacklist to inform the geometry mesh loader ')
 
 args=parser.parse_args()
 inputfile=args.gdml
@@ -31,7 +32,7 @@ myLcher.setSeed(rdseed)
 myLcher.loadGeometry(inputfile)
 
 if args.visualize is True:
-    v = Visualiser(['Tube300', 'Tube500', '300_L', '500_L'], printWorld=True)
+    v = Visualiser(args.blacklist, printWorld=True)
     for i in range(int(args.neutronNum)):
         print(f'trajectory size {myLcher.getTrajSize()}')
         myLcher.go(1, recordTrj=True)
