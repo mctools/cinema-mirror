@@ -27,6 +27,15 @@
 extern "C" {
 #endif
 
+void* pt_Transformation3D_new(void *consttrfm3Dobj);
+void* pt_Transformation3D_newfromID(int id);
+void pt_Transformation3D_delete(void *trfm3Dobj);
+void pt_Transformation3D_multiple(void *trfm3Dobj1, void *trfm3Dobj2);
+void pt_Transformation3D_transform(void *trfm3Dobj1, size_t numPt, double *in, double *out);
+const char* pt_Transformation3D_print(void *trfm3Dobj);
+
+
+
 size_t pt_placedVolNum();
 size_t pt_numDaughters(size_t pvolID);
 void pt_getDaughterID(size_t pvolID, size_t dsize, unsigned *data);
