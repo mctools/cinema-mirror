@@ -1,7 +1,6 @@
 import h5py
 import numpy as np
 from  Cinema.Prompt.Math.Hist import Hist1D
-import matplotlib.pyplot as plt
 
 # store the data in h5py file
 def wgt2h5(filePath, seedStart, seedEnd):
