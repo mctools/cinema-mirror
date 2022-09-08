@@ -38,7 +38,7 @@ const char* pt_Transformation3D_print(void *trfm3Dobj);
 
 size_t pt_placedVolNum();
 size_t pt_numDaughters(size_t pvolID);
-void pt_getDaughterID(size_t pvolID, size_t dsize, unsigned *data);
+void pt_getDaughterID(size_t pvolID, size_t dsize, unsigned *physicalID, unsigned *logicalID);
 
 const char* pt_getMeshName(size_t pvolID);
 void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlolygen, size_t &faceSize);
