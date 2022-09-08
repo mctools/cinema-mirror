@@ -15,7 +15,7 @@
     </define>
 
     <materials>
-       
+
         <material name="Vacuum">
           <atom value="vacuum.ncmat"/>
         </material>
@@ -75,6 +75,12 @@
                 <volumeref ref="LV_Cube4" />
                 <position name="P_Cube4" unit="mm" x="0.0" y="0.0" z="-170.0" />
             </physvol>
+
+            <physvol>
+                <volumeref ref="LV_Cube4" />
+                <position name="P_Cube5" unit="mm" x="0.0" y="0.0" z="170.0" />
+            </physvol>
+
         </volume>
     </structure>
 
