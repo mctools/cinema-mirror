@@ -12,10 +12,6 @@
     </define>
 
     <materials>
-<<<<<<< HEAD
-
-=======
->>>>>>> accb162968e9d98f3f35e2671794053794e37603
         <material name="Vacuum">
           <atom value="vacuum.ncmat"/>
         </material>
