@@ -62,7 +62,7 @@ _pt_getMeshName = importFunc("pt_getMeshName", type_cstr,  [type_sizet])
 _pt_getMesh = importFunc("pt_getMesh", None,  [type_sizet, type_sizet, type_npdbl2d, type_npszt1d, type_npszt1d])
 
 _pt_numDaughters = importFunc("pt_numDaughters", type_sizet, [type_sizet])
-_pt_getDaughterID = importFunc("pt_getDaughterID", None,  [type_sizet, type_sizet, type_npuint1d])
+_pt_getDaughterID = importFunc("pt_getDaughterID", None,  [type_sizet, type_sizet, type_npuint1d, type_npuint1d])
 
 class Mesh():
     def __init__(self):
@@ -70,33 +70,42 @@ class Mesh():
         self.n = 0
 
         daughter2Mother = {}
-
         id2tMat = {}
-
+        #iterate through all physical volumes
         for id in range(self.nMax):
             id2tMat[id] = MeshHelper(id)
-            print(f'***dau of vol {id}')
-            for dautID in self.getDaughterID(id):
+            phyid, logid = self.getDaughterID(id)
+            print(f'***dau of vol {id}, physical daughter {phyid}, corrispending logical ID {logid}')
+            for dautID in phyid:
                 if daughter2Mother.get(dautID):
-                    raise RuntimeError('double daughter ID')
-                daughter2Mother[dautID] = id
+                    daughter2Mother[dautID].append(id)
+                else:
+                    daughter2Mother[dautID] = [id]
         print(daughter2Mother)
 
+        #a play around :)
         matrix = id2tMat[3]
         loc = np.array([[0,0,0],[0,0.,0]])
         output = matrix.tansform(loc)
         print(output)
-        while True:
-            pass
+
+        matrix.multiple(matrix.cobj)
+        output = matrix.tansform(loc)
+        print(output)
+
+        # stop the shit
+        # while True:
+        #     pass
 
     def placedVolNum(self):
         return _pt_placedVolNum()
 
     def getDaughterID(self, volid):
         num = _pt_numDaughters(volid)
-        dauvec = np.zeros(num, dtype='uint32')
-        _pt_getDaughterID(volid, num, dauvec)
-        return dauvec
+        dauphy = np.zeros(num, dtype='uint32')
+        daulog = np.zeros(num, dtype='uint32')
+        _pt_getDaughterID(volid, num, dauphy, daulog)
+        return dauphy, daulog
 
     def printMesh(self):
         _pt_printMesh()

@@ -30,50 +30,6 @@
 #include <VecGeom/base/Transformation3D.h>
 #include "VecGeom/base/Vector3D.h"
 
-class GeoTree
-{
-  struct Node {
-    int physical, logical;
-    vecgeom::Transformation3D *matrix;
-    std::vector<std::shared_ptr<Node>> child;
-  };
-
-public:
-  GeoTree();
-  ~GeoTree();
-
-  std::shared_ptr<Node> getRoot();
-  std::shared_ptr<Node> findRootChild(int num);
-  std::shared_ptr<Node> findChild(std::shared_ptr<Node> node, int num);
-
-private:
-  std::shared_ptr<Node> m_root;
-};
-
-GeoTree::GeoTree() {}
-
-GeoTree::~GeoTree() {}
-
-std::shared_ptr<GeoTree::Node> GeoTree::getRoot() { return m_root; }
-
-std::shared_ptr<GeoTree::Node> GeoTree::findRootChild(int num)
-{
-  return findChild(m_root, num);
-}
-
-std::shared_ptr<GeoTree::Node> GeoTree::findChild(std::shared_ptr<Node> node, int num)
-{
-  if(!node)
-    return nullptr;
-  if (num == node->physical)
-    return node;
-  for (auto childptr : node->child)
-	{
-		return findChild(childptr, num);
-	}
-  	return nullptr;
-}
-
 
 
 void* pt_Transformation3D_new(void *consttrfm3Dobj)
