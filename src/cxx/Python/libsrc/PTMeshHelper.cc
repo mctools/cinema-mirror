@@ -108,10 +108,15 @@ size_t pt_placedVolNum()
   {
     root->childPhysicalID.push_back(d->id());
   }
+  printf("root info:\n");
+  root->print();
+
+  printf("+++entering %zu\n", volcount-2);
 
   // skip the world as it is the root
-  for(size_t i=volcount-2;i>-1;i--)
+  for(size_t i=volcount-2;i<-1;i--)
   {
+    printf("+++vol %zu\n", i);
     auto *vol = geoManager.Convert(i);
     auto node = std::shared_ptr<Prompt::GeoTree::Node>(new Prompt::GeoTree::Node {vol->id(), vol->GetLogicalVolume()->id()});
     node->setMatrix(vol->GetTransformation());
@@ -121,9 +126,13 @@ size_t pt_placedVolNum()
     {
       node->childPhysicalID.push_back(d->id());
     }
+    
     //set the correlation of this node to the tree
     auto mother = tree->findMotherNodeByPhysical(i);
-    mother->addChild(node);
+    if(!mother)
+    {
+      PROMPT_THROW(BadInput, "Mother volume is not found");
+    }
   }
 
   printf("+++\n");

@@ -20,8 +20,15 @@ namespace Prompt {
       {
         std::cout << "node physicalID " << physical << ", logicalID " << logical << "\n";
         matrix.Print();
+        std::cout << "\nChild physical ID: ";
+        for (const auto &c : childPhysicalID)
+        {
+          std::cout << c << "  ";
+        }
+        std::cout << "\n";
+
         if(child.empty())
-          std::cout << "no physical child:\n";
+          std::cout << "no physical child object:\n";
         else
         {
           std::cout << "Child physical and logical ID:\n";
@@ -55,18 +62,18 @@ namespace Prompt {
     std::shared_ptr<Node> getRoot();
 
     std::shared_ptr<Node> findMotherNodeByPhysical(int num);
-    std::shared_ptr<Node> findMotherNodeByPhysical(std::shared_ptr<Node> node, int num);
+    std::shared_ptr<Node> findMotherNodeByPhysical(const std::shared_ptr<Node> &node, int num);
 
     std::shared_ptr<Node> findNodeByPhysical(int num);
-    std::shared_ptr<Node> findNodeByPhysical(std::shared_ptr<Node> node, int num);
+    std::shared_ptr<Node> findNodeByPhysical(const std::shared_ptr<Node> &node, int num);
 
     std::vector<std::shared_ptr<Node>> findNodeByLogical(int num);
-    void findNodeByLogical(std::shared_ptr<Node> node, int num, std::vector<std::shared_ptr<Node>>& logicalnode);
+    void findNodeByLogical(const std::shared_ptr<Node> &node, int num, std::vector<std::shared_ptr<Node>>& logicalnode);
 
 
   private:
     std::shared_ptr<Node> m_root;
-    void printNode(std::shared_ptr<Node> node, int layer, std::vector<std::vector<int>> &printArray);
+    void printNode(const std::shared_ptr<Node> &node, int layer, std::vector<std::vector<int>> &printArray);
 
   };
 
