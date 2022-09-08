@@ -19,6 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTMeshHelper.hh"
+#include "PTGeoTree.hh"
 #include <VecGeom/base/Config.h>
 #include <VecGeom/volumes/SolidMesh.h>
 #include <VecGeom/management/GeoManager.h>
@@ -89,13 +90,55 @@ size_t pt_placedVolNum()
   auto &geoManager = vecgeom::GeoManager::Instance();
   printf("total volume in the tree %ld\n", geoManager.GetTotalNodeCount());
   printf("total placed volume %ld\n", geoManager.GetPlacedVolumesCount());
+  size_t volcount = geoManager.GetPlacedVolumesCount();
 
-  return geoManager.GetPlacedVolumesCount();
+  /////////////////////////////////////////////////////////////////////
+  //test geoTree
+  auto tree = std::make_shared<Prompt::GeoTree>();
+  auto world = geoManager.GetWorld();
+
+  if(world->id()!=(volcount-1))
+  PROMPT_THROW(BadInput, "world is not the last one in the map");
+
+  auto root = tree->getRoot();
+  root->physical = world->id();
+  root->logical = world->GetLogicalVolume()->id();
+  root->setMatrix(world->GetTransformation());
+  for(auto d: world->GetDaughters())
+  {
+    root->childPhysicalID.push_back(d->id());
+  }
+
+  // skip the world as it is the root
+  for(size_t i=volcount-2;i>-1;i--)
+  {
+    auto *vol = geoManager.Convert(i);
+    auto node = std::shared_ptr<Prompt::GeoTree::Node>(new Prompt::GeoTree::Node {vol->id(), vol->GetLogicalVolume()->id()});
+    node->setMatrix(vol->GetTransformation());
+    // set daughters
+    auto &dau = vol->GetDaughters();
+    for(auto d: dau)
+    {
+      node->childPhysicalID.push_back(d->id());
+    }
+    //set the correlation of this node to the tree
+    auto mother = tree->findMotherNodeByPhysical(i);
+    mother->addChild(node);
+  }
+
+  printf("+++\n");
+  tree->print();
+  printf("+++\n");
+
+  ///////////////////////////////////////////////////////////////////
+
+  return volcount;
 }
 
 size_t pt_numDaughters(size_t pvolID)
 {
   auto &geoManager = vecgeom::GeoManager::Instance();
+
   // const vgdml::VPlacedVolume
   auto *vol = geoManager.Convert(pvolID);
   // printf("\nfrom xx: vol name \"%s\", volID %zu, copy id %d, daughter num %zu\n", vol->GetName(), pvolID, vol->GetCopyNo(), vol->GetDaughters().size());

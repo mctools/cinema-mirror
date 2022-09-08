@@ -43,11 +43,11 @@ TEST_CASE("test_geotree")
 
   tree->print();
 
-  auto node = tree->findPhysicalChild(7);
+  auto node = tree->findNodeByPhysical(7);
   std::cout << "physical\n";
   node->print();
 
-  auto nodes = tree->findLogicalChild(105);
+  auto nodes = tree->findNodeByLogical(105);
   std::cout << "logical\n";
   for(const auto &n: nodes)
     n->print();

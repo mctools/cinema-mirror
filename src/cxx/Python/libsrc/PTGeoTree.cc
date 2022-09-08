@@ -12,12 +12,30 @@ Prompt::GeoTree::~GeoTree() {}
 
 shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::getRoot() { return m_root; }
 
-shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::findPhysicalChild(int num)
+std::shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::findMotherNodeByPhysical(int num)
 {
-  return findPhysicalChild(m_root, num);
+  return findMotherNodeByPhysical(m_root, num);
+}
+std::shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::findMotherNodeByPhysical(std::shared_ptr<Prompt::GeoTree::Node> node, int num)
+{
+  if(!node)
+    return nullptr;
+  if(std::find(node->childPhysicalID.begin(), node->childPhysicalID.end(), num) == node->childPhysicalID.end())
+    return node;
+  for (auto childptr : node->child)
+  {
+    return findMotherNodeByPhysical(childptr, num);
+  }
+    return nullptr;
 }
 
-shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::findPhysicalChild(shared_ptr<Prompt::GeoTree::Node> node, int num)
+
+shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::findNodeByPhysical(int num)
+{
+  return findNodeByPhysical(m_root, num);
+}
+
+shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::findNodeByPhysical(shared_ptr<Prompt::GeoTree::Node> node, int num)
 {
   if(!node)
     return nullptr;
@@ -25,20 +43,20 @@ shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::findPhysicalChild(shared_ptr<
     return node;
   for (auto childptr : node->child)
 	{
-		return findPhysicalChild(childptr, num);
+		return findNodeByPhysical(childptr, num);
 	}
   	return nullptr;
 }
 
-std::vector<std::shared_ptr<Prompt::GeoTree::Node>> Prompt::GeoTree::findLogicalChild(int num)
+std::vector<std::shared_ptr<Prompt::GeoTree::Node>> Prompt::GeoTree::findNodeByLogical(int num)
 {
   std::vector<std::shared_ptr<Node>> logicalnode;
-  findLogicalChild(m_root, num, logicalnode);
+  findNodeByLogical(m_root, num, logicalnode);
   return logicalnode;
 }
 
 
-void Prompt::GeoTree::findLogicalChild(std::shared_ptr<Prompt::GeoTree::Node> node, int num, std::vector<std::shared_ptr<Node>>& logicalnode)
+void Prompt::GeoTree::findNodeByLogical(std::shared_ptr<Prompt::GeoTree::Node> node, int num, std::vector<std::shared_ptr<Node>>& logicalnode)
 {
   if(!node)
     return;
@@ -48,7 +66,7 @@ void Prompt::GeoTree::findLogicalChild(std::shared_ptr<Prompt::GeoTree::Node> no
   }
   for (auto childptr : node->child)
   {
-    findLogicalChild(childptr, num, logicalnode);
+    findNodeByLogical(childptr, num, logicalnode);
   }
 }
 
@@ -69,14 +87,21 @@ void Prompt::GeoTree::printNode(std::shared_ptr<Prompt::GeoTree::Node> node, int
   }
 }
 
-void Prompt::GeoTree::print()
+void Prompt::GeoTree::print(bool raw)
 {
-  vector<vector<int>> printArray;
-  printNode(m_root, 0, printArray);
-  for(vector<int> varvector : printArray)
+  if(raw)
   {
-    for(int var : varvector)
-      cout << var << " ";
-    cout << "\n";
+
+  }
+  else
+  {
+    vector<vector<int>> printArray;
+    printNode(m_root, 0, printArray);
+    for(vector<int> varvector : printArray)
+    {
+      for(int var : varvector)
+        cout << var << " ";
+      cout << "\n";
+    }
   }
 }
