@@ -26,11 +26,114 @@
 #include <VecGeom/navigation/BVHNavigator.h>
 #include <VecGeom/navigation/NewSimpleNavigator.h>
 #include <VecGeom/gdml/Frontend.h>
+
 #include <VecGeom/base/Transformation3D.h>
+#include "VecGeom/base/Vector3D.h"
+
+class GeoTree
+{
+  struct Node {
+    int physical, logical;
+    vecgeom::Transformation3D *matrix;
+    std::vector<std::shared_ptr<Node>> child;
+  };
+
+public:
+  GeoTree();
+  ~GeoTree();
+
+  std::shared_ptr<Node> getRoot();
+  std::shared_ptr<Node> findRootChild(int num);
+  std::shared_ptr<Node> findChild(std::shared_ptr<Node> node, int num);
+
+private:
+  std::shared_ptr<Node> m_root;
+};
+
+GeoTree::GeoTree() {}
+
+GeoTree::~GeoTree() {}
+
+std::shared_ptr<GeoTree::Node> GeoTree::getRoot() { return m_root; }
+
+std::shared_ptr<GeoTree::Node> GeoTree::findRootChild(int num)
+{
+  return findChild(m_root, num);
+}
+
+std::shared_ptr<GeoTree::Node> GeoTree::findChild(std::shared_ptr<Node> node, int num)
+{
+  if(!node)
+    return nullptr;
+  if (num == node->physical)
+    return node;
+  for (auto childptr : node->child)
+	{
+		return findChild(childptr, num);
+	}
+  	return nullptr;
+}
+
+
+
+void* pt_Transformation3D_new(void *consttrfm3Dobj)
+{
+  auto p = static_cast<const vecgeom::Transformation3D*> (consttrfm3Dobj) ;
+  return static_cast<void *>(new vecgeom::Transformation3D(*p));
+}
+
+void* pt_Transformation3D_newfromID(int id)
+{
+  auto &geoManager = vecgeom::GeoManager::Instance();
+  // const vgdml::VPlacedVolume
+  auto *vol = geoManager.Convert(id);
+
+  auto p = new vecgeom::Transformation3D(* const_cast<vecgeom::Transformation3D*>(vol->GetTransformation()));
+  p->Inverse(*p); //NOTICE the inversion here, so the tranform function is from local to mater
+  return static_cast<void *>(p);
+}
+
+void pt_Transformation3D_delete(void *trfm3Dobj)
+{
+  delete static_cast<vecgeom::Transformation3D *>(trfm3Dobj);
+}
+
+void pt_Transformation3D_multiple(void *trfm3Dobj1, void *trfm3Dobj2)
+{
+   auto obj1 = static_cast<vecgeom::Transformation3D *>(trfm3Dobj1);
+   auto obj2 = static_cast<vecgeom::Transformation3D *>(trfm3Dobj2);
+   obj1->MultiplyFromRight(*obj2);
+}
+
+void pt_Transformation3D_transform(void *obj, size_t numPt, double *in, double *out)
+{
+  auto mat = static_cast<vecgeom::Transformation3D *>(obj);
+  for(size_t i=0;i<numPt;i++)
+  {
+    vecgeom::Vector3D<Precision> vert(in[i*3], in[i*3+1], in[i*3+2]);
+    auto vertTransformed = mat->Transform(vert);
+    // auto vertTransformed = mat->InverseTransform(vert);
+    out[i*3] = vertTransformed[0];
+    out[i*3+1] = vertTransformed[1];
+    out[i*3+2] = vertTransformed[2];
+  }
+}
+
+const char* pt_Transformation3D_print(void *trfm3Dobj)
+{
+  std::ostringstream a;
+  static_cast<vecgeom::Transformation3D *>(trfm3Dobj)->Print(a);
+  std::string str;
+  a << str;
+  return str.c_str();
+}
 
 size_t pt_placedVolNum()
 {
   auto &geoManager = vecgeom::GeoManager::Instance();
+  printf("total volume in the tree %ld\n", geoManager.GetTotalNodeCount());
+  printf("total placed volume %ld\n", geoManager.GetPlacedVolumesCount());
+
   return geoManager.GetPlacedVolumesCount();
 }
 
@@ -39,10 +142,14 @@ size_t pt_numDaughters(size_t pvolID)
   auto &geoManager = vecgeom::GeoManager::Instance();
   // const vgdml::VPlacedVolume
   auto *vol = geoManager.Convert(pvolID);
+  // printf("\nfrom xx: vol name \"%s\", volID %zu, copy id %d, daughter num %zu\n", vol->GetName(), pvolID, vol->GetCopyNo(), vol->GetDaughters().size());
+  printf("\nphysical volume info : %zu\n", pvolID);
+  vol->Print();
+  printf("\n");
   return vol->GetDaughters().size();
 }
 
-void pt_getDaughterID(size_t pvolID, size_t dsize, unsigned *data)
+void pt_getDaughterID(size_t pvolID, size_t dsize, unsigned *physicalID, unsigned *logicalID)
 {
   auto &geoManager = vecgeom::GeoManager::Instance();
   // const vgdml::VPlacedVolume
@@ -52,7 +159,10 @@ void pt_getDaughterID(size_t pvolID, size_t dsize, unsigned *data)
     PROMPT_THROW(BadInput, "Wrong daughter size");
 
   for(auto d: dau)
-    (*data++)=d->id();
+  {
+    (*physicalID++)=d->id();
+    (*logicalID++)=d->GetLogicalVolume()->id();
+  }
 }
 
 void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlolygen, size_t &faceSize)

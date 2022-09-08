@@ -22,6 +22,39 @@
 
 from ..Interface import *
 
+# void* pt_Transformation3D_new(void *trfm3Dobj);
+# void pt_Transformation3D_delete(void *trfm3Dobj);
+# void pt_Transformation3D_multiple(void *trfm3Dobj1, void *trfm3Dobj2);
+# void pt_Transformation3D_transform(void *trfm3Dobj1, size_t numPt, double *in, double *out);
+
+_pt_Transformation3D_new = importFunc('pt_Transformation3D_new', type_voidp, [type_voidp])
+_pt_Transformation3D_newfromID = importFunc('pt_Transformation3D_newfromID', type_voidp, [type_uint])
+_pt_Transformation3D_delete = importFunc('pt_Transformation3D_delete', None, [type_voidp])
+_pt_Transformation3D_multiple = importFunc('pt_Transformation3D_multiple', None, [type_voidp, type_voidp])
+_pt_Transformation3D_transform = importFunc('pt_Transformation3D_transform', None, [type_voidp, type_sizet, type_npdbl2d, type_npdbl2d])
+_pt_Transformation3D_print = importFunc('pt_Transformation3D_print', ctypes.c_char_p, [type_voidp])
+
+
+
+class MeshHelper(object):
+    def __init__(self, id):
+        self.cobj = _pt_Transformation3D_newfromID(id)
+        print(f'Created Transfromation {self.print()}') #fixme
+
+    def __del__(self):
+        _pt_Transformation3D_delete(self.cobj)
+
+    def multiple(self, cobjmatrix):
+        _pt_Transformation3D_multiple(self.cobj, cobjmatrix)
+
+    def tansform(self, input):
+        out = np.zeros_like(input, dtype=float)
+        _pt_Transformation3D_transform(self.cobj, input.shape[0], input, out)
+        return out
+
+    def print(self):
+        return _pt_Transformation3D_print(self.cobj).decode('utf-8')
+
 _pt_placedVolNum = importFunc('pt_placedVolNum', type_sizet, [])
 _pt_printMesh = importFunc("pt_printMesh", type_voidp, [])
 _pt_meshInfo = importFunc("pt_meshInfo", None,  [type_sizet, type_sizet, type_sizetp, type_sizetp, type_sizetp])
@@ -30,10 +63,31 @@ _pt_getMesh = importFunc("pt_getMesh", None,  [type_sizet, type_sizet, type_npdb
 
 _pt_numDaughters = importFunc("pt_numDaughters", type_sizet, [type_sizet])
 _pt_getDaughterID = importFunc("pt_getDaughterID", None,  [type_sizet, type_sizet, type_npuint1d])
+
 class Mesh():
     def __init__(self):
         self.nMax=self.placedVolNum()
         self.n = 0
+
+        daughter2Mother = {}
+
+        id2tMat = {}
+
+        for id in range(self.nMax):
+            id2tMat[id] = MeshHelper(id)
+            print(f'***dau of vol {id}')
+            for dautID in self.getDaughterID(id):
+                if daughter2Mother.get(dautID):
+                    raise RuntimeError('double daughter ID')
+                daughter2Mother[dautID] = id
+        print(daughter2Mother)
+
+        matrix = id2tMat[3]
+        loc = np.array([[0,0,0],[0,0.,0]])
+        output = matrix.tansform(loc)
+        print(output)
+        while True:
+            pass
 
     def placedVolNum(self):
         return _pt_placedVolNum()
@@ -68,9 +122,7 @@ class Mesh():
         NumPolygonPoints = np.zeros(nPlolygen, dtype=type_sizet)
         facesVec = np.zeros(faceSize+nPlolygen, dtype=type_sizet)
         _pt_getMesh(self.n, nSegments, vert, NumPolygonPoints, facesVec)
-
         return name, vert, facesVec
-
 
     def __iter__(self):
         self.n = -1
