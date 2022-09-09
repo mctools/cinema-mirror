@@ -5,7 +5,7 @@
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MPIGun;Neutron;500, 500, -30000, 20, 40, 0" /> -->
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;1.5; 0,0,-30000; 0,0,1" /> -->
-      <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;2.0; 0,0,-300; 0,0,1" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;2.0; 0,0,-1500; 0,0,1" />
     </userinfo>
 
     <define>
@@ -18,7 +18,7 @@
     </materials>
 
     <solids>
-        <box lunit="mm" name="WorldBox" x="300.0" y="300.0" z="650.0" />
+        <box lunit="mm" name="WorldBox" x="500.0" y="500.0" z="3200.0" />
         <box lunit="mm" name="Cube1" x="100.0" y="100.0" z="100.0" />
         <box lunit="mm" name="Cube2" x="150.0" y="150.0" z="150.0" />
         <box lunit="mm" name="Cube3" x="200.0" y="200.0" z="200.0" />
@@ -61,16 +61,54 @@
         <volume name="worldVOL">
             <solidref ref="WorldBox" />
             <materialref ref="Vacuum" />
+
             <physvol>
-                <volumeref ref="LV_Cube4" />
-                <position name="P_Cube4" unit="mm" x="0.0" y="0.0" z="-170.0" />
+                <volumeref ref="LV_Cube1" />
+                <position name="P_PhyVol1" unit="mm" x="0.0" y="0.0" z="-1400.0" />
+                <rotation name="R_PhyVol1" unit="deg" x="0.0" y="0.0" z="0.0" />
+            </physvol>
+
+            <physvol>
+                <volumeref ref="LV_Cube1" />
+                <position name="P_PhyVol2" unit="mm" x="0.0" y="0.0" z="-1000.0" />
+                <rotation name="R_PhyVol2" unit="deg" x="30.0" y="0.0" z="0.0" />
+            </physvol>
+
+            <physvol>
+                <volumeref ref="LV_Cube2" />
+                <position name="P_PhyVol3" unit="mm" x="0.0" y="0.0" z="-600.0" />
+                <rotation name="R_PhyVol3" unit="deg" x="0.0" y="0.0" z="0.0" />
+            </physvol>
+
+            <physvol>
+                <volumeref ref="LV_Cube2" />
+                <position name="P_PhyVol4" unit="mm" x="0.0" y="0.0" z="-200.0" />
+                <rotation name="R_PhyVol4" unit="deg" x="0.0" y="30.0" z="0.0" />
+            </physvol>
+
+            <physvol>
+                <volumeref ref="LV_Cube3" />
+                <position name="P_PhyVol5" unit="mm" x="0.0" y="0.0" z="200.0" />
+                <rotation name="R_PhyVol5" unit="deg" x="0.0" y="0.0" z="0.0" />
+            </physvol>
+
+            <physvol>
+                <volumeref ref="LV_Cube3" />
+                <position name="P_PhyVol6" unit="mm" x="0.0" y="0.0" z="600.0" />
+                <rotation name="R_PhyVol6" unit="deg" x="0.0" y="0.0" z="30.0" />
             </physvol>
 
             <physvol>
                 <volumeref ref="LV_Cube4" />
-                <position name="P_Cube5" unit="mm" x="0.0" y="0.0" z="170.0" />
+                <position name="P_PhyVol7" unit="mm" x="0.0" y="0.0" z="1000.0" />
+                <rotation name="R_PhyVol7" unit="deg" x="0.0" y="0.0" z="0.0" />
             </physvol>
-
+            
+            <physvol>
+                <volumeref ref="LV_Cube4" />
+                <position name="P_PhyVol8" unit="mm" x="0.0" y="0.0" z="1400.0" />
+                <rotation name="R_PhyVol8" unit="deg" x="0.0" y="0.0" z="60.0" />
+            </physvol>
         </volume>
     </structure>
 
