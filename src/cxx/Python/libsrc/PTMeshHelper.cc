@@ -19,6 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTMeshHelper.hh"
+#include "PTGeoTree.hh"
 #include <VecGeom/base/Config.h>
 #include <VecGeom/volumes/SolidMesh.h>
 #include <VecGeom/management/GeoManager.h>
@@ -29,50 +30,6 @@
 
 #include <VecGeom/base/Transformation3D.h>
 #include "VecGeom/base/Vector3D.h"
-
-class GeoTree
-{
-  struct Node {
-    int physical, logical;
-    vecgeom::Transformation3D *matrix;
-    std::vector<std::shared_ptr<Node>> child;
-  };
-
-public:
-  GeoTree();
-  ~GeoTree();
-
-  std::shared_ptr<Node> getRoot();
-  std::shared_ptr<Node> findRootChild(int num);
-  std::shared_ptr<Node> findChild(std::shared_ptr<Node> node, int num);
-
-private:
-  std::shared_ptr<Node> m_root;
-};
-
-GeoTree::GeoTree() {}
-
-GeoTree::~GeoTree() {}
-
-std::shared_ptr<GeoTree::Node> GeoTree::getRoot() { return m_root; }
-
-std::shared_ptr<GeoTree::Node> GeoTree::findRootChild(int num)
-{
-  return findChild(m_root, num);
-}
-
-std::shared_ptr<GeoTree::Node> GeoTree::findChild(std::shared_ptr<Node> node, int num)
-{
-  if(!node)
-    return nullptr;
-  if (num == node->physical)
-    return node;
-  for (auto childptr : node->child)
-	{
-		return findChild(childptr, num);
-	}
-  	return nullptr;
-}
 
 
 
@@ -133,13 +90,78 @@ size_t pt_placedVolNum()
   auto &geoManager = vecgeom::GeoManager::Instance();
   printf("total volume in the tree %ld\n", geoManager.GetTotalNodeCount());
   printf("total placed volume %ld\n", geoManager.GetPlacedVolumesCount());
+  size_t volcount = geoManager.GetPlacedVolumesCount();
 
-  return geoManager.GetPlacedVolumesCount();
+  /////////////////////////////////////////////////////////////////////
+  printf("\n\nNow time for testing\n");
+
+  //test geoTree
+  auto tree = std::make_shared<Prompt::GeoTree>();
+  auto world = geoManager.GetWorld();
+
+  if(world->id()!=(volcount-1))
+  PROMPT_THROW(BadInput, "world is not the last one in the map");
+
+  auto root = tree->getRoot();
+  root->physical = world->id();
+  root->logical = world->GetLogicalVolume()->id();
+  root->setMatrix(world->GetTransformation());
+  for(auto d: world->GetDaughters())
+  {
+    root->childPhysicalID.push_back(d->id());
+  }
+  Prompt::GeoTree::Node::allNodes.push_back(root);
+
+  // skip the world as it is the root
+  for(size_t i=volcount-2;i<-1;i--)
+  {
+    auto *vol = geoManager.Convert(i);
+
+    printf("volid %zu, adding physical volume \"%s\" into the tree\n", i, vol->GetLogicalVolume()->GetName());
+
+    auto node = std::shared_ptr<Prompt::GeoTree::Node>(new Prompt::GeoTree::Node {vol->id(), vol->GetLogicalVolume()->id()});
+    node->setMatrix(vol->GetTransformation());
+    // set daughters
+    auto &dau = vol->GetDaughters();
+    for(auto d: dau)
+    {
+      node->childPhysicalID.push_back(d->id());
+    }
+    // node->print();
+    Prompt::GeoTree::Node::allNodes.push_back(node);
+
+
+    //set the correlation of this node to the tree
+    auto mothers = tree->findMotherNodeByPhysical(i);
+    if(mothers.empty())
+    {
+      // printf("physical id:\n");
+      // tree->print();
+      // printf("child physical id:\n");
+      // tree->print(false);
+      PROMPT_THROW2(BadInput, "Mother volume is not found");
+    }
+    for(auto m:mothers)
+    {
+      m->addChild(node);
+    }
+  }
+
+  printf("+++\n");
+  tree->print();
+  printf("+++\n");
+  // tree->getRoot()->clearAllNodes();
+  tree->getRoot()->printAllNodes();
+
+  ///////////////////////////////////////////////////////////////////
+
+  return volcount;
 }
 
 size_t pt_numDaughters(size_t pvolID)
 {
   auto &geoManager = vecgeom::GeoManager::Instance();
+
   // const vgdml::VPlacedVolume
   auto *vol = geoManager.Convert(pvolID);
   // printf("\nfrom xx: vol name \"%s\", volID %zu, copy id %d, daughter num %zu\n", vol->GetName(), pvolID, vol->GetCopyNo(), vol->GetDaughters().size());
