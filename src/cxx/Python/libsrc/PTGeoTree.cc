@@ -5,31 +5,27 @@
 
 using namespace std;
 
+std::vector<std::shared_ptr<Prompt::GeoTree::Node>> Prompt::GeoTree::Node::allNodes = std::vector<std::shared_ptr<Prompt::GeoTree::Node>>{};
+
 Prompt::GeoTree::GeoTree()
-:m_root(std::make_shared<GeoTree::Node>()) {}
+:m_root(std::make_shared<GeoTree::Node>())
+{
+}
 
 Prompt::GeoTree::~GeoTree() {}
 
 shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::getRoot() { return m_root; }
 
-std::shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::findMotherNodeByPhysical(int num)
+vector<shared_ptr<Prompt::GeoTree::Node>> Prompt::GeoTree::findMotherNodeByPhysical(int num)
 {
-  return findMotherNodeByPhysical(m_root, num);
-}
-
-std::shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::findMotherNodeByPhysical(const std::shared_ptr<Prompt::GeoTree::Node> &node, int num)
-{
-  if(!node)
-    return nullptr;
-  if(std::find(node->childPhysicalID.begin(), node->childPhysicalID.end(), num) != node->childPhysicalID.end())
-    return node;
-  for (auto childptr : node->child)
+  auto motherNodes = vector<shared_ptr<GeoTree::Node>>();
+  for(auto node : m_root->allNodes)
   {
-    return findMotherNodeByPhysical(childptr, num);
+    if(std::find(node->childPhysicalID.begin(), node->childPhysicalID.end(), num) != node->childPhysicalID.end())
+      motherNodes.push_back(node);
   }
-    return nullptr;
+  return motherNodes;
 }
-
 
 shared_ptr<Prompt::GeoTree::Node> Prompt::GeoTree::findNodeByPhysical(int num)
 {
@@ -71,38 +67,43 @@ void Prompt::GeoTree::findNodeByLogical(const std::shared_ptr<Prompt::GeoTree::N
   }
 }
 
-void Prompt::GeoTree::printNode(const std::shared_ptr<Prompt::GeoTree::Node> &node, int layer, std::vector<std::vector<int>> &printArray)
+void Prompt::GeoTree::print(const std::shared_ptr<Prompt::GeoTree::Node> &node, int layer, std::vector<std::vector<int>> &printArray, bool phys)
 {
   try
   {
-    printArray.at(layer).push_back(node->physical);
+    if(phys)
+      printArray.at(layer).push_back(node->physical);
+    else
+    {
+      for(auto v: node->childPhysicalID)
+        printArray.at(layer).push_back(v);
+    }
   }
   catch (...)
   {
     printArray.push_back(vector<int>());
-    printArray.at(layer).push_back(node->physical);
+    if(phys)
+      printArray.at(layer).push_back(node->physical);
+    else
+    {
+      for(auto v: node->childPhysicalID)
+        printArray.at(layer).push_back(v);
+    }
   }
   for(auto pointptr: node->child)
   {
-    printNode(pointptr,layer+1, printArray);
+    print(pointptr,layer+1, printArray, phys);
   }
 }
 
-void Prompt::GeoTree::print(bool raw)
+void Prompt::GeoTree::print(bool phys)
 {
-  if(raw)
+  vector<vector<int>> printArray;
+  print(m_root, 0, printArray, phys);
+  for(vector<int> varvector : printArray)
   {
-
-  }
-  else
-  {
-    vector<vector<int>> printArray;
-    printNode(m_root, 0, printArray);
-    for(vector<int> varvector : printArray)
-    {
-      for(int var : varvector)
-        cout << var << " ";
-      cout << "\n";
-    }
+    for(int var : varvector)
+      cout << var << " ";
+    cout << "\n";
   }
 }

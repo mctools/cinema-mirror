@@ -15,23 +15,25 @@ namespace Prompt {
       vecgeom::Transformation3D matrix;
       std::vector<std::shared_ptr<Node>> child;
       std::vector<unsigned> childPhysicalID;
+      static std::vector<std::shared_ptr<Node>> allNodes;
 
       void print()
       {
         std::cout << "node physicalID " << physical << ", logicalID " << logical << "\n";
         matrix.Print();
-        std::cout << "\nChild physical ID: ";
-        for (const auto &c : childPhysicalID)
+        if(!childPhysicalID.empty())
         {
-          std::cout << c << "  ";
+          std::cout << "\nChild physical ID: ";
+          for (const auto &c : childPhysicalID)
+          {
+            std::cout << c << "  ";
+          }
+          std::cout << "\n";
         }
-        std::cout << "\n";
 
-        if(child.empty())
-          std::cout << "no physical child object:\n";
-        else
+        if(!child.empty())
         {
-          std::cout << "Child physical and logical ID:\n";
+          std::cout << "Child physical and logical ID (from the child objects):\n";
           for (const auto &c : child)
           {
             std::cout << "[" << c->physical << ", ";
@@ -39,6 +41,18 @@ namespace Prompt {
           }
           std::cout << "\n";
         }
+        std::cout << "\n";
+      }
+
+      void printAllNodes()
+      {
+        for(auto node : allNodes)
+          node->print();
+      }
+
+      void clearAllNodes()
+      {
+        allNodes.clear();
       }
 
       void addChild(std::shared_ptr<Node> c)
@@ -53,16 +67,16 @@ namespace Prompt {
       }
     };
 
+
   public:
     GeoTree();
     ~GeoTree();
 
-    void print(bool raw=false);
+    void print(bool phys=true);
 
     std::shared_ptr<Node> getRoot();
 
-    std::shared_ptr<Node> findMotherNodeByPhysical(int num);
-    std::shared_ptr<Node> findMotherNodeByPhysical(const std::shared_ptr<Node> &node, int num);
+    std::vector<std::shared_ptr<Node>> findMotherNodeByPhysical(int num);
 
     std::shared_ptr<Node> findNodeByPhysical(int num);
     std::shared_ptr<Node> findNodeByPhysical(const std::shared_ptr<Node> &node, int num);
@@ -73,7 +87,7 @@ namespace Prompt {
 
   private:
     std::shared_ptr<Node> m_root;
-    void printNode(const std::shared_ptr<Node> &node, int layer, std::vector<std::vector<int>> &printArray);
+    void print(const std::shared_ptr<Node> &node, int layer, std::vector<std::vector<int>> &printArray, bool phys);
 
   };
 
