@@ -40,6 +40,7 @@ namespace Prompt {
   private:
     std::shared_ptr<Node> m_root;
     void countChildNode(const std::shared_ptr<Node> &node, unsigned &count);
+    void updateChildMatrix(std::shared_ptr<Node> &node);
     std::vector<std::shared_ptr<Node>> findMotherNodeByPhysical(int num);
     void print(const std::shared_ptr<Node> &node, int layer, std::vector<std::vector<int>> &printArray, bool phys);
 

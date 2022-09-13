@@ -85,6 +85,19 @@ void Prompt::GeoTree::countChildNode(const std::shared_ptr<Prompt::GeoTree::Node
   }
 }
 
+void Prompt::GeoTree::updateChildMatrix(std::shared_ptr<Node> &node)
+{
+  if(node->childPhysicalID.size()!=node->child.size())
+    PROMPT_THROW2(BadInput, "Prompt::GeoTree::countChildNode node->childPhysicalID.size()!=node->child.size())");
+
+  for(auto &cn : node->child)
+  {
+    cn->matrix.MultiplyFromRight(node->matrix);
+    updateChildMatrix(cn);
+  }
+}
+
+
 // enum NODETYPE { PLACED, LOGICAL, FULL};
 unsigned Prompt::GeoTree::getNumNodes(NODETYPE type)
 {
@@ -165,6 +178,8 @@ void Prompt::GeoTree::makeTree()
       m->addChild(node);
     }
   }
+
+  updateChildMatrix(m_root);
 
   //sanity test
   if(getNumNodes(PLACED) != geoManager.GetPlacedVolumesCount())
