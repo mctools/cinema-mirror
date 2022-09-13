@@ -1,5 +1,3 @@
-
-
 #ifndef Prompt_GeoTree_hh
 #define Prompt_GeoTree_hh
 
@@ -17,54 +15,11 @@ namespace Prompt {
       std::vector<unsigned> childPhysicalID;
       static std::vector<std::shared_ptr<Node>> allNodes;
 
-      void print()
-      {
-        std::cout << "node physicalID " << physical << ", logicalID " << logical << "\n";
-        matrix.Print();
-        if(!childPhysicalID.empty())
-        {
-          std::cout << "\nChild physical ID: ";
-          for (const auto &c : childPhysicalID)
-          {
-            std::cout << c << "  ";
-          }
-          std::cout << "\n";
-        }
-
-        if(!child.empty())
-        {
-          std::cout << "Child physical and logical ID (from the child objects):\n";
-          for (const auto &c : child)
-          {
-            std::cout << "[" << c->physical << ", ";
-            std::cout << c->logical << "],  ";
-          }
-          std::cout << "\n";
-        }
-        std::cout << "\n";
-      }
-
-      void printAllNodes()
-      {
-        for(auto node : allNodes)
-          node->print();
-      }
-
-      void clearAllNodes()
-      {
-        allNodes.clear();
-      }
-
-      void addChild(std::shared_ptr<Node> c)
-      {
-        child.push_back(c);
-      }
-
-      void setMatrix(const vecgeom::Transformation3D *mat)
-      {
-        matrix = vecgeom::Transformation3D(* const_cast<vecgeom::Transformation3D*>(mat));
-        matrix.Inverse(matrix);
-      }
+      void print();
+      void printAllNodes();
+      void clearAllNodes();
+      void addChild(std::shared_ptr<Node> c);
+      void setMatrix(const vecgeom::Transformation3D *mat);
     };
 
 
@@ -73,20 +28,19 @@ namespace Prompt {
     ~GeoTree();
 
     void print(bool phys=true);
-
     std::shared_ptr<Node> getRoot();
-
-    std::vector<std::shared_ptr<Node>> findMotherNodeByPhysical(int num);
-
-    std::shared_ptr<Node> findNodeByPhysical(int num);
-    std::shared_ptr<Node> findNodeByPhysical(const std::shared_ptr<Node> &node, int num);
-
-    std::vector<std::shared_ptr<Node>> findNodeByLogical(int num);
-    void findNodeByLogical(const std::shared_ptr<Node> &node, int num, std::vector<std::shared_ptr<Node>>& logicalnode);
-
+    std::vector<std::shared_ptr<Node>> findNode(int num, bool physical=true);
+    void makeTree();
+    //The placed are those defined by <physvol></physvol> in the gdml file
+    //The logical are those defined by <volume></volume> in the gdml file
+    //The full are those in the fully expended geometry tree
+    enum NODETYPE { PLACED, LOGICAL, FULL};
+    unsigned getNumNodes(NODETYPE type);
 
   private:
     std::shared_ptr<Node> m_root;
+    void countChildNode(const std::shared_ptr<Node> &node, unsigned &count);
+    std::vector<std::shared_ptr<Node>> findMotherNodeByPhysical(int num);
     void print(const std::shared_ptr<Node> &node, int layer, std::vector<std::vector<int>> &printArray, bool phys);
 
   };

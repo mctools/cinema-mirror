@@ -97,61 +97,12 @@ size_t pt_placedVolNum()
 
   //test geoTree
   auto tree = std::make_shared<Prompt::GeoTree>();
-  auto world = geoManager.GetWorld();
-
-  bool emforce_placement=false; // fixme: this parameter should be an optional
-
-  if(world->id()!=(volcount-1))
-  PROMPT_THROW(BadInput, "world is not the last one in the map");
-
-  auto root = tree->getRoot();
-  root->physical = world->id();
-  root->logical = world->GetLogicalVolume()->id();
-  root->setMatrix(world->GetTransformation());
-  for(auto d: world->GetDaughters())
-  {
-    root->childPhysicalID.push_back(d->id());
-  }
-  Prompt::GeoTree::Node::allNodes.push_back(root);
-
-  // skip the world as it is the root
-  for(size_t i=volcount-2;i<-1;i--)
-  {
-    auto *vol = geoManager.Convert(i);
-
-    printf("volid %zu, adding physical volume \"%s\" into the tree\n", i, vol->GetLogicalVolume()->GetName());
-
-    auto node = std::shared_ptr<Prompt::GeoTree::Node>(new Prompt::GeoTree::Node {vol->id(), vol->GetLogicalVolume()->id()});
-    node->setMatrix(vol->GetTransformation());
-    // set daughters
-    auto &dau = vol->GetDaughters();
-    for(auto d: dau)
-    {
-      node->childPhysicalID.push_back(d->id());
-    }
-    // node->print();
-    Prompt::GeoTree::Node::allNodes.push_back(node);
-
-
-    //set the correlation of this node to the tree
-    auto mothers = tree->findMotherNodeByPhysical(i);
-    if(mothers.empty())
-    {
-      if(emforce_placement)
-        PROMPT_THROW2(BadInput, "Mother volume is not found");
-      continue;
-    }
-    for(auto m:mothers)
-    {
-      m->addChild(node);
-    }
-  }
-
+  tree->makeTree();
   printf("+++\n");
   tree->print();
   printf("+++\n");
   // tree->getRoot()->clearAllNodes();
-  tree->getRoot()->printAllNodes();
+  // tree->getRoot()->printAllNodes();
 
   ///////////////////////////////////////////////////////////////////
 
