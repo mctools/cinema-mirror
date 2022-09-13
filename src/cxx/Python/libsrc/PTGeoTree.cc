@@ -91,17 +91,21 @@ void Prompt::GeoTree::countChildNode(const std::shared_ptr<Prompt::GeoTree::Node
   }
 }
 
-void Prompt::GeoTree::updateChildMatrix(std::shared_ptr<Node> &node)
+void Prompt::GeoTree::updateChildMatrix(std::shared_ptr<Node> &node, const vecgeom::Transformation3D &motherMatrix)
 {
   if(node->childPhysicalID.size()!=node->child.size())
     PROMPT_THROW2(BadInput, "Prompt::GeoTree::countChildNode node->childPhysicalID.size()!=node->child.size())");
 
+  cout << node->physical << " " << node->logical << endl;
+
   m_fullTreeNode.push_back(node);
+  vecgeom::Transformation3D m = motherMatrix;
+  m.MultiplyFromRight(node->matrix);
+  m_fllTreeMatrix.push_back(m);
 
   for(auto &cn : node->child)
   {
-    cn->matrix.MultiplyFromRight(node->matrix);
-    updateChildMatrix(cn);
+    updateChildMatrix(cn, m);
   }
 }
 
@@ -188,7 +192,8 @@ void Prompt::GeoTree::makeTree()
   }
 
   // update the matrix and also the m_fullTreeNode
-  updateChildMatrix(m_root);
+  vecgeom::Transformation3D initialMat;
+  updateChildMatrix(m_root, initialMat);
 
   //sanity test
   if(getNumNodes(PLACED) != geoManager.GetPlacedVolumesCount())

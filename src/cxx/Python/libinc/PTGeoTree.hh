@@ -39,12 +39,13 @@ namespace Prompt {
     enum NODETYPE { PLACED, LOGICAL, FULL};
     unsigned getNumNodes(NODETYPE type);
     std::vector<std::shared_ptr<Node>> m_fullTreeNode;
+    std::vector<vecgeom::Transformation3D> m_fllTreeMatrix;
 
   private:
     friend class Singleton<GeoTree>;
     std::shared_ptr<Node> m_root;
     void countChildNode(const std::shared_ptr<Node> &node, unsigned &count);
-    void updateChildMatrix(std::shared_ptr<Node> &node);
+    void updateChildMatrix(std::shared_ptr<Node> &node, const vecgeom::Transformation3D &motherMatrix);
 
     std::vector<std::shared_ptr<Node>> findMotherNodeByPhysical(int num);
     void print(const std::shared_ptr<Node> &node, int layer, std::vector<std::vector<int>> &printArray, bool phys);

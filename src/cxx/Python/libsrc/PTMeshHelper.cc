@@ -137,19 +137,19 @@ void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPoly
 {
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
   const auto node = tree.m_fullTreeNode[pvolID];
+  const auto &tMatrix = tree.m_fllTreeMatrix[pvolID];
+
   auto &geoManager = vecgeom::GeoManager::Instance();
 
   // const vgdml::VPlacedVolume
   auto *vol = geoManager.Convert(node->physical);
   // std::cout << vol->GetName() << std::endl;
-
-  auto *mesh = vol->CreateMesh3D(nSegments);
-  const auto &tMatrix = node->matrix;
+  // auto *mesh = vol->CreateMesh3D(nSegments);
+  vecgeom::Transformation3D matrix;
+   auto *mesh = vol->GetUnplacedVolume()->CreateMesh3D(matrix, nSegments);
 
    if(mesh->GetPolygons().empty())
       PROMPT_THROW(BadInput, "empty mesh");
-
-   const vecgeom::Transformation3D *matrix = vol->GetTransformation();
 
    // auto = Utils3D::vector_t<Utils3D::Polygon> const
    auto &polygens = mesh->GetPolygons();
