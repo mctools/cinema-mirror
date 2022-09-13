@@ -143,8 +143,6 @@ void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPoly
 
   // const vgdml::VPlacedVolume
   auto *vol = geoManager.Convert(node->physical);
-  // std::cout << vol->GetName() << std::endl;
-  // auto *mesh = vol->CreateMesh3D(nSegments);
   vecgeom::Transformation3D matrix;
   auto *mesh = vol->GetUnplacedVolume()->CreateMesh3D(matrix, nSegments);
 

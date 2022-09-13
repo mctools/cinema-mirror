@@ -21,7 +21,7 @@
     </materials>
 
     <solids>
-        <box name="WorldBox" x="1200.0" y="1200.0" z="8000.0" lunit="mm"/>
+        <box name="WorldBox" x="70.0" y="70" z="7000.0" lunit="mm"/>
         <box name="Guider1_outer" z="1000" y="53" x="53" lunit="mm"/>
         <box name="Guider1_inner" z="1000" y="50" x="50" lunit="mm"/>
         <subtraction name="Guider1">
