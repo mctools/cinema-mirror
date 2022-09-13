@@ -24,8 +24,6 @@
 #include <VecGeom/volumes/SolidMesh.h>
 #include <VecGeom/management/GeoManager.h>
 #include <VecGeom/gdml/Middleware.h>
-#include <VecGeom/navigation/BVHNavigator.h>
-#include <VecGeom/navigation/NewSimpleNavigator.h>
 #include <VecGeom/gdml/Frontend.h>
 
 #include <VecGeom/base/Transformation3D.h>

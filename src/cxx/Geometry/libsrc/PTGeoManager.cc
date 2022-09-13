@@ -25,6 +25,13 @@
 #include <VecGeom/gdml/Middleware.h>
 #include <VecGeom/gdml/Frontend.h>
 #include <VecGeom/volumes/PlacedVolume.h>
+#include "VecGeom/management/GeoManager.h"
+#include "VecGeom/navigation/BVHNavigator.h"
+#include "VecGeom/navigation/NewSimpleNavigator.h"
+#include "VecGeom/navigation/SimpleABBoxNavigator.h"
+#include "VecGeom/navigation/SimpleABBoxLevelLocator.h"
+#include "VecGeom/navigation/BVHLevelLocator.h"
+
 #include "PTAnaManager.hh"
 
 #include "PTUtils.hh"
@@ -69,10 +76,28 @@ std::shared_ptr<Prompt::Scoror> Prompt::GeoManager::getScoror(const std::string 
     return nullptr;
 }
 
+
 void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 {
   vgdml::Parser p;
   const auto loadedMiddleware = p.Load(gdml_file.c_str(), false, 1);
+
+  //accelaration
+  vecgeom::BVHManager::Init();
+  for (auto &lvol : vecgeom::GeoManager::Instance().GetLogicalVolumesMap()) {
+    auto ndaughters = lvol.second->GetDaughtersp()->size();
+
+    if (ndaughters <= 2)
+      lvol.second->SetNavigator(vecgeom::NewSimpleNavigator<>::Instance());
+    else
+      lvol.second->SetNavigator(vecgeom::BVHNavigator<>::Instance());
+
+    if (lvol.second->ContainsAssembly())
+      lvol.second->SetLevelLocator(vecgeom::SimpleAssemblyAwareABBoxLevelLocator::GetInstance());
+    else
+      lvol.second->SetLevelLocator(vecgeom::BVHLevelLocator::GetInstance());
+  }
+
 
   if (!loadedMiddleware) PROMPT_THROW(DataLoadError, "failed to load the gdml file ");
 
