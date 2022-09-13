@@ -146,23 +146,23 @@ void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPoly
   // std::cout << vol->GetName() << std::endl;
   // auto *mesh = vol->CreateMesh3D(nSegments);
   vecgeom::Transformation3D matrix;
-   auto *mesh = vol->GetUnplacedVolume()->CreateMesh3D(matrix, nSegments);
+  auto *mesh = vol->GetUnplacedVolume()->CreateMesh3D(matrix, nSegments);
 
-   if(mesh->GetPolygons().empty())
-      PROMPT_THROW(BadInput, "empty mesh");
+  if(mesh->GetPolygons().empty())
+    PROMPT_THROW(BadInput, "empty mesh");
 
-   // auto = Utils3D::vector_t<Utils3D::Polygon> const
-   auto &polygens = mesh->GetPolygons();
-   for(const auto &poly: polygens)
-   {
-     for(const auto &vert: poly.fVert)
-     {
-       auto vertTransformed = tMatrix.Transform(vert);
-       *(points++)=vertTransformed[0];
-       *(points++)=vertTransformed[1];
-       *(points++)=vertTransformed[2];
-     }
-     break;
+  // auto = Utils3D::vector_t<Utils3D::Polygon> const
+  auto &polygens = mesh->GetPolygons();
+  for(const auto &poly: polygens)
+  {
+    for(const auto &vert: poly.fVert)
+    {
+      auto vertTransformed = tMatrix.Transform(vert);
+      *(points++)=vertTransformed[0];
+      *(points++)=vertTransformed[1];
+      *(points++)=vertTransformed[2];
+    }
+   break;
    }
 
   for(const auto &apolygon: polygens)

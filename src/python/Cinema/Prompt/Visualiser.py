@@ -53,7 +53,7 @@ class Visualiser():
                 if any(srchstr in name for srchstr in self.blacklist):
                     continue
 
-            print(f'loading mesh {name}')
+            # print(f'loading mesh {name}')
             if name!='World':
                 name, points, faces = am.getMesh(10)
                 if points.size==0:

@@ -96,8 +96,6 @@ void Prompt::GeoTree::updateChildMatrix(std::shared_ptr<Node> &node, const vecge
   if(node->childPhysicalID.size()!=node->child.size())
     PROMPT_THROW2(BadInput, "Prompt::GeoTree::countChildNode node->childPhysicalID.size()!=node->child.size())");
 
-  cout << node->physical << " " << node->logical << endl;
-
   m_fullTreeNode.push_back(node);
   vecgeom::Transformation3D m = motherMatrix;
   m.MultiplyFromRight(node->matrix);
