@@ -13,7 +13,7 @@ namespace Prompt {
       vecgeom::Transformation3D matrix;
       std::vector<std::shared_ptr<Node>> child;
       std::vector<unsigned> childPhysicalID;
-      static std::vector<std::shared_ptr<Node>> allNodes;
+      static std::vector<std::shared_ptr<Node>> allPhysicalNodes;
 
       void print();
       void printAllNodes();
@@ -36,11 +36,13 @@ namespace Prompt {
     //The full are those in the fully expended geometry tree
     enum NODETYPE { PLACED, LOGICAL, FULL};
     unsigned getNumNodes(NODETYPE type);
+    std::vector<std::shared_ptr<Node>> m_fullTreeNode;
 
   private:
     std::shared_ptr<Node> m_root;
     void countChildNode(const std::shared_ptr<Node> &node, unsigned &count);
     void updateChildMatrix(std::shared_ptr<Node> &node);
+
     std::vector<std::shared_ptr<Node>> findMotherNodeByPhysical(int num);
     void print(const std::shared_ptr<Node> &node, int layer, std::vector<std::vector<int>> &printArray, bool phys);
 
