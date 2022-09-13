@@ -94,13 +94,10 @@ size_t pt_placedVolNum()
 
   /////////////////////////////////////////////////////////////////////
   printf("\n\nNow time for testing\n");
+  auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
 
   //test geoTree
-  auto tree = std::make_shared<Prompt::GeoTree>();
-  tree->makeTree();
-  printf("+++\n");
-  tree->print();
-  printf("+++\n");
+  // auto tree = std::make_shared<Prompt::GeoTree>();
   // tree->getRoot()->clearAllNodes();
   // tree->getRoot()->printAllNodes();
 
@@ -140,6 +137,8 @@ void pt_getDaughterID(size_t pvolID, size_t dsize, unsigned *physicalID, unsigne
 
 void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlolygen, size_t &faceSize)
 {
+  // auto &rng = Singleton<SingletonPTRand>::getInstance();
+
   auto &geoManager = vecgeom::GeoManager::Instance();
   size_t pvolsize =  geoManager.GetPlacedVolumesCount();
 

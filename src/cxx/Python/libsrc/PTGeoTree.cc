@@ -55,7 +55,13 @@ void Prompt::GeoTree::Node::setMatrix(const vecgeom::Transformation3D *mat)
 }
 
 Prompt::GeoTree::GeoTree()
-:m_root(std::make_shared<GeoTree::Node>()) { }
+:m_root(std::make_shared<GeoTree::Node>())
+{
+  makeTree();
+  printf("+++begin full tree node (physical)\n");
+  print();
+  printf("+++end full tree node (physical)\n");
+}
 
 Prompt::GeoTree::~GeoTree() {}
 

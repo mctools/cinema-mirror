@@ -2,6 +2,8 @@
 #define Prompt_GeoTree_hh
 
 #include "PromptCore.hh"
+#include "PTSingleton.hh"
+
 #include <VecGeom/base/Transformation3D.h>
 
 namespace Prompt {
@@ -39,6 +41,7 @@ namespace Prompt {
     std::vector<std::shared_ptr<Node>> m_fullTreeNode;
 
   private:
+    friend class Singleton<GeoTree>;
     std::shared_ptr<Node> m_root;
     void countChildNode(const std::shared_ptr<Node> &node, unsigned &count);
     void updateChildMatrix(std::shared_ptr<Node> &node);
