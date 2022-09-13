@@ -22,11 +22,6 @@
 
 from ..Interface import *
 
-# void* pt_Transformation3D_new(void *trfm3Dobj);
-# void pt_Transformation3D_delete(void *trfm3Dobj);
-# void pt_Transformation3D_multiple(void *trfm3Dobj1, void *trfm3Dobj2);
-# void pt_Transformation3D_transform(void *trfm3Dobj1, size_t numPt, double *in, double *out);
-
 _pt_Transformation3D_new = importFunc('pt_Transformation3D_new', type_voidp, [type_voidp])
 _pt_Transformation3D_newfromID = importFunc('pt_Transformation3D_newfromID', type_voidp, [type_uint])
 _pt_Transformation3D_delete = importFunc('pt_Transformation3D_delete', None, [type_voidp])
@@ -69,29 +64,29 @@ class Mesh():
         self.nMax=self.placedVolNum()
         self.n = 0
 
-        daughter2Mother = {}
-        id2tMat = {}
-        #iterate through all physical volumes
-        for id in range(self.nMax):
-            id2tMat[id] = MeshHelper(id)
-            phyid, logid = self.getDaughterID(id)
-            print(f'***dau of vol {id}, physical daughter {phyid}, corrispending logical ID {logid}')
-            for dautID in phyid:
-                if daughter2Mother.get(dautID):
-                    daughter2Mother[dautID].append(id)
-                else:
-                    daughter2Mother[dautID] = [id]
-        print(daughter2Mother)
-
-        #a play around :)
-        matrix = id2tMat[3]
-        loc = np.array([[0,0,0],[0,0.,0]])
-        output = matrix.tansform(loc)
-        print(output)
-
-        matrix.multiple(matrix.cobj)
-        output = matrix.tansform(loc)
-        print(output)
+        # daughter2Mother = {}
+        # id2tMat = {}
+        # #iterate through all physical volumes
+        # for id in range(self.nMax):
+        #     id2tMat[id] = MeshHelper(id)
+        #     phyid, logid = self.getDaughterID(id)
+        #     print(f'***dau of vol {id}, physical daughter {phyid}, corrispending logical ID {logid}')
+        #     for dautID in phyid:
+        #         if daughter2Mother.get(dautID):
+        #             daughter2Mother[dautID].append(id)
+        #         else:
+        #             daughter2Mother[dautID] = [id]
+        # print(daughter2Mother)
+        #
+        # #a play around :)
+        # matrix = id2tMat[3]
+        # loc = np.array([[0,0,0],[0,0.,0]])
+        # output = matrix.tansform(loc)
+        # print(output)
+        #
+        # matrix.multiple(matrix.cobj)
+        # output = matrix.tansform(loc)
+        # print(output)
 
         # stop the shit
         # while True:

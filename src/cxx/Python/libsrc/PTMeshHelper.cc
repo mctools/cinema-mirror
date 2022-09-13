@@ -99,6 +99,8 @@ size_t pt_placedVolNum()
   auto tree = std::make_shared<Prompt::GeoTree>();
   auto world = geoManager.GetWorld();
 
+  bool emforce_placement=false; // fixme: this parameter should be an optional
+
   if(world->id()!=(volcount-1))
   PROMPT_THROW(BadInput, "world is not the last one in the map");
 
@@ -135,11 +137,9 @@ size_t pt_placedVolNum()
     auto mothers = tree->findMotherNodeByPhysical(i);
     if(mothers.empty())
     {
-      // printf("physical id:\n");
-      // tree->print();
-      // printf("child physical id:\n");
-      // tree->print(false);
-      PROMPT_THROW2(BadInput, "Mother volume is not found");
+      if(emforce_placement)
+        PROMPT_THROW2(BadInput, "Mother volume is not found");
+      continue;
     }
     for(auto m:mothers)
     {
