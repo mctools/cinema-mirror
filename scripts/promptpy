@@ -47,7 +47,7 @@ myLcher.setSeed(rdseed)
 myLcher.loadGeometry(inputfile)
 
 if args.visualize is True:
-    v = Visualiser(args.blacklist, printWorld=True)
+    v = Visualiser(args.blacklist, printWorld=False)
     for i in range(int(args.neutronNum)):
         myLcher.go(1, recordTrj=True)
         if printTraj:

@@ -85,65 +85,20 @@ const char* pt_Transformation3D_print(void *trfm3Dobj)
   return str.c_str();
 }
 
-size_t pt_placedVolNum()
+size_t pt_countFullTreeNode()
 {
-  auto &geoManager = vecgeom::GeoManager::Instance();
-  printf("total volume in the tree %ld\n", geoManager.GetTotalNodeCount());
-  printf("total placed volume %ld\n", geoManager.GetPlacedVolumesCount());
-  size_t volcount = geoManager.GetPlacedVolumesCount();
-
-  /////////////////////////////////////////////////////////////////////
-  printf("\n\nNow time for testing\n");
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
-
-  //test geoTree
-  // auto tree = std::make_shared<Prompt::GeoTree>();
-  // tree->getRoot()->clearAllNodes();
-  // tree->getRoot()->printAllNodes();
-
-  ///////////////////////////////////////////////////////////////////
-
-  return volcount;
-}
-
-size_t pt_numDaughters(size_t pvolID)
-{
-  auto &geoManager = vecgeom::GeoManager::Instance();
-
-  // const vgdml::VPlacedVolume
-  auto *vol = geoManager.Convert(pvolID);
-  // printf("\nfrom xx: vol name \"%s\", volID %zu, copy id %d, daughter num %zu\n", vol->GetName(), pvolID, vol->GetCopyNo(), vol->GetDaughters().size());
-  printf("\nphysical volume info : %zu\n", pvolID);
-  vol->Print();
-  printf("\n");
-  return vol->GetDaughters().size();
-}
-
-void pt_getDaughterID(size_t pvolID, size_t dsize, unsigned *physicalID, unsigned *logicalID)
-{
-  auto &geoManager = vecgeom::GeoManager::Instance();
-  // const vgdml::VPlacedVolume
-  auto *vol = geoManager.Convert(pvolID);
-  auto &dau = vol->GetDaughters();
-  if(dau.size() != dsize)
-    PROMPT_THROW(BadInput, "Wrong daughter size");
-
-  for(auto d: dau)
-  {
-    (*physicalID++)=d->id();
-    (*logicalID++)=d->GetLogicalVolume()->id();
-  }
+  return tree.getNumNodes(Prompt::GeoTree::FULL);
 }
 
 void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlolygen, size_t &faceSize)
 {
-  // auto &rng = Singleton<SingletonPTRand>::getInstance();
-
+  auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
+  const auto node = tree.m_fullTreeNode[pvolID];
   auto &geoManager = vecgeom::GeoManager::Instance();
-  size_t pvolsize =  geoManager.GetPlacedVolumesCount();
 
   // const vgdml::VPlacedVolume
-  auto *vol = geoManager.Convert(pvolID);
+  auto *vol = geoManager.Convert(node->physical);
 
   // Utils3D::USolidMesh
   auto *mesh = vol->CreateMesh3D(nSegments);
@@ -167,8 +122,12 @@ void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlol
 
 const char* pt_getMeshName(size_t pvolID)
 {
+  auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
+  const auto node = tree.m_fullTreeNode[pvolID];
   auto &geoManager = vecgeom::GeoManager::Instance();
-  return geoManager.Convert(pvolID)->GetName();
+
+  // const vgdml::VPlacedVolume
+  return geoManager.Convert(node->physical)->GetName();
 }
 
 //size of points: 3*n
@@ -176,13 +135,16 @@ const char* pt_getMeshName(size_t pvolID)
 //size of NumPolygonPoints: m
 void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPolygonPoints, size_t *faces)
 {
+  auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
+  const auto node = tree.m_fullTreeNode[pvolID];
   auto &geoManager = vecgeom::GeoManager::Instance();
 
   // const vgdml::VPlacedVolume
-  auto *vol = geoManager.Convert(pvolID);
+  auto *vol = geoManager.Convert(node->physical);
   // std::cout << vol->GetName() << std::endl;
-  // Utils3D::USolidMesh
+
   auto *mesh = vol->CreateMesh3D(nSegments);
+  const auto &tMatrix = node->matrix;
 
    if(mesh->GetPolygons().empty())
       PROMPT_THROW(BadInput, "empty mesh");
@@ -195,10 +157,10 @@ void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPoly
    {
      for(const auto &vert: poly.fVert)
      {
-       // auto vertTransformed = matrix->Transform(vert);
-       *(points++)=vert[0];
-       *(points++)=vert[1];
-       *(points++)=vert[2];
+       auto vertTransformed = tMatrix.Transform(vert);
+       *(points++)=vertTransformed[0];
+       *(points++)=vertTransformed[1];
+       *(points++)=vertTransformed[2];
      }
      break;
    }
