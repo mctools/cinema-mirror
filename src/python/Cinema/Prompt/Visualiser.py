@@ -61,4 +61,8 @@ class Visualiser():
             self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
 
     def show(self):
+        self.plotter.show_bounds()
+        self.plotter.view_yz()
+        self.plotter.show_axes()
+        self.plotter.show_grid()
         self.plotter.show()
