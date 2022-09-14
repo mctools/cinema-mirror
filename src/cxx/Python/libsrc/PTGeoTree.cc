@@ -134,9 +134,12 @@ unsigned Prompt::GeoTree::getNumNodes(NODETYPE type)
 void Prompt::GeoTree::makeTree()
 {
   auto &geoManager = vecgeom::GeoManager::Instance();
-  printf("total volume in the tree %ld\n", geoManager.GetTotalNodeCount());
-  printf("total placed volume %ld\n", geoManager.GetPlacedVolumesCount());
   size_t pvolCnt = geoManager.GetPlacedVolumesCount();
+  size_t vgtreenodecnt = geoManager.GetTotalNodeCount();
+  printf("total volume in the tree %ld\n", vgtreenodecnt);
+  printf("total placed volume %ld\n", pvolCnt);
+  if(pvolCnt==0 && vgtreenodecnt==0)
+    return;
 
   auto tree = this;
   auto world = geoManager.GetWorld();
