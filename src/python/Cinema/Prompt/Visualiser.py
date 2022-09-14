@@ -53,14 +53,12 @@ class Visualiser():
                 if any(srchstr in name for srchstr in self.blacklist):
                     continue
 
-            # print(f'loading mesh {name}')
-            if name!='World':
-                name, points, faces = am.getMesh(10)
-                if points.size==0:
-                    continue
-                rcolor = random.choice(self.color)
-                mesh = pv.PolyData(points, faces)
-                self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
+            name, points, faces = am.getMesh(10)
+            if points.size==0:
+                continue
+            rcolor = random.choice(self.color)
+            mesh = pv.PolyData(points, faces)
+            self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
 
     def show(self):
         self.plotter.show()
