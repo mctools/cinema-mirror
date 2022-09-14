@@ -58,13 +58,12 @@ class Visualiser():
                 continue
             rcolor = random.choice(self.color)
             mesh = pv.PolyData(points, faces)
-            self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3, name=name)
+            self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
 
     def show(self):
         self.plotter.show_bounds()
         self.plotter.view_zy()
-        self.plotter.enable_anti_aliasing()
         self.plotter.show_axes()
         self.plotter.show_grid()
-        self.plotter.enable_cell_picking(left_clicking=True) #fixme: to be implement
+        # self.plotter.enable_cell_picking(left_clicking=True) #fixme: to be implement
         self.plotter.show()
