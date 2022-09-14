@@ -27,28 +27,19 @@ namespace pt = Prompt;
 TEST_CASE("test_geotree")
 {
   auto tree = pt::Singleton<Prompt::GeoTree>::getInstance();
-  // auto root = tree.getRoot();
-  // root->physical = 8;
-  // root->logical = 108;
-  // auto child1 = std::shared_ptr<pt::GeoTree::Node>(new pt::GeoTree::Node {7,107});
-  // auto child2 = std::shared_ptr<pt::GeoTree::Node>(new pt::GeoTree::Node {6,106});
-  //
-  // root->addChild(child1);
-  // root->addChild(child2);
-  // auto child1_child1 = std::shared_ptr<pt::GeoTree::Node>(new pt::GeoTree::Node {5,105});
-  // auto child1_child2 = std::shared_ptr<pt::GeoTree::Node>(new pt::GeoTree::Node {4,105});
-  //
-  // child1->addChild(child1_child1);
-  // child1->addChild(child1_child2);
-  //
-  // tree.print();
+  auto root = tree.getRoot();
+  root->physical = 8;
+  root->logical = 108;
+  auto child1 = std::shared_ptr<pt::GeoTree::Node>(new pt::GeoTree::Node {7,107});
+  auto child2 = std::shared_ptr<pt::GeoTree::Node>(new pt::GeoTree::Node {6,106});
 
-  // auto node = tree->findNode(7)[0];
-  // std::cout << "physical\n";
-  // node->print();
-  //
-  // auto nodes = tree->findNode(105)[0];
-  // std::cout << "logical\n";
-  // for(const auto &n: nodes)
-  //   n->print();
+  root->addChild(child1);
+  root->addChild(child2);
+  auto child1_child1 = std::shared_ptr<pt::GeoTree::Node>(new pt::GeoTree::Node {5,105});
+  auto child1_child2 = std::shared_ptr<pt::GeoTree::Node>(new pt::GeoTree::Node {4,105});
+
+  child1->addChild(child1_child1);
+  child1->addChild(child1_child2);
+
+  tree.print();
 }
