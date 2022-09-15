@@ -193,8 +193,8 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   if (verbose && !sameVolume) { std::cout << "hitDaugherBoundary\n";}
 
   //Move next step
-  const double resolution = 0; //fixme: this value should be in sync with the geometry tolerance
-  particle.moveForward(step + (sameVolume ? 0 : resolution) );
+  const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
+  particle.moveForward(sameVolume ? step : (step + resolution) );
 
   if (verbose) {
     std::cout << "scattered conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << " step " << step << std::endl << std::endl;
