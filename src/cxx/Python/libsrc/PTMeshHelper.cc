@@ -123,9 +123,8 @@ const char* pt_getMeshName(size_t pvolID)
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
   const auto node = tree.m_fullTreeNode[pvolID];
   auto &geoManager = vecgeom::GeoManager::Instance();
-
   // const vgdml::VPlacedVolume
-  return geoManager.Convert(node->physical)->GetName();
+  return geoManager.Convert(node->physical)->GetLogicalVolume()->GetName();
 }
 
 //size of points: 3*n

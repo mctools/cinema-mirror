@@ -28,14 +28,14 @@ import matplotlib.colors as mcolors
 from .Mesh import Mesh
 
 class Visualiser():
-    def __init__(self, blacklist, printWorld=False):
+    def __init__(self, blacklist, printWorld=False, dumpMesh=False):
         self.color =  list(mcolors.CSS4_COLORS.keys())
         self.plotter = pv.Plotter()
         self.worldMesh = Mesh()
         self.blacklist = blacklist
         if printWorld:
             self.worldMesh.printMesh()
-        self.loadMesh()
+        self.loadMesh(dumpMesh)
 
 
     def addLine(self, data):
@@ -46,7 +46,8 @@ class Visualiser():
             self.plotter.add_mesh(point_cloud, color='red', opacity=0.3)
 
 
-    def loadMesh(self):
+    def loadMesh(self, dumpMesh=False):
+        count = 0
         for am in self.worldMesh:
             name = am.getMeshName()
             if self.blacklist is not None:
@@ -54,11 +55,17 @@ class Visualiser():
                     continue
 
             name, points, faces = am.getMesh(10)
+            name=f'{count}_{name}'
             if points.size==0:
                 continue
             rcolor = random.choice(self.color)
             mesh = pv.PolyData(points, faces)
-            self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
+            self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3, name=name)
+            if dumpMesh:
+                fn=f'{name}.ply'
+                print(f'saving {fn}')
+                mesh.save(fn, False)
+            count+=1
 
     def show(self):
         self.plotter.show_bounds()

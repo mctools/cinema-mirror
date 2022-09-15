@@ -16,6 +16,7 @@ parser.add_argument('-s', '--seed', action='store', type=int, default=4096,
 parser.add_argument('-n', '--neutronNum', action='store', type=float, default=100,
                     dest='neutronNum', help='neutron number')
 parser.add_argument('-b', '--blacklist',  type=str, nargs='+', dest='blacklist', help='solid mesh blacklist to inform the geometry mesh loader ')
+parser.add_argument('-d', '--dumpmesh', action='store_true', dest='dumpmesh', help='dump mesh into disk')
 
 #TODO:
 # parser.add_argument('-l', '--geoLayer', action='store', type=float, default=0,
@@ -47,7 +48,7 @@ myLcher.setSeed(rdseed)
 myLcher.loadGeometry(inputfile)
 
 if args.visualize is True:
-    v = Visualiser(args.blacklist, printWorld=False)
+    v = Visualiser(args.blacklist, printWorld=False, dumpMesh=args.dumpmesh)
     for i in range(int(args.neutronNum)):
         myLcher.go(1, recordTrj=True)
         if printTraj:
