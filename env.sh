@@ -117,10 +117,12 @@ if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
     if [ -d VecGeom ]; then
       rm -rf VecGeom
     fi
-    git clone https://gitlab.com/xxcai1/VecGeom.git
+    git clone -b v1.2.0 --single-branch https://gitlab.com/xxcai1/VecGeom.git
     cd -
+    patch $CINEMAPATH/external/VecGeom/persistency/gdml/source/src/Middleware.cpp < $CINEMAPATH/external/vecgoem1.2.0_ellisoid.patch
+    patch $CINEMAPATH/external/VecGeom/persistency/gdml/source/include/Middleware.h < $CINEMAPATH/external/vecgoem1.2.0_ellisoid.patch
     mkdir $CINEMAPATH/external/VecGeom/build && cd $CINEMAPATH/external/VecGeom/build
-    cmake -DXercesC_INCLUDE_DIR=$CINEMAPATH/external/xerces-c/install/include   -DVECGEOM_BUILTIN_VECCORE=on -DVECGEOM_XercesC_LIBRARY_RELEASE=$CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/VecGeom/install -DVECGEOM_GDML=On -DVECGEOM_USE_NAVINDEX=On  ..
+    cmake -DXercesC_INCLUDE_DIR=$CINEMAPATH/external/xerces-c/install/include   -DVECGEOM_BUILTIN_VECCORE=on -DXercesC_LIBRARY_RELEASE=$CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/VecGeom/install -DVECGEOM_GDML=On -DVECGEOM_USE_NAVINDEX=On  ..
     make -j${NUMCPU} && make install
     cd -
     echo "installed  VecGeom"

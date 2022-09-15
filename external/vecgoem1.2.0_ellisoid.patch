@@ -1,12 +1,12 @@
-From 275247fc2b212b486e6d925d6ca08c2c9e48422f Mon Sep 17 00:00:00 2001
+From 8b71b8fe75a508d1884d4d294ab7bd7f82ec82bd Mon Sep 17 00:00:00 2001
 From: Xiao-Xiao Cai <caixx@ihep.ac.cn>
-Date: Thu, 15 Sep 2022 14:35:05 +0800
-Subject: [PATCH] add ellipsoid support
+Date: Thu, 15 Sep 2022 16:56:22 +0800
+Subject: [PATCH] update
 
 ---
  persistency/gdml/source/include/Middleware.h |  2 ++
- persistency/gdml/source/src/Middleware.cpp   | 33 +++++++++++++++++++-
- 2 files changed, 34 insertions(+), 1 deletion(-)
+ persistency/gdml/source/src/Middleware.cpp   | 31 +++++++++++++++++++-
+ 2 files changed, 32 insertions(+), 1 deletion(-)
 
 diff --git a/persistency/gdml/source/include/Middleware.h b/persistency/gdml/source/include/Middleware.h
 index 9c7be1ff..443a3da2 100644
@@ -22,7 +22,7 @@ index 9c7be1ff..443a3da2 100644
        XERCES_CPP_NAMESPACE_QUALIFIER DOMNode const *aDOMNode);
    const vecgeom::VECGEOM_IMPL_NAMESPACE::VUnplacedVolume *processTube(
 diff --git a/persistency/gdml/source/src/Middleware.cpp b/persistency/gdml/source/src/Middleware.cpp
-index 51fd94a4..bd6a3214 100644
+index 51fd94a4..f7a1cdd7 100644
 --- a/persistency/gdml/source/src/Middleware.cpp
 +++ b/persistency/gdml/source/src/Middleware.cpp
 @@ -35,6 +35,7 @@
@@ -33,18 +33,17 @@ index 51fd94a4..bd6a3214 100644
 
  #include "VecGeom/volumes/LogicalVolume.h"
  #include "VecGeom/volumes/PlacedVolume.h"
-@@ -591,6 +592,9 @@ bool Middleware::processSolid(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode const *aDOM
+@@ -591,6 +592,8 @@ bool Middleware::processSolid(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode const *aDOM
        return processOrb(aDOMNode);
      } else if (name == "box") {
        return processBox(aDOMNode);
-+    }
-+    else if (name == "ellipsoid") {
++    } else if (name == "ellipsoid") {
 +      return processEllipsoid(aDOMNode);
      } else if (name == "tube") {
        return processTube(aDOMNode);
      } else if (name == "cutTube") {
-@@ -694,6 +698,33 @@ double Middleware::GetAngleMultiplier(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode con
-   return angleMultiplier;
+@@ -903,6 +906,32 @@ const vecgeom::VECGEOM_IMPL_NAMESPACE::VUnplacedVolume *Middleware::processSpher
+   return anUnplacedSpherePtr;
  }
 
 +const vecgeom::VECGEOM_IMPL_NAMESPACE::VUnplacedVolume *Middleware::processEllipsoid(
@@ -73,11 +72,10 @@ index 51fd94a4..bd6a3214 100644
 +
 +}
 +
-+
- vecgeom::VECGEOM_IMPL_NAMESPACE::VUnplacedVolume const *Middleware::processBox(
+ const vecgeom::VECGEOM_IMPL_NAMESPACE::VUnplacedVolume *Middleware::processParallelepiped(
      XERCES_CPP_NAMESPACE_QUALIFIER DOMNode const *aDOMNode)
  {
-@@ -1287,7 +1318,7 @@ bool Middleware::processLogicVolume(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode const
+@@ -1287,7 +1316,7 @@ bool Middleware::processLogicVolume(XERCES_CPP_NAMESPACE_QUALIFIER DOMNode const
        }
      } else if (theChildNodeName == "physvol") {
        auto const success = processPhysicalVolume(aDOMElement, logicVolume);
