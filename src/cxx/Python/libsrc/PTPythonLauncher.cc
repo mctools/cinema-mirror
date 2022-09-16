@@ -65,7 +65,7 @@ void pt_Launcher_getTrajectory(void* obj, double *trj)
   }
 }
 
-void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj)
+void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj, bool timer)
 {
-  static_cast<pt::Launcher *>(obj)->go(numParticle, printPrecent, recordTrj);
+  static_cast<pt::Launcher *>(obj)->go(numParticle, printPrecent, recordTrj, timer);
 }

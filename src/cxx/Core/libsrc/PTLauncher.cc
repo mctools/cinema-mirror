@@ -75,7 +75,7 @@ void Prompt::Launcher::loadGeometry(const std::string &geofile)
 }
 
 
-void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj)
+void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj, bool timer)
 {
   //set the seed for the random generator
   auto &rng = Singleton<SingletonPTRand>::getInstance();
@@ -91,7 +91,9 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
 
   DeltaParticle dltpar;
 
-  ProgressMonitor moni("Prompt simulation", numParticle, printPrecent);
+  ProgressMonitor *moni=nullptr;
+  if(timer)
+    moni = new ProgressMonitor("Prompt simulation", numParticle, printPrecent);
   for(size_t i=0;i<numParticle;i++)
   {
     //double ekin, const Vector& dir, const Vector& pos
@@ -154,6 +156,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
     {
       m_trajectory.push_back(particle.getPosition());
     }
-    moni.OneTaskCompleted();
+    if(timer)
+      moni->OneTaskCompleted();
   }
 }
