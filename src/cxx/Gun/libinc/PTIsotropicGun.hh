@@ -33,16 +33,17 @@ namespace Prompt {
     : SimpleThermalGun(aParticle, ekin, pos, dir), m_pos(pos) {};
     virtual ~IsotropicGun() {};
     virtual void samplePosDir(Vector &pos, Vector &dir) override
-    { 
+    {
         pos = m_pos;
-        double theta = M_PI*m_rng.generate();
-        double fai = 2*M_PI*m_rng.generate();
+        double r1 = m_rng.generate();
+        double r2 = m_rng.generate();
 
-        double sin_theta = sin(theta);
-        double dir_x = sin_theta*cos(fai);
-        double dir_y = sin_theta*sin(fai);
-        double dir_z = cos(theta);
-        dir = Vector(dir_x, dir_y, dir_z);
+        double u = 2*r1-1;
+        double temp = sqrt(1-u*u);
+        double v = temp*cos(2*M_PI*r2);
+        double w = temp*sin(2*M_PI*r2);
+
+        dir = Vector(u, v, w);
     }
   private:
     Vector m_pos;
