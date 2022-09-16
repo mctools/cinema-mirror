@@ -37,6 +37,7 @@
 #include "PTUtils.hh"
 #include "PTMaxwellianGun.hh"
 #include "PTSimpleThermalGun.hh"
+#include "PTIsotropicGun.hh"
 #include "PTUniModeratorGun.hh"
 #include "PTNeutron.hh"
 #include "PTMPIGun.hh"
@@ -144,6 +145,11 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
       {
         double ekin = std::stod(words[2]);
         m_gun = std::make_shared<SimpleThermalGun>(Neutron(), ekin, string2vec(words[3]), string2vec(words[4]));
+      }
+      else if(words[0]=="IsotropicGun")
+      {
+        double ekin = std::stod(words[2]);
+        m_gun = std::make_shared<IsotropicGun>(Neutron(), ekin, string2vec(words[3]), string2vec(words[4]));
       }
       else
         PROMPT_THROW2(BadInput, "No such gun");
