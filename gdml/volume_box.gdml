@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='utf-8'?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+    <userinfo>
+      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;2.0; 0,0,-1500; 0,0,1" /> -->
+      <auxiliary auxtype="PrimaryGun" auxvalue="IsotropicGun;Neutron;0.001; 0.0,0.0,0.0; 0,0,1" />
+    </userinfo>
+
+    <define>
+    </define>
+
+    <materials>
+        <material name="Vacuum">
+          <atom value="vacuum.ncmat"/>
+        </material>
+
+        <material name="Cd">
+          <atom value="Cd.ncmat"/>
+        </material>
+    </materials>
+
+    <solids>
+        <box lunit="mm" name="World" x="300.0" y="300.0" z="400.0" />
+        <box lunit="mm" name="Box" x="200.0" y="200.0" z="200.0" />     
+    </solids>
+
+    <structure>
+        <volume name="VolBox">
+            <solidref ref="Box" />
+            <materialref ref="Vacuum" />
+        </volume>
+
+        <volume name="VolWorld">
+            <solidref ref="World" />
+            <materialref ref="Cd" />
+
+            <physvol name="Vol">
+                <volumeref ref="VolBox" />
+                <position name="Pos" unit="mm" x="0.0" y="0.0" z="0" />
+                <!-- <rotation name="Rot" unit="deg" x="0.0" y="0.0" z="0.0" /> -->
+            </physvol>
+        </volume>
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="VolWorld" />
+    </setup>
+</gdml>
