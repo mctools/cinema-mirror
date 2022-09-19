@@ -66,7 +66,7 @@ class Visualiser():
                 continue
             rcolor = random.choice(self.color)
             mesh = pv.PolyData(points, faces)
-            mesh.add_field_data([name], 'mesh_name')
+            mesh.add_field_data([name, am.getLogVolumeInfo()], 'mesh_info')
             self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
             if dumpMesh:
                 fn=f'{name}.ply'
@@ -78,7 +78,7 @@ class Visualiser():
         # """Shrink the mesh each time it's clicked."""
         # shrunk = mesh.shrink(0.9)
         # mesh.overwrite(shrunk)  # must operate "in-place" by overwrite
-        print(type(mesh), mesh['mesh_name'])
+        print(type(mesh), mesh['mesh_info'])
         # self.plotter.add_point_scalar_labels(mesh.cast_to_pointset(), 'mesh_name')
         pass
 

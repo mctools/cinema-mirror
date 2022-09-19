@@ -67,13 +67,13 @@ std::shared_ptr<Prompt::MaterialPhysics> Prompt::GeoManager::getMaterialPhysics(
 
 std::string Prompt::GeoManager::getLogicalVolumeScororName(unsigned logid)
 {
-  auto it = m_logVolID2physcoror.find(logid);
   std::string names;
+  auto it = m_logVolID2physcoror.find(logid);
   if(it!=m_logVolID2physcoror.end())
   {
     for(const auto &sc : it->second->scorors)
     {
-      names += sc->getName() + "; ";
+      names += sc->getName() + " ";
     }
   }
   return names;
@@ -190,6 +190,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
   {
     auto &volume   = *item.second;
     const size_t volID = volume.id();
+
     std::shared_ptr<VolumePhysicsScoror> vps(nullptr);
     if(m_logVolID2physcoror.find(volID)==m_logVolID2physcoror.end())
     {
@@ -257,6 +258,12 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     // 3. setup physics model, if it is not yet set
     const vgdml::Material& mat = mat_iter->second;
     auto matphys = getMaterialPhysics(mat.name);
+
+    if(m_logVolID2Mateiral.find(volID)==m_logVolID2Mateiral.end())
+    {
+      m_logVolID2Mateiral.insert( std::make_pair<int, std::string>(volID , std::string(mat.attributes.find("atomValue")->second )) );
+    }
+
     if(matphys) //m_logVolID2physcoror not exist
     {
       vps->physics=matphys;
@@ -268,10 +275,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
       std::cout << "Creating model " << mat.name << ", "
                 << mat.attributes.find("atomValue")->second << volume.GetName() << std::endl;
       std::shared_ptr<MaterialPhysics> model = std::make_shared<MaterialPhysics>();
-      m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<MaterialPhysics>>
-                (std::string(mat.name) , std::move(model) ) );
-      m_logVolID2Mateiral.insert( std::make_pair<int, std::string>
-                (volID , std::string(mat.name) ) );
+      m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<MaterialPhysics>>(std::string(mat.name) , std::move(model) ) );
 
       auto theNewPhysics = getMaterialPhysics(mat.name);
       double bias (1.);

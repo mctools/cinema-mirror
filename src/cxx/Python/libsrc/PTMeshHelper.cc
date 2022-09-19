@@ -20,6 +20,8 @@
 
 #include "PTMeshHelper.hh"
 #include "PTGeoTree.hh"
+#include "PTGeoManager.hh"
+
 #include <VecGeom/base/Config.h>
 #include <VecGeom/volumes/SolidMesh.h>
 #include <VecGeom/management/GeoManager.h>
@@ -125,6 +127,21 @@ const char* pt_getMeshName(size_t pvolID)
   auto &geoManager = vecgeom::GeoManager::Instance();
   // const vgdml::VPlacedVolume
   return geoManager.Convert(node->physical)->GetLogicalVolume()->GetName();
+}
+
+
+
+const char* pt_getLogVolumeInfo(size_t pvolID)
+{
+  auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
+  const auto node = tree.m_fullTreeNode[pvolID];
+  auto &geoManager = Prompt::Singleton<Prompt::GeoManager>::getInstance();
+  std::string info;
+  info += geoManager.getLogicalVolumeMaterialName(node->logical) + " ";
+  info += geoManager.getLogicalVolumeScororName(node->logical) + " ";
+  char* cp = (char*) malloc(info.size()+1);
+  sprintf (cp, "%s ", info.c_str());
+  return cp;
 }
 
 //size of points: 3*n
