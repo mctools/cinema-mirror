@@ -4,27 +4,32 @@ USAGE="Usage: $0 -t for unit test"
 
 .  $CINEMAPATH/external/ncrystal/install/setup.sh
 
-BUILDTYPE="release"
-
-while getopts ti:d option
+while getopts ti:dr option
   do
     case "${option}"
-    in
+     in
       h) echo "$USAGE"
          exit 0;;
       t) TESTFLAG="test";;
       d) echo "Building cinema in the debug mode"
          BUILDTYPE="debug";;
+      r) echo "Building cinema in the release mode"
+         BUILDTYPE="release";;
     esac
 done
 
 
 cd $CINEMAPATH/cinemabin
-cmake -DCMAKE_BUILD_TYPE=${BUILDTYPE} ..
-make -j
+
+if [ -z ${BUILDTYPE} ]; then
+  cmake ..
+else
+  cmake -DCMAKE_BUILD_TYPE=${BUILDTYPE} ..
+fi
 
 if [ -z ${TESTFLAG} ]; then
   echo "Skipped unittest";
+  make -j
 else
   make -j
   ctest -j8

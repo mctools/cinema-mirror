@@ -36,7 +36,7 @@ namespace Prompt {
     PhysicsModel(const std::string &name);
     PhysicsModel(const std::string &name, unsigned gdp, double emin, double emax);
     virtual ~PhysicsModel() {};
-    const std::string getName() { return m_modelName; }
+    const std::string &getName() { return m_modelName; }
     bool applicable(unsigned pgd) const;
     bool isOriented();
     void getEnergyRange(double &ekinMin, double &ekinMax) ;

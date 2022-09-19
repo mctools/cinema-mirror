@@ -23,6 +23,12 @@
 from ..Interface import *
 
 import pyvista as pv
+# try:
+#     import pyvistaqt
+#     from pyvistaqt import BackgroundPlotter as Plotter
+# except ImportError:
+#     from pv import Plotter as Plotter
+
 import random
 import matplotlib.colors as mcolors
 from .Mesh import Mesh
@@ -40,9 +46,12 @@ class Visualiser():
 
     def addLine(self, data):
         line = pv.lines_from_points(data)
+        line.add_field_data(['a neutron trajectory'], 'mesh_info')
         self.plotter.add_mesh(line, color='blue', opacity=0.2, line_width=2)
+        #draw the first and last position as red dots
         if data.size>2:
             point_cloud = pv.PolyData(data[1:-1])
+            line.add_field_data(['a neutron trajectory'], 'mesh_info')
             self.plotter.add_mesh(point_cloud, color='red', opacity=0.3)
 
 
@@ -60,17 +69,24 @@ class Visualiser():
                 continue
             rcolor = random.choice(self.color)
             mesh = pv.PolyData(points, faces)
-            self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3, name=name)
+            mesh.add_field_data([' Volume name: '+name, ' Infomation: '+am.getLogVolumeInfo()], 'mesh_info')
+            self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
             if dumpMesh:
                 fn=f'{name}.ply'
                 print(f'saving {fn}')
                 mesh.save(fn, False)
             count+=1
 
+    def callback(self, mesh):
+        print('\nPicked volume info:')
+        for info in mesh['mesh_info']:
+            print(info)
+        # self.plotter.add_point_scalar_labels(mesh.cast_to_pointset(), 'mesh_name')
+
     def show(self):
         self.plotter.show_bounds()
         self.plotter.view_zy()
         self.plotter.show_axes()
         self.plotter.show_grid()
-        # self.plotter.enable_cell_picking(left_clicking=True) #fixme: to be implement
-        self.plotter.show()
+        self.plotter.enable_mesh_picking(callback=self.callback, left_clicking=False, show=True)
+        self.plotter.show(title='Cinema Visualiser')

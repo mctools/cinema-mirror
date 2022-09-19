@@ -34,19 +34,22 @@ void Prompt::ModelCollection::addPhysicsModel(const std::string &cfg, double bia
   if(bias!=1.)
     std::cout << "material " << cfg << " has a bias of " << bias << std::endl;
 
+  // fixme: absoption should be seperated once ENDF data model is available
   m_models.emplace_back(std::make_shared<NCrystalAbs>(cfg, bias));
-  m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, bias));
-
-  if(m_models.back()->isOriented())
-    m_oriented=true;
+  // cache_xs and bias will be updated once a calculation is required.
+  // so the initial value can be arbitrary.
   m_cache.cache_xs.push_back(0.);
   m_cache.bias.push_back(1.);
+  if(m_models.back()->isOriented())
+    m_oriented=true;
+
+  m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, bias));
+  m_cache.cache_xs.push_back(0.);
+  m_cache.bias.push_back(1.);
+  if(m_models.back()->isOriented())
+    m_oriented=true;
 }
 
-bool Prompt::ModelCollection::sameInquiryAsLastTime(double ekin, const Vector &dir) const
-{
-  return m_oriented ? (m_cache.ekin==ekin && m_cache.dir == dir) : m_cache.ekin==ekin;
-}
 
 double Prompt::ModelCollection::totalCrossSection(double ekin, const Vector &dir) const
 {
