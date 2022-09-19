@@ -74,8 +74,7 @@ class Mesh():
         return _pt_getMeshName(self.n).decode('utf-8')
 
     def getLogVolumeInfo(self):
-        print(f'getLogVolumeInfo {self.n}')
-        return _pt_getLogVolumeInfo(self.n).decode('utf')
+        return _pt_getLogVolumeInfo(self.n).decode('utf-8')
 
     def meshInfo(self, nSegments=10):
         npoints = type_sizet()

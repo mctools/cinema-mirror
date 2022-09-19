@@ -46,9 +46,12 @@ class Visualiser():
 
     def addLine(self, data):
         line = pv.lines_from_points(data)
+        line.add_field_data(['a neutron trajectory'], 'mesh_info')
         self.plotter.add_mesh(line, color='blue', opacity=0.2, line_width=2)
+        #draw the first and last position as red dots
         if data.size>2:
             point_cloud = pv.PolyData(data[1:-1])
+            line.add_field_data(['a neutron trajectory'], 'mesh_info')
             self.plotter.add_mesh(point_cloud, color='red', opacity=0.3)
 
 
@@ -66,7 +69,7 @@ class Visualiser():
                 continue
             rcolor = random.choice(self.color)
             mesh = pv.PolyData(points, faces)
-            mesh.add_field_data([name, am.getLogVolumeInfo()], 'mesh_info')
+            mesh.add_field_data([' Volume name: '+name, ' Infomation: '+am.getLogVolumeInfo()], 'mesh_info')
             self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
             if dumpMesh:
                 fn=f'{name}.ply'
@@ -75,12 +78,10 @@ class Visualiser():
             count+=1
 
     def callback(self, mesh):
-        # """Shrink the mesh each time it's clicked."""
-        # shrunk = mesh.shrink(0.9)
-        # mesh.overwrite(shrunk)  # must operate "in-place" by overwrite
-        print(type(mesh), mesh['mesh_info'])
+        print('\nPicked volume info:')
+        for info in mesh['mesh_info']:
+            print(info)
         # self.plotter.add_point_scalar_labels(mesh.cast_to_pointset(), 'mesh_name')
-        pass
 
     def show(self):
         self.plotter.show_bounds()

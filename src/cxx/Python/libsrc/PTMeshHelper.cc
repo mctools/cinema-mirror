@@ -136,9 +136,15 @@ const char* pt_getLogVolumeInfo(size_t pvolID)
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
   const auto node = tree.m_fullTreeNode[pvolID];
   auto &geoManager = Prompt::Singleton<Prompt::GeoManager>::getInstance();
-  std::string info;
-  info += geoManager.getLogicalVolumeMaterialName(node->logical) + " ";
-  info += geoManager.getLogicalVolumeScororName(node->logical) + " ";
+  std::string info = "Material cfgstr: ";
+  info += geoManager.getLogicalVolumeMaterialName(node->logical) + ".";
+
+  auto scorinfo = geoManager.getLogicalVolumeScororName(node->logical);
+  if(!scorinfo.empty())
+  {
+    info += " Scorror name(s): ";
+    info += scorinfo;
+  }
   char* cp = (char*) malloc(info.size()+1);
   sprintf (cp, "%s ", info.c_str());
   return cp;
