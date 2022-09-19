@@ -23,6 +23,12 @@
 from ..Interface import *
 
 import pyvista as pv
+# try:
+#     import pyvistaqt
+#     from pyvistaqt import BackgroundPlotter as Plotter
+# except ImportError:
+#     from pv import Plotter as Plotter
+
 import random
 import matplotlib.colors as mcolors
 from .Mesh import Mesh
@@ -60,17 +66,26 @@ class Visualiser():
                 continue
             rcolor = random.choice(self.color)
             mesh = pv.PolyData(points, faces)
-            self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3, name=name)
+            mesh.add_field_data([name], 'mesh_name')
+            self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
             if dumpMesh:
                 fn=f'{name}.ply'
                 print(f'saving {fn}')
                 mesh.save(fn, False)
             count+=1
 
+    def callback(self, mesh):
+        # """Shrink the mesh each time it's clicked."""
+        # shrunk = mesh.shrink(0.9)
+        # mesh.overwrite(shrunk)  # must operate "in-place" by overwrite
+        print(type(mesh), mesh['mesh_name'])
+        # self.plotter.add_point_scalar_labels(mesh.cast_to_pointset(), 'mesh_name')
+        pass
+
     def show(self):
         self.plotter.show_bounds()
         self.plotter.view_zy()
         self.plotter.show_axes()
         self.plotter.show_grid()
-        # self.plotter.enable_cell_picking(left_clicking=True) #fixme: to be implement
-        self.plotter.show()
+        self.plotter.enable_mesh_picking(callback=self.callback, left_clicking=False, show=True)
+        self.plotter.show(title='Cinema Visualiser')
