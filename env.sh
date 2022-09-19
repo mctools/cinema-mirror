@@ -122,7 +122,7 @@ if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
     mkdir $CINEMAPATH/external/VecGeom/build && cd $CINEMAPATH/external/VecGeom/build
     patch $CINEMAPATH/external/VecGeom/persistency/gdml/source/src/Middleware.cpp < $CINEMAPATH/external/vecgoem1.2.0_Middleware_cpp.patch
     patch $CINEMAPATH/external/VecGeom/persistency/gdml/source/include/Middleware.h < $CINEMAPATH/external/vecgeom1.2.0_Middleware_h.patch
-    cmake -DXercesC_INCLUDE_DIR=$CINEMAPATH/external/xerces-c/install/include   -DVECGEOM_BUILTIN_VECCORE=on -DXercesC_LIBRARY_RELEASE=$CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/VecGeom/install -DVECGEOM_GDML=On -DVECGEOM_USE_NAVINDEX=On  ..
+    cmake -DXercesC_INCLUDE_DIR=$CINEMAPATH/external/xerces-c/install/include   -DVECGEOM_BUILTIN_VECCORE=on -DVECGEOM_FASTMATH=ON -DBUILD_TESTING=OFF -DXercesC_LIBRARY_RELEASE=$CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/VecGeom/install -DVECGEOM_GDML=On -DVECGEOM_USE_NAVINDEX=On  ..
     make -j${NUMCPU} && make install
     cd -
     echo "installed  VecGeom"
