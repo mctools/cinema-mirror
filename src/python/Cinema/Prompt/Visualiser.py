@@ -75,8 +75,6 @@ class Visualiser():
             mesh = pv.PolyData(points, faces)
             mesh.add_field_data([' Volume name: '+name, ' Infomation: '+am.getLogVolumeInfo()], 'mesh_info')
             actor = self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
-            print(f'actor time {type(actor)}')
-            mesh.add_field_data([actor], 'mesh_actor')
 
             if dumpMesh:
                 fn=f'{name}.ply'
