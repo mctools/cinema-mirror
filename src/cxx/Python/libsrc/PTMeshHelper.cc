@@ -131,7 +131,7 @@ const char* pt_getMeshName(size_t pvolID)
 
 
 
-const char* pt_getLogVolumeInfo(size_t pvolID)
+void pt_getLogVolumeInfo(size_t pvolID, char* cp)
 {
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
   const auto node = tree.m_fullTreeNode[pvolID];
@@ -142,12 +142,10 @@ const char* pt_getLogVolumeInfo(size_t pvolID)
   auto scorinfo = geoManager.getLogicalVolumeScororName(node->logical);
   if(!scorinfo.empty())
   {
-    info += " Scorror name(s): ";
+    info += " Associated scorer: ";
     info += scorinfo;
   }
-  char* cp = (char*) malloc(info.size()+1);
   sprintf (cp, "%s ", info.c_str());
-  return cp;
 }
 
 //size of points: 3*n

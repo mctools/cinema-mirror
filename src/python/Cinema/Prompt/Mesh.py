@@ -21,6 +21,7 @@
 ################################################################################
 
 from ..Interface import *
+import copy
 
 _pt_Transformation3D_new = importFunc('pt_Transformation3D_new', type_voidp, [type_voidp])
 _pt_Transformation3D_newfromID = importFunc('pt_Transformation3D_newfromID', type_voidp, [type_uint])
@@ -55,8 +56,8 @@ _pt_printMesh = importFunc("pt_printMesh", type_voidp, [])
 _pt_meshInfo = importFunc("pt_meshInfo", None,  [type_sizet, type_sizet, type_sizetp, type_sizetp, type_sizetp])
 _pt_getMesh = importFunc("pt_getMesh", None,  [type_sizet, type_sizet, type_npdbl2d, type_npszt1d, type_npszt1d])
 _pt_getMeshName = importFunc("pt_getMeshName", type_cstr,  [type_sizet])
-# the cstr is malloced in C, it should be deleted by hand
-_pt_getLogVolumeInfo = importFunc("pt_getLogVolumeInfo", type_cstr, [type_sizet])
+_pt_getLogVolumeInfo = importFunc("pt_getLogVolumeInfo", None, [type_sizet, type_cstr])
+
 class Mesh():
     def __init__(self):
         self.nMax=self.countFullTreeNode()
@@ -74,7 +75,9 @@ class Mesh():
         return _pt_getMeshName(self.n).decode('utf-8')
 
     def getLogVolumeInfo(self):
-        return _pt_getLogVolumeInfo(self.n).decode('utf-8')
+        info = ctypes.create_string_buffer(2000) #fixme
+        _pt_getLogVolumeInfo(self.n, info)
+        return info.value.decode('utf-8')
 
     def meshInfo(self, nSegments=10):
         npoints = type_sizet()
