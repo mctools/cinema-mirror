@@ -159,4 +159,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
     if(timer)
       moni->OneTaskCompleted();
   }
+
+  if(timer)
+    delete moni;
 }
