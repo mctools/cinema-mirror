@@ -20,12 +20,12 @@
 
     <solids>
         <box lunit="mm" name="WorldSolid" x="150.0" y="150.0" z="150.0" />
-        <box lunit="mm" name="BoxSolid" x="100.0" y="100.0" z="100.0" />
+        <sphere aunit="deg" lunit="mm" name="SphereSolid" rmin="0.0" rmax="60.0" deltaphi="180.0" startphi="0.0" deltatheta="90.0" starttheta="0.0" />
     </solids>
 
     <structure>
-        <volume name="VolBox">
-            <solidref ref="BoxSolid" />
+        <volume name="VolSphere">
+            <solidref ref="SphereSolid" />
             <materialref ref="Vacuum" />
         </volume>
 
@@ -33,8 +33,8 @@
             <solidref ref="WorldSolid" />
             <materialref ref="Cd" />
 
-            <physvol name="Vol">
-                <volumeref ref="VolBox" />
+            <physvol name="PhysVol_Shere">
+                <volumeref ref="VolSphere" />
                 <position name="Position" unit="mm" x="0.0" y="0.0" z="0.0" />
             </physvol>
         </volume>
