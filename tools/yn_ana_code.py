@@ -34,7 +34,7 @@ class WgtFileAnalysor(Hist1D):
     def fillHist(self, filePath, seedStart, seedEnd, scatnum=None):
         super().__init__(self.xmin, self.xmax, self.numbin, self.linear)
         for i in range(seedStart, seedEnd+1):
-            Data = h5py.File(filePath+"/ScororNeutronSq_SofQ_He_seed%d.h5"%i,"r")
+            Data = h5py.File(filePath+"/ScorerNeutronSq_SofQ_He_seed%d.h5"%i,"r")
             x = np.array(Data[self.xname])
             weight = np.array(Data[self.weightname])
             if scatnum:
@@ -71,7 +71,7 @@ class MultiScatAnalysor(WgtFileAnalysor):
     def probaMultiScat(self, scatnum):
         proba = 0
         for i in range(self.seedStart, self.seedEnd+1):
-            Data = h5py.File(self.filePath+"/ScororNeutronSq_SofQ_He_seed%d.h5"%i,"r")
+            Data = h5py.File(self.filePath+"/ScorerNeutronSq_SofQ_He_seed%d.h5"%i,"r")
             numScat = np.array(Data['numScat'])
             idx = np.where(numScat==scatnum)
             weight = np.array(Data['weight'])[idx]

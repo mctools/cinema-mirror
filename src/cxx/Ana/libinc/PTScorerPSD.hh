@@ -1,3 +1,6 @@
+#ifndef Prompt_ScorerPSD_hh
+#define Prompt_ScorerPSD_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,16 +21,21 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScororVolFlux.hh"
+#include "PromptCore.hh"
+#include "PTScorer.hh"
 
-Prompt::ScororVolFlux::ScororVolFlux(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear, double volme)
-:Scoror1D("ScororVolFlux_"+ name, Scoror::PROPAGATE, std::make_unique<Hist1D>(xmin, xmax, nxbins, linear)), m_iVol(1./volme)
-{ }
+namespace Prompt {
 
-Prompt::ScororVolFlux::~ScororVolFlux() {}
-
-void Prompt::ScororVolFlux::score(Particle &particle)
-{
-  PROMPT_THROW2(BadInput, m_name << " does not support score(Particle &particle)");
-  // m_hist->fill(particle.getEKin()-dltpar.dlt_ekin, m_iVol*dltpar.dlt_pos.mag());
+  class ScorerPSD  : public Scorer2D {
+  public:
+    enum ScorerType {XY, XZ, YZ};
+  public:
+    ScorerPSD(const std::string &name, double xmin, double xmax, unsigned nxbins,
+      double ymin, double ymax, unsigned nybins, ScorerType type=XY);
+    virtual ~ScorerPSD();
+    virtual void score(Particle &particle) override;
+  private:
+    ScorerType m_type;
+  };
 }
+#endif

@@ -1,6 +1,3 @@
-#ifndef Prompt_ScororVolFlux_hh
-#define Prompt_ScororVolFlux_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,19 +18,39 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTScoror.hh"
+#include "PTScorerMultiScat.hh"
 
-namespace Prompt {
+Prompt::ScorerMultiScat::ScorerMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear)
+:Scorer1D("ScorerMultiScat_"+ name, Scorer::PROPAGATE, std::make_unique<Hist1D>(xmin, xmax, nxbins, linear)), m_lasteventid(0), m_p_counter(0), m_p_weight(0)
+{ }
 
-  class ScororVolFlux  : public Scoror1D {
-  public:
-    ScororVolFlux(const std::string &name, double xmin, double xmax,
-                  unsigned nxbins, bool linear, double volme);
-    virtual ~ScororVolFlux();
-    virtual void score(Particle &particle) override;
-  private:
-    double m_iVol;
-  };
+Prompt::ScorerMultiScat::~ScorerMultiScat() {}
+
+void Prompt::ScorerMultiScat::score(Particle &particle)
+{
+  if (m_lasteventid==particle.getEventID())
+  {
+    m_p_counter++;
+    particle.setNumScat(m_p_counter);
+    m_p_weight=particle.getWeight();
+  } 
+  else
+  {
+    if(m_p_counter==0)
+    {
+      m_lasteventid=particle.getEventID();
+      m_p_counter=1;
+      particle.setNumScat(m_p_counter);
+      m_p_weight=particle.getWeight();
+    }
+    else
+    {
+      m_hist->fill(m_p_counter, m_p_weight);
+      m_lasteventid=particle.getEventID();
+      m_p_counter=1;
+      particle.setNumScat(m_p_counter);
+      m_p_weight=particle.getWeight();
+    }
+  }
+    
 }
-#endif

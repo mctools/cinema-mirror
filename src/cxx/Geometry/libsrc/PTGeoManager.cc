@@ -51,7 +51,7 @@ Prompt::GeoManager::~GeoManager()
 {
   std::cout << "Simulation completed!\n";
   std::cout << "Simulation created " << numMaterialPhysics() << " material physics\n";
-  std::cout << "There are " << numScoror() << " scorors in total\n";
+  std::cout << "There are " << numScorer() << " scorers in total\n";
 }
 
 std::shared_ptr<Prompt::MaterialPhysics> Prompt::GeoManager::getMaterialPhysics(const std::string &name)
@@ -65,13 +65,13 @@ std::shared_ptr<Prompt::MaterialPhysics> Prompt::GeoManager::getMaterialPhysics(
     return nullptr;
 }
 
-std::string Prompt::GeoManager::getLogicalVolumeScororName(unsigned logid)
+std::string Prompt::GeoManager::getLogicalVolumeScorerName(unsigned logid)
 {
   std::string names;
-  auto it = m_logVolID2physcoror.find(logid);
-  if(it!=m_logVolID2physcoror.end())
+  auto it = m_logVolID2physcorer.find(logid);
+  if(it!=m_logVolID2physcorer.end())
   {
-    for(const auto &sc : it->second->scorors)
+    for(const auto &sc : it->second->scorers)
     {
       names += sc->getName() + " ";
     }
@@ -86,10 +86,10 @@ const std::string &Prompt::GeoManager::getLogicalVolumeMaterialName(unsigned log
   return it->second;
 }
 
-std::shared_ptr<Prompt::Scoror> Prompt::GeoManager::getScoror(const std::string &name)
+std::shared_ptr<Prompt::Scorer> Prompt::GeoManager::getScorer(const std::string &name)
 {
-  auto it = m_globelScorors.find(name);
-  if(it!= m_globelScorors.end())
+  auto it = m_globelScorers.find(name);
+  if(it!= m_globelScorers.end())
   {
     return it->second;
   }
@@ -191,11 +191,11 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     auto &volume   = *item.second;
     const size_t volID = volume.id();
 
-    std::shared_ptr<VolumePhysicsScoror> vps(nullptr);
-    if(m_logVolID2physcoror.find(volID)==m_logVolID2physcoror.end())
+    std::shared_ptr<VolumePhysicsScorer> vps(nullptr);
+    if(m_logVolID2physcorer.find(volID)==m_logVolID2physcorer.end())
     {
-      m_logVolID2physcoror.insert(std::make_pair(volID,  std::make_shared<VolumePhysicsScoror>()));
-      vps = m_logVolID2physcoror[volID];
+      m_logVolID2physcorer.insert(std::make_pair(volID,  std::make_shared<VolumePhysicsScorer>()));
+      vps = m_logVolID2physcorer[volID];
     }
     else
     {
@@ -206,12 +206,12 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     auto mat_iter = volumeMatMap.find(volID);
     if(mat_iter==volumeMatMap.end()) //union creates empty virtual volume
     {
-      m_logVolID2physcoror.erase(volID);
+      m_logVolID2physcorer.erase(volID);
       // PROMPT_THROW(CalcError, "empty volume ")
       continue;
     }
 
-    // 2. setup scorors
+    // 2. setup scorers
     if(volAuxInfo.size())
     {
       auto volAuxInfo_iter = volAuxInfo.find(volID);
@@ -227,17 +227,17 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
         {
           if (info.GetType() == "Sensitive")
           {
-            std::shared_ptr<Prompt::Scoror> scor = getScoror(info.GetValue());
+            std::shared_ptr<Prompt::Scorer> scor = getScorer(info.GetValue());
 
             if(scor.use_count()) //this scorer exist
             {
-              vps->scorors.push_back(scor);
+              vps->scorers.push_back(scor);
             }
             else
             {
-              scor = anaManager.createScoror(info.GetValue(), volume.GetUnplacedVolume()->Capacity() );
-              m_globelScorors[info.GetValue()]=scor;
-              vps->scorors.push_back(scor);
+              scor = anaManager.createScorer(info.GetValue(), volume.GetUnplacedVolume()->Capacity() );
+              m_globelScorers[info.GetValue()]=scor;
+              vps->scorers.push_back(scor);
               std::cout << "vol name " << volume.GetName() <<" capacity "<<  volume.GetUnplacedVolume()->Capacity()  << std::endl;
 
             }
@@ -264,7 +264,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
       m_logVolID2Mateiral.insert( std::make_pair<int, std::string>(volID , std::string(mat.attributes.find("atomValue")->second )) );
     }
 
-    if(matphys) //m_logVolID2physcoror not exist
+    if(matphys) //m_logVolID2physcorer not exist
     {
       vps->physics=matphys;
       std::cout << "Set model " << mat.name
@@ -290,7 +290,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
       vps->physics=theNewPhysics;
     }
 
-    vps->sortScorors();
+    vps->sortScorers();
 
     std::cout << "volume name " << volume.GetName() << " (id = " << volume.id() << "): material name " << mat.name << std::endl;
     if (mat.attributes.size()) std::cout << "  attributes:\n";
@@ -305,44 +305,44 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
   }
 }
 
-void Prompt::VolumePhysicsScoror::sortScorors()
+void Prompt::VolumePhysicsScorer::sortScorers()
 {
-  entry_scorors.clear();
-  propagate_scorors.clear();
-  exit_scorors.clear();
-  surface_scorors.clear();
-  absorb_scorors.clear();
+  entry_scorers.clear();
+  propagate_scorers.clear();
+  exit_scorers.clear();
+  surface_scorers.clear();
+  absorb_scorers.clear();
 
 
-  for(auto &v : scorors)
+  for(auto &v : scorers)
   {
     auto type = v->getType();
-    if(type==Scoror::ENTRY)
+    if(type==Scorer::ENTRY)
     {
-      entry_scorors.push_back(v);
-      std::cout << "Added ENTRY type scoror: " << v->getName() << std::endl;
+      entry_scorers.push_back(v);
+      std::cout << "Added ENTRY type scorer: " << v->getName() << std::endl;
     }
-    else if(type==Scoror::PROPAGATE)
+    else if(type==Scorer::PROPAGATE)
     {
-      propagate_scorors.push_back(v);
-      std::cout << "Added PROPAGATE type scoror: " << v->getName() << std::endl;
+      propagate_scorers.push_back(v);
+      std::cout << "Added PROPAGATE type scorer: " << v->getName() << std::endl;
     }
-    else if(type==Scoror::EXIT)
+    else if(type==Scorer::EXIT)
     {
-      exit_scorors.push_back(v);
-      std::cout << "Added EXIT type scoror: " << v->getName() << std::endl;
+      exit_scorers.push_back(v);
+      std::cout << "Added EXIT type scorer: " << v->getName() << std::endl;
     }
-    else if(type==Scoror::SURFACE)
+    else if(type==Scorer::SURFACE)
     {
-      surface_scorors.push_back(v);
-      std::cout << "Added SURFACE type scoror: " << v->getName() << std::endl;
+      surface_scorers.push_back(v);
+      std::cout << "Added SURFACE type scorer: " << v->getName() << std::endl;
     }
-    else if(type==Scoror::ABSORB)
+    else if(type==Scorer::ABSORB)
     {
-      absorb_scorors.push_back(v);
-      std::cout << "Added ABSORB type scoror: " << v->getName() << std::endl;
+      absorb_scorers.push_back(v);
+      std::cout << "Added ABSORB type scorer: " << v->getName() << std::endl;
     }
     else
-      PROMPT_THROW2(BadInput, "unknown scoror type " << type);
+      PROMPT_THROW2(BadInput, "unknown scorer type " << type);
   }
 }

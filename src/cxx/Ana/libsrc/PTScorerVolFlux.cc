@@ -18,17 +18,16 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScororESD.hh"
+#include "PTScorerVolFlux.hh"
 
+Prompt::ScorerVolFlux::ScorerVolFlux(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear, double volme)
+:Scorer1D("ScorerVolFlux_"+ name, Scorer::PROPAGATE, std::make_unique<Hist1D>(xmin, xmax, nxbins, linear)), m_iVol(1./volme)
+{ }
 
-Prompt::ScororESD::ScororESD(const std::string &name, double xmin, double xmax, unsigned nxbins)
-:Scoror1D("ScororESD_"+name, Scoror::ENTRY, std::make_unique<Hist1D>(xmin, xmax, nxbins))
-{}
+Prompt::ScorerVolFlux::~ScorerVolFlux() {}
 
-Prompt::ScororESD::~ScororESD() {}
-
-void Prompt::ScororESD::score(Prompt::Particle &particle)
+void Prompt::ScorerVolFlux::score(Particle &particle)
 {
-  m_hist->fill(particle.getEKin(),  particle.getWeight() );
+  PROMPT_THROW2(BadInput, m_name << " does not support score(Particle &particle)");
+  // m_hist->fill(particle.getEKin()-dltpar.dlt_ekin, m_iVol*dltpar.dlt_pos.mag());
 }
-

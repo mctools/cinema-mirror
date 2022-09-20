@@ -139,7 +139,7 @@ void pt_getLogVolumeInfo(size_t pvolID, char* cp)
   std::string info = "Material cfgstr: ";
   info += geoManager.getLogicalVolumeMaterialName(node->logical) + ".";
 
-  auto scorinfo = geoManager.getLogicalVolumeScororName(node->logical);
+  auto scorinfo = geoManager.getLogicalVolumeScorerName(node->logical);
   if(!scorinfo.empty())
   {
     info += " Associated scorer: ";

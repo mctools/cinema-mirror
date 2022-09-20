@@ -1,5 +1,5 @@
-#ifndef Prompt_ScororESD_hh
-#define Prompt_ScororESD_hh
+#ifndef Prompt_ScorerMultiScat_hh
+#define Prompt_ScorerMultiScat_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -22,16 +22,19 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
-#include "PTScoror.hh"
+#include "PTScorer.hh"
 
 namespace Prompt {
 
-  class ScororESD  : public Scoror1D {
+  class ScorerMultiScat : public Scorer1D {
   public:
-    ScororESD(const std::string &name, double xmin, double xmax, unsigned nxbins);
-    virtual ~ScororESD();
+    ScorerMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear=true);
+    virtual ~ScorerMultiScat();
     virtual void score(Particle &particle) override;
+  private:
+    unsigned long long m_lasteventid;
+    int m_p_counter;
+    double m_p_weight;
   };
 }
-
 #endif

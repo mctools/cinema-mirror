@@ -20,12 +20,12 @@
 
 #include "PTAnaManager.hh"
 #include "PTUtils.hh"
-#include "PTScororNeutronSq.hh"
-#include "PTScororPSD.hh"
-#include "PTScororESD.hh"
-#include "PTScororTOF.hh"
-#include "PTScororVolFlux.hh"
-#include "PTScororMultiScat.hh"
+#include "PTScorerNeutronSq.hh"
+#include "PTScorerPSD.hh"
+#include "PTScorerESD.hh"
+#include "PTScorerTOF.hh"
+#include "PTScorerVolFlux.hh"
+#include "PTScorerMultiScat.hh"
 
 Prompt::AnaManager::AnaManager()
 {}
@@ -34,10 +34,10 @@ Prompt::AnaManager::~AnaManager()
 {}
 
 
-std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::string &cfg, double vol)
+std::shared_ptr<Prompt::Scorer> Prompt::AnaManager::createScorer(const std::string &cfg, double vol)
 {
   auto words = split(cfg, ';');
-  std::cout << "Creating scoror with config: ";
+  std::cout << "Creating scorer with config: ";
   std::cout << cfg << "\n";
   //fixme check number of input config
 
@@ -51,44 +51,44 @@ std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::stri
     double maxQ = std::stod(words[6]);
     int numBin = std::stoi(words[7]);
     if(words[8]=="ABSORB")
-      return std::make_shared<Prompt::ScororNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scoror::ABSORB);
+      return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
     else if(words[8]=="ENTRY")
-      return std::make_shared<Prompt::ScororNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scoror::ENTRY);
+      return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
     else
     {
-      PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScororNeutronSq");
-      return std::make_shared<Prompt::ScororNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scoror::ENTRY);
+      PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerNeutronSq");
+      return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
     }
   }
   else if(words[0]=="PSD")
   {
     if(words[8]=="XY")
-        return std::make_shared<ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
-                                          std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScororPSD::XY );
+        return std::make_shared<ScorerPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
+                                          std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScorerPSD::XY );
     else if(words[8]=="XZ")
-        return std::make_shared<ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
-                                          std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScororPSD::XZ );
+        return std::make_shared<ScorerPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
+                                          std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScorerPSD::XZ );
     else if(words[8]=="YZ")
-        return std::make_shared<ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
-                                          std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScororPSD::YZ );
+        return std::make_shared<ScorerPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
+                                          std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScorerPSD::YZ );
     else
     {
-      PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScororPSD");
-      return std::make_shared<ScororPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
-                                        std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScororPSD::YZ );
+      PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerPSD");
+      return std::make_shared<ScorerPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
+                                        std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScorerPSD::YZ );
     } 
   }
   else if(words[0]=="ESD")
   {
-    return std::make_shared<ScororESD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) );
+    return std::make_shared<ScorerESD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) );
   }
   else if(words[0]=="TOF")
   {
-    return std::make_shared<ScororTOF>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) );
+    return std::make_shared<ScorerTOF>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) );
   }
-  else if(words[0]=="ScororMultiScat")
+  else if(words[0]=="ScorerMultiScat")
   {
-    return std::make_shared<ScororMultiScat>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) );
+    return std::make_shared<ScorerMultiScat>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) );
   }
   else if(words[0]=="VolFlux")
   {
@@ -98,10 +98,10 @@ std::shared_ptr<Prompt::Scoror> Prompt::AnaManager::createScoror(const std::stri
     <<  std::stoi(words[4]) << " "
     <<  std::stoi(words[5]) << " "
     <<  vol << std::endl;
-    return std::make_shared<Prompt::ScororVolFlux>(words[1], std::stod(words[2]) ,
+    return std::make_shared<Prompt::ScorerVolFlux>(words[1], std::stod(words[2]) ,
                 std::stod(words[3]) , std::stoi(words[4]) ,  std::stoi(words[5]),
                 vol );
   }
   else
-    PROMPT_THROW2(BadInput, "Scoror type " << words[0] << " is not supported. ")
+    PROMPT_THROW2(BadInput, "Scorer type " << words[0] << " is not supported. ")
 }

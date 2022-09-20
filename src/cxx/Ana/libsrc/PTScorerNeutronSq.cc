@@ -18,31 +18,31 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScororNeutronSq.hh"
+#include "PTScorerNeutronSq.hh"
 #include "PTRandCanonical.hh"
 
-Prompt::ScororNeutronSq::ScororNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScororType stype, bool linear)
-:Scoror1D("ScororNeutronSq_" + name, stype, std::make_unique<Hist1D>(qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
+Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
+      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool linear)
+:Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>(qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
 m_sourceSampleDist(sourceSampleDist)
 {
-  if(stype==Scoror::ENTRY)
+  if(stype==Scorer::ENTRY)
     m_kill=true;
-  else if (stype==Scoror::ABSORB)
+  else if (stype==Scorer::ABSORB)
     m_kill=false;
   else
-    PROMPT_THROW(BadInput, "ScororNeutronSq can only be Scoror::ENTRY or Scoror::ABSORB");
+    PROMPT_THROW(BadInput, "ScorerNeutronSq can only be Scorer::ENTRY or Scorer::ABSORB");
     auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
-    m_dataout.open("ScororNeutronSq_" + name + "_seed"+std::to_string(seed)+".wgt");
+    m_dataout.open("ScorerNeutronSq_" + name + "_seed"+std::to_string(seed)+".wgt");
 }
 
-Prompt::ScororNeutronSq::~ScororNeutronSq()
+Prompt::ScorerNeutronSq::~ScorerNeutronSq()
 {
   m_dataout.close();
 }
 
 
-void Prompt::ScororNeutronSq::score(Prompt::Particle &particle)
+void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
 {
   double angle_cos = particle.getDirection().angleCos(m_refDir);
   double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();

@@ -1,3 +1,6 @@
+#ifndef Prompt_ScorerNeutronSq_hh
+#define Prompt_ScorerNeutronSq_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,39 +21,24 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScororMultiScat.hh"
+#include "PromptCore.hh"
+#include "PTScorer.hh"
+#include <fstream>
 
-Prompt::ScororMultiScat::ScororMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear)
-:Scoror1D("ScororMultiScat_"+ name, Scoror::PROPAGATE, std::make_unique<Hist1D>(xmin, xmax, nxbins, linear)), m_lasteventid(0), m_p_counter(0), m_p_weight(0)
-{ }
+namespace Prompt {
 
-Prompt::ScororMultiScat::~ScororMultiScat() {}
-
-void Prompt::ScororMultiScat::score(Particle &particle)
-{
-  if (m_lasteventid==particle.getEventID())
-  {
-    m_p_counter++;
-    particle.setNumScat(m_p_counter);
-    m_p_weight=particle.getWeight();
-  } 
-  else
-  {
-    if(m_p_counter==0)
-    {
-      m_lasteventid=particle.getEventID();
-      m_p_counter=1;
-      particle.setNumScat(m_p_counter);
-      m_p_weight=particle.getWeight();
-    }
-    else
-    {
-      m_hist->fill(m_p_counter, m_p_weight);
-      m_lasteventid=particle.getEventID();
-      m_p_counter=1;
-      particle.setNumScat(m_p_counter);
-      m_p_weight=particle.getWeight();
-    }
-  }
-    
+  class ScorerNeutronSq  : public Scorer1D {
+  public:
+    ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
+      double sourceSampleDist, double qmin, double qmax, unsigned numbin,
+      ScorerType styp=Scorer::ENTRY, bool linear=true);
+    virtual ~ScorerNeutronSq();
+    virtual void score(Particle &particle) override;
+  private:
+    const Vector m_samplePos, m_refDir;
+    const double m_sourceSampleDist;
+    bool m_kill;
+    std::ofstream m_dataout;
+  };
 }
+#endif

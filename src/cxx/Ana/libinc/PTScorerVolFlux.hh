@@ -1,3 +1,6 @@
+#ifndef Prompt_ScorerVolFlux_hh
+#define Prompt_ScorerVolFlux_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,17 +21,19 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScororTOF.hh"
+#include "PromptCore.hh"
+#include "PTScorer.hh"
 
+namespace Prompt {
 
-Prompt::ScororTOF::ScororTOF(const std::string &name, double xmin, double xmax, unsigned nxbins)
-:Scoror1D("ScororTOF_"+name, Scoror::ENTRY,std::make_unique<Hist1D>(xmin, xmax, nxbins))
-{}
-
-Prompt::ScororTOF::~ScororTOF() {}
-
-void Prompt::ScororTOF::score(Prompt::Particle &particle)
-{
-  m_hist->fill(particle.getTime(), particle.getWeight());
+  class ScorerVolFlux  : public Scorer1D {
+  public:
+    ScorerVolFlux(const std::string &name, double xmin, double xmax,
+                  unsigned nxbins, bool linear, double volme);
+    virtual ~ScorerVolFlux();
+    virtual void score(Particle &particle) override;
+  private:
+    double m_iVol;
+  };
 }
-
+#endif

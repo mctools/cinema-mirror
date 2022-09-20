@@ -5,8 +5,8 @@ from  Cinema.Prompt.Math.Hist import Hist1D
 # store the data in h5py file
 def wgt2h5(filePath, seedStart, seedEnd):
     for i in range(seedStart, seedEnd):
-        Data=np.loadtxt(filePath+'/ScororNeutronSq_SofQ_He_seed%d.wgt'%i)
-        h5file=h5py.File("ScororNeutronSq_SofQ_He_seed%d.h5"%i,"w")
+        Data=np.loadtxt(filePath+'/ScorerNeutronSq_SofQ_He_seed%d.wgt'%i)
+        h5file=h5py.File("ScorerNeutronSq_SofQ_He_seed%d.h5"%i,"w")
         h5file.create_dataset('tof_us',data=Data[:,0])
         h5file.create_dataset('position_x',data=Data[:,1])
         h5file.create_dataset('position_y',data=Data[:,2])

@@ -132,8 +132,8 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       //! the next while loop, particle should move in the same volume
       while(navman.proprogateInAVolume(particle, 0) )
       {
-        // score if any scoror is available
-        if(navman.hasPropagateScoror())
+        // score if any scorer is available
+        if(navman.hasPropagateScorer())
         {
           // dltpar.calcDeltaParticle(particle); //fixme: delta?
           navman.scorePropagate(particle);

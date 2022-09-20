@@ -1,6 +1,3 @@
-#ifndef Prompt_ScororNeutronSq_hh
-#define Prompt_ScororNeutronSq_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,24 +18,17 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTScoror.hh"
-#include <fstream>
+#include "PTScorerTOF.hh"
 
-namespace Prompt {
 
-  class ScororNeutronSq  : public Scoror1D {
-  public:
-    ScororNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin,
-      ScororType styp=Scoror::ENTRY, bool linear=true);
-    virtual ~ScororNeutronSq();
-    virtual void score(Particle &particle) override;
-  private:
-    const Vector m_samplePos, m_refDir;
-    const double m_sourceSampleDist;
-    bool m_kill;
-    std::ofstream m_dataout;
-  };
+Prompt::ScorerTOF::ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins)
+:Scorer1D("ScorerTOF_"+name, Scorer::ENTRY,std::make_unique<Hist1D>(xmin, xmax, nxbins))
+{}
+
+Prompt::ScorerTOF::~ScorerTOF() {}
+
+void Prompt::ScorerTOF::score(Prompt::Particle &particle)
+{
+  m_hist->fill(particle.getTime(), particle.getWeight());
 }
-#endif
+

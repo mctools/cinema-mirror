@@ -25,7 +25,7 @@
 #include "PTSingleton.hh"
 #include "PTHist1D.hh"
 #include "PTHist2D.hh"
-#include "PTScoror.hh"
+#include "PTScorer.hh"
 namespace Prompt {
 
   enum AnalysisType {
@@ -38,7 +38,7 @@ namespace Prompt {
   class AnaManager  {
   public:
     //used in GeoManager::loadFile
-    std::shared_ptr<Scoror> createScoror(const std::string &cfg, double v);
+    std::shared_ptr<Scorer> createScorer(const std::string &cfg, double v);
 
   private:
     friend class Singleton<AnaManager>;

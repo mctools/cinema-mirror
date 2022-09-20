@@ -1,6 +1,3 @@
-#ifndef Prompt_ScororMultiScat_hh
-#define Prompt_ScororMultiScat_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,20 +18,26 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTScoror.hh"
+#include "PTScorerPSD.hh"
 
-namespace Prompt {
+Prompt::ScorerPSD::ScorerPSD(const std::string &name, double xmin, double xmax,
+   unsigned nxbins, double ymin, double ymax, unsigned nybins, ScorerType type)
+:Scorer2D("ScorerPSD_"+name, Scorer::SURFACE,
+  std::make_unique<Hist2D>(xmin, xmax, nxbins, ymin, ymax, nybins)),
+ m_type(type)
+{}
 
-  class ScororMultiScat : public Scoror1D {
-  public:
-    ScororMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear=true);
-    virtual ~ScororMultiScat();
-    virtual void score(Particle &particle) override;
-  private:
-    unsigned long long m_lasteventid;
-    int m_p_counter;
-    double m_p_weight;
-  };
+Prompt::ScorerPSD::~ScorerPSD() {}
+
+void Prompt::ScorerPSD::score(Prompt::Particle &particle)
+{
+  const Vector &vec = particle.getLocalPosition();
+  if (m_type==XY)
+    m_hist->fill(vec.x(), vec.y(), particle.getWeight() );
+  else if (m_type==YZ)
+    m_hist->fill(vec.y(), vec.z(), particle.getWeight() );
+  else if (m_type==XZ)
+    m_hist->fill(vec.x(), vec.z(), particle.getWeight() );
+  else
+    PROMPT_THROW2(BadInput, m_name << " not support type");
 }
-#endif

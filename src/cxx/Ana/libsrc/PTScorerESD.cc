@@ -18,26 +18,17 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScororPSD.hh"
+#include "PTScorerESD.hh"
 
-Prompt::ScororPSD::ScororPSD(const std::string &name, double xmin, double xmax,
-   unsigned nxbins, double ymin, double ymax, unsigned nybins, ScororType type)
-:Scoror2D("ScororPSD_"+name, Scoror::SURFACE,
-  std::make_unique<Hist2D>(xmin, xmax, nxbins, ymin, ymax, nybins)),
- m_type(type)
+
+Prompt::ScorerESD::ScorerESD(const std::string &name, double xmin, double xmax, unsigned nxbins)
+:Scorer1D("ScorerESD_"+name, Scorer::ENTRY, std::make_unique<Hist1D>(xmin, xmax, nxbins))
 {}
 
-Prompt::ScororPSD::~ScororPSD() {}
+Prompt::ScorerESD::~ScorerESD() {}
 
-void Prompt::ScororPSD::score(Prompt::Particle &particle)
+void Prompt::ScorerESD::score(Prompt::Particle &particle)
 {
-  const Vector &vec = particle.getLocalPosition();
-  if (m_type==XY)
-    m_hist->fill(vec.x(), vec.y(), particle.getWeight() );
-  else if (m_type==YZ)
-    m_hist->fill(vec.y(), vec.z(), particle.getWeight() );
-  else if (m_type==XZ)
-    m_hist->fill(vec.x(), vec.z(), particle.getWeight() );
-  else
-    PROMPT_THROW2(BadInput, m_name << " not support type");
+  m_hist->fill(particle.getEKin(),  particle.getWeight() );
 }
+

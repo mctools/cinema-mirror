@@ -1,5 +1,5 @@
-#ifndef Prompt_ScororPSD_hh
-#define Prompt_ScororPSD_hh
+#ifndef Prompt_ScorerTOF_hh
+#define Prompt_ScorerTOF_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -22,20 +22,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
-#include "PTScoror.hh"
+#include "PTScorer.hh"
 
 namespace Prompt {
 
-  class ScororPSD  : public Scoror2D {
+  class ScorerTOF  : public Scorer1D {
   public:
-    enum ScororType {XY, XZ, YZ};
-  public:
-    ScororPSD(const std::string &name, double xmin, double xmax, unsigned nxbins,
-      double ymin, double ymax, unsigned nybins, ScororType type=XY);
-    virtual ~ScororPSD();
+    ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins);
+    virtual ~ScorerTOF();
     virtual void score(Particle &particle) override;
-  private:
-    ScororType m_type;
   };
 }
+
 #endif
