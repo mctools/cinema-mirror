@@ -23,12 +23,6 @@
 from ..Interface import *
 
 import pyvista as pv
-# try:
-#     import pyvistaqt
-#     from pyvistaqt import BackgroundPlotter as Plotter
-# except ImportError:
-#     from pv import Plotter as Plotter
-
 import random
 import matplotlib.colors as mcolors
 from .Mesh import Mesh
@@ -36,13 +30,23 @@ from .Mesh import Mesh
 class Visualiser():
     def __init__(self, blacklist, printWorld=False, nSegments=30, dumpMesh=False):
         self.color =  list(mcolors.CSS4_COLORS.keys())
-        self.plotter = pv.Plotter()
         self.worldMesh = Mesh()
         self.blacklist = blacklist
         if printWorld:
             self.worldMesh.printMesh()
-        self.loadMesh(nSegments, dumpMesh)
 
+        self.plotter = pv.Plotter()
+        self.loadMesh(nSegments, dumpMesh)
+        self.plotter.show_bounds()
+        self.plotter.view_zy()
+        self.plotter.show_axes()
+        self.plotter.show_grid()
+        self.plotter.enable_mesh_picking(callback=self.callback, left_clicking=False, show_message="Press P to pick a single volume under the mouse pointer")
+        self.plotter.add_key_event('s', self.save)
+
+    def save(self):
+        print('save screenshot.png')
+        self.plotter.screenshot('screenshot.png')
 
     def addLine(self, data):
         line = pv.lines_from_points(data)
@@ -70,7 +74,10 @@ class Visualiser():
             rcolor = random.choice(self.color)
             mesh = pv.PolyData(points, faces)
             mesh.add_field_data([' Volume name: '+name, ' Infomation: '+am.getLogVolumeInfo()], 'mesh_info')
-            self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
+            actor = self.plotter.add_mesh(mesh, color=rcolor, opacity=0.3)
+            print(f'actor time {type(actor)}')
+            mesh.add_field_data([actor], 'mesh_actor')
+
             if dumpMesh:
                 fn=f'{name}.ply'
                 print(f'saving {fn}')
@@ -78,15 +85,10 @@ class Visualiser():
             count+=1
 
     def callback(self, mesh):
-        print('\nPicked volume info:')
+        print(f'\nPicked volume info:')
         for info in mesh['mesh_info']:
             print(info)
         # self.plotter.add_point_scalar_labels(mesh.cast_to_pointset(), 'mesh_name')
 
     def show(self):
-        self.plotter.show_bounds()
-        self.plotter.view_zy()
-        self.plotter.show_axes()
-        self.plotter.show_grid()
-        self.plotter.enable_mesh_picking(callback=self.callback, left_clicking=False, show=True)
         self.plotter.show(title='Cinema Visualiser')
