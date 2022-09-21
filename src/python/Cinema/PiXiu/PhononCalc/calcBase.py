@@ -60,8 +60,8 @@ class CalcBase:
             raise ValueError('phonon total qweight is not unity {}'.format( self.qweight.sum() ) )
 
         self.baseMetadataDict = {
-            'lattice': self.lattice, 
-            'molarMass': self.molarMass, 
+            'lattice': self.lattice,
+            'molarMass': self.molarMass,
             'position': self.pos,
             'temperature': self.temperature
             }    #future: may provide API to customize
@@ -158,6 +158,9 @@ class CalcPowder(CalcBase):
         tau=np.dot(hkl,self.lattice_reci)
         modeWeight = 1./(self.nAtom) #fixme: So the xs is in the unit of per atom? but the  eigv is already weighted
         for i in range(self.numQpoint):
+            if np.allclose(self.qpoint[i], np.zeros(3)):
+                #skip gamma point
+                continue
             Q=self.qpoint[i]+tau
             Qmag=np.linalg.norm(Q)
             if Qmag > hist.xmax:
