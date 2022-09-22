@@ -75,7 +75,7 @@
     </materials>
 
     <solids>
-        <box lunit="mm" name="WorldBox" x="30000.0" y="30000.0" z="65000.0" />
+        <box lunit="mm" name="WorldBox" x="300.0" y="300.0" z="1200.0" />
         <box lunit="mm" name="MonitorIn" x="40.0" y="40.0" z="1.0" />
     </solids>
 
