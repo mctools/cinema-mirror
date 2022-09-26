@@ -1,10 +1,10 @@
 import h5py
 import numpy as np
-from  Cinema.Prompt.Math.Hist import Hist1D
 
 # store the data in h5py file
 def wgt2h5(filePath, seedStart, seedEnd):
-    for i in range(seedStart, seedEnd):
+    for i in range(seedStart, seedEnd+1):
+        print('seed:',i)
         Data=np.loadtxt(filePath+'/ScorerNeutronSq_SofQ_He_seed%d.wgt'%i)
         h5file=h5py.File("ScorerNeutronSq_SofQ_He_seed%d.h5"%i,"w")
         h5file.create_dataset('tof_us',data=Data[:,0])
