@@ -2,6 +2,9 @@ import numpy as np
 from Cinema.Prompt.Math.Hist import Hist1D
 from Cinema.Interface.units import avogadro
 import h5py
+from glob import glob
+import os
+import re
 
 # atom number in material        
 def atomNum(d2o_r, d2o_h, v_r, v_h): # mm
@@ -18,23 +21,23 @@ def atomNum(d2o_r, d2o_h, v_r, v_h): # mm
     return d2o_atomNum, v_atomNum
 
 class WgtFileAnalysor(Hist1D):
-    def __init__(self, xmin, xmax, numbin, xname, weightname, linear=True):
-        self.xmin = xmin
-        self.xmax = xmax
-        self.numbin = numbin
+    # def __init__(self, xmin, xmax, numbin, xname, weightname, linear=True):
+    def __init__(self, filePath, xname, weightname):
+        path=os.path.join(filePath)
+        self.files = glob(path)
+        self.files.sort(key=lambda l: int(re.findall('\d+', l)[-2]))
         self.xname = xname
-        self.linear = linear
-        self. weightname = weightname
+        self.weightname = weightname
 
     def densityHist(self):
         x_hist = self.getCentre()
         y_hist = self.getWeight()/np.diff(self.getEdge())
         return x_hist, y_hist
     
-    def fillHist(self, filePath, seedStart, seedEnd, scatnum=None):
-        super().__init__(self.xmin, self.xmax, self.numbin, self.linear)
-        for i in range(seedStart, seedEnd+1):
-            Data = h5py.File(filePath+"/ScorerNeutronSq_SofQ_He_seed%d.h5"%i,"r")
+    def fillHist(self, seedStart, seedEnd, xmin, xmax, numbin, linear=True, scatnum=None):
+        super().__init__(xmin, xmax, numbin, linear)
+        for i in range(seedStart-1, seedEnd):
+            Data = h5py.File(self.files[i],"r")
             x = np.array(Data[self.xname])
             weight = np.array(Data[self.weightname])
             if scatnum:
@@ -47,34 +50,33 @@ class WgtFileAnalysor(Hist1D):
         return x_hist, y_hist
 
 class SQTrueHist(WgtFileAnalysor):
-    def __init__(self, xmin, xmax, numbin,linear=True):
-        super().__init__(xmin, xmax, numbin, 'qtrue', 'weight', linear)       
+    def __init__(self, filePath):
+        super().__init__(filePath, 'qtrue', 'weight')        
 
 class SQHist(WgtFileAnalysor):
-    def __init__(self, xmin, xmax, numbin,linear=True):
-        super().__init__(xmin, xmax, numbin, 'q', 'weight', linear)
+    def __init__(self, filePath):
+        super().__init__(filePath, 'q', 'weight')
     
 class MultiScatAnalysor(WgtFileAnalysor):
-    def __init__(self, filePath, seedStart, seedEnd):
+    def __init__(self, filePath):
         self.filePath = filePath
-        self.seedStart = seedStart
-        self.seedEnd = seedEnd
         
-    def sqHist(self, xmin, xmax, numbin, scatnum, inelastic=True, linear=True):
+    def sqHist(self, seedStart, seedEnd, xmin, xmax, numbin, scatnum, inelastic=True, linear=True):
         if inelastic:
-            super().__init__(xmin, xmax, numbin, 'qtrue', 'weight', linear)
+            super().__init__(self.filePath, 'qtrue', 'weight')
         else:
-            super().__init__(xmin, xmax, numbin, 'q', 'weight', linear)
-        q_hist, s_hist= self.fillHist(self.filePath, self.seedStart, self.seedEnd, scatnum)
+            super().__init__(self.filePath, 'q', 'weight')
+        q_hist, s_hist= self.fillHist(seedStart, seedEnd, xmin, xmax, numbin, linear, scatnum)
         return q_hist, s_hist
     
-    def probaMultiScat(self, scatnum):
+    def probaMultiScat(self, seedStart, seedEnd, scatnum):
+        super().__init__(self.filePath, 'numScat', 'weight')
         proba = 0
-        for i in range(self.seedStart, self.seedEnd+1):
-            Data = h5py.File(self.filePath+"/ScorerNeutronSq_SofQ_He_seed%d.h5"%i,"r")
-            numScat = np.array(Data['numScat'])
+        for i in range(seedStart-1, seedEnd):
+            Data = h5py.File(self.files[i],"r")
+            numScat = np.array(Data[self.xname])
             idx = np.where(numScat==scatnum)
-            weight = np.array(Data['weight'])[idx]
+            weight = np.array(Data[self.weightname])[idx]
             proba += np.sum(weight)
         return proba
             
