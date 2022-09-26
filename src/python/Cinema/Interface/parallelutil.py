@@ -10,7 +10,7 @@ def singleton(cls):
     return inner
 
 @singleton
-class SparkHelper():
+class ParallelHelper():
     sparkContext = None
     partitions = None
 
@@ -25,7 +25,7 @@ class SparkHelper():
 
     def mapReduce(self, func, iterabe1):
          if self.available():
-             res = SparkHelper().sparkContext.parallelize(iterabe1, SparkHelper.partitions).map(func).reduce()
+             res = self.sparkContext.parallelize(iterabe1, SparkHelper.partitions).map(func).reduce()
          else:
              res = list(map(func, iterabe1))
          return res

@@ -6,7 +6,7 @@ from Cinema.Interface.units import hbar
 
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from Cinema.Interface.units import *
-from Cinema.Interface.sparkutil import SparkHelper
+from Cinema.Interface.parallelutil import ParallelHelper
 # lattice (Aa), mass (molar mass), pos (fractional coordinate), bc (sqrt(barn))
 # qpoints(reduced coordinate), energy(eV ), eigv (unity magnitude), qweight (dimensionless), temperature(kelvin)
 
@@ -176,7 +176,7 @@ class CalcPowder(CalcBase):
         self.hist=Hist2D(0, maxQ + extraHistQranage, QSize, -(self.en.max()+extraHistEnrange)/hbar, 0, enSize, self.baseMetadataDict ) #note negtive energy, for  downscattering, y-axis is in THz
         it_hkl = PowderHKLIter(self.lattice_reci, maxQ)
 
-        SparkHelper().mapReduce(self.calcHKL, it_hkl)
+        ParallelHelper().mapReduce(self.calcHKL, it_hkl)
 
         return self.hist
 
