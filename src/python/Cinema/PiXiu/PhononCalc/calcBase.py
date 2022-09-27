@@ -20,7 +20,6 @@ class PowderHKLIter:
         maxhkl = int(maxQ/np.ceil(qmin1d))
         # print(f'maxhkl {maxhkl}')
         self.it = itertools.product(range(0, maxhkl+1, step), range(-maxhkl, maxhkl+1, step), range(-maxhkl, maxhkl+1, step))
-        self.mult = 1
         self.hkl = None
 
     def __iter__(self):
@@ -28,27 +27,25 @@ class PowderHKLIter:
 
     def __next__(self):
         self.hkl = next(self.it)
-        h=self.hkl[0]
-        k=self.hkl[1]
-        l=self.hkl[2]
+
+        h=int(self.hkl[0])
+        k=int(self.hkl[1])
+        l=int(self.hkl[2])
         if h==0:
             if k<0:
-                return next(self) #half a plane
+                next(self) #half a plane
             elif k==0 and l<0: #half an axis, keeping 0,0,0
-                return next(self)
+                next(self)
 
         # check the Q length
         if np.linalg.norm(np.dot(self.hkl, self.lattice_reci)) > self.maxQ:
-            # print('skipped hkl', (h,k,l))
-            return next(self)
+            next(self)
 
-        # print('accepted hkl', (h,k,l))
-        if not(h==0 and k==0 and l==0):
-            self.mult=1
-            return self
+        nphkl = np.array(self.hkl)
+        if np.allclose(nphkl, np.zeros(3)):
+            return {'hkl': nphkl, 'mult': 1}
         else:
-            self.mult=2
-            return self
+            return {'hkl': nphkl, 'mult': 2}
 
 
 class CalcBase:
@@ -161,9 +158,6 @@ class CalcBase:
         #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
         return F
 
-def test( v):
-    print(v)
-
 class CalcPowder(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
         super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature)
@@ -183,8 +177,8 @@ class CalcPowder(CalcBase):
 
     def calcHKL(self, latpnt):
         #S=np.array([self.nAtom*3*self.numQpoint, 3])
-        print(f'processing lattice point {latpnt.hkl}')
-        tau=np.dot(latpnt.hkl,self.lattice_reci)
+        print(f'processing lattice point {latpnt}')
+        tau=np.dot(latpnt['hkl'], self.lattice_reci)
         modeWeight = 1./(self.nAtom) #fixme: So the xs is in the unit of per atom? but the  eigv is already weighted
         for i in range(self.numQpoint):
             if np.allclose(self.qpoint[i], np.zeros(3)):
@@ -196,8 +190,8 @@ class CalcPowder(CalcBase):
                 continue
             F = self.calcFormFact(Q, self.eigv[i])
             Smag=modeWeight*(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar/self.en[i]
-            self.hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i]/hbar, Smag*latpnt.mult*hbar) #negative energy for downscattering, fill in angular frequency instead of energy
-        return self.hist
+            self.hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i]/hbar, Smag*latpnt['mult']*hbar) #negative energy for downscattering, fill in angular frequency instead of energy
+        return self.hist.getHistVal()
 
 class CalcBand(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):

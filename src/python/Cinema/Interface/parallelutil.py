@@ -25,7 +25,7 @@ class ParallelHelper():
 
     def mapReduce(self, func, iterabe1):
          if self.available():
-             res = self.sparkContext.parallelize(iterabe1, SparkHelper.partitions).map(func).reduce()
+             res = self.sparkContext.parallelize(iterabe1, self.partitions).map(func).collect()
          else:
              res = list(map(func, iterabe1))
          return res
