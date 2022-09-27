@@ -158,9 +158,6 @@ class CalcBase:
         #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
         return F
 
-def test( v):
-    print(v)
-
 class CalcPowder(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
         super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature)
@@ -194,7 +191,7 @@ class CalcPowder(CalcBase):
             F = self.calcFormFact(Q, self.eigv[i])
             Smag=modeWeight*(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar/self.en[i]
             self.hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i]/hbar, Smag*latpnt['mult']*hbar) #negative energy for downscattering, fill in angular frequency instead of energy
-        return self.hist
+        return self.hist.getHistVal()
 
 class CalcBand(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):

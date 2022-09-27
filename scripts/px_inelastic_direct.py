@@ -6,6 +6,9 @@ from Cinema.PiXiu.PhononCalc import MeshCell, MeshQE
 from Cinema.Interface.Utils import findData
 import argparse
 
+from Cinema.Interface.parallelutil import ParallelHelper
+from pyspark import SparkContext
+
 #parameters
 #temperature in kelvin
 #upper limit for the Q, maxQ, float
@@ -26,6 +29,11 @@ parser.add_argument('-s', '--step', action='store', type=int, default=1,
 parser.add_argument('-o', '--output-file-name', action='store', default='qehist.h5',
                     dest='output', help='output file name')
 args=parser.parse_args()
+
+ph = ParallelHelper()
+ph.partitions = 4
+ph.sparkContext = SparkContext(master=f'local[{ph.partitions}]')
+
 
 temp = args.temp #temperature in kelvin
 maxQ = args.maxQ

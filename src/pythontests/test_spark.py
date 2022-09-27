@@ -28,5 +28,7 @@ import hashlib, pickle
 m1=hashlib.md5(pickle.dumps(res1))
 m2=hashlib.md5(pickle.dumps(res2))
 print(m1.hexdigest(), m2.hexdigest()) # the order is not the same
+print(res1)
+print(res2)
 
 np.testing.assert_allclose(17, len(res1))
