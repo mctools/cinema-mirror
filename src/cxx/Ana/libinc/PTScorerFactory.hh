@@ -1,5 +1,5 @@
-#ifndef Prompt_AnaManager_hh
-#define Prompt_AnaManager_hh
+#ifndef Prompt_ScorerFactory_hh
+#define Prompt_ScorerFactory_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -35,15 +35,15 @@ namespace Prompt {
     SURFACE_CURRENT
   };
 
-  class AnaManager  {
+  class ScorerFactory  {
   public:
     //used in GeoManager::loadFile
     std::shared_ptr<Scorer> createScorer(const std::string &cfg, double v);
 
   private:
-    friend class Singleton<AnaManager>;
-    AnaManager();
-    ~AnaManager();
+    friend class Singleton<ScorerFactory>;
+    ScorerFactory();
+    ~ScorerFactory() = default;
   };
 }
 

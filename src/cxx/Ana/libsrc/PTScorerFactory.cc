@@ -18,7 +18,7 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTAnaManager.hh"
+#include "PTScorerFactory.hh"
 #include "PTUtils.hh"
 #include "PTScorerNeutronSq.hh"
 #include "PTScorerPSD.hh"
@@ -27,14 +27,11 @@
 #include "PTScorerVolFlux.hh"
 #include "PTScorerMultiScat.hh"
 
-Prompt::AnaManager::AnaManager()
-{}
-
-Prompt::AnaManager::~AnaManager()
+Prompt::ScorerFactory::ScorerFactory()
 {}
 
 
-std::shared_ptr<Prompt::Scorer> Prompt::AnaManager::createScorer(const std::string &cfg, double vol)
+std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::string &cfg, double vol)
 {
   auto words = split(cfg, ';');
   std::cout << "Creating scorer with config: ";
@@ -76,7 +73,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::AnaManager::createScorer(const std::stri
       PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerPSD");
       return std::make_shared<ScorerPSD>(words[1], std::stod(words[2]) , std::stod(words[3]) , std::stoi(words[4]) ,
                                         std::stod(words[5]) , std::stod(words[6]) , std::stoi(words[7]), ScorerPSD::YZ );
-    } 
+    }
   }
   else if(words[0]=="ESD")
   {

@@ -32,7 +32,7 @@
 #include "VecGeom/navigation/SimpleABBoxLevelLocator.h"
 #include "VecGeom/navigation/BVHLevelLocator.h"
 
-#include "PTAnaManager.hh"
+#include "PTScorerFactory.hh"
 
 #include "PTUtils.hh"
 #include "PTMaxwellianGun.hh"
@@ -182,7 +182,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
   std::cout << "Geometry contains "
             << volAuxInfo.size() << " entries of volum auxiliary info\n";
 
-  auto &anaManager = Singleton<AnaManager>::getInstance();
+  auto &anaManager = Singleton<ScorerFactory>::getInstance();
   auto &geoManager = vecgeom::GeoManager::Instance();
 
   //geoManager.GetLogicalVolumesMap() returens std::map<unsigned int, LogicalVolume *>
