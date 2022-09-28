@@ -21,7 +21,6 @@ def atomNum(d2o_r, d2o_h, v_r, v_h): # mm
     return d2o_atomNum, v_atomNum
 
 class WgtFileAnalysor(Hist1D):
-    # def __init__(self, xmin, xmax, numbin, xname, weightname, linear=True):
     def __init__(self, filePath, xname, weightname):
         path=os.path.join(filePath)
         self.files = glob(path)
@@ -40,7 +39,7 @@ class WgtFileAnalysor(Hist1D):
             Data = h5py.File(self.files[i],"r")
             x = np.array(Data[self.xname])
             weight = np.array(Data[self.weightname])
-            if scatnum:
+            if scatnum != None:
                 numScat = np.array(Data['numScat'])
                 idx = np.where(numScat==scatnum)
                 x = x[idx]
