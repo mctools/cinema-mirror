@@ -1,3 +1,6 @@
+#ifndef Prompt_CfgParser_hh
+#define Prompt_CfgParser_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,33 +21,30 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTUtils.hh"
-#include <algorithm>
+#include <string>
+#include <map>
+#include <typeinfo>
 
-std::vector<std::string> Prompt::split(const std::string& text, char delimiter)
-{
-  std::vector<std::string> words;
-  std::stringstream sstream(text);
-  std::string word;
-  while (std::getline(sstream, word, delimiter))
-  {
-    word.erase(std::remove_if(word.begin(), word.end(),
-                            [](char c) {
-                                return (c == ' ' || c == '\n' || c == '\r' ||
-                                        c == '\t' || c == '\v' || c == '\f');
-                            }),
-                            word.end());
-    words.push_back(word);
-  }
+namespace Prompt {
+  class CfgParser {
+  public:
+    struct ScorerCfg {
+      ScorerCfg() = default;
+      ScorerCfg(ScorerCfg&& other) = default;
+      ~ScorerCfg() = default;
+      std::string name;
+      std::map<std::string, std::string> parameters;
+      void print()
+      {
+        printf("+ScorerCfg %s\n", name.c_str() );
+      }
+    };
+  public:
+    CfgParser();
+    ~CfgParser() = default;
+    ScorerCfg getScorerCfg(const std::string& cfgstr);
 
-
-  return words;
+    std::string getTypeName(const std::type_info& ti);
+  };
 }
-
-Prompt::Vector Prompt::string2vec(const std::string& text, char delimiter)
-{
-  auto subs = split(text, delimiter);
-  if(subs.size()!=3)
-    PROMPT_THROW2(BadInput, "string2vec " << text);
-  return Vector{std::stod(subs[0]), std::stod(subs[1]),std::stod(subs[2]) };
-}
+#endif

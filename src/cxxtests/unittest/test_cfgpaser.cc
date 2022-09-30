@@ -18,33 +18,19 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTUtils.hh"
-#include <algorithm>
+#include "../doctest.h"
 
-std::vector<std::string> Prompt::split(const std::string& text, char delimiter)
+#include "PTCfgParser.hh"
+
+namespace pt = Prompt;
+#include <typeinfo>
+#include <iostream>
+#include <vector>
+
+TEST_CASE("CfgParser")
 {
-  std::vector<std::string> words;
-  std::stringstream sstream(text);
-  std::string word;
-  while (std::getline(sstream, word, delimiter))
-  {
-    word.erase(std::remove_if(word.begin(), word.end(),
-                            [](char c) {
-                                return (c == ' ' || c == '\n' || c == '\r' ||
-                                        c == '\t' || c == '\v' || c == '\f');
-                            }),
-                            word.end());
-    words.push_back(word);
-  }
-
-
-  return words;
-}
-
-Prompt::Vector Prompt::string2vec(const std::string& text, char delimiter)
-{
-  auto subs = split(text, delimiter);
-  if(subs.size()!=3)
-    PROMPT_THROW2(BadInput, "string2vec " << text);
-  return Vector{std::stod(subs[0]), std::stod(subs[1]),std::stod(subs[2]) };
+  pt::CfgParser ps;
+  std::cout << ps.getTypeName(typeid(pt::CfgParser)) << std::endl;
+  auto cfg = ps.getScorerCfg("Scorer=(NeutronSq); name=str(SofQ);sample_position=vec(0,0,1);beam_direction=vec(0,0,1);src_sample_dist=double(30000);ScorerType=str(ENTRY);linear=bool(true)");
+  cfg.print();
 }

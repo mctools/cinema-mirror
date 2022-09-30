@@ -18,33 +18,40 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTUtils.hh"
-#include <algorithm>
+#include "PTCfgParser.hh"
+#include "PTUtils.hh" //split
+#include <cxxabi.h> //__cxa_demangle
 
-std::vector<std::string> Prompt::split(const std::string& text, char delimiter)
+Prompt::CfgParser::CfgParser()
 {
-  std::vector<std::string> words;
-  std::stringstream sstream(text);
-  std::string word;
-  while (std::getline(sstream, word, delimiter))
-  {
-    word.erase(std::remove_if(word.begin(), word.end(),
-                            [](char c) {
-                                return (c == ' ' || c == '\n' || c == '\r' ||
-                                        c == '\t' || c == '\v' || c == '\f');
-                            }),
-                            word.end());
-    words.push_back(word);
-  }
 
-
-  return words;
 }
 
-Prompt::Vector Prompt::string2vec(const std::string& text, char delimiter)
+std::string Prompt::CfgParser::getTypeName(const std::type_info& ti)
 {
-  auto subs = split(text, delimiter);
-  if(subs.size()!=3)
-    PROMPT_THROW2(BadInput, "string2vec " << text);
-  return Vector{std::stod(subs[0]), std::stod(subs[1]),std::stod(subs[2]) };
+  // see https://panthema.net/2008/0901-stacktrace-demangled/cxa_demangle.html and
+  // https://gcc.gnu.org/onlinedocs/libstdc++/manual/ext_demangling.html
+  ;
+  std::string tname (abi::__cxa_demangle(ti.name(), nullptr, nullptr, nullptr));
+
+  std::string substr = "Prompt::";
+  std::string::size_type i = tname.find(substr);
+  if (i != std::string::npos)
+     tname.erase(i, substr.length());
+
+  return std::move(tname);
+}
+
+Prompt::CfgParser::ScorerCfg Prompt::CfgParser::getScorerCfg(const std::string& cfgstr)
+{
+  auto strvec = split(cfgstr, ';');
+  ScorerCfg cfg;
+  cfg.name=strvec[0];
+  for(const auto &s: strvec)
+  {
+    auto p = split(s, '=');
+    cfg.parameters[p[0]] = p[1];
+    std::cout << s << std::endl;
+  }
+  return std::move(cfg);
 }
