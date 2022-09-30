@@ -29,9 +29,6 @@ namespace Prompt {
   class CfgParser {
   public:
     struct ScorerCfg {
-      ScorerCfg() = default;
-      ScorerCfg(ScorerCfg&& other) = default;
-      ~ScorerCfg() = default;
       std::string name;
       std::map<std::string, std::string> parameters;
       void print()
