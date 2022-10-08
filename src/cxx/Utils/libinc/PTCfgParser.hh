@@ -24,6 +24,7 @@
 #include <string>
 #include <map>
 #include <typeinfo>
+#include "PTSingleton.hh"
 
 namespace Prompt {
   class CfgParser {
@@ -37,11 +38,12 @@ namespace Prompt {
       }
     };
   public:
+    ScorerCfg getScorerCfg(const std::string& cfgstr);
+    std::string getTypeName(const std::type_info& ti);
+  private:
+    friend class Singleton<CfgParser>;
     CfgParser();
     ~CfgParser() = default;
-    ScorerCfg getScorerCfg(const std::string& cfgstr);
-
-    std::string getTypeName(const std::type_info& ti);
   };
 }
 #endif

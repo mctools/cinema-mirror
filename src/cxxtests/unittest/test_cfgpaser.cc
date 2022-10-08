@@ -21,6 +21,7 @@
 #include "../doctest.h"
 
 #include "PTCfgParser.hh"
+#include "PTSingleton.hh"
 
 namespace pt = Prompt;
 #include <typeinfo>
@@ -29,7 +30,7 @@ namespace pt = Prompt;
 
 TEST_CASE("CfgParser")
 {
-  pt::CfgParser ps;
+  auto &ps = pt::Singleton<pt::CfgParser>::getInstance();
   std::cout << ps.getTypeName(typeid(pt::CfgParser)) << std::endl;
   auto cfg = ps.getScorerCfg("Scorer=(NeutronSq); name=str(SofQ);sample_position=vec(0,0,1);beam_direction=vec(0,0,1);src_sample_dist=double(30000);ScorerType=str(ENTRY);linear=bool(true)");
   cfg.print();

@@ -26,6 +26,7 @@
 namespace Prompt {
   std::vector<std::string> split(const std::string& text, char delimiter);
   Vector string2vec(const std::string& text, char delimiter=',');
+  double ptstod(const std::string& text);
 }
 
 #endif

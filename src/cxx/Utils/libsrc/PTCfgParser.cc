@@ -31,7 +31,7 @@ std::string Prompt::CfgParser::getTypeName(const std::type_info& ti)
 {
   // see https://panthema.net/2008/0901-stacktrace-demangled/cxa_demangle.html and
   // https://gcc.gnu.org/onlinedocs/libstdc++/manual/ext_demangling.html
-  ;
+
   std::string tname (abi::__cxa_demangle(ti.name(), nullptr, nullptr, nullptr));
 
   std::string substr = "Prompt::";
@@ -39,7 +39,7 @@ std::string Prompt::CfgParser::getTypeName(const std::type_info& ti)
   if (i != std::string::npos)
      tname.erase(i, substr.length());
 
-  return std::move(tname);
+  return tname;
 }
 
 Prompt::CfgParser::ScorerCfg Prompt::CfgParser::getScorerCfg(const std::string& cfgstr)
@@ -53,5 +53,5 @@ Prompt::CfgParser::ScorerCfg Prompt::CfgParser::getScorerCfg(const std::string& 
     cfg.parameters[p[0]] = p[1];
     std::cout << s << std::endl;
   }
-  return std::move(cfg);
+  return cfg;
 }

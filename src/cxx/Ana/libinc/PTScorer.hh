@@ -25,15 +25,16 @@
 #include "PTParticle.hh"
 #include "PTHist1D.hh"
 #include "PTHist2D.hh"
+#include "PTCfgParser.hh"
 
 namespace Prompt {
-
 
   class Scorer {
   public:
     enum ScorerType {SURFACE, ENTRY, PROPAGATE, ABSORB, EXIT};
   public:
     Scorer(const std::string& name, ScorerType type) : m_name(name), m_type(type) {};
+    
     virtual ~Scorer() {std::cout<<"Destructing scorer " << m_name <<std::endl;};
     const std::string &getName() { return m_name; }
     ScorerType getType() { return m_type; }
