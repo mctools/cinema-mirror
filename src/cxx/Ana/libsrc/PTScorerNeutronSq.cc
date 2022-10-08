@@ -22,10 +22,31 @@
 #include "PTRandCanonical.hh"
 
 Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool linear)
-:Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>(qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
-m_sourceSampleDist(sourceSampleDist)
+  double sourceSampleDist, double qmin, double qmax, unsigned numbin,
+  ScorerType stype, bool linear)
+  :Scorer1D()
 {
+  init(name, samplePos, refDir, sourceSampleDist, qmin, qmax, numbin, stype, linear);
+}
+
+Prompt::ScorerNeutronSq::~ScorerNeutronSq()
+{
+  m_dataout.close();
+}
+
+void Prompt::ScorerNeutronSq::init(const std::string &name, const Vector &samplePos, const Vector &refDir,
+  double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool linear)
+{
+  // scorer
+  m_name = "ScorerNeutronSq_" + name;
+  m_type = stype;
+  // scorer1D
+  m_hist = std::make_unique<Hist1D>(qmin, qmax, numbin, linear);
+
+  m_samplePos = samplePos;
+  m_refDir = refDir;
+  m_sourceSampleDist = sourceSampleDist;
+
   if(stype==Scorer::ENTRY)
     m_kill=true;
   else if (stype==Scorer::ABSORB)
@@ -35,12 +56,6 @@ m_sourceSampleDist(sourceSampleDist)
     auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
     m_dataout.open("ScorerNeutronSq_" + name + "_seed"+std::to_string(seed)+".wgt");
 }
-
-Prompt::ScorerNeutronSq::~ScorerNeutronSq()
-{
-  m_dataout.close();
-}
-
 
 void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
 {
