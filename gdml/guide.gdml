@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+    <userinfo>
+      <auxiliary auxtype="PrimaryGun" auxvalue="UniModeratorGun;Neutron;3.39;0.3;50, 50, 0, 50, 50, 1000" />
+    </userinfo>
+
+    <define>
+        <position name="Monitor1Pos" x="0" y="0" z="1000.0" />
+        <position name="GuidePos" x="0" y="0" z="1600.0" />
+        <position name="Monitor2Pos" x="0" y="0" z="3100.0" />
+    </define>
+
+    <materials>
+      <material name="Vaccum">
+        <atom value="vacuum.ncmat"/>
+      </material>
+
+      <material name="Cd">
+        <atom value="Cd.ncmat"/>
+      </material>
+    </materials>
+
+    <solids>
+        <box name="WorldBox" x="70.0" y="70" z="7000.0" lunit="mm"/>
+        <box name="Guider1_outer" z="1000" y="53" x="53" lunit="mm"/>
+        <box name="Guider1_inner" z="1000" y="50" x="50" lunit="mm"/>
+        <subtraction name="Guider1">
+            <first ref="Guider1_outer"/>
+            <second ref="Guider1_inner"/>
+        </subtraction>
+        <box name="Monitor1Solid" x="50" y="50" z="0.00001" />
+        <box name="Monitor2Solid" x="70" y="70" z="0.00001" />
+    </solids>
+
+    <structure>
+        <volume name="LV_Guider1">
+            <solidref ref="Guider1"/>
+            <materialref ref="Cd"/>
+            <auxiliary auxtype="MirrorPhysics" auxvalue="1.0"/>
+        </volume>
+
+        <volume name="logMonitor1">
+            <solidref ref="Monitor1Solid"/>
+            <auxiliary auxtype="Sensitive" auxvalue="PSD;Monitor1;-25;25;20;-25;25;20;XY"/>
+            <materialref ref="Vaccum"/>
+        </volume>
+
+        <volume name="logMonitor2">
+            <solidref ref="Monitor2Solid"/>
+            <auxiliary auxtype="Sensitive" auxvalue="PSD;Monitor2;-35;35;20;-35;35;20;XY"/>
+            <materialref ref="Vaccum"/>
+        </volume>
+
+
+        <volume name="worldVOL"><!-- World -->
+            <solidref ref="WorldBox"/>
+            <materialref ref="Vaccum"/>
+            <auxiliary auxtype="Color" auxvalue="#ff9f0000"/>
+
+            <physvol name="Guider_1">
+                <volumeref ref="LV_Guider1"/>
+                <positionref ref="GuidePos"/>
+            </physvol>
+
+            <physvol name="Monitor1">
+                <volumeref ref="logMonitor1"/>
+                <positionref ref="Monitor1Pos"/>
+            </physvol>
+
+            <physvol name="Monitor2">
+                <volumeref ref="logMonitor2"/>
+                <positionref ref="Monitor2Pos"/>
+            </physvol>
+
+        </volume>
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="worldVOL"/>
+    </setup>
+</gdml>

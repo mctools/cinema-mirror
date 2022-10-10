@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='utf-8'?>
+<gdml>
+
+    <userinfo>
+      <auxiliary auxtype="PrimaryGun" auxvalue="IsotropicGun;Neutron;0.001; 0.0,0.0,0.0; 0,0,1" />
+    </userinfo>
+
+    <define>
+    </define>
+
+    <materials>
+        <material name="Vacuum">
+          <atom value="vacuum.ncmat"/>
+        </material>
+
+        <material name="Cd">
+          <atom value="Cd.ncmat"/>
+        </material>
+    </materials>
+
+    <solids>
+        <box lunit="mm" name="WorldSolid" x="150.0" y="150.0" z="150.0" />
+        <ellipsoid aunit="deg" lunit="mm" name="EllipsoidSolid" ax="80.0" by="100.0" cz="140.0" zcut1="10" zcut2="50" />
+    </solids>
+
+    <structure>
+        <volume name="VolEllipsoid">
+            <solidref ref="EllipsoidSolid" />
+            <materialref ref="Vacuum" />
+        </volume>
+
+        <volume name="VolWorld">
+            <solidref ref="WorldSolid" />
+            <materialref ref="Cd" />
+
+            <physvol name="PhysVol_Ellipsoid">
+                <volumeref ref="VolEllipsoid" />
+                <position name="Position" unit="mm" x="0.0" y="0.0" z="0.0" />
+            </physvol>
+        </volume>
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="VolWorld" />
+    </setup>
+</gdml>

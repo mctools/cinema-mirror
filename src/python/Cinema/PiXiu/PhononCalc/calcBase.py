@@ -6,9 +6,47 @@ from Cinema.Interface.units import hbar
 
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from Cinema.Interface.units import *
-
+from Cinema.Interface.parallelutil import ParallelHelper
 # lattice (Aa), mass (molar mass), pos (fractional coordinate), bc (sqrt(barn))
 # qpoints(reduced coordinate), energy(eV ), eigv (unity magnitude), qweight (dimensionless), temperature(kelvin)
+
+import itertools
+
+class PowderHKLIter:
+    def __init__(self, lattice_reci, maxQ, step=1):
+        self.lattice_reci = lattice_reci
+        self.maxQ = maxQ
+        qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
+        maxhkl = int(maxQ/np.ceil(qmin1d))
+        # print(f'maxhkl {maxhkl}')
+        self.it = itertools.product(range(0, maxhkl+1, step), range(-maxhkl, maxhkl+1, step), range(-maxhkl, maxhkl+1, step))
+        self.hkl = None
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.hkl = next(self.it)
+
+        h=int(self.hkl[0])
+        k=int(self.hkl[1])
+        l=int(self.hkl[2])
+        if h==0:
+            if k<0:
+                next(self) #half a plane
+            elif k==0 and l<0: #half an axis, keeping 0,0,0
+                next(self)
+
+        # check the Q length
+        if np.linalg.norm(np.dot(self.hkl, self.lattice_reci)) > self.maxQ:
+            next(self)
+
+        nphkl = np.array(self.hkl)
+        if np.allclose(nphkl, np.zeros(3)):
+            return {'hkl': nphkl, 'mult': 1}
+        else:
+            return {'hkl': nphkl, 'mult': 2}
+
 
 class CalcBase:
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
@@ -60,8 +98,8 @@ class CalcBase:
             raise ValueError('phonon total qweight is not unity {}'.format( self.qweight.sum() ) )
 
         self.baseMetadataDict = {
-            'lattice': self.lattice, 
-            'molarMass': self.molarMass, 
+            'lattice': self.lattice,
+            'molarMass': self.molarMass,
             'position': self.pos,
             'temperature': self.temperature
             }    #future: may provide API to customize
@@ -128,43 +166,32 @@ class CalcPowder(CalcBase):
         qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
         maxhkl = np.int(maxQ/np.ceil(qmin1d))
 
-        hist=Hist2D(0, maxQ + extraHistQranage, QSize, -(self.en.max()+extraHistEnrange)/hbar, 0, enSize, self.baseMetadataDict ) #note negtive energy, for  downscattering, y-axis is in THz
 
-        for h in range(0,maxhkl+1,step):  # half a space
-                for k in range(-maxhkl,maxhkl+1,step):
-                    hkllist=[]
-                    for l in range(-maxhkl,maxhkl+1,step):
-                        if h==0:
-                            if k<0:
-                                continue #half a plane
-                            elif k==0 and l<0: #half an axis, keeping 0,0,0
-                                continue
+        self.hist=Hist2D(0, maxQ + extraHistQranage, QSize, -(self.en.max()+extraHistEnrange)/hbar, 0, enSize, self.baseMetadataDict ) #note negtive energy, for  downscattering, y-axis is in THz
+        it_hkl = PowderHKLIter(self.lattice_reci, maxQ)
 
-                        hkl=np.array([h,k,l])
-                        if np.linalg.norm(np.dot(hkl,self.lattice_reci)) > maxQ:
-                            print('skipped hkl', (h,k,l))
-                            continue
+        ParallelHelper().mapReduce(self.calcHKL, it_hkl)
 
-                        print('processing hkl', (h,k,l))
+        return self.hist
 
-                        if not(h==0 and k==0 and l==0):
-                            self.calcHKL(hkl, hist)
-                        else:
-                            self.calcHKL(hkl, hist, 2)
-        return hist
 
-    def calcHKL(self, hkl, hist, hklweight=1.):
+    def calcHKL(self, latpnt):
         #S=np.array([self.nAtom*3*self.numQpoint, 3])
-        tau=np.dot(hkl,self.lattice_reci)
+        print(f'processing lattice point {latpnt}')
+        tau=np.dot(latpnt['hkl'], self.lattice_reci)
         modeWeight = 1./(self.nAtom) #fixme: So the xs is in the unit of per atom? but the  eigv is already weighted
         for i in range(self.numQpoint):
+            if np.allclose(self.qpoint[i], np.zeros(3)):
+                #skip gamma point
+                continue
             Q=self.qpoint[i]+tau
             Qmag=np.linalg.norm(Q)
-            if Qmag > hist.xmax:
+            if Qmag > self.hist.xmax:
                 continue
             F = self.calcFormFact(Q, self.eigv[i])
             Smag=modeWeight*(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar/self.en[i]
-            hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i]/hbar, Smag*hklweight*hbar) #negative energy for downscattering, fill in angular frequency instead of energy
+            self.hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i]/hbar, Smag*latpnt['mult']*hbar) #negative energy for downscattering, fill in angular frequency instead of energy
+        return self.hist.getHistVal()
 
 class CalcBand(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):

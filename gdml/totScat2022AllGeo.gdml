@@ -73,7 +73,7 @@
     </materials>
 
     <solids>
-        <box lunit="mm" name="WorldBox" x="30000.0" y="30000.0" z="65000.0" />
+        <box lunit="mm" name="WorldBox" x="3000.0" y="3000.0" z="65000.0" />
         <!-- CollimatorFoil -->
         <box lunit="mm" name="Foil" x="0.1" y="100.0" z="724.0" />
         <!-- Collimator -->
@@ -82,9 +82,10 @@
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleStick" rmax="4.4758" rmin="0.0" startphi="0.0" z="14.3376" />
         <!-- Light Water -->
         <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleStick" rmax="4.4758" rmin="0.0" startphi="0.0" z="4.7792" /> -->
+        <!-- Si -->
+        <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleStick" rmax="2.2" rmin="0.0" startphi="0.0" z="14.3376" /> -->
         <!-- Vanadium Stick -->
         <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleStick" rmax="3.175" rmin="0.0" startphi="0.0" z="60.0" /> -->
-        <!-- Vanadium SampleHolder -->
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleHolder" rmax="4.7658" rmin="4.4758" startphi="0.0" z="60.0" />
         <box lunit="mm" name="MonitorIn" x="40.0" y="40.0" z="1.0" />
         <box lunit="mm" name="Module300_L" x="25.4" y="211.2" z="300" />
@@ -103,6 +104,7 @@
         <volume name="LV_Tube_SampleStick">
             <solidref ref="SampleStick" />
             <materialref ref="HeavyWater" />
+            <auxiliary auxtype="Sensitive" auxvalue="ScorerMultiScat;HW;0.5;10.5;10"/>
             <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
         </volume>
 

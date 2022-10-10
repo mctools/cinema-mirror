@@ -3,7 +3,6 @@ numba==0.55.1
 
 #required packages for Prompt visualisation
 pyvista==0.34.1
-pyvistaqt==0.9.0
 matplotlib
 
 #required packages for post-analysis

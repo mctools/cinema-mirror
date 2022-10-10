@@ -28,7 +28,7 @@
 #include "PTSingleton.hh"
 #include "PTParticle.hh"
 #include "PTMaterialPhysics.hh"
-#include "PTScoror.hh"
+#include "PTScorer.hh"
 #include "PTHist2D.hh"
 #include <VecGeom/management/GeoManager.h>
 #include "PTGeoManager.hh"
@@ -52,7 +52,7 @@ namespace Prompt {
     void scoreSurface(Particle &particle);
     void scoreAbsorb(Particle &particle);
 
-    bool hasPropagateScoror() {return m_matphysscor->propagate_scorors.size(); };
+    bool hasPropagateScorer() {return m_matphysscor->propagate_scorers.size(); };
 
     bool hasMirrorPhyiscs();
     bool surfacePhysics(Particle &particle);
@@ -64,7 +64,7 @@ namespace Prompt {
 
     vecgeom::GeoManager &m_geo;
     const vecgeom::VPlacedVolume *m_currPV;
-    std::shared_ptr<VolumePhysicsScoror> m_matphysscor;
+    std::shared_ptr<VolumePhysicsScorer> m_matphysscor;
     // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
     // It is NavStatePath otherwise
     vecgeom::NavigationState *m_currState, *m_nextState;

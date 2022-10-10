@@ -27,80 +27,42 @@
 #include "PromptCore.hh"
 #include "PTMaterialPhysics.hh"
 #include "PTSingleton.hh"
-#include "PTScoror.hh"
+#include "PTScorer.hh"
 #include "PTPrimaryGun.hh"
 #include "PTMirrorPhysics.hh"
 
 namespace Prompt {
 
-  struct VolumePhysicsScoror { // to attached to a volume
+  struct VolumePhysicsScorer { // to attached to a volume
     std::shared_ptr<MaterialPhysics> physics; //bulk physics
     std::shared_ptr<MirrorPhyiscs> mirrorPhysics; //boundary physics
-    std::vector< std::shared_ptr<Scoror> >  scorors; /*scoror name, scoror*/
+    std::vector< std::shared_ptr<Scorer> >  scorers; /*scorer name, scorer*/
 
-    std::vector< std::shared_ptr<Scoror> >  surface_scorors;
-    std::vector< std::shared_ptr<Scoror> >  entry_scorors;
-    std::vector< std::shared_ptr<Scoror> >  propagate_scorors;
-    std::vector< std::shared_ptr<Scoror> >  exit_scorors;
-    std::vector< std::shared_ptr<Scoror> >  absorb_scorors;
+    std::vector< std::shared_ptr<Scorer> >  surface_scorers;
+    std::vector< std::shared_ptr<Scorer> >  entry_scorers;
+    std::vector< std::shared_ptr<Scorer> >  propagate_scorers;
+    std::vector< std::shared_ptr<Scorer> >  exit_scorers;
+    std::vector< std::shared_ptr<Scorer> >  absorb_scorers;
 
-
-    void sortScorors()
-    {
-      entry_scorors.clear();
-      propagate_scorors.clear();
-      exit_scorors.clear();
-      surface_scorors.clear();
-      absorb_scorors.clear();
-
-
-      for(auto &v : scorors)
-      {
-        auto type = v->getType();
-        if(type==Scoror::ENTRY)
-        {
-          entry_scorors.push_back(v);
-          std::cout << "Added ENTRY type scoror: " << v->getName() << std::endl;
-        }
-        else if(type==Scoror::PROPAGATE)
-        {
-          propagate_scorors.push_back(v);
-          std::cout << "Added PROPAGATE type scoror: " << v->getName() << std::endl;
-        }
-        else if(type==Scoror::EXIT)
-        {
-          exit_scorors.push_back(v);
-          std::cout << "Added EXIT type scoror: " << v->getName() << std::endl;
-        }
-        else if(type==Scoror::SURFACE)
-        {
-          surface_scorors.push_back(v);
-          std::cout << "Added SURFACE type scoror: " << v->getName() << std::endl;
-        }
-        else if(type==Scoror::ABSORB)
-        {
-          absorb_scorors.push_back(v);
-          std::cout << "Added ABSORB type scoror: " << v->getName() << std::endl;
-        }
-        else
-          PROMPT_THROW2(BadInput, "unknown scoror type " << type);
-      }
-    }
+    void sortScorers();
   };
-  using VPSMap = std::unordered_map<size_t, std::shared_ptr<VolumePhysicsScoror>>;
+
+  using VPSMap = std::unordered_map<size_t, std::shared_ptr<VolumePhysicsScorer>>;
 
   class GeoManager  {
   public:
     void loadFile(const std::string &loadFile);
     std::shared_ptr<MaterialPhysics> getMaterialPhysics(const std::string &name);
-    std::shared_ptr<Scoror> getScoror(const std::string &name);
+    std::shared_ptr<Scorer> getScorer(const std::string &name);
     size_t numMaterialPhysics() {return m_globelPhysics.size();}
-    size_t numScoror() {return m_globelScorors.size();}
+    size_t numScorer() {return m_globelScorers.size();}
+    std::string getLogicalVolumeScorerName(unsigned logid);
+    const std::string &getLogicalVolumeMaterialName(unsigned logid);
 
-    VPSMap::const_iterator getVolumePhysicsScoror(size_t id)
+    VPSMap::const_iterator getVolumePhysicsScorer(size_t logid)
     {
-      auto it = m_volphyscoror.find(id);
-      assert(it!=m_volphyscoror.end());
+      auto it = m_logVolID2physcorer.find(logid);
+      assert(it!=m_logVolID2physcorer.end());
       return it;
     }
 
@@ -115,10 +77,11 @@ namespace Prompt {
 
     // the name is unique
     std::map<std::string /*material name*/, std::shared_ptr<MaterialPhysics> > m_globelPhysics;
-    std::map<std::string /*scoror name*/, std::shared_ptr<Scoror> >  m_globelScorors;
+    std::map<std::string /*scorer name*/, std::shared_ptr<Scorer> >  m_globelScorers;
 
-    //the place to manage the life time of MaterialPhysics scorors
-    std::unordered_map<size_t, std::shared_ptr<VolumePhysicsScoror>> m_volphyscoror;
+    //the place to manage the life time of MaterialPhysics scorers
+    std::unordered_map<size_t, std::shared_ptr<VolumePhysicsScorer>> m_logVolID2physcorer;
+    std::unordered_map<size_t, std::string> m_logVolID2Mateiral;
   };
 }
 

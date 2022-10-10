@@ -20,7 +20,7 @@ v alpha.0.1, 25 March 2022
 
 v beta.0.2, 31 Oct 2021
 - PTSingleton for modern template singleton management.
-- Add volume scoror for statistical analysis   
+- Add volume scorer for statistical analysis   
 - Add particle gun module for generate primary incident particle
 - Smart pointer for material physics models resource management
 

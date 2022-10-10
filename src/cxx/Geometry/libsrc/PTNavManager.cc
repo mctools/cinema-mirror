@@ -35,9 +35,9 @@ Prompt::NavManager::~NavManager()
   std::cout << "Destructed NavManager" << std::endl;
 }
 
-Prompt::VolumePhysicsScoror *getLogicalVolumePhysicsScoror(const vecgeom::LogicalVolume &lv)
+Prompt::VolumePhysicsScorer *getLogicalVolumePhysicsScorer(const vecgeom::LogicalVolume &lv)
 {
-  return (Prompt::VolumePhysicsScoror *)lv.GetUserExtensionPtr();
+  return (Prompt::VolumePhysicsScorer *)lv.GetUserExtensionPtr();
 }
 
 void Prompt::NavManager::locateLogicalVolume(const Vector &p)
@@ -59,7 +59,7 @@ void Prompt::NavManager::setupVolumePhysics()
   // m_currState->Top() gets the placed volume
   m_currPV = m_currState->Top();
   auto &geo = Singleton<GeoManager>::getInstance();
-  m_matphysscor = geo.getVolumePhysicsScoror(getVolumeID())->second;
+  m_matphysscor = geo.getVolumePhysicsScorer(getVolumeID())->second;
 }
 
 bool Prompt::NavManager::surfacePhysics(Particle &particle)
@@ -102,9 +102,9 @@ const vecgeom::VPlacedVolume *Prompt::NavManager::getVolume()
 
 void Prompt::NavManager::scoreEntry(Prompt::Particle &particle)
 {
-  if(m_matphysscor->entry_scorors.size())
+  if(m_matphysscor->entry_scorers.size())
   {
-    for(auto &v:m_matphysscor->entry_scorors)
+    for(auto &v:m_matphysscor->entry_scorers)
     {
       v->score(particle);
     }
@@ -114,11 +114,11 @@ void Prompt::NavManager::scoreEntry(Prompt::Particle &particle)
 void Prompt::NavManager::scoreSurface(Prompt::Particle &particle)
 {
   auto localposition = particle.getPosition();
-  if(m_matphysscor->surface_scorors.size())
+  if(m_matphysscor->surface_scorers.size())
   {
     auto loc = m_currState->GlobalToLocal({localposition.x(), localposition.y(), localposition.z()});
     particle.setLocalPosition(Prompt::Vector(loc[0], loc[1], loc[2]));
-    for(auto &v:m_matphysscor->surface_scorors)
+    for(auto &v:m_matphysscor->surface_scorers)
     {
       v->score(particle);
     }
@@ -128,9 +128,9 @@ void Prompt::NavManager::scoreSurface(Prompt::Particle &particle)
 
 void Prompt::NavManager::scoreAbsorb(Prompt::Particle &particle)
 {
-  if(m_matphysscor->absorb_scorors.size())
+  if(m_matphysscor->absorb_scorers.size())
   {
-    for(auto &v:m_matphysscor->absorb_scorors)
+    for(auto &v:m_matphysscor->absorb_scorers)
     {
       v->score(particle);
     }
@@ -141,9 +141,9 @@ void Prompt::NavManager::scoreAbsorb(Prompt::Particle &particle)
 
 void Prompt::NavManager::scorePropagate(Prompt::Particle &particle)
 {
-  if(m_matphysscor->propagate_scorors.size())
+  if(m_matphysscor->propagate_scorers.size())
   {
-    for(auto &v:m_matphysscor->propagate_scorors)
+    for(auto &v:m_matphysscor->propagate_scorers)
     {
       v->score(particle);
     }
@@ -152,9 +152,9 @@ void Prompt::NavManager::scorePropagate(Prompt::Particle &particle)
 
 void Prompt::NavManager::scoreExit(Prompt::Particle &particle)
 {
-  if(m_matphysscor->exit_scorors.size())
+  if(m_matphysscor->exit_scorers.size())
   {
-    for(auto &v:m_matphysscor->exit_scorors)
+    for(auto &v:m_matphysscor->exit_scorers)
     {
       v->score(particle);
     }
@@ -193,8 +193,8 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   if (verbose && !sameVolume) { std::cout << "hitDaugherBoundary\n";}
 
   //Move next step
-  const double resolution = 0; //fixme: this value should be in sync with the geometry tolerance
-  particle.moveForward(step + (sameVolume ? 0 : resolution) );
+  const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
+  particle.moveForward(sameVolume ? step : (step + resolution) );
 
   if (verbose) {
     std::cout << "scattered conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << " step " << step << std::endl << std::endl;

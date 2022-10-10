@@ -27,8 +27,19 @@
 extern "C" {
 #endif
 
-size_t pt_placedVolNum();
+void* pt_Transformation3D_new(void *consttrfm3Dobj);
+void* pt_Transformation3D_newfromID(int id);
+void pt_Transformation3D_delete(void *trfm3Dobj);
+void pt_Transformation3D_multiple(void *trfm3Dobj1, void *trfm3Dobj2);
+void pt_Transformation3D_transform(void *trfm3Dobj1, size_t numPt, double *in, double *out);
+const char* pt_Transformation3D_print(void *trfm3Dobj);
+
+
+
+size_t pt_countFullTreeNode();
+
 const char* pt_getMeshName(size_t pvolID);
+void pt_getLogVolumeInfo(size_t pvolID, char* cp);
 void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlolygen, size_t &faceSize);
 void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPolygonPoints, size_t *faces);
 void pt_printMesh();

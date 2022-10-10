@@ -68,4 +68,9 @@ namespace Prompt {
   };
 }
 
+inline bool Prompt::ModelCollection::sameInquiryAsLastTime(double ekin, const Vector &dir) const
+{
+  return m_oriented ? (m_cache.ekin==ekin && m_cache.dir == dir) : m_cache.ekin==ekin;
+}
+
 #endif

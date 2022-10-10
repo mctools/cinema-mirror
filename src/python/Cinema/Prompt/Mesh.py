@@ -21,26 +21,63 @@
 ################################################################################
 
 from ..Interface import *
+import copy
 
-_pt_placedVolNum = importFunc('pt_placedVolNum', type_sizet, [])
+_pt_Transformation3D_new = importFunc('pt_Transformation3D_new', type_voidp, [type_voidp])
+_pt_Transformation3D_newfromID = importFunc('pt_Transformation3D_newfromID', type_voidp, [type_uint])
+_pt_Transformation3D_delete = importFunc('pt_Transformation3D_delete', None, [type_voidp])
+_pt_Transformation3D_multiple = importFunc('pt_Transformation3D_multiple', None, [type_voidp, type_voidp])
+_pt_Transformation3D_transform = importFunc('pt_Transformation3D_transform', None, [type_voidp, type_sizet, type_npdbl2d, type_npdbl2d])
+_pt_Transformation3D_print = importFunc('pt_Transformation3D_print', ctypes.c_char_p, [type_voidp])
+
+
+
+class MeshHelper(object):
+    def __init__(self, id):
+        self.cobj = _pt_Transformation3D_newfromID(id)
+        print(f'Created Transfromation {self.print()}') #fixme
+
+    def __del__(self):
+        _pt_Transformation3D_delete(self.cobj)
+
+    def multiple(self, cobjmatrix):
+        _pt_Transformation3D_multiple(self.cobj, cobjmatrix)
+
+    def tansform(self, input):
+        out = np.zeros_like(input, dtype=float)
+        _pt_Transformation3D_transform(self.cobj, input.shape[0], input, out)
+        return out
+
+    def print(self):
+        return _pt_Transformation3D_print(self.cobj).decode('utf-8')
+
+_pt_countFullTreeNode = importFunc('pt_countFullTreeNode', type_sizet, [])
 _pt_printMesh = importFunc("pt_printMesh", type_voidp, [])
 _pt_meshInfo = importFunc("pt_meshInfo", None,  [type_sizet, type_sizet, type_sizetp, type_sizetp, type_sizetp])
-_pt_getMeshName = importFunc("pt_getMeshName", type_cstr,  [type_sizet])
 _pt_getMesh = importFunc("pt_getMesh", None,  [type_sizet, type_sizet, type_npdbl2d, type_npszt1d, type_npszt1d])
+_pt_getMeshName = importFunc("pt_getMeshName", type_cstr,  [type_sizet])
+_pt_getLogVolumeInfo = importFunc("pt_getLogVolumeInfo", None, [type_sizet, type_cstr])
 
 class Mesh():
     def __init__(self):
-        self.nMax=self.placedVolNum()
+        self.nMax=self.countFullTreeNode()
         self.n = 0
 
-    def placedVolNum(self):
-        return _pt_placedVolNum()
+
+    def countFullTreeNode(self):
+        return _pt_countFullTreeNode()
+
 
     def printMesh(self):
         _pt_printMesh()
 
     def getMeshName(self):
         return _pt_getMeshName(self.n).decode('utf-8')
+
+    def getLogVolumeInfo(self):
+        info = ctypes.create_string_buffer(2000) #fixme
+        _pt_getLogVolumeInfo(self.n, info)
+        return info.value.decode('utf-8')
 
     def meshInfo(self, nSegments=10):
         npoints = type_sizet()
@@ -60,9 +97,7 @@ class Mesh():
         NumPolygonPoints = np.zeros(nPlolygen, dtype=type_sizet)
         facesVec = np.zeros(faceSize+nPlolygen, dtype=type_sizet)
         _pt_getMesh(self.n, nSegments, vert, NumPolygonPoints, facesVec)
-
         return name, vert, facesVec
-
 
     def __iter__(self):
         self.n = -1

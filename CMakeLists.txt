@@ -11,7 +11,7 @@ find_package(Threads REQUIRED)
 
 # VecGeom
 set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/VecGeom/install/;${CMAKE_SOURCE_DIR}/external/xerces-c/install/")
-set(VecGeom_VERSION 1.1.17...1.1.18)
+set(VecGeom_VERSION 1.2.0)
 find_package(VecGeom ${VecGeom_VERSION} REQUIRED)
 message(STATUS "Using VecGeom version ${VecGeom_VERSION}")
 # make sure we import VecGeom architecture flags - is this needed?
