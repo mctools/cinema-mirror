@@ -62,6 +62,7 @@ void Prompt::ScororNeutronSq::score(Prompt::Particle &particle)
   << ekin << " "
   << particle.getEKin0() << " "
   << particle.getEKin() << " "
+  << particle.getNumScat() << " "
   << particle.getWeight() <<  "\n";
 
   // printf("Qe, Qtrue; Ekine , Ekin0 , Ekin; TOF; x y z\n");
