@@ -36,6 +36,11 @@ namespace Prompt {
       {
         printf("+ScorerCfg %s\n", name.c_str() );
       }
+      std::string find(const std::string &key)
+      {
+        auto  it = parameters.find(key);
+        return  it == parameters.end() ? nullptr : it->second;
+      }
     };
   public:
     ScorerCfg getScorerCfg(const std::string& cfgstr);

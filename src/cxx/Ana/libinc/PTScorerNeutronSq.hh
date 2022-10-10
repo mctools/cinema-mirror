@@ -29,6 +29,7 @@ namespace Prompt {
 
   class ScorerNeutronSq  : public Scorer1D {
   public:
+    ScorerNeutronSq(const std::string &cfg);
     ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin,
       ScorerType styp=Scorer::ENTRY, bool linear=true);

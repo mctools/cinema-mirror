@@ -59,6 +59,7 @@ namespace Prompt {
 
   class Scorer2D : public Scorer {
   public:
+    Scorer2D(): Scorer() {};
     Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist)
     : Scorer(name, type), m_hist(std::move(hist)) {};
     virtual ~Scorer2D() { save(m_name); }
