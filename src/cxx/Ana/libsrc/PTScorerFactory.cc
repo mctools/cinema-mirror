@@ -89,12 +89,6 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
   }
   else if(words[0]=="VolFlux")
   {
-    std::cout << words[1] << " "
-    <<  ptstod(words[2]) << " "
-    <<  ptstod(words[3]) << " "
-    <<  std::stoi(words[4]) << " "
-    <<  std::stoi(words[5]) << " "
-    <<  vol << std::endl;
     return std::make_shared<Prompt::ScorerVolFlux>(words[1], ptstod(words[2]) ,
                 ptstod(words[3]) , std::stoi(words[4]) ,  std::stoi(words[5]),
                 vol );

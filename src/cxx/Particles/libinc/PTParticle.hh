@@ -37,7 +37,7 @@ namespace Prompt {
     Particle(double ekin, const Vector& dir, const Vector& pos);
     virtual ~Particle(){};
 
-    virtual void moveForward(double length); //fixme PTTrack is not used, so this virtual function may not be useful
+    virtual void moveForward(double length);
 
     virtual void setDirection(const Vector& dir);
     const Vector &getDirection() { return m_dir; }
@@ -49,11 +49,14 @@ namespace Prompt {
     const Vector &getLocalPosition() { return m_localpos; }
 
     double getTime() { return m_time; }
+    double getStep() { return m_step; }
+    double getEnergyChange() { return m_deltaEn; }
     void setEKin(double ekin);
     double getEKin() { return m_ekin; }
     double getEKin0() { return m_ekin0; }
     double getWeight() { return m_weight; }
-    void scaleWeight(double factor) { m_weight *= factor; }
+    double getWeightFactor() { return m_wFactor; }
+    void scaleWeight(double factor) { m_weight *= factor; m_wFactor = factor; }
     unsigned long long getEventID() { return m_eventid; }
     void setNumScat(int counter);
     int getNumScat() { return m_counter; }
@@ -66,6 +69,7 @@ namespace Prompt {
   protected:
     friend class DeltaParticle;
     double m_ekin0, m_ekin, m_time;
+    double m_step, m_deltaEn, m_wFactor;
     Vector m_dir, m_pos, m_localpos;
     unsigned m_pgd;
     double m_weight;
@@ -113,12 +117,14 @@ inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& 
 inline void Prompt::Particle::moveForward(double length)
 {
   m_pos += m_dir*length;
+  m_step = length;
   if(m_ekin)
     m_time += length/calcSpeed();
 }
 
 inline void Prompt::Particle::setEKin(double ekin)
 {
+  m_deltaEn = m_ekin - ekin;
   m_ekin = ekin;
 }
 

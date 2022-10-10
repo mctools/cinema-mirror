@@ -89,8 +89,6 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
     m_gun = std::make_shared<SimpleThermalGun>(Neutron());
   }
 
-  DeltaParticle dltpar;
-
   ProgressMonitor *moni=nullptr;
   if(timer)
     moni = new ProgressMonitor("Prompt simulation", numParticle, printPrecent);
@@ -98,8 +96,6 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
   {
     //double ekin, const Vector& dir, const Vector& pos
     auto particle = m_gun->generate();
-    dltpar.setLastParticle(particle);
-    // std::cout << "ekin " << particle.getEKin() << std::endl;
 
     if(recordTrj)
     {
@@ -129,13 +125,12 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       }
       navman.scoreEntry(particle);
 
-      //! the next while loop, particle should move in the same volume
+      //! within the next while loop, particle should move in the same volume
       while(navman.proprogateInAVolume(particle, 0) )
       {
         // score if any scorer is available
         if(navman.hasPropagateScorer())
         {
-          // dltpar.calcDeltaParticle(particle); //fixme: delta?
           navman.scorePropagate(particle);
         }
         if(recordTrj)

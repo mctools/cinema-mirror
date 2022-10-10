@@ -65,7 +65,8 @@ void Prompt::Hist1D::save(const std::string &filename) const
   nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_edge.npy", getEdge(), NumpyWriter::data_type::f8,
                    std::vector<uint64_t>{m_nbins+1});
 
-  char buffer [500];
+  char buffer [1000];
+
   int n =sprintf (buffer,
     "import numpy as np\n"
     "import matplotlib.pyplot as plt\n"
