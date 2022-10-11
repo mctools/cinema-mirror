@@ -33,15 +33,7 @@ namespace Prompt {
     struct ScorerCfg {
       std::string name;
       std::map<std::string, std::string> parameters;
-      void print()
-      {
-        std::cout << "ScorerCfg " << name << " of size " << size() << ":\n";
-        for(auto it = parameters.begin(); it!=parameters.end();++it)
-        {
-          std::cout << "  [" << it->first << " = "
-                      << it->second << "]\n";
-        }
-      }
+      void print();
       std::string find(const std::string &key, bool force=false);
       bool contains(const std::string &key)
       {

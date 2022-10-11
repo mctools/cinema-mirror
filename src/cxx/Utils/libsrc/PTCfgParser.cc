@@ -22,6 +22,15 @@
 #include "PTUtils.hh" //split
 #include <cxxabi.h> //__cxa_demangle
 
+void Prompt::CfgParser::ScorerCfg::print()
+{
+  std::cout << "ScorerCfg " << name << " of size " << size() << ":\n";
+  for(auto it = parameters.begin(); it!=parameters.end();++it)
+  {
+    std::cout << "  [" << it->first << " = "
+                << it->second << "]\n";
+  }
+}
 
 std::string Prompt::CfgParser::ScorerCfg::find(const std::string &key, bool force)
 {
