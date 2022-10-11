@@ -182,7 +182,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
   std::cout << "Geometry contains "
             << volAuxInfo.size() << " entries of volum auxiliary info\n";
 
-  auto &anaManager = Singleton<ScorerFactory>::getInstance();
+  auto &scorerFactory = Singleton<ScorerFactory>::getInstance();
   auto &geoManager = vecgeom::GeoManager::Instance();
 
   //geoManager.GetLogicalVolumesMap() returens std::map<unsigned int, LogicalVolume *>
@@ -225,7 +225,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
         for(const auto& info : volAuxInfoVec)
         {
-          if (info.GetType() == "Sensitive")
+          if (info.GetType() == "Scorer")
           {
             std::shared_ptr<Prompt::Scorer> scor = getScorer(info.GetValue());
 
@@ -235,7 +235,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
             }
             else
             {
-              scor = anaManager.createScorer(info.GetValue(), volume.GetUnplacedVolume()->Capacity() );
+              scor = scorerFactory.createScorer(info.GetValue(), volume.GetUnplacedVolume()->Capacity() );
               m_globelScorers[info.GetValue()]=scor;
               vps->scorers.push_back(scor);
               std::cout << "vol name " << volume.GetName() <<" capacity "<<  volume.GetUnplacedVolume()->Capacity()  << std::endl;

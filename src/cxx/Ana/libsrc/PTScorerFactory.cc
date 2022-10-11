@@ -83,7 +83,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
   {
     return std::make_shared<ScorerTOF>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) );
   }
-  else if(words[0]=="ScorerMultiScat")
+  else if(words[0]=="MultiScat")
   {
     return std::make_shared<ScorerMultiScat>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) );
   }

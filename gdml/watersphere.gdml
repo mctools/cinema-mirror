@@ -17,28 +17,45 @@
           <atom value="LiquidWaterH2O_T293.6K.ncmat;density=1.0gcm3"/>
           <D value="1"/>
         </material>
+
+        <material name="WaterD2">
+          <atom value="LiquidWaterH2O_T293.6K.ncmat;density=1.0gcm3"/>
+          <D value="2"/>
+        </material>
     </materials>
 
     <solids>
-        <box lunit="mm" name="WorldSolid" x="700.0" y="700.0" z="700.0" />
-        <sphere aunit="deg" lunit="mm" name="SphereSolid" rmin="0.0" rmax="300.0" deltaphi="360.0" startphi="0.0" deltatheta="180.0" starttheta="0.0" />
+        <box lunit="mm" name="WorldSolid" x="700.0" y="700.0" z="2800.0" />
+        <box lunit="mm" name="boxSolid" x="400" y="400" z="400" />
+        <sphere aunit="deg" lunit="mm" name="SphereSolid" rmin="0.0" rmax="30.0" deltaphi="360.0" startphi="0.0" deltatheta="180.0" starttheta="0.0" />
     </solids>
 
     <structure>
         <volume name="VolSphere">
             <solidref ref="SphereSolid" />
-            <materialref ref="Water" />
-            <auxiliary auxtype="Sensitive" auxvalue="VolFlux;waterflux;1e-5;1.2;1000;0"/>
+            <materialref ref="WaterD2" />
+            <!-- <auxiliary auxtype="Scorer" auxvalue="VolFlux;waterSphereflux;1e-5;1.2;1000;0"/> -->
         </volume>
+
+        <volume name="VolBox">
+            <solidref ref="boxSolid" />
+            <materialref ref="Water" />
+            <auxiliary auxtype="Scorer" auxvalue="VolFlux;waterBoxflux;1e-5;1.2;1000;0"/>
+        </volume>
+
 
         <volume name="VolWorld">
             <solidref ref="WorldSolid" />
             <materialref ref="Vacuum" />
-
+            <!-- <auxiliary auxtype="Scorer" auxvalue="VolFlux;waterflux;1e-5;1.2;1000;0"/> -->
             <physvol name="PhysVol_Shere">
                 <volumeref ref="VolSphere" />
                 <position name="Position" unit="mm" x="0.0" y="0.0" z="0.0" />
+            </physvol>
 
+            <physvol name="PhysVol_Box">
+                <volumeref ref="VolBox" />
+                <position name="Position2" unit="mm" x="0.0" y="0.0" z="700.0" />
             </physvol>
         </volume>
     </structure>

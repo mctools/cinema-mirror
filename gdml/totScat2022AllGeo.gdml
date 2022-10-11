@@ -104,7 +104,7 @@
         <volume name="LV_Tube_SampleStick">
             <solidref ref="SampleStick" />
             <materialref ref="HeavyWater" />
-            <auxiliary auxtype="Sensitive" auxvalue="ScorerMultiScat;HW;0.5;10.5;10"/>
+            <auxiliary auxtype="Scorer" auxvalue="MultiScat;HW;0.5;10.5;10"/>
             <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
         </volume>
 
@@ -118,15 +118,15 @@
             <solidref ref="MonitorIn" />
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Sensitive" auxvalue="ESD;MonitorIn;0.00;5.0;207"/>
-            <auxiliary auxtype="Sensitive" auxvalue="TOF;MonitorIn;0.00;5.0;207"/>
+            <auxiliary auxtype="Scorer" auxvalue="ESD;MonitorIn;0.00;5.0;207"/>
+            <auxiliary auxtype="Scorer" auxvalue="TOF;MonitorIn;0.00;5.0;207"/>
         </volume>
 
         <volume name="LV_Tube300_He">
             <solidref ref="Tube300_He" />
             <materialref ref="G4_He" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;SofQ_300;0,0,0;0,0,1;30000.;0.1;120;1000;ABSORB"/>
+            <auxiliary auxtype="Scorer" auxvalue="NeutronSq;SofQ_300;0,0,0;0,0,1;30000.;0.1;120;1000;ABSORB"/>
         </volume>
 
         <volume name="LV_Tube300_Wall">
@@ -149,7 +149,7 @@
 
         <volume name="LV_Tube500_He">
             <solidref ref="Tube500_He" />
-            <auxiliary auxtype="Sensitive" auxvalue="NeutronSq;SofQ_500;0,0,0;0,0,1;30000.;0.1;120;1000;ABSORB"/>
+            <auxiliary auxtype="Scorer" auxvalue="NeutronSq;SofQ_500;0,0,0;0,0,1;30000.;0.1;120;1000;ABSORB"/>
             <materialref ref="G4_He" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
         </volume>
@@ -176,7 +176,7 @@
             <solidref ref="Module300_L" />
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
-            <auxiliary auxtype="Sensitive" auxvalue="PSD;NeutronHistMapM300;-170;170;68;-125;125;50;YZ"/>
+            <auxiliary auxtype="Scorer" auxvalue="PSD;NeutronHistMapM300;-170;170;68;-125;125;50;YZ"/>
             <physvol name="LV_Tube300_1">
                 <volumeref ref="LV_Tube300" />
                 <positionref ref="P_LV_Tube_1" />
@@ -215,7 +215,7 @@
             <solidref ref="Module500_L" />
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
-            <auxiliary auxtype="Sensitive" auxvalue="PSD;NeutronHistMapM500;-270;270;108;-125;125;50;YZ"/>
+            <auxiliary auxtype="Scorer" auxvalue="PSD;NeutronHistMapM500;-270;270;108;-125;125;50;YZ"/>
             <physvol name="LV_Tube500_1">
                 <volumeref ref="LV_Tube500" />
                 <positionref ref="P_LV_Tube_1" />
@@ -292,7 +292,7 @@
 	              <position name="P_Foil_Left002" unit="mm" x="-67.0627" y="361.8378" z="0.0" />
 	              <rotation name="R_Foil_Left002" unit="deg" x="0.0" y="0.0" z="-10.50" />
             </physvol>
-            
+
             <physvol name="LV_Foil_Left003">
                 <volumeref ref="LV_Foil" />
                 <position name="P_Foil_Left003" unit="mm" x="-76.5115" y="359.9583" z="0.0" />
@@ -1635,209 +1635,209 @@
                 <rotation name="R_MonitorIn" unit="deg" x="0.0" y="0.0" z="0.0" />
             </physvol>
 
-            <physvol name="module10701"> 
-                <volumeref ref="LV_Box_Module300" /> 
+            <physvol name="module10701">
+                <volumeref ref="LV_Box_Module300" />
                 <position name="P_module10701" unit="mm" x="-363.9888" y="-321.0" z="-1226.2908" />
                 <rotation name="R_module10701" unit="deg" x="180.0" y="0.0" z="180.0" />
                 <auxiliary auxtype="name" auxvalue="module10701" />
             </physvol>
 
-            <physvol name="module10702"> 
-                <volumeref ref="LV_Box_Module300" />   
+            <physvol name="module10702">
+                <volumeref ref="LV_Box_Module300" />
                 <position name="P_module10702" unit="mm" x="-363.9888" y="-107.0" z="-1226.2908" />
                 <rotation name="R_module10702" unit="deg" x="-180.0" y="0.0" z="180.0" />
                 <auxiliary auxtype="name" auxvalue="module10702" />
             </physvol>
 
-            <physvol name="module10703"> 
-                <volumeref ref="LV_Box_Module300" />   
+            <physvol name="module10703">
+                <volumeref ref="LV_Box_Module300" />
                 <position name="P_module10703" unit="mm" x="-363.9888" y="107.0" z="-1226.2908" />
                 <rotation name="R_module10703" unit="deg" x="-180.0" y="0.0" z="180.0" />
                 <auxiliary auxtype="name" auxvalue="module10703" />
             </physvol>
 
-            <physvol name="module10704"> 
-                <volumeref ref="LV_Box_Module300" />   
+            <physvol name="module10704">
+                <volumeref ref="LV_Box_Module300" />
                 <position name="P_module10704" unit="mm" x="-363.9888" y="321.0" z="-1226.2908" />
                 <rotation name="R_module10704" unit="deg" x="-180.0" y="0.0" z="180.0" />
                 <auxiliary auxtype="name" auxvalue="module10704" />
             </physvol>
 
-            <physvol name="module10801">   
+            <physvol name="module10801">
                 <volumeref ref="LV_Box_Module300" />
                 <position name="P_module10801" unit="mm" x="363.9888" y="-321.0" z="-1226.2908" />
                 <rotation name="R_module10801" unit="deg" x="180.0" y="0.0" z="180.0" />
                 <auxiliary auxtype="name" auxvalue="module10801" />
             </physvol>
 
-            <physvol name="module10802">   
+            <physvol name="module10802">
                 <volumeref ref="LV_Box_Module300" />
                 <position name="P_module10802" unit="mm" x="363.9888" y="-107.0" z="-1226.2908" />
                 <rotation name="R_module10802" unit="deg" x="-180.0" y="0.0" z="180.0" />
                 <auxiliary auxtype="name" auxvalue="module10802" />
             </physvol>
 
-            <physvol name="module10803">   
+            <physvol name="module10803">
                 <volumeref ref="LV_Box_Module300" />
                 <position name="P_module10803" unit="mm" x="363.9888" y="107.0" z="-1226.2908" />
                 <rotation name="R_module10803" unit="deg" x="-180.0" y="0.0" z="180.0" />
                 <auxiliary auxtype="name" auxvalue="module10803" />
             </physvol>
 
-            <physvol name="module10804">   
+            <physvol name="module10804">
                 <volumeref ref="LV_Box_Module300" />
                 <position name="P_module10804" unit="mm" x="363.9888" y="321.0" z="-1226.2908" />
                 <rotation name="R_module10804" unit="deg" x="-180.0" y="0.0" z="180.0" />
                 <auxiliary auxtype="name" auxvalue="module10804" />
             </physvol>
 
-            <physvol name="module10602">  
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module10602">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10602" unit="mm" x="-852.42935" y="-107.0" z="-813.33845 " />
                 <rotation name="R_module10602" unit="deg" x="-180.0000" y="46.3443" z="-180.0000" />
                 <auxiliary auxtype="name" auxvalue="module10602" />
-            </physvol>  
+            </physvol>
 
-            <physvol name="module10603">      
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module10603">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10603" unit="mm" x="-852.42935" y="107.0" z="-813.33845 " />
                 <rotation name="R_module10603" unit="deg" x="-180.0000" y="46.3443" z="-180.0000" />
                 <auxiliary auxtype="name" auxvalue="module10603" />
-            </physvol>  
+            </physvol>
 
-             <physvol name="module10902">  
-                <volumeref ref="LV_Box_Module500" /> 
+             <physvol name="module10902">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10902" unit="mm" x="852.42935" y="-107.0" z="-813.33845 " />
                 <rotation name="R_module10902" unit="deg" x="-180.0000" y="-46.3443" z="-180.0000" />
                 <auxiliary auxtype="name" auxvalue="module10902" />
-            </physvol>  
+            </physvol>
 
-            <physvol name="module10903">      
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module10903">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10903" unit="mm" x="852.42935" y="107.0" z="-813.33845 " />
                 <rotation name="R_module10903" unit="deg" x="-180.0000" y="-46.3443" z="-180.0000" />
                 <auxiliary auxtype="name" auxvalue="module10903" />
-            </physvol> 
+            </physvol>
 
-            <physvol name="module10502"> 
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module10502">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10502" unit="mm" x="-1097.44135" y="-473.1892" z="-40.9817 " />
                 <rotation name="R_module10502" unit="deg" x="-113.0365" y="58.2600" z="-116.5654" />
                 <auxiliary auxtype="name" auxvalue="module10502" />
             </physvol>
 
-            <physvol name="module10503"> 
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module10503">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10503" unit="mm" x="-1162.48405" y="-214.0 " z="-56.72595" />
                 <rotation name="R_module10503" unit="deg" x="180.0" y="76.3927" z="180.0" />
                 <auxiliary auxtype="name" auxvalue="module10503" />
             </physvol>
 
-            <physvol name="module10504">  
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module10504">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10504" unit="mm" x="-1162.48405" y="0.0 " z="-56.72595" />
                 <rotation name="R_module10504" unit="deg" x="-180.0" y="76.3927" z="180.0" />
                 <auxiliary auxtype="name" auxvalue="module10504" />
             </physvol>
 
-            <physvol name="module10505">  
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module10505">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10505" unit="mm" x="-1162.48405" y="214.0 " z="-56.72595" />
                 <rotation name="R_module10505" unit="deg" x="-180.0" y="76.3927" z="180.0" />
                 <auxiliary auxtype="name" auxvalue="module10505" />
             </physvol>
 
 
-            <physvol name="module11002">  
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module11002">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module11002" unit="mm" x="1097.4414" y="-473.1892" z="-40.9817 " />
                 <rotation name="R_module11002" unit="deg" x="-113.0365" y="-58.2600" z="116.5653" />
                 <auxiliary auxtype="name" auxvalue="module11002" />
-            </physvol> 
+            </physvol>
 
-            <physvol name="module11003">  
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module11003">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module11003" unit="mm" x="1162.48405" y="-214.0" z="-56.72595 " />
                 <rotation name="R_module11003" unit="deg" x="180.0000" y="-76.3927" z="180.0000" />
                 <auxiliary auxtype="name" auxvalue="module11003" />
-            </physvol>  
+            </physvol>
 
-            <physvol name="module11004">  
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module11004">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module11004" unit="mm" x="1162.48405" y="0.0" z="-56.72595 " />
                 <rotation name="R_module11004" unit="deg" x="-180.0000" y="-76.3927" z="180.0000" />
                 <auxiliary auxtype="name" auxvalue="module11004" />
-            </physvol>  
+            </physvol>
 
-            <physvol name="module11005">  
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module11005">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module11005" unit="mm" x="1162.48405" y="214.0" z="-56.72595 " />
                 <rotation name="R_module11005" unit="deg" x="-180.0000" y="-76.3927" z="180.0000" />
                 <auxiliary auxtype="name" auxvalue="module11005" />
             </physvol>
 
-            <physvol name="module10403">     
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module10403">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10403" unit="mm" x="-1259.68 " y="-214.0" z="771.1368 " />
                 <rotation name="R_module10403" unit="deg" x="0.0000" y="90.0000" z="0.0000" />
                 <auxiliary auxtype="name" auxvalue="module10403" />
-            </physvol> 
+            </physvol>
 
-            <physvol name="module10404">      
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module10404">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10404" unit="mm" x="-1259.68 " y="0.0" z="771.1368 " />
                 <rotation name="R_module10404" unit="deg" x="0.0000" y="90.0000" z="0.0000" />
                 <auxiliary auxtype="name" auxvalue="module10404" />
-            </physvol> 
+            </physvol>
 
-            <physvol name="module10405">      
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module10405">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module10405" unit="mm" x="-1259.68 " y="214.0" z="771.1368 " />
                 <rotation name="R_module10405" unit="deg" x="0.0000" y="90.0000" z="0.0000" />
                 <auxiliary auxtype="name" auxvalue="module10405" />
-            </physvol> 
+            </physvol>
 
-            <physvol name="module11104">    
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module11104">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module11104" unit="mm" x="1259.68 " y="0.0" z="771.1368 " />
                 <rotation name="R_module11104" unit="deg" x="0.0000" y="-90.0000" z="0.0000" />
                 <auxiliary auxtype="name" auxvalue="module11104" />
-            </physvol> 
+            </physvol>
 
-            <physvol name="module11105">      
-                <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module11105">
+                <volumeref ref="LV_Box_Module500" />
                 <position name="P_module11105" unit="mm" x="1259.68 " y="214.0" z="771.1368 " />
                 <rotation name="R_module11105" unit="deg" x="0.0000" y="-90.0000" z="0.0000" />
                 <auxiliary auxtype="name" auxvalue="module11105" />
             </physvol>
 
             <physvol name="module10303">
-               <volumeref ref="LV_Box_Module500" /> 
+               <volumeref ref="LV_Box_Module500" />
                <position name="P_module10303" unit="mm" x="-1143.28635 " y="-107.0" z="1564.77325" />
                <rotation name="R_module10303" unit="deg" x="-0.0" y="74.0341" z="-0.0" />
                <auxiliary auxtype="name" auxvalue="module10303" />
             </physvol>
 
-            <physvol name="module10304">  
-               <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module10304">
+               <volumeref ref="LV_Box_Module500" />
                <position name="P_module10304" unit="mm" x="-1143.28635 " y="107.0" z="1564.77325" />
                <rotation name="R_module10304" unit="deg" x="-0.0" y="74.0341" z="-0.0" />
                <auxiliary auxtype="name" auxvalue="module10304" />
             </physvol>
 
-            <physvol name="module11203"> 
-               <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module11203">
+               <volumeref ref="LV_Box_Module500" />
                <position name="P_module11203" unit="mm" x="1143.28635 " y="-107.0" z="1564.77325" />
                <rotation name="R_module11203" unit="deg" x="-0.0" y="-74.0341" z="-0.0" />
                <auxiliary auxtype="name" auxvalue="module11203" />
             </physvol>
 
-            <physvol name="module11204">  
-               <volumeref ref="LV_Box_Module500" /> 
+            <physvol name="module11204">
+               <volumeref ref="LV_Box_Module500" />
                <position name="P_module11204" unit="mm" x="1143.28635 " y="107.0" z="1564.77325" />
                <rotation name="R_module11204" unit="deg" x="-0.0" y="-74.0341" z="-0.0" />
                <auxiliary auxtype="name" auxvalue="module11204" />
-            </physvol>  
+            </physvol>
 
             <physvol name="module10203">
                 <volumeref ref="LV_Box_Module500" />
@@ -1845,13 +1845,13 @@
                <rotation name="R_module10203" unit="deg" x="-0.0" y="75.4059" z="-0.0" />
                <auxiliary auxtype="name" auxvalue="module10203" />
             </physvol>
-            
-            <physvol name="module11303">  
+
+            <physvol name="module11303">
                 <volumeref ref="LV_Box_Module500" />
                 <position name="P_module11303" unit="mm" x="651.49465" y="-107.0" z="2455.7008" />
                 <rotation name="R_module11303" unit="deg" x="-0.0" y="-75.4059" z="-0.0" />
                 <auxiliary auxtype="name" auxvalue="module11303" />
-            </physvol> 
+            </physvol>
 
             <physvol name="Collimator360">
                 <volumeref ref="LV_Collimator" />

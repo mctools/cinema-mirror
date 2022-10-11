@@ -84,8 +84,8 @@
             <solidref ref="MonitorIn" />
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Sensitive" auxvalue="ESD;MonitorIn;0.00;5.0;207"/>
-            <auxiliary auxtype="Sensitive" auxvalue="TOF;MonitorIn;0.00;0.2;107"/>
+            <auxiliary auxtype="Scorer" auxvalue="ESD;MonitorIn;0.00;5.0;207"/>
+            <auxiliary auxtype="Scorer" auxvalue="TOF;MonitorIn;0.00;0.2;107"/>
         </volume>
 
         <volume name="worldVOL">

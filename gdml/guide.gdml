@@ -41,13 +41,13 @@
 
         <volume name="logMonitor1">
             <solidref ref="Monitor1Solid"/>
-            <auxiliary auxtype="Sensitive" auxvalue="PSD;Monitor1;-25;25;20;-25;25;20;XY"/>
+            <auxiliary auxtype="Scorer" auxvalue="PSD;Monitor1;-25;25;20;-25;25;20;XY"/>
             <materialref ref="Vaccum"/>
         </volume>
 
         <volume name="logMonitor2">
             <solidref ref="Monitor2Solid"/>
-            <auxiliary auxtype="Sensitive" auxvalue="PSD;Monitor2;-35;35;20;-35;35;20;XY"/>
+            <auxiliary auxtype="Scorer" auxvalue="PSD;Monitor2;-35;35;20;-35;35;20;XY"/>
             <materialref ref="Vaccum"/>
         </volume>
 
