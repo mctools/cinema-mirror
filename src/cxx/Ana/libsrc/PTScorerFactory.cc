@@ -59,19 +59,45 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
       // where type can be ENTRY(default) or ABSORB, the default value for linear is yes
 
+
+      int parCount = 10;
+
       // The mandatory parameters
+      if (!cfg.contains("name"))
+        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"name\"" );
       std::string name = cfg.find("name");
+
+      if (!cfg.contains("sample_position"))
+        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"sample_position\"" );
       auto samplePos = string2vec(cfg.find("sample_position"));
+
+      if (!cfg.contains("beam_direction"))
+        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"beam_direction\"" );
       auto beamDir = string2vec(cfg.find("beam_direction"));
+
+      if (!cfg.contains("src_sample_dist"))
+        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"src_sample_dist\"" );
       double moderator2SampleDist = ptstod(cfg.find("src_sample_dist"));
+
+      if (!cfg.contains("Qmin"))
+        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"Qmin\"" );
       double minQ = ptstod(cfg.find("Qmin"));
+
+      if (!cfg.contains("Qmax"))
+        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"Qmax\"" );
       double maxQ = ptstod(cfg.find("Qmax"));
+
+      if (!cfg.contains("numbin"))
+        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"numbin\"" );
       int numBin = ptstoi(cfg.find("numbin"));
+
 
       // the optional parameters
       Scorer::ScorerType type = Scorer::ENTRY;
       std::string typeInStr = cfg.find("type");
-      if(!typeInStr.empty())
+      if(typeInStr.empty())
+        parCount--;
+      else
       {
         if(typeInStr=="ENTRY")
         {
@@ -82,13 +108,15 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
           type = Scorer::ABSORB;
         }
         else {
-          PROMPT_THROW(BadInput, "Scorer type can only be ENTRY or ABSORB" )
+          PROMPT_THROW(BadInput, "Scorer type can only be ENTRY or ABSORB" );
         }
       }
 
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
-      if(!linearInStr.empty())
+      if(linearInStr.empty())
+        parCount--;
+      else
       {
         if(linearInStr=="yes")
         {
@@ -97,6 +125,12 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         else
           linear = false;
       }
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Scorer type NeutronSq is missing or with extra config parameters" << cfg.size() << " " << parCount );
+      }
+
       return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
     }
 
