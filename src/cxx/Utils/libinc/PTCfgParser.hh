@@ -25,6 +25,7 @@
 #include <map>
 #include <typeinfo>
 #include "PTSingleton.hh"
+#include <iostream>
 
 namespace Prompt {
   class CfgParser {
@@ -34,12 +35,25 @@ namespace Prompt {
       std::map<std::string, std::string> parameters;
       void print()
       {
-        printf("+ScorerCfg %s\n", name.c_str() );
+        std::cout << "ScorerCfg " << name << " of size " << size() << ":\n";
+        for(auto it = parameters.begin(); it!=parameters.end();++it)
+        {
+          std::cout << "  [" << it->first << " = "
+                      << it->second << "]\n";
+        }
       }
       std::string find(const std::string &key)
       {
         auto  it = parameters.find(key);
-        return  it == parameters.end() ? nullptr : it->second;
+        return  it == parameters.end() ? "" : it->second;
+      }
+      bool contains(const std::string &key)
+      {
+        return find(key).empty() ? false : true;
+      }
+      size_t size()
+      {
+        return parameters.size();
       }
     };
   public:

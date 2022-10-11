@@ -39,7 +39,7 @@ std::string Prompt::CfgParser::getTypeName(const std::type_info& ti)
   if (i != std::string::npos)
      tname.erase(i, substr.length());
 
-  return tname;
+  return std::move(tname);
 }
 
 Prompt::CfgParser::ScorerCfg Prompt::CfgParser::getScorerCfg(const std::string& cfgstr)
@@ -51,7 +51,7 @@ Prompt::CfgParser::ScorerCfg Prompt::CfgParser::getScorerCfg(const std::string& 
   {
     auto p = split(s, '=');
     cfg.parameters[p[0]] = p[1];
-    std::cout << s << std::endl;
+    // std::cout << s << std::endl;
   }
-  return cfg;
+  return std::move(cfg);
 }

@@ -31,68 +31,154 @@ Prompt::ScorerFactory::ScorerFactory()
 {}
 
 
-std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::string &cfg, double vol)
+std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::string &cfgstr, double vol)
 {
-  auto words = split(cfg, ';');
-  std::cout << "Creating scorer with config: ";
-  std::cout << cfg << "\n";
+  std::cout << "Parsing scorer with config string: \n";
+  std::cout << cfgstr << "\n";
   //fixme check number of input config
 
-  if(words[0]=="NeutronSq")
+  auto &ps = Singleton<CfgParser>::getInstance();
+  auto cfg = ps.getScorerCfg(cfgstr);
+  std::cout << "Parsed cfg: \n";
+  cfg.print();
+
+  std::string ScorDef = cfg.find("Scorer");
+
+  if(ScorDef.empty())
   {
-    //type
-    auto samplePos = string2vec(words[2]);
-    auto neutronDir = string2vec(words[3]);
-    double moderator2SampleDist = ptstod(words[4]);
-    double minQ = ptstod(words[5]);
-    double maxQ = ptstod(words[6]);
-    int numBin = std::stoi(words[7]);
-    if(words[8]=="ABSORB")
-      return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
-    else if(words[8]=="ENTRY")
-      return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
-    else
-    {
-      PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerNeutronSq");
-      return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
-    }
-  }
-  else if(words[0]=="PSD")
-  {
-    if(words[8]=="XY")
-        return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
-                                          ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::XY );
-    else if(words[8]=="XZ")
-        return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
-                                          ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::XZ );
-    else if(words[8]=="YZ")
-        return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
-                                          ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::YZ );
-    else
-    {
-      PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerPSD");
-      return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
-                                        ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::YZ );
-    }
-  }
-  else if(words[0]=="ESD")
-  {
-    return std::make_shared<ScorerESD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) );
-  }
-  else if(words[0]=="TOF")
-  {
-    return std::make_shared<ScorerTOF>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) );
-  }
-  else if(words[0]=="MultiScat")
-  {
-    return std::make_shared<ScorerMultiScat>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) );
-  }
-  else if(words[0]=="VolFlux")
-  {
-    return std::make_shared<Prompt::ScorerVolFlux>(words[1], ptstod(words[2]) ,
-                ptstod(words[3]) , std::stoi(words[4]) ,  std::stoi(words[5]),
-                vol );
+    PROMPT_THROW2(BadInput, "Scorer config string " << cfgstr << " does not define the scorer by the key \"Scorer\" ")
   }
   else
-    PROMPT_THROW2(BadInput, "Scorer type " << words[0] << " is not supported. ")
+  {
+
+    if(ScorDef == "NeutronSq")
+    {
+      // example cfg
+      // ""Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=-100;
+      // type=ENTRY; linear=yes; Qmin=0.5; Qmax = 50; numbin=1000""
+      
+      // where type can be ENTRY(default) or ABSORB, the default value for linear is yes
+
+      // The mandatory parameters
+      std::string name = cfg.find("name");
+      auto samplePos = string2vec(cfg.find("sample_position"));
+      auto neutronDir = string2vec(cfg.find("beam_direction"));
+      double moderator2SampleDist = ptstod(cfg.find("src_sample_dist"));
+      double minQ = ptstod(cfg.find("Qmin"));
+      double maxQ = ptstod(cfg.find("Qmax"));
+      int numBin = ptstoi(cfg.find("numbin"));
+
+      // the optional parameters
+      Scorer::ScorerType type = Scorer::ENTRY;
+      std::string typeInStr = cfg.find("type");
+      if(!typeInStr.empty())
+      {
+        if(typeInStr=="ENTRY")
+        {
+          type = Scorer::ENTRY;
+        }
+        else if(typeInStr=="ABSORB")
+        {
+          type = Scorer::ABSORB;
+        }
+        else {
+          PROMPT_THROW(BadInput, "Scorer type can only be ENTRY or ABSORB" )
+        }
+      }
+
+      bool linear = true;
+      std::string linearInStr = cfg.find("linear");
+      if(!linearInStr.empty())
+      {
+        if(linearInStr=="yes")
+        {
+          linear = true;
+        }
+        else
+          linear = false;
+      }
+      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
+    }
+
+    else if(ScorDef == "PSD")
+    {
+
+    }
+    else if(ScorDef == "ESD")
+    {
+
+    }
+    else if(ScorDef == "TOF")
+    {
+
+    }
+    else if(ScorDef == "MultiScat")
+    {
+
+    }
+    else if(ScorDef == "VolFlux")
+    {
+
+    }
+    else
+      PROMPT_THROW2(BadInput, "Scorer type " << ScorDef << " is not supported. ")
+  }
+
+  // if(words[0]=="NeutronSq")
+  // {
+  //   //type
+  //   auto samplePos = string2vec(words[2]);
+  //   auto neutronDir = string2vec(words[3]);
+  //   double moderator2SampleDist = ptstod(words[4]);
+  //   double minQ = ptstod(words[5]);
+  //   double maxQ = ptstod(words[6]);
+  //   int numBin = std::stoi(words[7]);
+  //   if(words[8]=="ABSORB")
+  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
+  //   else if(words[8]=="ENTRY")
+  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
+  //   else
+  //   {
+  //     PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerNeutronSq");
+  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
+  //   }
+  // }
+  // else if(words[0]=="PSD")
+  // {
+  //   if(words[8]=="XY")
+  //       return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
+  //                                         ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::XY );
+  //   else if(words[8]=="XZ")
+  //       return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
+  //                                         ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::XZ );
+  //   else if(words[8]=="YZ")
+  //       return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
+  //                                         ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::YZ );
+  //   else
+  //   {
+  //     PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerPSD");
+  //     return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
+  //                                       ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::YZ );
+  //   }
+  // }
+  // else if(words[0]=="ESD")
+  // {
+  //   return std::make_shared<ScorerESD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) );
+  // }
+  // else if(words[0]=="TOF")
+  // {
+  //   return std::make_shared<ScorerTOF>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) );
+  // }
+  // else if(words[0]=="MultiScat")
+  // {
+  //   return std::make_shared<ScorerMultiScat>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) );
+  // }
+  // else if(words[0]=="VolFlux")
+  // {
+  //   return std::make_shared<Prompt::ScorerVolFlux>(words[1], ptstod(words[2]) ,
+  //               ptstod(words[3]) , std::stoi(words[4]) ,  std::stoi(words[5]),
+  //               vol );
+  // }
+  // else
+  //   PROMPT_THROW2(BadInput, "Scorer type " << words[0] << " is not supported. ")
 }

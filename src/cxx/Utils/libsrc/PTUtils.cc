@@ -49,6 +49,20 @@ Prompt::Vector Prompt::string2vec(const std::string& text, char delimiter)
   return Vector{ptstod(subs[0]), ptstod(subs[1]), ptstod(subs[2]) };
 }
 
+int Prompt::ptstoi(const std::string& text)
+{
+  try
+  {
+    return std::stoi(text);
+  }
+  catch(...)
+  {
+    // std::invalid_argument, std::out_of_range
+    PROMPT_THROW2(BadInput, "ptstod filed to a int from the input string " << text);
+  }
+}
+
+
 double Prompt::ptstod(const std::string& text)
 {
   try
