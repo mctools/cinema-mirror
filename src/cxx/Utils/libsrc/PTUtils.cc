@@ -72,6 +72,6 @@ double Prompt::ptstod(const std::string& text)
   catch(...)
   {
     // std::invalid_argument, std::out_of_range
-    PROMPT_THROW2(BadInput, "ptstod filed to a double from the input string " << text);
+    PROMPT_THROW2(BadInput, "ptstod failed to convert a double from the input string " << text);
   }
 }
