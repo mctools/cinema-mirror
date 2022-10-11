@@ -56,13 +56,13 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // example cfg
       // ""Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=-100;
       // type=ENTRY; linear=yes; Qmin=0.5; Qmax = 50; numbin=1000""
-      
+
       // where type can be ENTRY(default) or ABSORB, the default value for linear is yes
 
       // The mandatory parameters
       std::string name = cfg.find("name");
       auto samplePos = string2vec(cfg.find("sample_position"));
-      auto neutronDir = string2vec(cfg.find("beam_direction"));
+      auto beamDir = string2vec(cfg.find("beam_direction"));
       double moderator2SampleDist = ptstod(cfg.find("src_sample_dist"));
       double minQ = ptstod(cfg.find("Qmin"));
       double maxQ = ptstod(cfg.find("Qmax"));
@@ -97,7 +97,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         else
           linear = false;
       }
-      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
+      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
     }
 
     else if(ScorDef == "PSD")
@@ -128,19 +128,19 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
   // {
   //   //type
   //   auto samplePos = string2vec(words[2]);
-  //   auto neutronDir = string2vec(words[3]);
+  //   auto beamDir = string2vec(words[3]);
   //   double moderator2SampleDist = ptstod(words[4]);
   //   double minQ = ptstod(words[5]);
   //   double maxQ = ptstod(words[6]);
   //   int numBin = std::stoi(words[7]);
   //   if(words[8]=="ABSORB")
-  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
+  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
   //   else if(words[8]=="ENTRY")
-  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
+  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
   //   else
   //   {
   //     PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerNeutronSq");
-  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
+  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
   //   }
   // }
   // else if(words[0]=="PSD")
