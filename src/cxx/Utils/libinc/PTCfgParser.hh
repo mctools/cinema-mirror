@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerNeutronSq_hh
-#define Prompt_ScorerNeutronSq_hh
+#ifndef Prompt_CfgParser_hh
+#define Prompt_CfgParser_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,27 +21,34 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTScorer.hh"
-#include <fstream>
+#include <string>
+#include <map>
+#include <typeinfo>
+#include "PTSingleton.hh"
 
 namespace Prompt {
-
-  class ScorerNeutronSq  : public Scorer1D {
+  class CfgParser {
   public:
-    ScorerNeutronSq(const std::string &cfg);
-    ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin,
-      ScorerType styp=Scorer::ENTRY, bool linear=true);
-    virtual ~ScorerNeutronSq();
-    virtual void score(Particle &particle) override;
+    struct ScorerCfg {
+      std::string name;
+      std::map<std::string, std::string> parameters;
+      void print()
+      {
+        printf("+ScorerCfg %s\n", name.c_str() );
+      }
+      std::string find(const std::string &key)
+      {
+        auto  it = parameters.find(key);
+        return  it == parameters.end() ? nullptr : it->second;
+      }
+    };
+  public:
+    ScorerCfg getScorerCfg(const std::string& cfgstr);
+    std::string getTypeName(const std::type_info& ti);
   private:
-    void init(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType styp, bool linear);
-    Vector m_samplePos, m_refDir;
-    double m_sourceSampleDist;
-    bool m_kill;
-    std::ofstream m_dataout;
+    friend class Singleton<CfgParser>;
+    CfgParser();
+    ~CfgParser() = default;
   };
 }
 #endif

@@ -28,6 +28,7 @@ Prompt::ScorerVolFlux::~ScorerVolFlux() {}
 
 void Prompt::ScorerVolFlux::score(Particle &particle)
 {
-  PROMPT_THROW2(BadInput, m_name << " does not support score(Particle &particle)");
-  // m_hist->fill(particle.getEKin()-dltpar.dlt_ekin, m_iVol*dltpar.dlt_pos.mag());
+  if(particle.getWeightFactor()!=1.)
+    PROMPT_THROW(LogicError, "ScorerVolFlux is incorrect in the cross section biasing model. The D value for all material should be unity");
+  m_hist->fill(particle.getEKin()+particle.getEnergyChange(), m_iVol*particle.getStep());
 }

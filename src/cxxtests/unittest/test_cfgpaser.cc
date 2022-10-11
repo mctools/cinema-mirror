@@ -1,6 +1,3 @@
-#ifndef Prompt_ScorerNeutronSq_hh
-#define Prompt_ScorerNeutronSq_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,27 +18,20 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTScorer.hh"
-#include <fstream>
+#include "../doctest.h"
 
-namespace Prompt {
+#include "PTCfgParser.hh"
+#include "PTSingleton.hh"
 
-  class ScorerNeutronSq  : public Scorer1D {
-  public:
-    ScorerNeutronSq(const std::string &cfg);
-    ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin,
-      ScorerType styp=Scorer::ENTRY, bool linear=true);
-    virtual ~ScorerNeutronSq();
-    virtual void score(Particle &particle) override;
-  private:
-    void init(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType styp, bool linear);
-    Vector m_samplePos, m_refDir;
-    double m_sourceSampleDist;
-    bool m_kill;
-    std::ofstream m_dataout;
-  };
+namespace pt = Prompt;
+#include <typeinfo>
+#include <iostream>
+#include <vector>
+
+TEST_CASE("CfgParser")
+{
+  auto &ps = pt::Singleton<pt::CfgParser>::getInstance();
+  std::cout << ps.getTypeName(typeid(pt::CfgParser)) << std::endl;
+  auto cfg = ps.getScorerCfg("Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=30000;ScorerType=ENTRY;linear=true");
+  cfg.print();
 }
-#endif

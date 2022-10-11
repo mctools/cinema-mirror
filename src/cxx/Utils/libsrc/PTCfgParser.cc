@@ -1,6 +1,3 @@
-#ifndef Prompt_ScorerNeutronSq_hh
-#define Prompt_ScorerNeutronSq_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,27 +18,40 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTScorer.hh"
-#include <fstream>
+#include "PTCfgParser.hh"
+#include "PTUtils.hh" //split
+#include <cxxabi.h> //__cxa_demangle
 
-namespace Prompt {
+Prompt::CfgParser::CfgParser()
+{
 
-  class ScorerNeutronSq  : public Scorer1D {
-  public:
-    ScorerNeutronSq(const std::string &cfg);
-    ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin,
-      ScorerType styp=Scorer::ENTRY, bool linear=true);
-    virtual ~ScorerNeutronSq();
-    virtual void score(Particle &particle) override;
-  private:
-    void init(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType styp, bool linear);
-    Vector m_samplePos, m_refDir;
-    double m_sourceSampleDist;
-    bool m_kill;
-    std::ofstream m_dataout;
-  };
 }
-#endif
+
+std::string Prompt::CfgParser::getTypeName(const std::type_info& ti)
+{
+  // see https://panthema.net/2008/0901-stacktrace-demangled/cxa_demangle.html and
+  // https://gcc.gnu.org/onlinedocs/libstdc++/manual/ext_demangling.html
+
+  std::string tname (abi::__cxa_demangle(ti.name(), nullptr, nullptr, nullptr));
+
+  std::string substr = "Prompt::";
+  std::string::size_type i = tname.find(substr);
+  if (i != std::string::npos)
+     tname.erase(i, substr.length());
+
+  return tname;
+}
+
+Prompt::CfgParser::ScorerCfg Prompt::CfgParser::getScorerCfg(const std::string& cfgstr)
+{
+  auto strvec = split(cfgstr, ';');
+  ScorerCfg cfg;
+  cfg.name=strvec[0];
+  for(const auto &s: strvec)
+  {
+    auto p = split(s, '=');
+    cfg.parameters[p[0]] = p[1];
+    std::cout << s << std::endl;
+  }
+  return cfg;
+}

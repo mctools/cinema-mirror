@@ -19,6 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTUtils.hh"
+#include <algorithm>
 
 std::vector<std::string> Prompt::split(const std::string& text, char delimiter)
 {
@@ -26,7 +27,16 @@ std::vector<std::string> Prompt::split(const std::string& text, char delimiter)
   std::stringstream sstream(text);
   std::string word;
   while (std::getline(sstream, word, delimiter))
-      words.push_back(word);
+  {
+    word.erase(std::remove_if(word.begin(), word.end(),
+                            [](char c) {
+                                return (c == ' ' || c == '\n' || c == '\r' ||
+                                        c == '\t' || c == '\v' || c == '\f');
+                            }),
+                            word.end());
+    words.push_back(word);
+  }
+
 
   return words;
 }
@@ -35,6 +45,19 @@ Prompt::Vector Prompt::string2vec(const std::string& text, char delimiter)
 {
   auto subs = split(text, delimiter);
   if(subs.size()!=3)
-    PROMPT_THROW2(BadInput, "string2vec " << text);
-  return Vector{std::stod(subs[0]), std::stod(subs[1]),std::stod(subs[2]) };
+    PROMPT_THROW2(BadInput, "string2vec failed to create a vector from the input string " << text);
+  return Vector{ptstod(subs[0]), ptstod(subs[1]), ptstod(subs[2]) };
+}
+
+double Prompt::ptstod(const std::string& text)
+{
+  try
+  {
+    return std::stod(text);
+  }
+  catch(...)
+  {
+    // std::invalid_argument, std::out_of_range
+    PROMPT_THROW2(BadInput, "ptstod filed to a double from the input string " << text);
+  }
 }

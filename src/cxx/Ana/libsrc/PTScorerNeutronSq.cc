@@ -20,12 +20,58 @@
 
 #include "PTScorerNeutronSq.hh"
 #include "PTRandCanonical.hh"
+#include "PTCfgParser.hh"
+
+Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &cfgstr)
+{
+  auto &ps = Singleton<CfgParser>::getInstance();
+  // auto cfg = ps.getScorerCfg("Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=30000;ScorerType=ENTRY;linear=true");
+  auto cfg = ps.getScorerCfg(cfgstr);
+  cfg.print();
+  // auto samplePos = string2vec(words[2]);
+  // auto neutronDir = string2vec(words[3]);
+  // double moderator2SampleDist = ptstod(words[4]);
+  // double minQ = ptstod(words[5]);
+  // double maxQ = ptstod(words[6]);
+  // int numBin = std::stoi(words[7]);
+  // if(words[8]=="ABSORB")
+  //   return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
+  // else if(words[8]=="ENTRY")
+  //   return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
+  // else
+  // {
+  //   PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerNeutronSq");
+  //   return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, neutronDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
+  // }
+
+}
 
 Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool linear)
-:Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>(qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
-m_sourceSampleDist(sourceSampleDist)
+  double sourceSampleDist, double qmin, double qmax, unsigned numbin,
+  ScorerType stype, bool linear)
+  :Scorer1D()
 {
+  init(name, samplePos, refDir, sourceSampleDist, qmin, qmax, numbin, stype, linear);
+}
+
+Prompt::ScorerNeutronSq::~ScorerNeutronSq()
+{
+  m_dataout.close();
+}
+
+void Prompt::ScorerNeutronSq::init(const std::string &name, const Vector &samplePos, const Vector &refDir,
+  double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool linear)
+{
+  // scorer
+  m_name = "ScorerNeutronSq_" + name;
+  m_type = stype;
+  // scorer1D
+  m_hist = std::make_unique<Hist1D>(qmin, qmax, numbin, linear);
+
+  m_samplePos = samplePos;
+  m_refDir = refDir;
+  m_sourceSampleDist = sourceSampleDist;
+
   if(stype==Scorer::ENTRY)
     m_kill=true;
   else if (stype==Scorer::ABSORB)
@@ -35,12 +81,6 @@ m_sourceSampleDist(sourceSampleDist)
     auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
     m_dataout.open("ScorerNeutronSq_" + name + "_seed"+std::to_string(seed)+".wgt");
 }
-
-Prompt::ScorerNeutronSq::~ScorerNeutronSq()
-{
-  m_dataout.close();
-}
-
 
 void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
 {
