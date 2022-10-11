@@ -22,6 +22,16 @@
 #include "PTUtils.hh" //split
 #include <cxxabi.h> //__cxa_demangle
 
+
+std::string Prompt::CfgParser::ScorerCfg::find(const std::string &key, bool force)
+{
+  auto  it = parameters.find(key);
+  std::string v =  it == parameters.end() ? "" : it->second;
+  if(v.empty() && force)
+    PROMPT_THROW2(BadInput, "cfg is missing the key \""<< key << "\"" );
+  return v;
+}
+
 Prompt::CfgParser::CfgParser()
 {
 

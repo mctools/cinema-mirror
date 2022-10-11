@@ -63,33 +63,14 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       int parCount = 10;
 
       // The mandatory parameters
-      if (!cfg.contains("name"))
-        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"name\"" );
-      std::string name = cfg.find("name");
-
-      if (!cfg.contains("sample_position"))
-        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"sample_position\"" );
-      auto samplePos = string2vec(cfg.find("sample_position"));
-
-      if (!cfg.contains("beam_direction"))
-        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"beam_direction\"" );
-      auto beamDir = string2vec(cfg.find("beam_direction"));
-
-      if (!cfg.contains("src_sample_dist"))
-        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"src_sample_dist\"" );
-      double moderator2SampleDist = ptstod(cfg.find("src_sample_dist"));
-
-      if (!cfg.contains("Qmin"))
-        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"Qmin\"" );
-      double minQ = ptstod(cfg.find("Qmin"));
-
-      if (!cfg.contains("Qmax"))
-        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"Qmax\"" );
-      double maxQ = ptstod(cfg.find("Qmax"));
-
-      if (!cfg.contains("numbin"))
-        PROMPT_THROW(BadInput, "Scorer cfg should define the key \"numbin\"" );
-      int numBin = ptstoi(cfg.find("numbin"));
+      bool force = true;
+      std::string name = cfg.find("name", force);
+      auto samplePos = string2vec(cfg.find("sample_position", force));
+      auto beamDir = string2vec(cfg.find("beam_direction", force));
+      double moderator2SampleDist = ptstod(cfg.find("src_sample_dist", force));
+      double minQ = ptstod(cfg.find("Qmin", force));
+      double maxQ = ptstod(cfg.find("Qmax", force));
+      int numBin = ptstoi(cfg.find("numbin", force));
 
 
       // the optional parameters

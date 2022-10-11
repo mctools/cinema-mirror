@@ -42,11 +42,7 @@ namespace Prompt {
                       << it->second << "]\n";
         }
       }
-      std::string find(const std::string &key)
-      {
-        auto  it = parameters.find(key);
-        return  it == parameters.end() ? "" : it->second;
-      }
+      std::string find(const std::string &key, bool force=false);
       bool contains(const std::string &key)
       {
         return find(key).empty() ? false : true;
