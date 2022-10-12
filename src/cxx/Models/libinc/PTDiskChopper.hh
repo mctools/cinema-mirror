@@ -1,3 +1,6 @@
+#ifndef Prompt_DiskChopper_hh
+#define Prompt_DiskChopper_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,47 +21,25 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTPhysicsModel.hh"
+#include <string>
 
-Prompt::PhysicsModel::PhysicsModel(const std::string &name)
- :m_modelName(name), m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance()) {};
+#include "PromptCore.hh"
+#include "PTLookUpTable.hh"
+#include "PTDiscreteModel.hh"
 
-Prompt::PhysicsModel::PhysicsModel(const std::string &name, unsigned gdp,
-             double emin, double emax)
- :m_modelName(name), m_supportPGD(gdp), m_minEkin(emin),
-  m_maxEkin(emax), m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance())  {};
+#include "NCrystal/NCrystal.hh"
 
-bool Prompt::PhysicsModel::applicable(unsigned pgd) const
-{ return m_supportPGD==pgd; }
+namespace Prompt {
 
-bool Prompt::PhysicsModel::isOriented()
-{return m_oriented;}
+  class DiskChopper  : public DiscreteModel {
+    public:
+      DiskChopper();
+      virtual ~DiskChopper() override;
+      virtual void generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor, double &scaleWeight) const override;
 
-void Prompt::PhysicsModel::getEnergyRange(double &ekinMin, double &ekinMax)
-{
-  m_minEkin = ekinMin;
-  m_maxEkin = ekinMax;
-};
+    private:
+  };
 
-void Prompt::PhysicsModel::setEnergyRange(double ekinMin, double ekinMax)
-{
-  ekinMin = m_minEkin;
-  ekinMax = m_maxEkin;
-};
-
-bool Prompt::PhysicsModel::applicable(unsigned pgd, double ekin) const
-{
-  return pgd==m_supportPGD && (ekin > m_minEkin && ekin < m_maxEkin);
 }
 
-double Prompt::PhysicsModel::getCrossSection(double ekin) const
-{
-  PROMPT_THROW(LogicError, "getCrossSection is not impletmented ")
-  return 0.;
-}
-
-double Prompt::PhysicsModel::getCrossSection(double ekin, const Vector &dir) const
-{
-  PROMPT_THROW(LogicError, "getCrossSection is not impletmented ")
-  return 0.;
-}
+#endif

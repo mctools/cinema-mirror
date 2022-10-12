@@ -73,8 +73,10 @@ bool Prompt::NavManager::surfaceReaction(Particle &particle)
     Vector ptNorm{norm[0], norm[1], norm[2]};
     m_matphysscor->boundaryPhysics->generate(particle.getEKin(),
     particle.getDirection(), eout, ptNorm, scaleWeigh);
-    if(eout==-1.)
+    if(eout==-2.)
       particle.kill(Particle::BIAS);
+    else if (eout==-1.)
+      particle.kill(Particle::ABSORB);
     particle.setDirection(ptNorm);
     particle.scaleWeight(scaleWeigh);
     return true;

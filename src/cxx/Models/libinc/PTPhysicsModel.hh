@@ -42,8 +42,11 @@ namespace Prompt {
     void getEnergyRange(double &ekinMin, double &ekinMax) ;
     void setEnergyRange(double ekinMin, double ekinMax);
     virtual bool applicable(unsigned pgd, double ekin) const;
-    virtual double getCrossSection(double ekin) const = 0;
-    virtual double getCrossSection(double ekin, const Vector &dir) const = 0;
+    virtual double getCrossSection(double ekin) const;
+    virtual double getCrossSection(double ekin, const Vector &dir) const;
+
+    // final_ekin -1., propose kill because of an absorb event
+    // final_ekin -2., propose kill because of a biasing event
     virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight) const = 0;
 
   protected:
@@ -51,6 +54,7 @@ namespace Prompt {
     unsigned m_supportPGD;
     double m_minEkin, m_maxEkin;
     bool m_oriented;
+    SingletonPTRand &m_rng;
   };
 
 }

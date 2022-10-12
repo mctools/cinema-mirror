@@ -53,16 +53,6 @@ m_wcut(weightCut), m_rng(Singleton<SingletonPTRand>::getInstance())
 Prompt::MirrorPhyiscs::~MirrorPhyiscs()
 {}
 
-double Prompt::MirrorPhyiscs::getCrossSection(double ekin) const
-{
-  return 0.;
-}
-
-double Prompt::MirrorPhyiscs::getCrossSection(double ekin, const Vector &dir) const
-{
-  return 0.;
-}
-
 void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor, double &scaleWeight) const
 {
   final_ekin=ekin;
@@ -79,7 +69,7 @@ void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, doubl
       scaleWeight = m_wcut;
     }
     else
-      final_ekin = -1.0; //paprose kill
+      final_ekin = -2.0; //paprose kill
   }
 
 

@@ -18,47 +18,19 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTPhysicsModel.hh"
+#include "PTDiskChopper.hh"
+#include "PTUtils.hh"
 
-Prompt::PhysicsModel::PhysicsModel(const std::string &name)
- :m_modelName(name), m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance()) {};
-
-Prompt::PhysicsModel::PhysicsModel(const std::string &name, unsigned gdp,
-             double emin, double emax)
- :m_modelName(name), m_supportPGD(gdp), m_minEkin(emin),
-  m_maxEkin(emax), m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance())  {};
-
-bool Prompt::PhysicsModel::applicable(unsigned pgd) const
-{ return m_supportPGD==pgd; }
-
-bool Prompt::PhysicsModel::isOriented()
-{return m_oriented;}
-
-void Prompt::PhysicsModel::getEnergyRange(double &ekinMin, double &ekinMax)
+Prompt::DiskChopper::DiskChopper()
+:Prompt::DiscreteModel("DiskChopper", const_neutron_pgd, std::numeric_limits<double>::min(), std::numeric_limits<double>::max())
 {
-  m_minEkin = ekinMin;
-  m_maxEkin = ekinMax;
-};
-
-void Prompt::PhysicsModel::setEnergyRange(double ekinMin, double ekinMax)
-{
-  ekinMin = m_minEkin;
-  ekinMax = m_maxEkin;
-};
-
-bool Prompt::PhysicsModel::applicable(unsigned pgd, double ekin) const
-{
-  return pgd==m_supportPGD && (ekin > m_minEkin && ekin < m_maxEkin);
 }
 
-double Prompt::PhysicsModel::getCrossSection(double ekin) const
-{
-  PROMPT_THROW(LogicError, "getCrossSection is not impletmented ")
-  return 0.;
-}
 
-double Prompt::PhysicsModel::getCrossSection(double ekin, const Vector &dir) const
+Prompt::DiskChopper::~DiskChopper()
+{}
+
+void Prompt::DiskChopper::generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor, double &scaleWeight) const
 {
-  PROMPT_THROW(LogicError, "getCrossSection is not impletmented ")
-  return 0.;
+      final_ekin = -1.0; //paprose kill, triggered by an absorption event
 }
