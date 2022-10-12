@@ -62,16 +62,16 @@ void Prompt::NavManager::setupVolumePhysics()
   m_matphysscor = geo.getVolumePhysicsScorer(getVolumeID())->second;
 }
 
-bool Prompt::NavManager::surfacePhysics(Particle &particle)
+bool Prompt::NavManager::surfaceReaction(Particle &particle)
 {
-  if(hasMirrorPhyiscs())
+  if(hasBoundaryPhyiscs())
   {
     Vector pos(particle.getPosition());
     vecgeom::cxx::Vector3D<double> norm;
     m_currPV->Normal({pos.x(), pos.y(), pos.z()}, norm);
     double eout(0), scaleWeigh(0);
     Vector ptNorm{norm[0], norm[1], norm[2]};
-    m_matphysscor->mirrorPhysics->generate(particle.getEKin(),
+    m_matphysscor->boundaryPhysics->generate(particle.getEKin(),
     particle.getDirection(), eout, ptNorm, scaleWeigh);
     if(eout==-1.)
       particle.kill(Particle::BIAS);
@@ -160,9 +160,9 @@ void Prompt::NavManager::scoreExit(Prompt::Particle &particle)
     }
   }
 }
-bool Prompt::NavManager::hasMirrorPhyiscs()
+bool Prompt::NavManager::hasBoundaryPhyiscs()
 {
-  return m_matphysscor->mirrorPhysics.use_count();
+  return m_matphysscor->boundaryPhysics.use_count();
 }
 
 bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )

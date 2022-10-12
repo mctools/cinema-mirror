@@ -118,8 +118,8 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       navman.setupVolumePhysics();
       navman.scoreSurface(particle);
 
-      //if reflected
-      if(navman.surfacePhysics(particle))
+      //if reflected or absorbed
+      if(navman.surfaceReaction(particle))
       {
         // std::cout << "reflection weight " << particle.getWeight() << "\n";
       }

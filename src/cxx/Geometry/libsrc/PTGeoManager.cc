@@ -34,6 +34,7 @@
 
 #include "PTScorerFactory.hh"
 #include "PTGunFactory.hh"
+#include "PTPhysicsFactory.hh"
 
 #include "PTUtils.hh"
 #include "PTNeutron.hh"
@@ -201,12 +202,12 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
             }
             std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
           }
-          else if(info.GetType() == "MirrorPhysics")
+          else if(info.GetType() == "BoundaryPhysics")
           {
             std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
             std::cout << "info is " << info.GetValue() << std::endl;
 
-            vps->mirrorPhysics = std::make_shared<MirrorPhyiscs>(ptstod(info.GetValue()), 1e-5);
+            vps->boundaryPhysics = Singleton<PhysicsFactory>::getInstance().createPhysics(info.GetValue());
             std::cout << "added mirror physics " << std::endl;
           }
         }

@@ -1,5 +1,5 @@
-#ifndef Prompt_NavManager_hh
-#define Prompt_NavManager_hh
+#ifndef Prompt_PhysicsFactory_hh
+#define Prompt_PhysicsFactory_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,55 +21,21 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <string>
-#include <map>
 #include "PromptCore.hh"
-#include "PTModelCollection.hh"
 #include "PTSingleton.hh"
-#include "PTParticle.hh"
-#include "PTMaterialPhysics.hh"
-#include "PTScorer.hh"
-#include "PTHist2D.hh"
-#include <VecGeom/management/GeoManager.h>
-#include "PTGeoManager.hh"
+#include "PTPhysicsModel.hh"
 
 namespace Prompt {
 
-  class NavManager  {
+  class PhysicsFactory  {
   public:
-    //return false if the track is terminated, i.e. exist world
-    bool proprogateInAVolume(Particle &particle, bool verbose = true);
-    void locateLogicalVolume(const Vector &p);
-    bool exitWorld();
-    void setupVolumePhysics();
-    size_t getVolumeID();
-    std::string getVolumeName();
-    const vecgeom::VPlacedVolume *getVolume();
-
-    void scoreEntry(Particle &particle);
-    void scorePropagate(Particle &particle);
-    void scoreExit(Particle &particle);
-    void scoreSurface(Particle &particle);
-    void scoreAbsorb(Particle &particle);
-
-    bool hasPropagateScorer() {return m_matphysscor->propagate_scorers.size(); };
-
-    bool hasBoundaryPhyiscs();
-    bool surfaceReaction(Particle &particle);
+    std::shared_ptr<PhysicsModel> createPhysics(const std::string &cfg);
 
   private:
-    friend class Singleton<NavManager>;
-    NavManager();
-    ~NavManager();
-
-    vecgeom::GeoManager &m_geo;
-    const vecgeom::VPlacedVolume *m_currPV;
-    std::shared_ptr<VolumePhysicsScorer> m_matphysscor;
-    // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
-    // It is NavStatePath otherwise
-    vecgeom::NavigationState *m_currState, *m_nextState;
+    friend class Singleton<PhysicsFactory>;
+    PhysicsFactory();
+    ~PhysicsFactory() = default;
   };
-
 }
 
 #endif

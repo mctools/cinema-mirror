@@ -36,7 +36,7 @@
         <volume name="LV_Guider1">
             <solidref ref="Guider1"/>
             <materialref ref="Cd"/>
-            <auxiliary auxtype="MirrorPhysics" auxvalue="1.0"/>
+            <auxiliary auxtype="BoundaryPhysics" auxvalue="physics=MirrorPhyiscs;m=1.0"/>
         </volume>
 
         <volume name="logMonitor1">
