@@ -33,14 +33,10 @@
 #include "VecGeom/navigation/BVHLevelLocator.h"
 
 #include "PTScorerFactory.hh"
+#include "PTGunFactory.hh"
 
 #include "PTUtils.hh"
-#include "PTMaxwellianGun.hh"
-#include "PTSimpleThermalGun.hh"
-#include "PTIsotropicGun.hh"
-#include "PTUniModeratorGun.hh"
 #include "PTNeutron.hh"
-#include "PTMPIGun.hh"
 
 Prompt::GeoManager::GeoManager()
 :m_gun(nullptr)
@@ -129,50 +125,12 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
   auto uinfo = aMiddleware.GetUserInfo();
   for(const auto& info : uinfo)
   {
-    std::cout << info.GetType() << std::endl;
+    std::cout << "Processing userinfo \"" <<  info.GetType() << "\": " ;
     std::cout << info.GetValue() << std::endl;
 
     if(info.GetType()=="PrimaryGun")
     {
-      auto words = split(info.GetValue(), ';');
-      if(words[0]=="MaxwellianGun")
-      {
-        double temp = std::stod(words[2]);
-        auto positions = split(words[3], ',');
-
-        m_gun = std::make_shared<MaxwellianGun>(Neutron(), temp,
-          std::array<double, 6> {std::stod(positions[0]), std::stod(positions[1]), std::stod(positions[2]),
-                                 std::stod(positions[3]), std::stod(positions[4]), std::stod(positions[5])});
-      }
-      else if(words[0]=="MPIGun")
-      {
-        auto positions = split(words[2], ',');
-        m_gun = std::make_shared<MPIGun>(Neutron(),
-          std::array<double, 6> {std::stod(positions[0]), std::stod(positions[1]), std::stod(positions[2]),
-                                 std::stod(positions[3]), std::stod(positions[4]), std::stod(positions[5])});
-      }
-      else if(words[0]=="UniModeratorGun")
-      {
-        double wl0 = std::stod(words[2]);
-        double wl_dlt = std::stod(words[3]);
-        auto positions = split(words[4], ',');
-
-        m_gun = std::make_shared<UniModeratorGun>(Neutron(), wl0, wl_dlt,
-          std::array<double, 6> {std::stod(positions[0]), std::stod(positions[1]), std::stod(positions[2]),
-                                 std::stod(positions[3]), std::stod(positions[4]), std::stod(positions[5])});
-      }
-      else if(words[0]=="SimpleThermalGun")
-      {
-        double ekin = std::stod(words[2]);
-        m_gun = std::make_shared<SimpleThermalGun>(Neutron(), ekin, string2vec(words[3]), string2vec(words[4]));
-      }
-      else if(words[0]=="IsotropicGun")
-      {
-        double ekin = std::stod(words[2]);
-        m_gun = std::make_shared<IsotropicGun>(Neutron(), ekin, string2vec(words[3]), string2vec(words[4]));
-      }
-      else
-        PROMPT_THROW2(BadInput, "No such gun");
+      m_gun = Singleton<GunFactory>::getInstance().createGun(info.GetValue());
     }
   }
 
@@ -248,7 +206,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
             std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
             std::cout << "info is " << info.GetValue() << std::endl;
 
-            vps->mirrorPhysics = std::make_shared<MirrorPhyiscs>(std::stod(info.GetValue()), 1e-5);
+            vps->mirrorPhysics = std::make_shared<MirrorPhyiscs>(ptstod(info.GetValue()), 1e-5);
             std::cout << "added mirror physics " << std::endl;
           }
         }
@@ -283,7 +241,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
       if(itbias!=mat.attributes.end())
       {
-        bias = std::stod(itbias->second);
+        bias = ptstod(itbias->second);
       }
       const std::string &cfg = mat.attributes.find("atomValue")->second;
       theNewPhysics->addComposition(cfg, bias);

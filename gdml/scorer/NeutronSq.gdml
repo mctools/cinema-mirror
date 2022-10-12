@@ -2,7 +2,7 @@
 <gdml>
 
   <userinfo>
-    <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;0.0253; 0,0,-100; 0,0,1" />
+    <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=0;moderator_height_y=0;moderator_positon_z=-100;slit_width_x=0;slit_height_y=0;slit_position_z=1;temperature=293.15" />
   </userinfo>
 
    <define>
