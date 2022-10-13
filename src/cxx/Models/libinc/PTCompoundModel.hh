@@ -1,5 +1,5 @@
-#ifndef Prompt_ModelCollection_hh
-#define Prompt_ModelCollection_hh
+#ifndef Prompt_CompoundModel_hh
+#define Prompt_CompoundModel_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -44,10 +44,10 @@ namespace Prompt {
   // This class is used to represent a collection of models for a material.
   // Only discrete models for now.
 
-  class ModelCollection  {
+  class CompoundModel  {
   public:
-    ModelCollection();
-    virtual ~ModelCollection();
+    CompoundModel();
+    virtual ~CompoundModel();
 
     double totalCrossSection(double ekin, const Vector &dir) const;
     void sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight) const;
@@ -68,7 +68,7 @@ namespace Prompt {
   };
 }
 
-inline bool Prompt::ModelCollection::sameInquiryAsLastTime(double ekin, const Vector &dir) const
+inline bool Prompt::CompoundModel::sameInquiryAsLastTime(double ekin, const Vector &dir) const
 {
   return m_oriented ? (m_cache.ekin==ekin && m_cache.dir == dir) : m_cache.ekin==ekin;
 }

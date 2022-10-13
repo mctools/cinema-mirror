@@ -20,12 +20,12 @@
 
 #include "../doctest.h"
 #include "PTMath.hh"
-#include "PTModelCollection.hh"
+#include "PTCompoundModel.hh"
 
-TEST_CASE("ModelCollection")
+TEST_CASE("CompoundModel")
 {
 
-  auto collection = Prompt::ModelCollection() ;
+  auto collection = Prompt::CompoundModel() ;
   collection.addPhysicsModel("Al_sg225.ncmat;dcutoff=0.5;temp=25C");
 
   double xs(0.);

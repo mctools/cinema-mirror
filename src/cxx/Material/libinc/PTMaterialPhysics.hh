@@ -23,7 +23,7 @@
 
 #include <string>
 #include "PromptCore.hh"
-#include "PTModelCollection.hh"
+#include "PTCompoundModel.hh"
 #include "PTParticle.hh"
 
 namespace Prompt {
@@ -41,7 +41,7 @@ namespace Prompt {
     double macroCrossSection(double ekin, const Prompt::Vector &dir) const;
     double calNumDensity(const std::string &cfg);
     SingletonPTRand &m_rng;
-    std::unique_ptr<ModelCollection> m_modelcoll;
+    std::unique_ptr<CompoundModel> m_compModel;
     double m_numdensity;
 
   };

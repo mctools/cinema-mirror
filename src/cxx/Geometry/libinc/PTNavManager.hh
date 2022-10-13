@@ -24,7 +24,7 @@
 #include <string>
 #include <map>
 #include "PromptCore.hh"
-#include "PTModelCollection.hh"
+#include "PTCompoundModel.hh"
 #include "PTSingleton.hh"
 #include "PTParticle.hh"
 #include "PTMaterialPhysics.hh"

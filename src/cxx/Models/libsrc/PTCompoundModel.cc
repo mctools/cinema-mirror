@@ -18,18 +18,18 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTModelCollection.hh"
+#include "PTCompoundModel.hh"
 #include "PTNCrystalScat.hh"
 #include "PTNCrystalAbs.hh"
 #include "PTPhysicsModel.hh"
 
-Prompt::ModelCollection::ModelCollection()
+Prompt::CompoundModel::CompoundModel()
 :m_cache({}), m_oriented(false), m_rng( Singleton<SingletonPTRand>::getInstance() )
 {}
 
-Prompt::ModelCollection::~ModelCollection() {}
+Prompt::CompoundModel::~CompoundModel() {}
 
-void Prompt::ModelCollection::addPhysicsModel(const std::string &cfg, double bias)
+void Prompt::CompoundModel::addPhysicsModel(const std::string &cfg, double bias)
 {
   if(bias!=1.)
     std::cout << "material " << cfg << " has a bias of " << bias << std::endl;
@@ -51,7 +51,7 @@ void Prompt::ModelCollection::addPhysicsModel(const std::string &cfg, double bia
 }
 
 
-double Prompt::ModelCollection::totalCrossSection(double ekin, const Vector &dir) const
+double Prompt::CompoundModel::totalCrossSection(double ekin, const Vector &dir) const
 {
   if(sameInquiryAsLastTime(ekin, dir))
   {
@@ -75,7 +75,7 @@ double Prompt::ModelCollection::totalCrossSection(double ekin, const Vector &dir
   }
 }
 
-void Prompt::ModelCollection::sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight) const
+void Prompt::CompoundModel::sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight) const
 {
   if(!sameInquiryAsLastTime(ekin, dir))
     printf("WARNING, sampling event with different incident energy and/or direction\n");
@@ -104,7 +104,7 @@ void Prompt::ModelCollection::sample(double ekin, const Vector &dir, double &fin
 }
 
 //call it right after cross section is updated
-double Prompt::ModelCollection::calculateWeight(double lengthRho, bool selBiase)
+double Prompt::CompoundModel::calculateWeight(double lengthRho, bool selBiase)
 {
   double factor(1.);
   for(size_t i=0;i<m_models.size();i++)
