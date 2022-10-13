@@ -30,7 +30,7 @@ Prompt::DiskChopper::DiskChopper()
 Prompt::DiskChopper::~DiskChopper()
 {}
 
-void Prompt::DiskChopper::generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor, double &scaleWeight) const
+void Prompt::DiskChopper::generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor) const
 {
       final_ekin = -1.0; //paprose kill, triggered by an absorption event
 }

@@ -33,7 +33,7 @@ namespace Prompt {
     virtual ~MaterialPhysics();
 
     double sampleStepLength(const Prompt::Particle &particle) const;
-    void sampleFinalState(const Prompt::Particle &particle, double &final_ekin, Vector &final_dir, double &scaleWeight);
+    void sampleFinalState(const Prompt::Particle &particle, double &final_ekin, Vector &final_dir);
     double calculateWeight(double step, bool selBiase);
     void addComposition(const std::string &cfg, double bias=1.0);
 

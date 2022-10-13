@@ -50,18 +50,18 @@ TEST_CASE("NCrystal")
   double xs = pc.getCrossSection(1);
   Prompt::Vector out;
   double final(0);
-  double scaleWeight(0);
+
   std::cout << xs << std::endl;
   printf("%.15f\n", xs);
 
   CHECK(Prompt::floateq(1.378536096609809*Prompt::Unit::barn, xs ));
 
-  pc.generate(1., {1,0,0}, final, out, scaleWeight);
+  pc.generate(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;
 
-  pc.generate(1., {1,0,0}, final, out, scaleWeight);
+  pc.generate(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;
 
-  pc.generate(1., {1,0,0}, final, out, scaleWeight);
+  pc.generate(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;
 }

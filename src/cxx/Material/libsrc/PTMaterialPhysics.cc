@@ -26,22 +26,18 @@
 Prompt::MaterialPhysics::MaterialPhysics()
 :m_rng(Singleton<SingletonPTRand>::getInstance()),
 m_compModel(std::make_unique<CompoundModel>()),
-m_numdensity(0.)
-{
-}
+m_numdensity(0.) { }
 
-Prompt::MaterialPhysics::~MaterialPhysics()
-{
-}
+Prompt::MaterialPhysics::~MaterialPhysics() { }
 
 double Prompt::MaterialPhysics::macroCrossSection(const Prompt::Particle &particle) const
 {
   return m_numdensity*m_compModel->totalCrossSection(particle.getEKin(), particle.getDirection());
 }
 
-void Prompt::MaterialPhysics::sampleFinalState(const Prompt::Particle &particle, double &final_ekin, Vector &final_dir, double &scaleWeight)
+void Prompt::MaterialPhysics::sampleFinalState(const Prompt::Particle &particle, double &final_ekin, Vector &final_dir)
 {
-  m_compModel->sample(particle.getEKin(), particle.getDirection(), final_ekin, final_dir, scaleWeight);
+  m_compModel->sample(particle.getEKin(), particle.getDirection(), final_ekin, final_dir);
 }
 
 double Prompt::MaterialPhysics::sampleStepLength(const Prompt::Particle &particle) const

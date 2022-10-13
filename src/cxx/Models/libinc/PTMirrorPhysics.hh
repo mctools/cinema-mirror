@@ -35,7 +35,7 @@ namespace Prompt {
     public:
       MirrorPhyiscs(double mvalue, double weightCut = 1e-5);
       virtual ~MirrorPhyiscs() override;
-      virtual void generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor, double &scaleWeight) const override;
+      virtual void generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor) const override;
 
     private:
       std::shared_ptr<LookUpTable> m_table;

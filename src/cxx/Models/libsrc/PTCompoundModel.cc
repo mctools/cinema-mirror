@@ -75,7 +75,7 @@ double Prompt::CompoundModel::totalCrossSection(double ekin, const Vector &dir) 
   }
 }
 
-void Prompt::CompoundModel::sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight) const
+void Prompt::CompoundModel::sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const
 {
   if(!sameInquiryAsLastTime(ekin, dir))
     printf("WARNING, sampling event with different incident energy and/or direction\n");
@@ -97,7 +97,7 @@ void Prompt::CompoundModel::sample(double ekin, const Vector &dir, double &final
     if(p > r1)
       break;
   }
-  m_models[i]->generate(ekin, dir, final_ekin, final_dir, scaleWeight);
+  m_models[i]->generate(ekin, dir, final_ekin, final_dir);
   m_cache.selectedBias = m_models[i]->getBias();
   // std::cout << "selected model " << m_models[i]->getName() << " "
   // << " total model num " << m_models.size() << std::endl;

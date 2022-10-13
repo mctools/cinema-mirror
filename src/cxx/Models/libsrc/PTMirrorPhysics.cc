@@ -53,24 +53,26 @@ m_wcut(weightCut), m_rng(Singleton<SingletonPTRand>::getInstance())
 Prompt::MirrorPhyiscs::~MirrorPhyiscs()
 {}
 
-void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor, double &scaleWeight) const
+void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor) const
 {
   final_ekin=ekin;
   reflectionNor = nDirInLab - reflectionNor*(2*(nDirInLab.dot(reflectionNor)));
   double angleCos = reflectionNor.angleCos(nDirInLab);
 
   double Q = neutronAngleCosine2Q(angleCos, ekin, ekin);
-  scaleWeight =  m_table->get(Q);
-  // std::cout << "Q " << Q << " scale " << scaleWeight << std::endl;
-  if(m_wcut > scaleWeight)
-  {
-    if(m_wcut*m_rng.generate() < scaleWeight )
-    {
-      scaleWeight = m_wcut;
-    }
-    else
-      final_ekin = -2.0; //paprose kill
-  }
+  PROMPT_THROW(CalcError, "fixme");
+  // scaleWeight =  m_table->get(Q);
+
+  // // std::cout << "Q " << Q << " scale " << scaleWeight << std::endl;
+  // if(m_wcut > scaleWeight)
+  // {
+  //   if(m_wcut*m_rng.generate() < scaleWeight )
+  //   {
+  //     scaleWeight = m_wcut;
+  //   }
+  //   else
+  //     final_ekin = -2.0; //paprose kill
+  // }
 
 
 }

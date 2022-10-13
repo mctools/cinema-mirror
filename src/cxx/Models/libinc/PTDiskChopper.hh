@@ -35,7 +35,7 @@ namespace Prompt {
     public:
       DiskChopper();
       virtual ~DiskChopper() override;
-      virtual void generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor, double &scaleWeight) const override;
+      virtual void generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor) const override;
 
     private:
   };

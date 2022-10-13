@@ -65,7 +65,11 @@ void Prompt::NavManager::setupVolumePhysics()
 bool Prompt::NavManager::surfaceReaction(Particle &particle)
 {
   // //fix me!!!
-  // if(hasBoundaryPhyiscs())
+  if(hasBoundaryPhyiscs())
+  {
+    PROMPT_THROW(CalcError, "fixme");
+    return true;
+  }
   // {
   //   Vector pos(particle.getPosition());
   //   vecgeom::cxx::Vector3D<double> norm;
@@ -82,7 +86,7 @@ bool Prompt::NavManager::surfaceReaction(Particle &particle)
   //   particle.scaleWeight(scaleWeigh);
   //   return true;
   // }
-  // else
+  else
     return false;
 }
 
@@ -208,8 +212,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     //sample the interaction at the location
     double final_ekin(0);
     Vector final_dir;
-    double dummy(0.);
-    m_matphysscor->physics->sampleFinalState(particle, final_ekin, final_dir, dummy);
+    m_matphysscor->physics->sampleFinalState(particle, final_ekin, final_dir);
     // final reaction channel is picked here, calculate the weigth factor
     // based on individual xs, stepLength and picked physics
     particle.scaleWeight( m_matphysscor->physics->calculateWeight(step, true));
@@ -232,9 +235,8 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     // based on individual xs, stepLength and picked physics
     double final_ekin(0);
     Vector final_dir;
-    double dummy(0.);
 
-    m_matphysscor->physics->sampleFinalState(particle, final_ekin, final_dir, dummy);
+    m_matphysscor->physics->sampleFinalState(particle, final_ekin, final_dir);
     particle.scaleWeight(m_matphysscor->physics->calculateWeight(step, false));
     // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
     return false;
