@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerESD_hh
-#define Prompt_ScorerESD_hh
+#ifndef Prompt_ScorerESpectrum_hh
+#define Prompt_ScorerESpectrum_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -26,10 +26,10 @@
 
 namespace Prompt {
 
-  class ScorerESD  : public Scorer1D {
+  class ScorerESpectrum  : public Scorer1D {
   public:
-    ScorerESD(const std::string &name, double xmin, double xmax, unsigned nxbins);
-    virtual ~ScorerESD();
+    ScorerESpectrum(const std::string &name, double xmin, double xmax, unsigned nxbins);
+    virtual ~ScorerESpectrum();
     virtual void score(Particle &particle) override;
   };
 }

@@ -18,16 +18,16 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerESD.hh"
+#include "PTScorerESpectrum.hh"
 
 
-Prompt::ScorerESD::ScorerESD(const std::string &name, double xmin, double xmax, unsigned nxbins)
-:Scorer1D("ScorerESD_"+name, Scorer::ENTRY, std::make_unique<Hist1D>(xmin, xmax, nxbins))
+Prompt::ScorerESpectrum::ScorerESpectrum(const std::string &name, double xmin, double xmax, unsigned nxbins)
+:Scorer1D("ScorerESpectrum_"+name, Scorer::ENTRY, std::make_unique<Hist1D>(xmin, xmax, nxbins))
 {}
 
-Prompt::ScorerESD::~ScorerESD() {}
+Prompt::ScorerESpectrum::~ScorerESpectrum() {}
 
-void Prompt::ScorerESD::score(Prompt::Particle &particle)
+void Prompt::ScorerESpectrum::score(Prompt::Particle &particle)
 {
   m_hist->fill(particle.getEKin(),  particle.getWeight() );
 }
