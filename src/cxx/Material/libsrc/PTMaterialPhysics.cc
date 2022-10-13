@@ -35,9 +35,15 @@ double Prompt::MaterialPhysics::macroCrossSection(const Prompt::Particle &partic
   return m_numdensity*m_compModel->totalCrossSection(particle.getEKin(), particle.getDirection());
 }
 
-void Prompt::MaterialPhysics::sampleFinalState(const Prompt::Particle &particle, double &final_ekin, Vector &final_dir)
+void Prompt::MaterialPhysics::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
 {
-  m_compModel->sample(particle.getEKin(), particle.getDirection(), final_ekin, final_dir);
+  double final_ekin;
+  Vector final_dir;
+  m_compModel->generate(particle.getEKin(), particle.getDirection(), final_ekin, final_dir);
+  particle.setEKin(final_ekin);
+  particle.setDirection(final_dir);
+  if(!stepLength)
+    particle.scaleWeight(m_compModel->calculateWeight(stepLength*m_numdensity, hitWall));
 }
 
 double Prompt::MaterialPhysics::sampleStepLength(const Prompt::Particle &particle) const
@@ -53,10 +59,6 @@ double Prompt::MaterialPhysics::sampleStepLength(const Prompt::Particle &particl
   }
 }
 
-double Prompt::MaterialPhysics::calculateWeight(double step, bool selBiase)
-{
-  return m_compModel->calculateWeight(step*m_numdensity, selBiase);
-}
 
 double Prompt::MaterialPhysics::calNumDensity(const std::string &cfg)
 {

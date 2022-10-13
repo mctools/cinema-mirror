@@ -75,7 +75,7 @@ double Prompt::CompoundModel::totalCrossSection(double ekin, const Vector &dir) 
   }
 }
 
-void Prompt::CompoundModel::sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const
+void Prompt::CompoundModel::generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const
 {
   if(!sameInquiryAsLastTime(ekin, dir))
     printf("WARNING, sampling event with different incident energy and/or direction\n");
@@ -104,18 +104,18 @@ void Prompt::CompoundModel::sample(double ekin, const Vector &dir, double &final
 }
 
 //this shoule be called right after cross section is updated
-double Prompt::CompoundModel::calculateWeight(double lengthRho, bool selBiase)
+double Prompt::CompoundModel::calculateWeight(double lengthRho, bool hitWall)
 {
   double factor(1.);
   for(size_t i=0;i<m_models.size();i++)
   {
     double modbias(m_models[i]->getBias());
     if (modbias==1.) continue;
+    //this factor contributed in this step of lengthRho by this model
     factor *= exp( (m_cache.bias[i]-1.)*lengthRho* m_cache.cache_xs[i]/m_cache.bias[i] );
-    // std::cout << "exponet " <<  (m_cache.bias[i]-1.)*lengthRho* m_cache.cache_xs[i] <<
-    // " "<< exp( (m_cache.bias[i]-1.)*lengthRho* m_cache.cache_xs[i] ) << std::endl;
   }
   // std::cout << "selectedBias " << m_cache.selectedBias << " factor " << factor
   // << std::endl;
-  return (m_cache.selectedBias!=1. && selBiase ) ?  (factor/m_cache.selectedBias) : factor;
+  assert(m_cache.selectedBias);
+  return (m_cache.selectedBias!=1. && !hitWall ) ?  (factor/m_cache.selectedBias) : factor;
 }

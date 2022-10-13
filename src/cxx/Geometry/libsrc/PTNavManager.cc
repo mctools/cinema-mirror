@@ -212,10 +212,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     //sample the interaction at the location
     double final_ekin(0);
     Vector final_dir;
-    m_matphysscor->physics->sampleFinalState(particle, final_ekin, final_dir);
-    // final reaction channel is picked here, calculate the weigth factor
-    // based on individual xs, stepLength and picked physics
-    particle.scaleWeight( m_matphysscor->physics->calculateWeight(step, true));
+    m_matphysscor->physics->sampleFinalState(particle, step, false);
     // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
 
     if(final_ekin==-1.) // fixme: are we sure all -1 means capture??
@@ -236,9 +233,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     double final_ekin(0);
     Vector final_dir;
 
-    m_matphysscor->physics->sampleFinalState(particle, final_ekin, final_dir);
-    particle.scaleWeight(m_matphysscor->physics->calculateWeight(step, false));
-    // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
+    m_matphysscor->physics->sampleFinalState(particle, step, true);
     return false;
   }
 

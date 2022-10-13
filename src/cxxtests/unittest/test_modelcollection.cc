@@ -38,12 +38,12 @@ TEST_CASE("CompoundModel")
   CHECK(Prompt::floateq(1.378536096609809*Prompt::Unit::barn, xs ));
 
 
-  collection.sample(1., {1,0,0}, final, out);
+  collection.generate(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;
 
-  collection.sample(1., {1,0,0}, final, out);
+  collection.generate(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;
 
-  collection.sample(1., {1,0,0}, final, out);
+  collection.generate(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;
 }

@@ -51,12 +51,12 @@ namespace Prompt {
     virtual ~CompoundModel();
 
     double totalCrossSection(double ekin, const Vector &dir) const;
-    void sample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const;
 
     void addPhysicsModel(const std::string &cfg, double bias=1.);
     bool sameInquiryAsLastTime(double ekin, const Vector &dir) const;
 
-    double calculateWeight(double lengthRho, bool selBiase);
+    void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const;
+    double calculateWeight(double lengthRho, bool hitWall);
 
   private:
     std::vector<std::shared_ptr<DiscreteModel> > m_models;
