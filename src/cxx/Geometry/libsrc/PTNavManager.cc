@@ -178,7 +178,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     std::cout << "initial conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << std::endl;
   }
 
-  double stepLength = m_matphysscor->physics->sampleStepLength(particle);
+  double stepLength = m_matphysscor->bulkPhysics->sampleStepLength(particle);
 
 
   //! updates m_nextState to contain information about the next hitting boundary:
@@ -206,7 +206,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     //sample the interaction at the location
     double final_ekin(0);
     Vector final_dir;
-    m_matphysscor->physics->sampleFinalState(particle, step, false);
+    m_matphysscor->bulkPhysics->sampleFinalState(particle, step, false);
     // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
 
     if(final_ekin==-1.) // fixme: are we sure all -1 means capture??
@@ -227,7 +227,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     double final_ekin(0);
     Vector final_dir;
 
-    m_matphysscor->physics->sampleFinalState(particle, step, true);
+    m_matphysscor->bulkPhysics->sampleFinalState(particle, step, true);
     return false;
   }
 
