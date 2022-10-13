@@ -76,7 +76,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
 
       // the optional parameters
-      Scorer::ScorerType type = Scorer::ENTRY;
+      Scorer::ScorerType type = Scorer::ScorerType::ENTRY;
       std::string typeInStr = cfg.find("type");
       if(typeInStr.empty())
         parCount--;
@@ -84,11 +84,11 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       {
         if(typeInStr=="ENTRY")
         {
-          type = Scorer::ENTRY;
+          type = Scorer::ScorerType::ENTRY;
         }
         else if(typeInStr=="ABSORB")
         {
-          type = Scorer::ABSORB;
+          type = Scorer::ScorerType::ABSORB;
         }
         else {
           PROMPT_THROW(BadInput, "Scorer type can only be ENTRY or ABSORB" );
@@ -151,13 +151,13 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
   //   double maxQ = ptstod(words[6]);
   //   int numBin = std::stoi(words[7]);
   //   if(words[8]=="ABSORB")
-  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
+  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ScorerType::ABSORB);
   //   else if(words[8]=="ENTRY")
-  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
+  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ScorerType::ENTRY);
   //   else
   //   {
   //     PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerNeutronSq");
-  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ENTRY);
+  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ScorerType::ENTRY);
   //   }
   // }
   // else if(words[0]=="PSD")

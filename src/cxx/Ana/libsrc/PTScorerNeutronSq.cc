@@ -26,12 +26,12 @@ Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &name, const Vector &
 :Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>(qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
 m_sourceSampleDist(sourceSampleDist)
 {
-  if(stype==Scorer::ENTRY)
+  if(stype==Scorer::ScorerType::ENTRY)
     m_kill=true;
-  else if (stype==Scorer::ABSORB)
+  else if (stype==Scorer::ScorerType::ABSORB)
     m_kill=false;
   else
-    PROMPT_THROW(BadInput, "ScorerNeutronSq can only be Scorer::ENTRY or Scorer::ABSORB");
+    PROMPT_THROW(BadInput, "ScorerNeutronSq can only be Scorer::ScorerType::ENTRY or Scorer::ScorerType::ABSORB");
     auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
     m_dataout.open("ScorerNeutronSq_" + name + "_seed"+std::to_string(seed)+".wgt");
 }
@@ -71,5 +71,5 @@ void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
 
   m_hist->fill(qtrue, particle.getWeight());
   if(m_kill)
-    particle.kill(Particle::SCORE);
+    particle.kill(Particle::KillType::SCORE);
 }

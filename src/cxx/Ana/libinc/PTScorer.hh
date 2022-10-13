@@ -31,7 +31,7 @@ namespace Prompt {
 
   class Scorer {
   public:
-    enum ScorerType {SURFACE, ENTRY, PROPAGATE, ABSORB, EXIT};
+    enum class ScorerType {SURFACE, ENTRY, PROPAGATE, ABSORB, EXIT};
   public:
     Scorer(const std::string& name, ScorerType type) : m_name(name), m_type(type) {};
     virtual ~Scorer() {std::cout<<"Destructing Scorer " << m_name <<std::endl;};

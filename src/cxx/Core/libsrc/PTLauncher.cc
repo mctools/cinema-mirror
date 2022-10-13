@@ -141,7 +141,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
 
     if(!navman.exitWorld() && !particle.isAlive())
     {
-      if(particle.getKillType()==Particle::ABSORB)
+      if(particle.getKillType()==Particle::KillType::ABSORB)
       {
         navman.scoreAbsorb(particle);
       }

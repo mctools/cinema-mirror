@@ -276,32 +276,32 @@ void Prompt::VolumePhysicsScorer::sortScorers()
   for(auto &v : scorers)
   {
     auto type = v->getType();
-    if(type==Scorer::ENTRY)
+    if(type==Scorer::ScorerType::ENTRY)
     {
       entry_scorers.push_back(v);
       std::cout << "Added ENTRY type scorer: " << v->getName() << std::endl;
     }
-    else if(type==Scorer::PROPAGATE)
+    else if(type==Scorer::ScorerType::PROPAGATE)
     {
       propagate_scorers.push_back(v);
       std::cout << "Added PROPAGATE type scorer: " << v->getName() << std::endl;
     }
-    else if(type==Scorer::EXIT)
+    else if(type==Scorer::ScorerType::EXIT)
     {
       exit_scorers.push_back(v);
       std::cout << "Added EXIT type scorer: " << v->getName() << std::endl;
     }
-    else if(type==Scorer::SURFACE)
+    else if(type==Scorer::ScorerType::SURFACE)
     {
       surface_scorers.push_back(v);
       std::cout << "Added SURFACE type scorer: " << v->getName() << std::endl;
     }
-    else if(type==Scorer::ABSORB)
+    else if(type==Scorer::ScorerType::ABSORB)
     {
       absorb_scorers.push_back(v);
       std::cout << "Added ABSORB type scorer: " << v->getName() << std::endl;
     }
     else
-      PROMPT_THROW2(BadInput, "unknown scorer type " << type);
+      PROMPT_THROW2(BadInput, "unknown scorer type " << static_cast<int>(type) );
   }
 }

@@ -74,9 +74,9 @@ bool Prompt::NavManager::surfaceReaction(Particle &particle)
     m_matphysscor->boundaryPhysics->generate(particle.getEKin(),
     particle.getDirection(), eout, ptNorm, scaleWeigh);
     if(eout==-2.)
-      particle.kill(Particle::BIAS);
+      particle.kill(Particle::KillType::BIAS);
     else if (eout==-1.)
-      particle.kill(Particle::ABSORB);
+      particle.kill(Particle::KillType::ABSORB);
     particle.setDirection(ptNorm);
     particle.scaleWeight(scaleWeigh);
     return true;
@@ -216,7 +216,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
 
     if(final_ekin==-1.) // fixme: are we sure all -1 means capture??
     {
-      particle.kill(Particle::ABSORB);
+      particle.kill(Particle::KillType::ABSORB);
     }
     else
     {
