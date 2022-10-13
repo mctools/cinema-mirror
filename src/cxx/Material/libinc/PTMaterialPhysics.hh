@@ -26,6 +26,7 @@
 #include "PTCompoundModel.hh"
 #include "PTParticle.hh"
 
+// MaterialPhysics does not check applicable
 namespace Prompt {
   class MaterialPhysics  {
   public:
@@ -33,8 +34,8 @@ namespace Prompt {
     virtual ~MaterialPhysics();
 
     double sampleStepLength(const Prompt::Particle &particle) const;
-    double getScaleWeight(double step, bool selBiase);
-    void sampleFinalState(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir, double &scaleWeight);
+    void sampleFinalState(const Prompt::Particle &particle, double &final_ekin, Vector &final_dir, double &scaleWeight);
+    double calculateWeight(double step, bool selBiase);
     void addComposition(const std::string &cfg, double bias=1.0);
 
   private:

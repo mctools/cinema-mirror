@@ -208,10 +208,10 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     double final_ekin(0);
     Vector final_dir;
     double dummy(0.);
-    m_matphysscor->physics->sampleFinalState(particle.getEKin(), dir, final_ekin, final_dir, dummy);
+    m_matphysscor->physics->sampleFinalState(particle, final_ekin, final_dir, dummy);
     // final reaction channel is picked here, calculate the weigth factor
     // based on individual xs, stepLength and picked physics
-    particle.scaleWeight( m_matphysscor->physics->getScaleWeight(step, true));
+    particle.scaleWeight( m_matphysscor->physics->calculateWeight(step, true));
     // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
 
     if(final_ekin==-1.) // fixme: are we sure all -1 means capture??
@@ -229,13 +229,12 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   {
     // final reaction channel is picked here, calculate the weigth factor
     // based on individual xs, stepLength and picked physics
-    auto fq=particle;
     double final_ekin(0);
     Vector final_dir;
     double dummy(0.);
 
-    m_matphysscor->physics->sampleFinalState(fq.getEKin(), dir, final_ekin, final_dir, dummy);
-    particle.scaleWeight(m_matphysscor->physics->getScaleWeight(step, false));
+    m_matphysscor->physics->sampleFinalState(particle, final_ekin, final_dir, dummy);
+    particle.scaleWeight(m_matphysscor->physics->calculateWeight(step, false));
     // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
     return false;
   }

@@ -103,7 +103,7 @@ void Prompt::CompoundModel::sample(double ekin, const Vector &dir, double &final
   // << " total model num " << m_models.size() << std::endl;
 }
 
-//call it right after cross section is updated
+//this shoule be called right after cross section is updated
 double Prompt::CompoundModel::calculateWeight(double lengthRho, bool selBiase)
 {
   double factor(1.);
