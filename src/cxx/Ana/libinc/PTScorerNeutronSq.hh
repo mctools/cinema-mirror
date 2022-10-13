@@ -29,17 +29,14 @@ namespace Prompt {
 
   class ScorerNeutronSq  : public Scorer1D {
   public:
-    ScorerNeutronSq(const std::string &cfg);
     ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin,
       ScorerType styp=Scorer::ENTRY, bool linear=true);
     virtual ~ScorerNeutronSq();
     virtual void score(Particle &particle) override;
   private:
-    void init(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType styp, bool linear);
-    Vector m_samplePos, m_refDir;
-    double m_sourceSampleDist;
+    const Vector m_samplePos, m_refDir;
+    const double m_sourceSampleDist;
     bool m_kill;
     std::ofstream m_dataout;
   };

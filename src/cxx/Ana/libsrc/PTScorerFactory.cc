@@ -20,6 +20,8 @@
 
 #include "PTScorerFactory.hh"
 #include "PTUtils.hh"
+#include "PTCfgParser.hh"
+
 #include "PTScorerNeutronSq.hh"
 #include "PTScorerPSD.hh"
 #include "PTScorerESD.hh"
@@ -112,7 +114,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type NeutronSq is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ABSORB);
+      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, type, linear);
     }
 
     else if(ScorDef == "PSD")

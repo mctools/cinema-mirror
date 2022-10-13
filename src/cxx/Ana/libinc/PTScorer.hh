@@ -25,30 +25,27 @@
 #include "PTParticle.hh"
 #include "PTHist1D.hh"
 #include "PTHist2D.hh"
-#include "PTCfgParser.hh"
 
 namespace Prompt {
+
 
   class Scorer {
   public:
     enum ScorerType {SURFACE, ENTRY, PROPAGATE, ABSORB, EXIT};
   public:
-    Scorer() {};
     Scorer(const std::string& name, ScorerType type) : m_name(name), m_type(type) {};
-
-    virtual ~Scorer() {std::cout<<"Destructing scorer " << m_name <<std::endl;};
+    virtual ~Scorer() {std::cout<<"Destructing Scorer " << m_name <<std::endl;};
     const std::string &getName() { return m_name; }
     ScorerType getType() { return m_type; }
     virtual void score(Particle &particle) = 0;
     virtual void save(const std::string &fname) = 0;
   protected:
-    std::string m_name;
+    const std::string m_name;
     ScorerType m_type;
   };
 
   class Scorer1D : public Scorer {
   public:
-    Scorer1D(): Scorer() {};
     Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist)
     : Scorer(name, type), m_hist(std::move(hist)) {};
     virtual ~Scorer1D() { save(m_name); }
@@ -59,7 +56,6 @@ namespace Prompt {
 
   class Scorer2D : public Scorer {
   public:
-    Scorer2D(): Scorer() {};
     Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist)
     : Scorer(name, type), m_hist(std::move(hist)) {};
     virtual ~Scorer2D() { save(m_name); }

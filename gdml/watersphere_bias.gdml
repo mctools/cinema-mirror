@@ -27,7 +27,7 @@
     <solids>
         <box lunit="mm" name="WorldSolid" x="700.0" y="700.0" z="2800.0" />
         <box lunit="mm" name="boxSolid" x="400" y="400" z="400" />
-        <sphere aunit="deg" lunit="mm" name="SphereSolid" rmin="0.0" rmax="0.001" deltaphi="360.0" startphi="0.0" deltatheta="180.0" starttheta="0.0" />
+        <sphere aunit="deg" lunit="mm" name="SphereSolid" rmin="0.0" rmax="2" deltaphi="360.0" startphi="0.0" deltatheta="180.0" starttheta="0.0" />
     </solids>
 
     <structure>
