@@ -73,8 +73,9 @@ double Prompt::MaterialPhysics::calNumDensity(const std::string &cfg)
   }
 }
 
-void Prompt::MaterialPhysics::addComposition(const std::string &cfg, double bias)
+void Prompt::MaterialPhysics::setComposition(const std::string &cfg, double bias)
 {
+  assert(!m_numdensity);
   m_compModel->addPhysicsModel(cfg, bias);
-  m_numdensity += calNumDensity(cfg);
+  m_numdensity = calNumDensity(cfg);
 }
