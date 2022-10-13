@@ -40,11 +40,16 @@ void Prompt::MaterialPhysics::sampleFinalState(Prompt::Particle &particle, doubl
   double final_ekin;
   Vector final_dir;
   m_compModel->generate(particle.getEKin(), particle.getDirection(), final_ekin, final_dir);
-  particle.setEKin(final_ekin);
-  particle.setDirection(final_dir);
-  if(!stepLength)
+  if(!hitWall)
+  {
+    particle.setEKin(final_ekin);
+    particle.setDirection(final_dir);
+  }
+
+  if(stepLength)
     particle.scaleWeight(m_compModel->calculateWeight(stepLength*m_numdensity, hitWall));
 }
+
 
 double Prompt::MaterialPhysics::sampleStepLength(const Prompt::Particle &particle) const
 {

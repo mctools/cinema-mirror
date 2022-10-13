@@ -204,31 +204,18 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   if(sameVolume)
   {
     //sample the interaction at the location
-    double final_ekin(0);
-    Vector final_dir;
     m_matphysscor->bulkPhysics->sampleFinalState(particle, step, false);
     // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
 
-    if(final_ekin==-1.) // fixme: are we sure all -1 means capture??
+    if(particle.getEKin()==-1.) // fixme: are we sure all -1 means capture??
     {
       particle.kill(Particle::KillType::ABSORB);
-    }
-    else
-    {
-      particle.setEKin(final_ekin);
-      particle.setDirection(final_dir);
     }
     return true;
   }
   else
   {
-    // final reaction channel is picked here, calculate the weigth factor
-    // based on individual xs, stepLength and picked physics
-    double final_ekin(0);
-    Vector final_dir;
-
     m_matphysscor->bulkPhysics->sampleFinalState(particle, step, true);
     return false;
   }
-
 }
