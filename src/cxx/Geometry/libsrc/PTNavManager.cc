@@ -64,24 +64,25 @@ void Prompt::NavManager::setupVolumePhysics()
 
 bool Prompt::NavManager::surfaceReaction(Particle &particle)
 {
-  if(hasBoundaryPhyiscs())
-  {
-    Vector pos(particle.getPosition());
-    vecgeom::cxx::Vector3D<double> norm;
-    m_currPV->Normal({pos.x(), pos.y(), pos.z()}, norm);
-    double eout(0), scaleWeigh(0);
-    Vector ptNorm{norm[0], norm[1], norm[2]};
-    m_matphysscor->boundaryPhysics->generate(particle.getEKin(),
-    particle.getDirection(), eout, ptNorm, scaleWeigh);
-    if(eout==-2.)
-      particle.kill(Particle::KillType::BIAS);
-    else if (eout==-1.)
-      particle.kill(Particle::KillType::ABSORB);
-    particle.setDirection(ptNorm);
-    particle.scaleWeight(scaleWeigh);
-    return true;
-  }
-  else
+  // //fix me!!!
+  // if(hasBoundaryPhyiscs())
+  // {
+  //   Vector pos(particle.getPosition());
+  //   vecgeom::cxx::Vector3D<double> norm;
+  //   m_currPV->Normal({pos.x(), pos.y(), pos.z()}, norm);
+  //   double eout(0), scaleWeigh(0);
+  //   Vector ptNorm{norm[0], norm[1], norm[2]};
+  //   m_matphysscor->boundaryPhysics->generate(particle.getEKin(),
+  //   particle.getDirection(), eout, ptNorm, scaleWeigh);
+  //   if(eout==-2.)
+  //     particle.kill(Particle::KillType::BIAS);
+  //   else if (eout==-1.)
+  //     particle.kill(Particle::KillType::ABSORB);
+  //   particle.setDirection(ptNorm);
+  //   particle.scaleWeight(scaleWeigh);
+  //   return true;
+  // }
+  // else
     return false;
 }
 
