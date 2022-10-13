@@ -24,11 +24,25 @@
 
 #include "PTMirrorPhysics.hh"
 
-Prompt::PhysicsFactory::PhysicsFactory()
-{}
+Prompt::PhysicsFactory::PhysicsType Prompt::PhysicsFactory::checkPhysicsType(const std::string &cfg) const
+{
+  // example cfg
+  // nccfg="LiquidHeavyWaterD2O_T293.6K.ncmat;density=1.0gcm3";scatter_bias=1.0;abs_bias=1.0;
 
+  return PhysicsFactory::PhysicsType::NC_ABSORB;
+}
 
-std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createPhysics(const std::string &cfgstr)
+std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createNCrystalScatPhysics(const std::string &cfg)
+{
+
+}
+
+std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createNCrystalAbsPhysics(const std::string &cfg)
+{
+
+}
+
+std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createBoundaryPhysics(const std::string &cfgstr)
 {
   std::cout << "Parsing config string for a physics model: \n";
   std::cout << cfgstr << "\n";
@@ -47,6 +61,7 @@ std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createPhysics(cons
   }
   else
   {
+    std::shared_ptr<Prompt::PhysicsModel> phy;
 
     if(physDef == "MirrorPhyiscs")
     {
@@ -83,9 +98,14 @@ std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createPhysics(cons
         PROMPT_THROW2(BadInput, "Cfgstr for a mirror physics is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<MirrorPhyiscs>(m, threshold);
+      phy = std::make_shared<MirrorPhyiscs>(m, threshold);
     }
 
+
+    if(phy)
+    {
+      return phy;
+    }
     else
       PROMPT_THROW2(BadInput, "Physics type " << physDef << " is not supported. ")
   }
