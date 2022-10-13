@@ -34,9 +34,9 @@ Prompt::MaterialPhysics::~MaterialPhysics()
 {
 }
 
-double Prompt::MaterialPhysics::macroCrossSection(double ekin, const Prompt::Vector &dir) const
+double Prompt::MaterialPhysics::macroCrossSection(const Prompt::Particle &particle) const
 {
-  return m_numdensity*m_compModel->totalCrossSection(ekin, dir);
+  return m_numdensity*m_compModel->totalCrossSection(particle.getEKin(), particle.getDirection());
 }
 
 void Prompt::MaterialPhysics::sampleFinalState(const Prompt::Particle &particle, double &final_ekin, Vector &final_dir, double &scaleWeight)
@@ -46,7 +46,7 @@ void Prompt::MaterialPhysics::sampleFinalState(const Prompt::Particle &particle,
 
 double Prompt::MaterialPhysics::sampleStepLength(const Prompt::Particle &particle) const
 {
-  double mxs = macroCrossSection(particle.getEKin(), particle.getDirection());
+  double mxs = macroCrossSection(particle);
   if(mxs)
   {
     return -log(m_rng.generate())/mxs;

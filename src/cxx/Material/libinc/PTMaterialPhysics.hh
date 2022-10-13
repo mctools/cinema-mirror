@@ -26,7 +26,6 @@
 #include "PTCompoundModel.hh"
 #include "PTParticle.hh"
 
-// MaterialPhysics does not check applicable
 namespace Prompt {
   class MaterialPhysics  {
   public:
@@ -39,7 +38,7 @@ namespace Prompt {
     void addComposition(const std::string &cfg, double bias=1.0);
 
   private:
-    double macroCrossSection(double ekin, const Prompt::Vector &dir) const;
+    double macroCrossSection(const Prompt::Particle &particle) const;
     double calNumDensity(const std::string &cfg);
     SingletonPTRand &m_rng;
     std::unique_ptr<CompoundModel> m_compModel;

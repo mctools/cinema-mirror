@@ -41,7 +41,8 @@ namespace Prompt {
     double tot;
   };
 
-  // This class is used to represent a collection of models for a material.
+  // This class is used to represent a collection of models.
+  // The upstream should make should it is the right one for the material
   // Only discrete models for now.
 
   class CompoundModel  {
@@ -63,8 +64,6 @@ namespace Prompt {
     bool m_oriented;
 
     SingletonPTRand &m_rng;
-
-    //fixme: cache
   };
 }
 
