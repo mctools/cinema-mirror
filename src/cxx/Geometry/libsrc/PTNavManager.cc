@@ -179,7 +179,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     std::cout << "initial conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << std::endl;
   }
 
-  double stepLength = m_matphysscor->physics->sampleStepLength(particle.getEKin(), dir);
+  double stepLength = m_matphysscor->physics->sampleStepLength(particle);
 
 
   //! updates m_nextState to contain information about the next hitting boundary:

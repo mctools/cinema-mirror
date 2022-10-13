@@ -31,7 +31,7 @@ namespace Prompt {
   class Particle {
     friend class PrimaryGun;
   public:
-    enum KillType {ABSORB, SCORE, BIAS};
+    enum KillType {ABSORB, BIAS, SCORE };
   public:
     Particle();
     Particle(double ekin, const Vector& dir, const Vector& pos);
@@ -40,27 +40,27 @@ namespace Prompt {
     virtual void moveForward(double length);
 
     virtual void setDirection(const Vector& dir);
-    const Vector &getDirection() { return m_dir; }
+    const Vector &getDirection() const { return m_dir; }
 
     void setPosition(const Vector& pos);
-    const Vector &getPosition() { return m_pos; }
+    const Vector &getPosition() const { return m_pos; }
 
     void setLocalPosition(const Vector& pos) { m_localpos=pos; }
-    const Vector &getLocalPosition() { return m_localpos; }
+    const Vector &getLocalPosition() const { return m_localpos; }
 
-    double getTime() { return m_time; }
-    double getStep() { return m_step; }
-    double getEnergyChange() { return m_deltaEn; }
+    double getTime() const { return m_time; }
+    double getStep() const { return m_step; }
+    double getEnergyChange() const { return m_deltaEn; }
     void setEKin(double ekin);
-    double getEKin() { return m_ekin; }
-    double getEKin0() { return m_ekin0; }
-    double getWeight() { return m_weight; }
-    double getWeightFactor() { return m_wFactor; }
+    double getEKin() const { return m_ekin; }
+    double getEKin0() const { return m_ekin0; }
+    double getWeight() const { return m_weight; }
+    double getWeightFactor() const { return m_wFactor; }
     void scaleWeight(double factor) { m_weight *= factor; m_wFactor = factor; }
-    unsigned long long getEventID() { return m_eventid; }
+    unsigned long long getEventID() const { return m_eventid; }
     void setNumScat(int counter);
-    int getNumScat() { return m_counter; }
-    KillType getKillType() { return m_killtype; }
+    int getNumScat() const { return m_counter; }
+    KillType getKillType() const { return m_killtype; }
 
     void kill(KillType t);
     bool isAlive();
