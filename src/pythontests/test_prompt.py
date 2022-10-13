@@ -3,11 +3,19 @@
 import numpy as np
 import os
 
+f1='ScorerNeutronSq_SofQ_seed4096_edge.npy'
+f2='ScorerNeutronSq_SofQ_seed4096_content.npy'
+f3='ScorerNeutronSq_SofQ_seed4096_hit.npy'
+
+os.system(f'rm {f1}')
+os.system(f'rm {f2}')
+os.system(f'rm {f3}')
+
 os.system('prompt -g watersphere_bias.gdml -n 1e5')
 
-x=np.load('ScorerNeutronSq_SofQ_seed4096_edge.npy')
-w=np.load('ScorerNeutronSq_SofQ_seed4096_content.npy')
-hit=np.load('ScorerNeutronSq_SofQ_seed4096_hit.npy')
+x=np.load(f1)
+w=np.load(f2)
+hit=np.load(f3)
 
 res = np.array([x.sum(), w.sum(), hit.sum()])
 np.set_printoptions(precision=16)
