@@ -33,13 +33,16 @@ namespace Prompt {
 
   class MirrorPhyiscs  : public DiscreteModel {
     public:
-      MirrorPhyiscs(double mvalue, double weightCut = 1e-5);
+      MirrorPhyiscs(double mvalue, double weightCut = 1e-3);
       virtual ~MirrorPhyiscs() override;
       virtual void generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor) const override;
+
+      double getEventWeight() const {return m_wAtQ;};
 
     private:
       std::shared_ptr<LookUpTable> m_table;
       double m_wcut;
+      mutable double m_wAtQ;
       SingletonPTRand &m_rng;
 
   };

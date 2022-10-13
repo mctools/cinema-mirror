@@ -21,6 +21,7 @@
 #include "PTNavManager.hh"
 #include <VecGeom/navigation/BVHNavigator.h>
 #include <VecGeom/navigation/NewSimpleNavigator.h>
+#include "PTMirrorPhysics.hh"
 
 Prompt::NavManager::NavManager()
 :m_geo(vecgeom::GeoManager::Instance()), m_currPV(nullptr),
@@ -64,28 +65,24 @@ void Prompt::NavManager::setupVolumePhysics()
 
 bool Prompt::NavManager::surfaceReaction(Particle &particle)
 {
-  // //fix me!!!
   if(hasBoundaryPhyiscs())
   {
-    PROMPT_THROW(CalcError, "fixme");
+    Vector pos(particle.getPosition());
+    vecgeom::cxx::Vector3D<double> norm;
+    m_currPV->Normal({pos.x(), pos.y(), pos.z()}, norm);
+    double eout(0);
+    Vector ptNorm{norm[0], norm[1], norm[2]};
+    m_matphysscor->boundaryPhysics->generate(particle.getEKin(),
+    particle.getDirection(), eout, ptNorm);
+    double scaleWeigh = reinterpret_cast<MirrorPhyiscs*>(m_matphysscor->boundaryPhysics.get())->getEventWeight();
+    if(eout==-2.)
+      particle.kill(Particle::KillType::BIAS);
+    else if (eout==-1.)
+      particle.kill(Particle::KillType::ABSORB);
+    particle.setDirection(ptNorm);
+    particle.scaleWeight(scaleWeigh);
     return true;
   }
-  // {
-  //   Vector pos(particle.getPosition());
-  //   vecgeom::cxx::Vector3D<double> norm;
-  //   m_currPV->Normal({pos.x(), pos.y(), pos.z()}, norm);
-  //   double eout(0), scaleWeigh(0);
-  //   Vector ptNorm{norm[0], norm[1], norm[2]};
-  //   m_matphysscor->boundaryPhysics->generate(particle.getEKin(),
-  //   particle.getDirection(), eout, ptNorm, scaleWeigh);
-  //   if(eout==-2.)
-  //     particle.kill(Particle::KillType::BIAS);
-  //   else if (eout==-1.)
-  //     particle.kill(Particle::KillType::ABSORB);
-  //   particle.setDirection(ptNorm);
-  //   particle.scaleWeight(scaleWeigh);
-  //   return true;
-  // }
   else
     return false;
 }
@@ -132,7 +129,6 @@ void Prompt::NavManager::scoreSurface(Prompt::Particle &particle)
   }
 }
 
-
 void Prompt::NavManager::scoreAbsorb(Prompt::Particle &particle)
 {
   if(m_matphysscor->absorb_scorers.size())
@@ -143,8 +139,6 @@ void Prompt::NavManager::scoreAbsorb(Prompt::Particle &particle)
     }
   }
 }
-
-
 
 void Prompt::NavManager::scorePropagate(Prompt::Particle &particle)
 {

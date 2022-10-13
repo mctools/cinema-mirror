@@ -33,13 +33,11 @@ TEST_CASE("Mirror physics")
   dir.normalise();
   double ekin(0.0253), eout(0), wscale(0.);
 
-  //mirr.generate(ekin, dir, eout, nor, wscale);
-      PROMPT_THROW(CalcError, "fixme");
-mirr.generate(ekin, dir, eout, nor);
+  mirr.generate(ekin, dir, eout, nor);
+  wscale = mirr.getEventWeight();
   printf("%.16g %.16g %.16g, %.16e\n", nor.x(), nor.y(), nor.z(), wscale);
   CHECK(pt::floateq(nor.x(), 0));
   CHECK(pt::floateq(nor.y(), 0.9999382773199424));
   CHECK(pt::floateq(nor.z(), -0.01111042530355492));
-
-
+  CHECK(pt::floateq(wscale, 6.5194188833312261e-01));
 }

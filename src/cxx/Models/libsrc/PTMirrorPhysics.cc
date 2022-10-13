@@ -23,7 +23,7 @@
 
 Prompt::MirrorPhyiscs::MirrorPhyiscs(double mvalue, double weightCut)
 :Prompt::DiscreteModel("MirrorPhysics", const_neutron_pgd, std::numeric_limits<double>::min(), 10*Prompt::Unit::eV),
-m_wcut(weightCut), m_rng(Singleton<SingletonPTRand>::getInstance())
+m_wcut(weightCut), m_wAtQ(0.), m_rng(Singleton<SingletonPTRand>::getInstance())
 {
   std::cout << "constructor mirror physics " << std::endl;
   //parameters sync with mcastas 2.7 guide component default value
@@ -60,19 +60,16 @@ void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, doubl
   double angleCos = reflectionNor.angleCos(nDirInLab);
 
   double Q = neutronAngleCosine2Q(angleCos, ekin, ekin);
-  PROMPT_THROW(CalcError, "fixme");
-  // scaleWeight =  m_table->get(Q);
+  m_wAtQ =  m_table->get(Q);
 
-  // // std::cout << "Q " << Q << " scale " << scaleWeight << std::endl;
-  // if(m_wcut > scaleWeight)
-  // {
-  //   if(m_wcut*m_rng.generate() < scaleWeight )
-  //   {
-  //     scaleWeight = m_wcut;
-  //   }
-  //   else
-  //     final_ekin = -2.0; //paprose kill
-  // }
-
-
+  // std::cout << "Q " << Q << " scale " << scaleWeight << std::endl;
+  if(m_wcut > m_wAtQ)
+  {
+    if(m_wcut*m_rng.generate() < m_wAtQ )
+    {
+      m_wAtQ = m_wcut;
+    }
+    else
+      final_ekin = -2.0; //paprose kill
+  }
 }

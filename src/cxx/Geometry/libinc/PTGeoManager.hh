@@ -33,7 +33,7 @@
 
 namespace Prompt {
 
-  struct VolumePhysicsScorer { // to attached to a volume
+  struct VolumePhysicsScorer { // to attach to a volume
     std::shared_ptr<MaterialPhysics> physics; //bulk physics
     std::shared_ptr<PhysicsModel> boundaryPhysics; //boundary physics
     std::vector< std::shared_ptr<Scorer> >  scorers; /*scorer name, scorer*/
