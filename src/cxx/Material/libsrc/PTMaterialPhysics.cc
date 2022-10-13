@@ -44,6 +44,10 @@ void Prompt::MaterialPhysics::sampleFinalState(Prompt::Particle &particle, doubl
   {
     particle.setEKin(final_ekin);
     particle.setDirection(final_dir);
+    if(final_ekin==-1.) // fixme: are we sure all -1 means capture??
+    {
+      particle.kill(Particle::KillType::ABSORB);
+    }
   }
 
   if(stepLength)

@@ -206,11 +206,6 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
     //sample the interaction at the location
     m_matphysscor->bulkPhysics->sampleFinalState(particle, step, false);
     // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
-
-    if(particle.getEKin()==-1.) // fixme: are we sure all -1 means capture??
-    {
-      particle.kill(Particle::KillType::ABSORB);
-    }
     return true;
   }
   else
