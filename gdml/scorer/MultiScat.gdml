@@ -35,7 +35,7 @@
     <volume name="Sample">
       <materialref ref="HeavyWater"/>
       <solidref ref="SampleSolid"/>
-      <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat; name=D2O; Numbermin=0.5; Numbermax=5.5; numbin=5"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; numbin=5"/>
     </volume>
 
     <volume name="Detector">
