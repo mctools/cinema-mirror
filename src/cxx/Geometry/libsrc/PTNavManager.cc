@@ -67,10 +67,16 @@ bool Prompt::NavManager::surfaceReaction(Particle &particle)
 {
   if(hasBoundaryPhyiscs())
   {
-    Vector pos(particle.getPosition());
-    vecgeom::cxx::Vector3D<double> norm;
-    m_currPV->Normal({pos.x(), pos.y(), pos.z()}, norm);
-    m_matphysscor->boundaryPhysics->sampleFinalState(particle, {norm[0], norm[1], norm[2]});
+    auto ptype = m_matphysscor->boundaryPhysics->getType();
+    if(ptype==BoundaryPhysics::PhysicsType::Mirror)
+    {
+      Vector pos(particle.getPosition());
+      vecgeom::cxx::Vector3D<double> norm;
+      m_currPV->Normal({pos.x(), pos.y(), pos.z()}, norm);
+      auto mphys = dynamic_cast<MirrorPhyiscs*>(m_matphysscor->boundaryPhysics.get());
+      mphys->setReflectionNormal(*reinterpret_cast<Vector*>(&norm));
+    }
+    m_matphysscor->boundaryPhysics->sampleFinalState(particle);
     return true;
   }
   else

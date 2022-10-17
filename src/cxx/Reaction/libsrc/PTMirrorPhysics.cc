@@ -22,7 +22,7 @@
 #include "PTUtils.hh"
 
 Prompt::MirrorPhyiscs::MirrorPhyiscs(double mvalue, double weightCut)
-:Prompt::BoundaryPhysics(), m_wcut(weightCut), m_wAtQ(0.)
+:Prompt::BoundaryPhysics(Prompt::BoundaryPhysics::PhysicsType::Mirror), m_wcut(weightCut), m_wAtQ(0.)
 {
   std::cout << "constructor mirror physics " << std::endl;
   //parameters sync with mcastas 2.7 guide component default value
@@ -48,19 +48,14 @@ Prompt::MirrorPhyiscs::MirrorPhyiscs(double mvalue, double weightCut)
   std::cout << "constructor mirror physics completed" << std::endl;
 }
 
-
-Prompt::MirrorPhyiscs::~MirrorPhyiscs()
-{}
-
-
-void Prompt::MirrorPhyiscs::sampleFinalState(Prompt::Particle &particle, Vector reflectionNor) const
+void Prompt::MirrorPhyiscs::sampleFinalState(Prompt::Particle &particle) const
 {
   double ekin = particle.getEKin();
   const auto &nDirInLab = particle.getDirection();
 
-  reflectionNor = nDirInLab - reflectionNor*(2*(nDirInLab.dot(reflectionNor)));
-  double angleCos = reflectionNor.angleCos(nDirInLab);
-  particle.setDirection(reflectionNor);
+  Vector newDir = nDirInLab - m_refNorm*(2*(nDirInLab.dot(m_refNorm)));
+  double angleCos = newDir.angleCos(nDirInLab);
+  particle.setDirection(newDir);
 
   double Q = neutronAngleCosine2Q(angleCos, ekin, ekin); // elastic reflection
   m_wAtQ =  m_table->get(Q);

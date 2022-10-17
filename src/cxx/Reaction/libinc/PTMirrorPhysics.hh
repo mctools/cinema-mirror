@@ -32,13 +32,15 @@ namespace Prompt {
   class MirrorPhyiscs  : public BoundaryPhysics {
     public:
       MirrorPhyiscs(double mvalue, double weightCut = 1e-3);
-      virtual ~MirrorPhyiscs();
-      virtual void sampleFinalState(Prompt::Particle &particle, Vector ref) const override;
-      double getEventWeight() const {return m_wAtQ;};
+      virtual ~MirrorPhyiscs() = default;
+      virtual void sampleFinalState(Prompt::Particle &particle) const override;
+      double getEventWeight() const {return m_wAtQ;}
+      void setReflectionNormal(const Vector &nor) {m_refNorm=nor;}
 
     private:
       std::shared_ptr<LookUpTable> m_table;
       double m_wcut;
+      Vector m_refNorm;
       mutable double m_wAtQ;
 
   };

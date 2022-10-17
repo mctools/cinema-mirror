@@ -36,8 +36,8 @@ TEST_CASE("Mirror physics")
   auto n = Prompt::Neutron();
   n.setEKin(ekin);
   n.setDirection(dir);
-
-  mirr.sampleFinalState(n, nor);
+  mirr.setReflectionNormal(nor);
+  mirr.sampleFinalState(n);
   wscale = mirr.getEventWeight();
   printf("%.16g %.16g %.16g, %.16e\n", nor.x(), nor.y(), nor.z(), wscale);
   const auto &newdir = n.getDirection();
