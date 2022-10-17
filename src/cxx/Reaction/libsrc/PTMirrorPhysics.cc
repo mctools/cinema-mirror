@@ -22,8 +22,7 @@
 #include "PTUtils.hh"
 
 Prompt::MirrorPhyiscs::MirrorPhyiscs(double mvalue, double weightCut)
-:Prompt::DiscreteModel("MirrorPhysics", const_neutron_pgd, std::numeric_limits<double>::min(), 10*Prompt::Unit::eV),
-m_wcut(weightCut), m_wAtQ(0.), m_rng(Singleton<SingletonPTRand>::getInstance())
+:Prompt::BoundaryPhysics(), m_wcut(weightCut), m_wAtQ(0.)
 {
   std::cout << "constructor mirror physics " << std::endl;
   //parameters sync with mcastas 2.7 guide component default value
@@ -53,13 +52,19 @@ m_wcut(weightCut), m_wAtQ(0.), m_rng(Singleton<SingletonPTRand>::getInstance())
 Prompt::MirrorPhyiscs::~MirrorPhyiscs()
 {}
 
-void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor) const
+void Prompt::MirrorPhyiscs::sampleFinalState(Prompt::Particle &particle, Vector ref) const
 {
-  final_ekin=ekin;
-  reflectionNor = nDirInLab - reflectionNor*(2*(nDirInLab.dot(reflectionNor)));
-  double angleCos = reflectionNor.angleCos(nDirInLab);
+  // m_matphysscor->boundaryPhysics->generate(particle.getEKin(),
+  // particle.getDirection(), eout, ptNorm);
 
-  double Q = neutronAngleCosine2Q(angleCos, ekin, ekin);
+  double ekin = particle.getEKin();
+  const auto &nDirInLab = particle.getDirection();
+
+  Vector newDir = nDirInLab - ref*(2*(nDirInLab.dot(ref)));
+  particle.setDirection(newDir);
+
+  double angleCos = newDir.angleCos(nDirInLab);
+  double Q = neutronAngleCosine2Q(angleCos, ekin, ekin); // elastic reflection
   m_wAtQ =  m_table->get(Q);
 
   // std::cout << "Q " << Q << " scale " << scaleWeight << std::endl;
@@ -70,6 +75,20 @@ void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, doubl
       m_wAtQ = m_wcut;
     }
     else
-      final_ekin = ENERGYTOKEN_BIAS; //paprose kill
+      particle.kill(Particle::KillType::BIAS);
   }
+  particle.scaleWeight(m_wAtQ);
+
+  // double eout(0);
+  // Vector ptNorm{norm[0], norm[1], norm[2]};
+  // m_matphysscor->boundaryPhysics->generate(particle.getEKin(),
+  // particle.getDirection(), eout, ptNorm);
+  // double scaleWeigh = reinterpret_cast<MirrorPhyiscs*>(m_matphysscor->boundaryPhysics.get())->getEventWeight();
+  // if(eout==ENERGYTOKEN_BIAS)
+  //   particle.kill(Particle::KillType::BIAS);
+  // else if (eout==ENERGYTOKEN_ABSORB)
+  //   particle.kill(Particle::KillType::ABSORB);
+  // particle.setDirection(ptNorm);
+  // particle.scaleWeight(scaleWeigh);
+
 }

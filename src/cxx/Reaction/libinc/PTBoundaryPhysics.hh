@@ -1,3 +1,6 @@
+#ifndef Prompt_BoundaryPhysics_hh
+#define Prompt_BoundaryPhysics_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,22 +21,22 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "../doctest.h"
-#include "PTBulkPhysics.hh"
-#include "PTNeutron.hh"
+#include <string>
+#include "PromptCore.hh"
+#include "PTParticle.hh"
+#include "PTRandCanonical.hh"
+#include "PTPhysicsModel.hh"
 
-TEST_CASE("BulkPhysics")
-{
-  auto mat = Prompt::BulkPhysics() ;
-  mat.setComposition("LiquidWaterH2O_T293.6K.ncmat", 1); //LiquidWaterH2O_T293.6K, Be_sg194, Al_sg225, UO2_sg225_UraniumDioxide
-  double ekin  = 0.0253;
-  auto n = Prompt::Neutron(ekin, Prompt::Vector(1,0,0), Prompt::Vector(0,0,0) );
-  double totlength(0.);
-  unsigned loop(100000);
-  for(unsigned i=0;i<loop;i++)
-  {
-    totlength += mat.sampleStepLength(n);
-  }
-  printf("%.16f \n", totlength/loop);
-  CHECK(Prompt::floateq(totlength/loop, 2.7602913707687793));
+namespace Prompt {
+  class BoundaryPhysics : public PhysicsBase  {
+  public:
+    // by default the physics is applicable for neutron (2112)
+    BoundaryPhysics(unsigned pgd=2112): PhysicsBase("NeutronDiskChopper", pgd, std::numeric_limits<double>::min(), std::numeric_limits<double>::max()) {};
+    virtual ~BoundaryPhysics() = default;
+    virtual void sampleFinalState(Particle &particle, Vector ref = {1,0,0}) const = 0;
+
+  };
+
 }
+
+#endif

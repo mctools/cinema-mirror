@@ -27,7 +27,7 @@
 #include "PTCompoundModel.hh"
 #include "PTSingleton.hh"
 #include "PTParticle.hh"
-#include "PTMaterialPhysics.hh"
+#include "PTBulkPhysics.hh"
 #include "PTScorer.hh"
 #include "PTHist2D.hh"
 #include <VecGeom/management/GeoManager.h>

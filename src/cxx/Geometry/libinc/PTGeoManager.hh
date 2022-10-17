@@ -25,17 +25,17 @@
 #include <map>
 #include <unordered_map>
 #include "PromptCore.hh"
-#include "PTMaterialPhysics.hh"
+#include "PTBulkPhysics.hh"
 #include "PTSingleton.hh"
 #include "PTScorer.hh"
 #include "PTPrimaryGun.hh"
-#include "PTPhysicsModel.hh"
+#include "PTBoundaryPhysics.hh"
 
 namespace Prompt {
 
   struct VolumePhysicsScorer { // to attach to a volume
-    std::shared_ptr<MaterialPhysics> bulkPhysics; //bulk physics
-    std::shared_ptr<PhysicsModel> boundaryPhysics; //boundary physics
+    std::shared_ptr<BulkPhysics> bulkPhysics; //bulk physics
+    std::shared_ptr<BoundaryPhysics> boundaryPhysics; //boundary physics
     std::vector< std::shared_ptr<Scorer> >  scorers; /*scorer name, scorer*/
 
     std::vector< std::shared_ptr<Scorer> >  surface_scorers;
@@ -52,9 +52,9 @@ namespace Prompt {
   class GeoManager  {
   public:
     void loadFile(const std::string &loadFile);
-    std::shared_ptr<MaterialPhysics> getMaterialPhysics(const std::string &name);
+    std::shared_ptr<BulkPhysics> getBulkPhysics(const std::string &name);
     std::shared_ptr<Scorer> getScorer(const std::string &name);
-    size_t numMaterialPhysics() {return m_globelPhysics.size();}
+    size_t numBulkPhysics() {return m_globelPhysics.size();}
     size_t numScorer() {return m_globelScorers.size();}
     std::string getLogicalVolumeScorerName(unsigned logid);
     const std::string &getLogicalVolumeMaterialName(unsigned logid);
@@ -76,10 +76,10 @@ namespace Prompt {
     ~GeoManager();
 
     // the name is unique
-    std::map<std::string /*material name*/, std::shared_ptr<MaterialPhysics> > m_globelPhysics;
+    std::map<std::string /*material name*/, std::shared_ptr<BulkPhysics> > m_globelPhysics;
     std::map<std::string /*scorer name*/, std::shared_ptr<Scorer> >  m_globelScorers;
 
-    //the place to manage the life time of MaterialPhysics scorers
+    //the place to manage the life time of BulkPhysics scorers
     std::unordered_map<size_t, std::shared_ptr<VolumePhysicsScorer>> m_logVolID2physcorer;
     std::unordered_map<size_t, std::string> m_logVolID2Mateiral;
   };

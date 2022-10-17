@@ -50,7 +50,7 @@ std::shared_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics
 }
 
 
-std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createBoundaryPhysics(const std::string &cfgstr)
+std::shared_ptr<Prompt::BoundaryPhysics> Prompt::PhysicsFactory::createBoundaryPhysics(const std::string &cfgstr)
 {
   std::cout << "Parsing config string for a physics model: \n";
 
@@ -67,7 +67,7 @@ std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createBoundaryPhys
   }
   else
   {
-    std::shared_ptr<Prompt::PhysicsModel> phy;
+    std::shared_ptr<BoundaryPhysics> phy;
 
     if(physDef == "MirrorPhyiscs")
     {

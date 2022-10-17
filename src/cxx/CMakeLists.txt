@@ -36,9 +36,10 @@ file(GLOB GEO_SRC "${PROJECT_SOURCE_DIR}/Geometry/libsrc/*.cc")
 file(GLOB GUN_SRC "${PROJECT_SOURCE_DIR}/Gun/libsrc/*.cc")
 file(GLOB MAT_SRC "${PROJECT_SOURCE_DIR}/Material/libsrc/*.cc")
 file(GLOB PYN_SRC "${PROJECT_SOURCE_DIR}/Python/libsrc/*.cc")
+file(GLOB RAC_SRC "${PROJECT_SOURCE_DIR}/Reaction/libsrc/*.cc")
 file(GLOB TRJ_SRC "${PROJECT_SOURCE_DIR}/Trj/libsrc/*.cc")
 
-ADD_LIBRARY(${PROJECT_NAME} SHARED ${COR_SRC} ${RND_SRC} ${UTL_SRC} ${ANA_SRC} ${PAR_SRC} ${MOD_SRC} ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC})
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${COR_SRC} ${RAC_SRC} ${RND_SRC} ${UTL_SRC} ${ANA_SRC} ${PAR_SRC} ${MOD_SRC} ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC})
 
 
 target_link_libraries(${PROJECT_NAME} PUBLIC NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml fftw3 ${HDF5_LIBRARIES} OpenMP::OpenMP_CXX)
@@ -55,6 +56,7 @@ target_include_directories( ${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/Geometry/libinc
     ${PROJECT_SOURCE_DIR}/Material/libinc
     ${PROJECT_SOURCE_DIR}/Gun/libinc
+    ${PROJECT_SOURCE_DIR}/Reaction/libinc
     ${PROJECT_SOURCE_DIR}/Python/libinc
     ${PROJECT_SOURCE_DIR}/Trj/libinc
     ${VECGEOM_INCLUDE_DIRS}

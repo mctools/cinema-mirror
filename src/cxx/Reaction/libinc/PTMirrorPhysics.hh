@@ -1,5 +1,5 @@
-#ifndef Prompt_MaterialPhysics_hh
-#define Prompt_MaterialPhysics_hh
+#ifndef Prompt_MirrorPhyiscs_hh
+#define Prompt_MirrorPhyiscs_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -22,26 +22,24 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <string>
+
 #include "PromptCore.hh"
-#include "PTCompoundModel.hh"
-#include "PTParticle.hh"
+#include "PTLookUpTable.hh"
+#include "PTBoundaryPhysics.hh"
 
 namespace Prompt {
-  class MaterialPhysics  {
-  public:
-    MaterialPhysics();
-    virtual ~MaterialPhysics();
 
-    double sampleStepLength(const Prompt::Particle &particle) const;
-    void sampleFinalState(Prompt::Particle &particle, double stepLength=0., bool hitWall=false) const;
-    void setComposition(const std::string &cfg, double bias=1.0);
+  class MirrorPhyiscs  : public BoundaryPhysics {
+    public:
+      MirrorPhyiscs(double mvalue, double weightCut = 1e-3);
+      virtual ~MirrorPhyiscs();
+      virtual void sampleFinalState(Prompt::Particle &particle, Vector ref) const override;
+      double getEventWeight() const {return m_wAtQ;};
 
-  private:
-    double macroCrossSection(const Prompt::Particle &particle) const;
-    double calNumDensity(const std::string &cfg);
-    SingletonPTRand &m_rng;
-    std::shared_ptr<CompoundModel> m_compModel;
-    double m_numdensity;
+    private:
+      std::shared_ptr<LookUpTable> m_table;
+      double m_wcut;
+      mutable double m_wAtQ;
 
   };
 

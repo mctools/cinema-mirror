@@ -23,6 +23,7 @@
 
 #include "PTMirrorPhysics.hh"
 #include "PromptCore.hh"
+#include "PTNeutron.hh"
 
 namespace pt = Prompt;
 
@@ -32,8 +33,11 @@ TEST_CASE("Mirror physics")
   pt::Vector dir{0, 0.9, 0.01}, nor{0, 0., 1};
   dir.normalise();
   double ekin(0.0253), eout(0), wscale(0.);
+  auto n = Prompt::Neutron();
+  n.setEKin(ekin);
+  n.setDirection(dir);
 
-  mirr.generate(ekin, dir, eout, nor);
+  mirr.sampleFinalState(n, nor);
   wscale = mirr.getEventWeight();
   printf("%.16g %.16g %.16g, %.16e\n", nor.x(), nor.y(), nor.z(), wscale);
   CHECK(pt::floateq(nor.x(), 0));

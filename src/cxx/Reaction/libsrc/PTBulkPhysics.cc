@@ -18,24 +18,24 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTMaterialPhysics.hh"
+#include "PTBulkPhysics.hh"
 #include <cmath>
 #include <limits>
 #include "NCrystal/NCrystal.hh"
 
-Prompt::MaterialPhysics::MaterialPhysics()
+Prompt::BulkPhysics::BulkPhysics()
 :m_rng(Singleton<SingletonPTRand>::getInstance()),
 m_compModel(std::make_unique<CompoundModel>()),
 m_numdensity(0.) { }
 
-Prompt::MaterialPhysics::~MaterialPhysics() { }
+Prompt::BulkPhysics::~BulkPhysics() { }
 
-double Prompt::MaterialPhysics::macroCrossSection(const Prompt::Particle &particle) const
+double Prompt::BulkPhysics::macroCrossSection(const Prompt::Particle &particle) const
 {
   return m_numdensity*m_compModel->totalCrossSection(particle.getEKin(), particle.getDirection());
 }
 
-void Prompt::MaterialPhysics::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
+void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
 {
   double final_ekin;
   Vector final_dir;
@@ -55,7 +55,7 @@ void Prompt::MaterialPhysics::sampleFinalState(Prompt::Particle &particle, doubl
 }
 
 
-double Prompt::MaterialPhysics::sampleStepLength(const Prompt::Particle &particle) const
+double Prompt::BulkPhysics::sampleStepLength(const Prompt::Particle &particle) const
 {
   double mxs = macroCrossSection(particle);
   if(mxs)
@@ -69,7 +69,7 @@ double Prompt::MaterialPhysics::sampleStepLength(const Prompt::Particle &particl
 }
 
 
-double Prompt::MaterialPhysics::calNumDensity(const std::string &cfg)
+double Prompt::BulkPhysics::calNumDensity(const std::string &cfg)
 {
   NCrystal::MatCfg matcfg(cfg);
   auto info = NCrystal::createInfo(matcfg);
@@ -82,7 +82,7 @@ double Prompt::MaterialPhysics::calNumDensity(const std::string &cfg)
   }
 }
 
-void Prompt::MaterialPhysics::setComposition(const std::string &cfg, double bias)
+void Prompt::BulkPhysics::setComposition(const std::string &cfg, double bias)
 {
   assert(!m_numdensity);
   m_compModel->addPhysicsModel(cfg, bias);

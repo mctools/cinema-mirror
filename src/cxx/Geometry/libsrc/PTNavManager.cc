@@ -70,17 +70,7 @@ bool Prompt::NavManager::surfaceReaction(Particle &particle)
     Vector pos(particle.getPosition());
     vecgeom::cxx::Vector3D<double> norm;
     m_currPV->Normal({pos.x(), pos.y(), pos.z()}, norm);
-    double eout(0);
-    Vector ptNorm{norm[0], norm[1], norm[2]};
-    m_matphysscor->boundaryPhysics->generate(particle.getEKin(),
-    particle.getDirection(), eout, ptNorm);
-    double scaleWeigh = reinterpret_cast<MirrorPhyiscs*>(m_matphysscor->boundaryPhysics.get())->getEventWeight();
-    if(eout==ENERGYTOKEN_BIAS)
-      particle.kill(Particle::KillType::BIAS);
-    else if (eout==ENERGYTOKEN_ABSORB)
-      particle.kill(Particle::KillType::ABSORB);
-    particle.setDirection(ptNorm);
-    particle.scaleWeight(scaleWeigh);
+    m_matphysscor->boundaryPhysics->sampleFinalState(particle, {norm[0], norm[1], norm[2]});
     return true;
   }
   else

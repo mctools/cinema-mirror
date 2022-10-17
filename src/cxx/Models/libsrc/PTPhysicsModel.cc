@@ -20,13 +20,20 @@
 
 #include "PTPhysicsModel.hh"
 
-Prompt::PhysicsModel::PhysicsModel(const std::string &name)
+Prompt::PhysicsBase::PhysicsBase(const std::string &name)
  :m_modelName(name), m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance()) {};
 
-Prompt::PhysicsModel::PhysicsModel(const std::string &name, unsigned gdp,
+Prompt::PhysicsBase::PhysicsBase(const std::string &name, unsigned gdp,
              double emin, double emax)
  :m_modelName(name), m_supportPGD(gdp), m_minEkin(emin),
   m_maxEkin(emax), m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance())  {};
+
+Prompt::PhysicsModel::PhysicsModel(const std::string &name)
+:PhysicsBase(name) {}
+
+Prompt::PhysicsModel::PhysicsModel(const std::string &name, unsigned gdp,
+             double emin, double emax)
+:PhysicsBase(name, gdp, emin, emax) { }
 
 bool Prompt::PhysicsModel::applicable(unsigned pgd) const
 { return m_supportPGD==pgd; }

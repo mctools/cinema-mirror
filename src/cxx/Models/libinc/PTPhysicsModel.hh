@@ -31,11 +31,25 @@
 
 namespace Prompt {
 
-  class PhysicsModel {
+  class PhysicsBase {
+  public:
+    PhysicsBase(const std::string &name);
+    PhysicsBase(const std::string &name, unsigned gdp, double emin, double emax);
+    virtual ~PhysicsBase() = default;
+
+  protected:
+    std::string m_modelName;
+    unsigned m_supportPGD;
+    double m_minEkin, m_maxEkin;
+    bool m_oriented;
+    SingletonPTRand &m_rng;
+  };
+
+  class PhysicsModel : public PhysicsBase {
   public:
     PhysicsModel(const std::string &name);
     PhysicsModel(const std::string &name, unsigned gdp, double emin, double emax);
-    virtual ~PhysicsModel() {};
+    virtual ~PhysicsModel() = default;
 
     const std::string &getName() { return m_modelName; }
     bool isOriented();
@@ -50,13 +64,6 @@ namespace Prompt {
     // final_ekin -1., propose kill because of an absorb event
     // final_ekin -2., propose kill because of a biasing event
     virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const = 0;
-
-  protected:
-    std::string m_modelName;
-    unsigned m_supportPGD;
-    double m_minEkin, m_maxEkin;
-    bool m_oriented;
-    SingletonPTRand &m_rng;
 
   };
 

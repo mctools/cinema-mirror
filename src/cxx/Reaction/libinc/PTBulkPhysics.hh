@@ -1,5 +1,5 @@
-#ifndef Prompt_MirrorPhyiscs_hh
-#define Prompt_MirrorPhyiscs_hh
+#ifndef Prompt_BulkPhysics_hh
+#define Prompt_BulkPhysics_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -22,28 +22,26 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <string>
-
 #include "PromptCore.hh"
-#include "PTLookUpTable.hh"
-#include "PTDiscreteModel.hh"
-
-#include "NCrystal/NCrystal.hh"
+#include "PTCompoundModel.hh"
+#include "PTParticle.hh"
 
 namespace Prompt {
+  class BulkPhysics  {
+  public:
+    BulkPhysics();
+    virtual ~BulkPhysics();
 
-  class MirrorPhyiscs  : public DiscreteModel {
-    public:
-      MirrorPhyiscs(double mvalue, double weightCut = 1e-3);
-      virtual ~MirrorPhyiscs() override;
-      virtual void generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor) const override;
+    double sampleStepLength(const Prompt::Particle &particle) const;
+    void sampleFinalState(Prompt::Particle &particle, double stepLength=0., bool hitWall=false) const;
+    void setComposition(const std::string &cfg, double bias=1.0);
 
-      double getEventWeight() const {return m_wAtQ;};
-
-    private:
-      std::shared_ptr<LookUpTable> m_table;
-      double m_wcut;
-      mutable double m_wAtQ;
-      SingletonPTRand &m_rng;
+  private:
+    double macroCrossSection(const Prompt::Particle &particle) const;
+    double calNumDensity(const std::string &cfg);
+    SingletonPTRand &m_rng;
+    std::shared_ptr<CompoundModel> m_compModel;
+    double m_numdensity;
 
   };
 
