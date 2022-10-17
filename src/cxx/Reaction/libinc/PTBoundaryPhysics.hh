@@ -30,10 +30,17 @@
 namespace Prompt {
   class BoundaryPhysics : public PhysicsBase  {
   public:
+    enum PhysicsType { Mirror, DiskChopper };
+  public:
     // by default the physics is applicable for neutron (2112)
-    BoundaryPhysics(unsigned pgd=2112): PhysicsBase("NeutronDiskChopper", pgd, std::numeric_limits<double>::min(), std::numeric_limits<double>::max()) {};
+    BoundaryPhysics(PhysicsType t, unsigned pgd=2112)
+      : PhysicsBase("NeutronDiskChopper", pgd, std::numeric_limits<double>::min(), std::numeric_limits<double>::max())
+      , m_type(t) {};
     virtual ~BoundaryPhysics() = default;
-    virtual void sampleFinalState(Particle &particle, Vector ref = {1,0,0}) const = 0;
+    virtual void sampleFinalState(Particle &particle) const = 0;
+    PhysicsType getType() { return m_type; };
+  protected:
+    PhysicsType m_type;
 
   };
 

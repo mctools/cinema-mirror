@@ -21,16 +21,12 @@
 #include "PTDiskChopper.hh"
 #include "PTUtils.hh"
 
-Prompt::DiskChopper::DiskChopper()
-:Prompt::DiscreteModel("DiskChopper", const_neutron_pgd, std::numeric_limits<double>::min(), std::numeric_limits<double>::max())
+Prompt::DiskChopper::DiskChopper(const Vector &centre, double radius, double theta0, double h, double phase, double freq)
+:Prompt::BoundaryPhysics(Prompt::BoundaryPhysics::PhysicsType::DiskChopper)
 {
 }
 
-
-Prompt::DiskChopper::~DiskChopper()
-{}
-
-void Prompt::DiskChopper::generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor) const
+void Prompt::DiskChopper::sampleFinalState(Particle &particle) const
 {
-      final_ekin = -1.0; //paprose kill, triggered by an absorption event
+
 }

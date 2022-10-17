@@ -24,20 +24,23 @@
 #include <string>
 
 #include "PromptCore.hh"
-#include "PTLookUpTable.hh"
-#include "PTDiscreteModel.hh"
-
-#include "NCrystal/NCrystal.hh"
+#include "PTBoundaryPhysics.hh"
 
 namespace Prompt {
 
-  class DiskChopper  : public DiscreteModel {
+  class DiskChopper  : public BoundaryPhysics
+  {
     public:
-      DiskChopper();
-      virtual ~DiskChopper() override;
-      virtual void generate(double ekin, const Vector &nDirInLab, double &final_ekin, Vector &reflectionNor) const override;
+      enum class ActiveFace {XY, XZ, YZ};
+
+    public:
+      DiskChopper(const Vector &centre, double radius, double theta0, double h, double phase, double freq);
+      virtual ~DiskChopper() = default;
+      virtual void sampleFinalState(Particle &particle) const override;
 
     private:
+      Vector m_centre;
+      double m_theta0, m_h, m_phase, m_freq;
   };
 
 }
