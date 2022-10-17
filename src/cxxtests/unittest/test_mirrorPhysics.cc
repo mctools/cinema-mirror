@@ -40,8 +40,9 @@ TEST_CASE("Mirror physics")
   mirr.sampleFinalState(n, nor);
   wscale = mirr.getEventWeight();
   printf("%.16g %.16g %.16g, %.16e\n", nor.x(), nor.y(), nor.z(), wscale);
-  CHECK(pt::floateq(nor.x(), 0));
-  CHECK(pt::floateq(nor.y(), 0.9999382773199424));
-  CHECK(pt::floateq(nor.z(), -0.01111042530355492));
+  const auto &newdir = n.getDirection();
+  CHECK(pt::floateq(newdir.x(), 0));
+  CHECK(pt::floateq(newdir.y(), 0.9999382773199424));
+  CHECK(pt::floateq(newdir.z(), -0.01111042530355492));
   CHECK(pt::floateq(wscale, 6.5194188833312261e-01));
 }
