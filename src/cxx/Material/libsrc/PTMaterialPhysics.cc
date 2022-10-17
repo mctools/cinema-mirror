@@ -40,11 +40,20 @@ void Prompt::MaterialPhysics::sampleFinalState(Prompt::Particle &particle, doubl
   double final_ekin;
   Vector final_dir;
   m_compModel->generate(particle.getEKin(), particle.getDirection(), final_ekin, final_dir);
-  particle.setEKin(final_ekin);
-  particle.setDirection(final_dir);
-  if(!stepLength)
+  if(!hitWall)
+  {
+    particle.setEKin(final_ekin);
+    particle.setDirection(final_dir);
+    if(final_ekin==-1.) // fixme: are we sure all -1 means capture??
+    {
+      particle.kill(Particle::KillType::ABSORB);
+    }
+  }
+
+  if(stepLength)
     particle.scaleWeight(m_compModel->calculateWeight(stepLength*m_numdensity, hitWall));
 }
+
 
 double Prompt::MaterialPhysics::sampleStepLength(const Prompt::Particle &particle) const
 {
@@ -73,8 +82,9 @@ double Prompt::MaterialPhysics::calNumDensity(const std::string &cfg)
   }
 }
 
-void Prompt::MaterialPhysics::addComposition(const std::string &cfg, double bias)
+void Prompt::MaterialPhysics::setComposition(const std::string &cfg, double bias)
 {
+  assert(!m_numdensity);
   m_compModel->addPhysicsModel(cfg, bias);
-  m_numdensity += calNumDensity(cfg);
+  m_numdensity = calNumDensity(cfg);
 }

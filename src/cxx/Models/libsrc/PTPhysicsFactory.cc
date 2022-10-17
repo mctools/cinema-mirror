@@ -24,15 +24,35 @@
 
 #include "PTMirrorPhysics.hh"
 
-Prompt::PhysicsFactory::PhysicsFactory()
-{}
+std::shared_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics(const std::string &cfgstr)
+{
+  std::cout << "Parsing config string for a CompoundModel: \n";
+  auto &ps = Singleton<CfgParser>::getInstance();
+  auto cfg = ps.getScorerCfg(cfgstr);
+  std::cout << "Parsed cfg: \n";
+  cfg.print();
+
+  std::string physDef = cfg.find("physics");
+
+  if(physDef.empty())
+  {
+    PROMPT_THROW2(BadInput, "Config string " << cfgstr << " does not define the scorer by the key \"physics\" ")
+  }
+  else
+  {
+    // example cfg
+    // physics=ncrystal; nccfg="LiquidHeavyWaterD2O_T293.6K.ncmat;density=1.0gcm3";scatter_bias=1.0;abs_bias=1.0;
+    if(physDef == "ncrystal")
+    {
+      std::string nccfg = cfg.find("nccfg", true);
+    }
+  }
+}
 
 
-std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createPhysics(const std::string &cfgstr)
+std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createBoundaryPhysics(const std::string &cfgstr)
 {
   std::cout << "Parsing config string for a physics model: \n";
-  std::cout << cfgstr << "\n";
-  //fixme check number of input config
 
   auto &ps = Singleton<CfgParser>::getInstance();
   auto cfg = ps.getScorerCfg(cfgstr);
@@ -43,10 +63,11 @@ std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createPhysics(cons
 
   if(physDef.empty())
   {
-    PROMPT_THROW2(BadInput, "Scorer config string " << cfgstr << " does not define the scorer by the key \"Scorer\" ")
+    PROMPT_THROW2(BadInput, "Config string " << cfgstr << " does not define the scorer by the key \"physics\" ")
   }
   else
   {
+    std::shared_ptr<Prompt::PhysicsModel> phy;
 
     if(physDef == "MirrorPhyiscs")
     {
@@ -83,9 +104,13 @@ std::shared_ptr<Prompt::PhysicsModel> Prompt::PhysicsFactory::createPhysics(cons
         PROMPT_THROW2(BadInput, "Cfgstr for a mirror physics is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<MirrorPhyiscs>(m, threshold);
+      phy = std::make_shared<MirrorPhyiscs>(m, threshold);
     }
 
+    if(phy)
+    {
+      return phy;
+    }
     else
       PROMPT_THROW2(BadInput, "Physics type " << physDef << " is not supported. ")
   }

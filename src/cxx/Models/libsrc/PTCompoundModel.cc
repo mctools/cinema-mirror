@@ -32,7 +32,7 @@ Prompt::CompoundModel::~CompoundModel() {}
 void Prompt::CompoundModel::addPhysicsModel(const std::string &cfg, double bias)
 {
   if(bias!=1.)
-    std::cout << "material " << cfg << " has a bias of " << bias << std::endl;
+    std::cout << "material " << cfg << " has a nonunity bias of " << bias << std::endl;
 
   // fixme: absoption should be seperated once ENDF data model is available
   m_models.emplace_back(std::make_shared<NCrystalAbs>(cfg, bias));

@@ -34,7 +34,8 @@ std::vector<std::string> Prompt::split(const std::string& text, char delimiter)
                                         c == '\t' || c == '\v' || c == '\f');
                             }),
                             word.end());
-    words.push_back(word);
+    if(!word.empty())
+      words.push_back(word);
   }
 
 

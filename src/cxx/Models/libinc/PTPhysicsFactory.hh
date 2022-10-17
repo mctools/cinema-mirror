@@ -24,16 +24,28 @@
 #include "PromptCore.hh"
 #include "PTSingleton.hh"
 #include "PTPhysicsModel.hh"
+#include "PTCompoundModel.hh"
 
 namespace Prompt {
 
   class PhysicsFactory  {
   public:
-    std::shared_ptr<PhysicsModel> createPhysics(const std::string &cfg);
+    enum class PhysicsType {
+      BOUNDARY_PHYSICS,
+      NC_SCATTER,
+      NC_ABSORB,
+      NC_SCATTER_ABSORB,
+      ENDF_SCATTER,
+      ENDF_ABSORB
+    };
+  public:
+    std::shared_ptr<PhysicsModel> createBoundaryPhysics(const std::string &cfg);
+    std::shared_ptr<CompoundModel> createBulkPhysics(const std::string &cfg);
+    PhysicsType checkPhysicsType(const std::string &cfg) const;
 
   private:
     friend class Singleton<PhysicsFactory>;
-    PhysicsFactory();
+    PhysicsFactory() = default;
     ~PhysicsFactory() = default;
   };
 }

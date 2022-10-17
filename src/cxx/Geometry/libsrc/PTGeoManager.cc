@@ -207,7 +207,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
             std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
             std::cout << "info is " << info.GetValue() << std::endl;
 
-            vps->boundaryPhysics = Singleton<PhysicsFactory>::getInstance().createPhysics(info.GetValue());
+            vps->boundaryPhysics = Singleton<PhysicsFactory>::getInstance().createBoundaryPhysics(info.GetValue());
             std::cout << "added mirror physics " << std::endl;
           }
         }
@@ -225,7 +225,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
     if(matphys) //m_logVolID2physcorer not exist
     {
-      vps->physics=matphys;
+      vps->bulkPhysics=matphys;
       std::cout << "Set model " << mat.name
                 << " for volume " << volume.GetName() << std::endl;
     }
@@ -245,8 +245,8 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
         bias = ptstod(itbias->second);
       }
       const std::string &cfg = mat.attributes.find("atomValue")->second;
-      theNewPhysics->addComposition(cfg, bias);
-      vps->physics=theNewPhysics;
+      theNewPhysics->setComposition(cfg, bias);
+      vps->bulkPhysics=theNewPhysics;
     }
 
     vps->sortScorers();
