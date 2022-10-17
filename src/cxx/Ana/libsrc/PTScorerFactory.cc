@@ -24,7 +24,7 @@
 
 #include "PTScorerNeutronSq.hh"
 #include "PTScorerPSD.hh"
-#include "PTScorerESD.hh"
+#include "PTScorerESpectrum.hh"
 #include "PTScorerTOF.hh"
 #include "PTScorerVolFlux.hh"
 #include "PTScorerMultiScat.hh"
@@ -121,17 +121,81 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
 
     }
-    else if(ScorDef == "ESD")
+    else if(ScorDef == "ESpectrum")
     {
+      // example cfg
+      // ""Scorer=ESD; name=detector; Emin=0.0; Emax=0.0253; numbin=100""
+      int parCount = 5;
 
+      // The mandatory parameters
+      bool force = true;
+      std::string name = cfg.find("name", force);
+      double minE = ptstod(cfg.find("Emin", force));
+      double maxE = ptstod(cfg.find("Emax", force));
+      int numBin = ptstoi(cfg.find("numbin", force));
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Scorer type ESpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
+      }
+
+      return std::make_shared<ScorerESpectrum>(name, minE, maxE, numBin);
     }
     else if(ScorDef == "TOF")
     {
+      // example cfg
+      // ""Scorer=TOF; name=detector; Tmin=0.0; Tmax=0.5; numbin=1000""
+      int parCount = 5;
 
+      // The mandatory parameters
+      bool force = true;
+      std::string name = cfg.find("name", force);
+      double minT = ptstod(cfg.find("Tmin", force));
+      double maxT = ptstod(cfg.find("Tmax", force));
+      int numBin = ptstoi(cfg.find("numbin", force));
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Scorer type TOF is missing or with extra config parameters" << cfg.size() << " " << parCount );
+      }
+
+      return std::make_shared<ScorerTOF>(name, minT, maxT, numBin);
     }
     else if(ScorDef == "MultiScat")
     {
+      // example cfg
+      // ""Scorer=MultiScat; name=D2O; Numbermin=0.5; Numbermax=5.5; numbin=5; linear=yes""
+      // the default value for linear is yes
+      int parCount = 6;
 
+      // The mandatory parameters
+      bool force = true;
+      std::string name = cfg.find("name", force);
+      double minNumber = ptstod(cfg.find("Numbermin", force));
+      double maxNumber = ptstod(cfg.find("Numbermax", force));
+      int numBin = ptstoi(cfg.find("numbin", force));
+
+      // the optional parameters
+      bool linear = true;
+      std::string linearInStr = cfg.find("linear");
+      if(linearInStr.empty())
+        parCount--;
+      else
+      {
+        if(linearInStr=="yes")
+        {
+          linear = true;
+        }
+        else
+          linear = false;
+      }
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Scorer type MultiScat is missing or with extra config parameters" << cfg.size() << " " << parCount );
+      }
+
+      return std::make_shared<ScorerMultiScat>(name, minNumber, maxNumber, numBin, linear);
     }
     else if(ScorDef == "VolFlux")
     {
