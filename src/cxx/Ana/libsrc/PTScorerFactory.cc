@@ -168,7 +168,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     else if(ScorDef == "MultiScat")
     {
       // example cfg
-      // ""Scorer=MultiScat; name=D2O; Numbermin=0.5; Numbermax=5.5; numbin=5; linear=yes""
+      // ""Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; numbin=5; linear=yes""
       // the default value for linear is yes
       int parCount = 6;
 
@@ -202,7 +202,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type MultiScat is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerMultiScat>(name, minNumber, maxNumber, numBin, linear);
+      return std::make_shared<ScorerMultiScat>(name, minNumber-0.5, maxNumber+0.5, numBin, linear);
     }
     else if(ScorDef == "VolFlux")
     {
