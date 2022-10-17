@@ -55,5 +55,5 @@ double Prompt::NCrystalAbs::getCrossSection(double ekin, const Prompt::Vector &d
 
 void Prompt::NCrystalAbs::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
 {
-  final_ekin=-1.;
+  final_ekin=ENERGYTOKEN_ABSORB;
 }

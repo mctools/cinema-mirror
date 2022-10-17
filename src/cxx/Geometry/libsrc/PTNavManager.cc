@@ -75,9 +75,9 @@ bool Prompt::NavManager::surfaceReaction(Particle &particle)
     m_matphysscor->boundaryPhysics->generate(particle.getEKin(),
     particle.getDirection(), eout, ptNorm);
     double scaleWeigh = reinterpret_cast<MirrorPhyiscs*>(m_matphysscor->boundaryPhysics.get())->getEventWeight();
-    if(eout==-2.)
+    if(eout==ENERGYTOKEN_BIAS)
       particle.kill(Particle::KillType::BIAS);
-    else if (eout==-1.)
+    else if (eout==ENERGYTOKEN_ABSORB)
       particle.kill(Particle::KillType::ABSORB);
     particle.setDirection(ptNorm);
     particle.scaleWeight(scaleWeigh);

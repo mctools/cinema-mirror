@@ -70,6 +70,6 @@ void Prompt::MirrorPhyiscs::generate(double ekin, const Vector &nDirInLab, doubl
       m_wAtQ = m_wcut;
     }
     else
-      final_ekin = -2.0; //paprose kill
+      final_ekin = ENERGYTOKEN_BIAS; //paprose kill
   }
 }

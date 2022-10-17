@@ -35,9 +35,14 @@
 #include "PTVector.hh"
 #include "PTMath.hh"
 
-namespace Prompt {
+namespace Prompt
+{
+
+  constexpr double ENERGYTOKEN_ABSORB = -1.;
+  constexpr double ENERGYTOKEN_BIAS = -2.;
+  constexpr double ENERGYTOKEN_SCORE = -3.;
+
   void printLogo();
   void printLogo2();
-
 }
 #endif

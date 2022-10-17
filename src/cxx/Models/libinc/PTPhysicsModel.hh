@@ -57,6 +57,7 @@ namespace Prompt {
     double m_minEkin, m_maxEkin;
     bool m_oriented;
     SingletonPTRand &m_rng;
+
   };
 
 }

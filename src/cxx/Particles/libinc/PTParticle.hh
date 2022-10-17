@@ -28,8 +28,10 @@
 //! Particle is neutron with pgd code of 2112 by defult. Proton (2212) is also supported.
 //! fixme: support Gamma (22) as well.
 namespace Prompt {
+
   class Particle {
     friend class PrimaryGun;
+
   public:
     enum class KillType {ABSORB, BIAS, SCORE };
   public:
