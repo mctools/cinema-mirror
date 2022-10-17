@@ -24,6 +24,7 @@
 #include "PromptCore.hh"
 #include "PTSingleton.hh"
 #include "PTPhysicsModel.hh"
+#include "PTCompoundModel.hh"
 
 namespace Prompt {
 
@@ -39,8 +40,7 @@ namespace Prompt {
     };
   public:
     std::shared_ptr<PhysicsModel> createBoundaryPhysics(const std::string &cfg);
-    std::shared_ptr<PhysicsModel> createNCrystalScatPhysics(const std::string &cfg);
-    std::shared_ptr<PhysicsModel> createNCrystalAbsPhysics(const std::string &cfg);
+    std::shared_ptr<CompoundModel> createBulkPhysics(const std::string &cfg);
     PhysicsType checkPhysicsType(const std::string &cfg) const;
 
   private:
