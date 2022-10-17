@@ -105,8 +105,12 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         {
           linear = true;
         }
-        else
+        else if(linearInStr=="no")
           linear = false;
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"linear\" should either be \"yes\" or \"no\"");
+        }
+
       }
 
       if(parCount!=cfg.size())
@@ -186,8 +190,11 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         {
           linear = true;
         }
-        else
+        else if(linearInStr=="no")
           linear = false;
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"linear\" should either be \"yes\" or \"no\"");
+        }
       }
 
       if(parCount!=cfg.size())
