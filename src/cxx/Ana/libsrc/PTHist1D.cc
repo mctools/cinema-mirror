@@ -60,13 +60,14 @@ void Prompt::Hist1D::save(const std::string &filename) const
   auto bwr = BinaryWrite(filename+"_seed"+std::to_string(seed));
 
   double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
+  bwr.addHeaderComment(m_name);
   bwr.addHeaderComment(getTypeName(typeid(this)).c_str());
-  bwr.addHeaderComment(("total hit: " + std::to_string(getTotalHit())).c_str());
+  bwr.addHeaderComment(("Total hit: " + std::to_string(getTotalHit())).c_str());
 
-  bwr.addHeaderComment(("integral weight: " + std::to_string(intergral )).c_str());
-  bwr.addHeaderComment(("accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
-  bwr.addHeaderComment(("overflow weight: " + std::to_string(overflow )).c_str());
-  bwr.addHeaderComment(("underflow weight: " + std::to_string(underflow)).c_str());
+  bwr.addHeaderComment(("Integral weight: " + std::to_string(intergral )).c_str());
+  bwr.addHeaderComment(("Accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
+  bwr.addHeaderComment(("Overflow weight: " + std::to_string(overflow )).c_str());
+  bwr.addHeaderComment(("Underflow weight: " + std::to_string(underflow)).c_str());
 
   bwr.addHeaderData("overflow", &overflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
   bwr.addHeaderData("underflow", &underflow, {1}, Prompt::NumpyWriter::NPDataType::f8);

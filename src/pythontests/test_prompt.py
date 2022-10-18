@@ -11,7 +11,6 @@ os.system('prompt -g watersphere_bias.gdml -n 1e4')
 
 f = PromptFileReader(f1)
 
-print(f.getComments())
 hist_weight = f.getData('content').sum()
 hist_hit = f.getData('hit').sum()
 hist_edge = f.getData('edge').sum()
