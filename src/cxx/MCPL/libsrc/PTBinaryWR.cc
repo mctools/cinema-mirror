@@ -37,6 +37,10 @@ Prompt::BinaryWrite::BinaryWrite(const std::string &fn, bool with_extra3double, 
     m_particleSpace = mcpl_get_empty_particle(m_file);
 }
 
+Prompt::BinaryWrite::~BinaryWrite()
+{
+  mcpl_closeandgzip_outfile(m_file);
+}
 
 void Prompt::BinaryWrite::addHeaderComment(const std::string &comment)
 {

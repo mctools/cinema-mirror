@@ -33,13 +33,13 @@ namespace Prompt {
   class BinaryWrite {
   public:
     BinaryWrite(const std::string &fn, bool with_extra3double=false, bool with_extraUnsigned=false);
-    virtual ~BinaryWrite() = default;
+    virtual ~BinaryWrite();
     void record(const Particle &p);
 
     void addHeaderComment(const std::string &comment);
     template <typename T>
-    void addHeaderData(const std::string &dataname, const T *data, size_t datasize, NumpyWriter::NPDataType type,
-                      const std::vector<uint64_t> &shape);
+    void addHeaderData(const std::string &dataname, const T *data,
+                      const std::vector<uint64_t> &shape, NumpyWriter::NPDataType type);
     constexpr void closeHeader() { m_headerClosed=true; }
 
   protected:
@@ -50,23 +50,23 @@ namespace Prompt {
 }
 
 template <typename T>
-void Prompt::BinaryWrite::addHeaderData(const std::string &dataname, const T *data, size_t datasize, NumpyWriter::NPDataType type,
-                  const std::vector<uint64_t> &shape)
+void Prompt::BinaryWrite::addHeaderData(const std::string &dataname, const T *data,
+                  const std::vector<uint64_t> &shape, NumpyWriter::NPDataType type)
 {
+
   if(m_headerClosed)
       PROMPT_THROW(LogicError, "addHeaderData can not operate on a file when the file header is closed ");
 
-  uint64_t datasize2 = 1;
+  uint64_t datasize = 1;
   for(auto v: shape)
-    datasize2 *= v;
-
-  if(datasize != datasize)
-    PROMPT_THROW2(LogicError, "addHeaderData: the shape of the data: " << datasize2 <<", the given data size is " << datasize);
+    datasize *= v;
 
   std::string npdata;
   NumpyWriter::makeNumpyArrFromUChar(reinterpret_cast<const uint8_t*>(data), sizeof(T)*datasize, type, shape, npdata );
 
-  mcpl_hdr_add_data(m_file, dataname.c_str(), sizeof(T)*datasize, npdata.c_str());
+  std::cout << "npdata type " << typeid(T).name()  << "\n " << npdata << std::endl;
+
+   mcpl_hdr_add_data(m_file, dataname.c_str(), npdata.size(), npdata.c_str());
 }
 
 #endif

@@ -24,8 +24,18 @@
 #include "PTBinaryWR.hh"
 #include "PTNeutron.hh"
 
-TEST_CASE("test_geotree")
+TEST_CASE("test_mcpl")
 {
   auto bwr = Prompt::BinaryWrite("cai");
+
+  std::vector<double> dvec {1,2,3,4,5,6,7,8,9.};
+  std::vector<float> fvec {1,2,3,4,5,6,7,8,9.};
+  std::vector<unsigned> uvec {1,2,3,4,5,6,7,8,9};
+
+  bwr.addHeaderData("npdouble", dvec.data(), {3,3}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr.addHeaderData("npfloat", fvec.data(), {3,3}, Prompt::NumpyWriter::NPDataType::f4);
+  bwr.addHeaderData("npunsigned", uvec.data(), {3,3}, Prompt::NumpyWriter::NPDataType::i4);
+
+  bwr.closeHeader();
   bwr.record(Prompt::Neutron(0.0253, {0,0,1}, {0,0,0.}));
 }
