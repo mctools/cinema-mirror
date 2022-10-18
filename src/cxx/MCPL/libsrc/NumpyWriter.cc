@@ -18,28 +18,52 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
-void Prompt::NumpyWriter::writeNumpyFile(const std::string &filename, const std::vector<T> &data, data_type type,
-                  const std::vector<uint64_t> &shape) const
+#include "NumpyWriter.hh"
+#include <cstring>
+
+Prompt::NumpyWriter::NumpyWriter()
+:m_fixed_magic( "\x93NUMPY")
 {
-  std::string serialised;
-  makeNumpyArr(data, type, shape, serialised);
-  std::ofstream outfile(filename, std::ofstream::binary);
-  outfile << serialised;
-  outfile.close();
+  //fixme: make sure it is a little endian system
 }
 
-template <typename T>
-void Prompt::NumpyWriter::makeNumpyArr(const std::vector<T> &data, data_type type,
-                              const std::vector<uint64_t> &shape, std::string &npArr) const
+Prompt::NumpyWriter::~NumpyWriter()
 {
-  makeNumpyArr_real( reinterpret_cast<const uint8_t*>(data.data()),
-                data.size()*sizeof(T), type, shape , npArr );
+
 }
 
-template <typename T>
-void Prompt::NumpyWriter::makeNumpyArr(const T *data, unsigned datasize, data_type type,
-                              const std::vector<uint64_t> &shape, std::string &npArr) const
+void Prompt::NumpyWriter::makeNumpyArr_real(const uint8_t *data, unsigned len,
+                  Prompt::NumpyWriter::NPDataType dtype, const std::vector<uint64_t> &shape, std::string &npArr) const
 {
-  makeNumpyArr_real( reinterpret_cast<const uint8_t*>(data), datasize*sizeof(T), type, shape , npArr );
+  npArr.reserve(len + 128); //a guess of tot size
+
+  npArr = m_fixed_magic +'\x01'+'\x00' + "  ";
+  npArr += "{'descr': '" + U32toASCII(dtype).getTypeString() + "', 'fortran_order': False, 'shape': (" ;
+
+  for(auto v:shape)
+    npArr += std::to_string(v) + ",";
+  if(shape.size()>1)
+    npArr.pop_back();
+
+  npArr += "), }";
+
+  unsigned dict_size = npArr.size();
+  if(dict_size>65535)
+    throw std::length_error("header in npy 1.0 format can't be larger than 65535 bytes, see https://docs.scipy.org/doc/numpy-1.14.2/neps/npy-format.html");
+
+  //total meta info size mush be evenly divisible by 64 for alignment purposes.
+  //-1, because terminated by a newline '\n'
+  unsigned tot = ((dict_size/64)+1)*64;
+
+  //sizeof("\x93NUMPY\x01\00")+sizeof(HEADER_LEN)=10 bytes
+  uint16_t header_len_with_padding = tot-10;
+
+  npArr[8] = ( unsigned char ) (header_len_with_padding & 0xff) ;
+  npArr[9] = ( unsigned char ) ((header_len_with_padding>>8) & 0xff);
+
+  unsigned padding_size = tot - dict_size - 1;
+  npArr.append(padding_size,'\x20');
+  npArr += "\n";
+
+  npArr.append(reinterpret_cast<const char* >(data),len);
 }

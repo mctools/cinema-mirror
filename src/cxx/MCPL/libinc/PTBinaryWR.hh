@@ -26,9 +26,7 @@
 #include "PromptCore.hh"
 #include "PTParticle.hh"
 #include "mcpl.h"
-
-// struct mcpl_outfile_t;
-// struct mcpl_particle_t;
+#include "NumpyWriter.hh"
 
 namespace Prompt {
 
@@ -37,11 +35,16 @@ namespace Prompt {
     BinaryWrite(const std::string &fn, bool with_extra3double=false, bool with_extraUnsigned=false);
     virtual ~BinaryWrite() = default;
     void record(const Particle &p);
+    void addHeaderComment(const std::string &comment);
+    template <typename T>
+    void addHeaderData(const T *data, unsigned datasize, NumpyWriter::NPDataType type,
+                      const std::vector<uint64_t> &shape);
+    constexpr void closeHeader() { m_headerClosed=true; }
 
   protected:
     mcpl_outfile_t m_file;
     mcpl_particle_t *m_particleSpace;
-    virtual void configHeaderAndData();
+    bool m_headerClosed;
   };
 
 }

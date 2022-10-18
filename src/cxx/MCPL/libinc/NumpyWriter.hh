@@ -58,7 +58,7 @@ namespace Prompt {
     //0x3c633136 for <c16
 
   public:
-    enum data_type : uint32_t {
+    enum class NPDataType : uint32_t {
       c8 = 0x38633c,
       f4 = 0x34663c,
       f8 = 0x38663c,
@@ -77,27 +77,27 @@ namespace Prompt {
     virtual ~NumpyWriter();
 
     template <typename T>
-    void makeNumpyArr(const std::vector<T> &data, data_type type,
+    void makeNumpyArr(const std::vector<T> &data, NPDataType type,
                       const std::vector<uint64_t> &shape, std::string &npArr) const;
 
     template <typename T>
-    void makeNumpyArr(const T *data, unsigned datasize, data_type type,
+    void makeNumpyArr(const T *data, unsigned datasize, NPDataType type,
                       const std::vector<uint64_t> &shape, std::string &npArr) const;
 
     template <typename T>
-    void writeNumpyFile(const std::string &filename, const std::vector<T> &data, data_type type,
+    void writeNumpyFile(const std::string &filename, const std::vector<T> &data, NPDataType type,
                       const std::vector<uint64_t> &shape) const;
 
   private:
     const std::string m_fixed_magic;
     void makeNumpyArr_real(const uint8_t  *data, unsigned len,
-                      data_type type, const std::vector<uint64_t> &shape, std::string &npArr) const;
+                      NPDataType type, const std::vector<uint64_t> &shape, std::string &npArr) const;
   private:
     //use the data_type to construct. getTypeString retures the ascii name of the type in npy format
     union U32toASCII {
       uint32_t u32;
       char  ascii[4];
-      U32toASCII(uint32_t a) : u32(a) {};
+      U32toASCII(NPDataType a) : u32(static_cast<uint32_t>(a)) {};
       std::string getTypeString() {
         std::string type_str;
         for(unsigned i=0;i<4;i++) {
@@ -107,7 +107,7 @@ namespace Prompt {
         }
         if(type_str.empty()) //shouldn't really reach here
           throw std::invalid_argument("data_type ascii array can't be all zero");
-        return type_str;
+        return std::move(type_str);
       }
     };
   };

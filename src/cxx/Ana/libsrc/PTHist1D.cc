@@ -56,13 +56,13 @@ void Prompt::Hist1D::save(const std::string &filename) const
 {
   auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
   NumpyWriter nvt;
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_content.npy", m_data, NumpyWriter::data_type::f8,
+  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_content.npy", m_data, NumpyWriter::NPDataType::f8,
                    std::vector<uint64_t>{m_nbins});
 
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_hit.npy", m_hit, NumpyWriter::data_type::f8,
+  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_hit.npy", m_hit, NumpyWriter::NPDataType::f8,
                   std::vector<uint64_t>{m_nbins});
 
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_edge.npy", getEdge(), NumpyWriter::data_type::f8,
+  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_edge.npy", getEdge(), NumpyWriter::NPDataType::f8,
                    std::vector<uint64_t>{m_nbins+1});
 
   char buffer [1000];

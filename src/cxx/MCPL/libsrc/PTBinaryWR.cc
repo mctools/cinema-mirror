@@ -26,30 +26,31 @@
 
 
 Prompt::BinaryWrite::BinaryWrite(const std::string &fn, bool with_extra3double, bool with_extraUnsigned)
-:m_file(mcpl_create_outfile(fn.c_str()))
+:m_file(mcpl_create_outfile(fn.c_str())), m_particleSpace(nullptr), m_headerClosed(false)
 {
     mcpl_hdr_set_srcname(m_file,"my_cool_program_name");
     mcpl_enable_doubleprec(m_file);
     if(with_extra3double)   mcpl_enable_polarisation(m_file);  // double[3]
     if(with_extraUnsigned)  mcpl_enable_userflags(m_file);    // uint32_t
 
-    mcpl_hdr_set_srcname(m_file, "Prompt");
-    configHeaderAndData();
+    mcpl_hdr_set_srcname(m_file, ("Prompt " + PTVersion).c_str());
     m_particleSpace = mcpl_get_empty_particle(m_file);
 }
 
-void Prompt::BinaryWrite::configHeaderAndData()
-{
-
-  mcpl_hdr_add_comment(m_file,"It is created by the BinaryWrite class.");
-  mcpl_hdr_add_comment(m_file,"By X.");
-
-  // mcpl_hdr_add_data is not endian safe...
-  
-  // void mcpl_hdr_add_data(mcpl_outfile_t, const char * key,
-  //                        uint32_t ldata, const char * data);
-
-}
+// void Prompt::BinaryWrite::configHeaderAndData()
+// {
+//
+//   mcpl_hdr_add_comment(m_file,"It is created by the BinaryWrite class.");
+//   mcpl_hdr_add_comment(m_file,"By X.");
+//
+//   // mcpl_hdr_add_data is not endian safe...
+//
+//   // void mcpl_hdr_add_data(mcpl_outfile_t, const char * key,
+//   //                        uint32_t ldata, const char * data);
+//
+//   m_headerClosed = true;
+//
+// }
 
 void Prompt::BinaryWrite::record(const Particle &p)
 {
