@@ -32,7 +32,7 @@ namespace Prompt {
 
   class BinaryWrite {
   public:
-    BinaryWrite(const std::string &fn, bool with_extra3double=false, bool with_extraUnsigned=false);
+    BinaryWrite(const std::string &fn, bool enable_double=false, bool with_extra3double=false, bool with_extraUnsigned=false);
     virtual ~BinaryWrite();
     void record(const Particle &p);
 
@@ -41,7 +41,7 @@ namespace Prompt {
     void addHeaderData(const std::string &dataname, const T *data,
                       const std::vector<uint64_t> &shape, NumpyWriter::NPDataType type);
     constexpr void closeHeader() { m_headerClosed=true; }
-    const std::string& getFileName() { return m_filename; } 
+    const std::string& getFileName() { return m_filename; }
 
   protected:
     std::string m_filename;

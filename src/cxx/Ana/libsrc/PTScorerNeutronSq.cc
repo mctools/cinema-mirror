@@ -24,7 +24,7 @@
 Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool linear)
 :Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>("ScorerNeutronSq_" + name, qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
-m_sourceSampleDist(sourceSampleDist)
+m_sourceSampleDist(sourceSampleDist), m_bwr(BinaryWrite("NeutronHistory"))
 {
   if(stype==Scorer::ScorerType::ENTRY)
     m_kill=true;
@@ -64,6 +64,8 @@ void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
   << particle.getEKin() << " "
   << particle.getNumScat() << " "
   << particle.getWeight() <<  "\n";
+
+  m_bwr.record(particle);
 
   // printf("Qe, Qtrue; Ekine , Ekin0 , Ekin; TOF; x y z\n");
   // printf("%f, %f, %.02e, %.02e, %.02e;  %.02f; %.02f %.02f %.02f\n\n", q, qtrue, ekin, particle.getEKin0(), particle.getEKin(),

@@ -60,7 +60,6 @@ namespace Prompt {
 
     virtual unsigned dimension() const = 0;
     virtual void save(const std::string &filename) const = 0;
-    BinaryWrite *getBinaryWrite() { return m_bwr; }
 
   protected:
 
