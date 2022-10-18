@@ -41,6 +41,9 @@ namespace Prompt {
     uint32_t getNBinY() const {return m_ynbins;}
     double getYMin() const {return m_ymin;}
     double getYMax() const {return m_ymax;}
+    std::vector<double> getXEdge() const;
+    std::vector<double> getYEdge() const;
+
 
     void fill(double xval, double yval);
     void fill(double xval, double yval, double weight);

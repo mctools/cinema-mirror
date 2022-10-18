@@ -19,6 +19,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTHist2D.hh"
+#include "PTMath.hh"
+#include "PTBinaryWR.hh"
+#include <typeinfo>
+#include "PTUtils.hh"
+#include "PTRandCanonical.hh"
 
 Prompt::Hist2D::Hist2D(double xmin, double xmax, unsigned xnbins,
                        double ymin, double ymax, unsigned ynbins)
@@ -51,35 +56,38 @@ void Prompt::Hist2D::operator+=(const Hist2D& hist)
     m_data[i]+=data[i];
 }
 
-#include<iostream>
-#include<fstream>
+std::vector<double> Prompt::Hist2D::getXEdge() const
+{
+  return linspace(m_xmin, m_xmax, m_xnbins+1);
+}
+
+std::vector<double> Prompt::Hist2D::getYEdge() const
+{
+  return linspace(m_ymin, m_ymax, m_ynbins+1);
+}
+
+
 void Prompt::Hist2D::save(const std::string &filename) const
 {
-  std::cout << "total count " << getTotalHit() << std::endl;
-  std::ofstream ofs;
-  ofs.open(filename, std::ios::out);
+  auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
+  auto bwr = BinaryWrite(filename+"_seed"+std::to_string(seed));
 
-  for(uint32_t i=0;i<m_xnbins;i++)
-  {
-    for(uint32_t j=0;j<m_ynbins;j++)
-    {
-      ofs << m_data[i*m_ynbins + j] << " ";
-    }
-    ofs << "\n";
-  }
-  ofs.close();
+  double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
+  bwr.addHeaderComment(getTypeName(typeid(this)).c_str());
+  bwr.addHeaderComment(("total hit: " + std::to_string(getTotalHit())).c_str());
 
-  ofs.open(filename+"_hit", std::ios::out);
+  bwr.addHeaderComment(("integral weight: " + std::to_string(intergral )).c_str());
+  bwr.addHeaderComment(("accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
+  bwr.addHeaderComment(("overflow weight: " + std::to_string(overflow )).c_str());
+  bwr.addHeaderComment(("underflow weight: " + std::to_string(underflow)).c_str());
 
-  for(uint32_t i=0;i<m_xnbins;i++)
-  {
-    for(uint32_t j=0;j<m_ynbins;j++)
-    {
-      ofs << m_hit[i*m_ynbins + j] << " ";
-    }
-    ofs << "\n";
-  }
-  ofs.close();
+  bwr.addHeaderData("overflow", &overflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr.addHeaderData("underflow", &underflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+
+  bwr.addHeaderData("content", m_data.data(), {m_xnbins, m_ynbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr.addHeaderData("hit", m_hit.data(), {m_xnbins, m_ynbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr.addHeaderData("xedge", getXEdge().data(), {m_xnbins+1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr.addHeaderData("yedge", getYEdge().data(), {m_ynbins+1}, Prompt::NumpyWriter::NPDataType::f8);
 
   char buffer [1000];
   //fixme: add xy to dimansion

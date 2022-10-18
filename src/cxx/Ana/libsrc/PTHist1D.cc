@@ -23,6 +23,7 @@
 #include "PTBinaryWR.hh"
 #include <typeinfo>
 #include "PTUtils.hh"
+#include "PTRandCanonical.hh"
 
 Prompt::Hist1D::Hist1D(double xmin, double xmax, unsigned nbins, bool linear)
 :HistBase(nbins), m_binfactor(0), m_linear(linear), m_logxmin(0)
@@ -52,8 +53,6 @@ std::vector<double> Prompt::Hist1D::getEdge() const
   else
     return logspace(log10(m_xmin), log10(m_xmax), m_nbins+1);
 }
-
-#include "PTRandCanonical.hh"
 
 void Prompt::Hist1D::save(const std::string &filename) const
 {
