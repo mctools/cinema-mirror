@@ -58,7 +58,7 @@ std::vector<double> Prompt::Hist1D::getEdge() const
 void Prompt::Hist1D::save(const std::string &filename) const
 {
   auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
-  auto bwr = BinaryWrite(filename+"_seed_"+std::to_string(seed));
+  auto bwr = BinaryWrite(filename+"_seed"+std::to_string(seed));
 
   double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
   bwr.addHeaderComment(getTypeName(typeid(this)).c_str());
@@ -69,21 +69,24 @@ void Prompt::Hist1D::save(const std::string &filename) const
   bwr.addHeaderComment(("overflow weight: " + std::to_string(overflow )).c_str());
   bwr.addHeaderComment(("underflow weight: " + std::to_string(underflow)).c_str());
 
+  bwr.addHeaderData("overflow", &overflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr.addHeaderData("underflow", &underflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+
   bwr.addHeaderData("content", m_data.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
   bwr.addHeaderData("hit", m_hit.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
   bwr.addHeaderData("edge", getEdge().data(), {m_nbins+1}, Prompt::NumpyWriter::NPDataType::f8);
 
   char buffer [1000];
-
   int n =sprintf (buffer,
-    "import numpy as np\n"
+    "import numpy as np\nfrom Cinema.Prompt import PromptFileReader\n"
     "import matplotlib.pyplot as plt\n"
-    "x=np.load('%s_seed%ld_edge.npy')\n"
-    "y=np.load('%s_seed%ld_content.npy')\n"
+    "f = PromptFileReader('%s_seed%ld.mcpl.gz')\n"
+    "x=f.getData('edge')\n"
+    "y=f.getData('content')\n"
     "plt.%s(x[:-1],y/np.diff(x), label=f'integral={y.sum()}')\n"
     "plt.grid()\n"
     "plt.legend()\n"
-    "plt.show()\n", filename.c_str(), seed, filename.c_str(), seed, m_linear? "plot":"loglog");
+    "plt.show()\n", filename.c_str(), seed, m_linear? "plot":"loglog");
 
   std::ofstream outfile(filename+"_view.py");
   outfile << buffer;
