@@ -20,6 +20,9 @@
 
 #include "PTHist1D.hh"
 #include "PTMath.hh"
+#include "PTBinaryWR.hh"
+#include <typeinfo>
+#include "PTUtils.hh"
 
 Prompt::Hist1D::Hist1D(double xmin, double xmax, unsigned nbins, bool linear)
 :HistBase(nbins), m_binfactor(0), m_linear(linear), m_logxmin(0)
@@ -55,15 +58,20 @@ std::vector<double> Prompt::Hist1D::getEdge() const
 void Prompt::Hist1D::save(const std::string &filename) const
 {
   auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
-  NumpyWriter nvt;
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_content.npy", m_data, NumpyWriter::NPDataType::f8,
-                   std::vector<uint64_t>{m_nbins});
+  auto bwr = BinaryWrite(filename+"_seed_"+std::to_string(seed));
 
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_hit.npy", m_hit, NumpyWriter::NPDataType::f8,
-                  std::vector<uint64_t>{m_nbins});
+  double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
+  bwr.addHeaderComment(getTypeName(typeid(this)).c_str());
+  bwr.addHeaderComment(("total hit: " + std::to_string(getTotalHit())).c_str());
 
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_edge.npy", getEdge(), NumpyWriter::NPDataType::f8,
-                   std::vector<uint64_t>{m_nbins+1});
+  bwr.addHeaderComment(("integral weight: " + std::to_string(intergral )).c_str());
+  bwr.addHeaderComment(("accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
+  bwr.addHeaderComment(("overflow weight: " + std::to_string(overflow )).c_str());
+  bwr.addHeaderComment(("underflow weight: " + std::to_string(underflow)).c_str());
+
+  bwr.addHeaderData("content", m_data.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr.addHeaderData("hit", m_hit.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr.addHeaderData("edge", getEdge().data(), {m_nbins+1}, Prompt::NumpyWriter::NPDataType::f8);
 
   char buffer [1000];
 

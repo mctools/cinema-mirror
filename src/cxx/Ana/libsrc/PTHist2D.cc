@@ -55,7 +55,7 @@ void Prompt::Hist2D::operator+=(const Hist2D& hist)
 #include<fstream>
 void Prompt::Hist2D::save(const std::string &filename) const
 {
-  std::cout << "total count " << getTotalHist() << std::endl;
+  std::cout << "total count " << getTotalHit() << std::endl;
   std::ofstream ofs;
   ofs.open(filename, std::ios::out);
 

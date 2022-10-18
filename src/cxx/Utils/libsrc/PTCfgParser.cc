@@ -20,7 +20,6 @@
 
 #include "PTCfgParser.hh"
 #include "PTUtils.hh" //split
-#include <cxxabi.h> //__cxa_demangle
 
 void Prompt::CfgParser::ScorerCfg::print()
 {
@@ -43,22 +42,6 @@ std::string Prompt::CfgParser::ScorerCfg::find(const std::string &key, bool forc
 
 Prompt::CfgParser::CfgParser()
 {
-
-}
-
-std::string Prompt::CfgParser::getTypeName(const std::type_info& ti)
-{
-  // see https://panthema.net/2008/0901-stacktrace-demangled/cxa_demangle.html and
-  // https://gcc.gnu.org/onlinedocs/libstdc++/manual/ext_demangling.html
-
-  std::string tname (abi::__cxa_demangle(ti.name(), nullptr, nullptr, nullptr));
-
-  std::string substr = "Prompt::";
-  std::string::size_type i = tname.find(substr);
-  if (i != std::string::npos)
-     tname.erase(i, substr.length());
-
-  return std::move(tname);
 }
 
 Prompt::CfgParser::ScorerCfg Prompt::CfgParser::getScorerCfg(const std::string& cfgstr)

@@ -2,23 +2,21 @@
 
 import numpy as np
 import os
+from Cinema.Prompt import PromptFileReader
 
-f1='ScorerNeutronSq_SofQ_seed4096_edge.npy'
-f2='ScorerNeutronSq_SofQ_seed4096_content.npy'
-f3='ScorerNeutronSq_SofQ_seed4096_hit.npy'
-
+f1='ScorerNeutronSq_SofQ_seed_4096.mcpl.gz'
 os.system(f'rm {f1}')
-os.system(f'rm {f2}')
-os.system(f'rm {f3}')
+os.system('prompt -g watersphere_bias.gdml -n 1e4')
 
-os.system('prompt -g watersphere_bias.gdml -n 1e5')
 
-x=np.load(f1)
-w=np.load(f2)
-hit=np.load(f3)
+f = PromptFileReader(f1)
 
-res = np.array([x.sum(), w.sum(), hit.sum()])
+print(f.getComments())
+hist_weight = f.getData('content').sum()
+hist_hit = f.getData('hit').sum()
+hist_edge = f.getData('edge').sum()
+
 np.set_printoptions(precision=16)
+res = np.array([hist_edge, hist_weight, hist_hit])
 print(res)
-np.testing.assert_allclose(res, [5894.344942918124, 2001.947312844668, 3333.], rtol=1e-15)
-print('passed prompt test')
+np.testing.assert_allclose(res, [5894.344942918124, 193.3844824901961, 320.], rtol=1e-15)

@@ -46,7 +46,7 @@ class PromptFileReader:
         return np.load(raw)
 
     def getComments(self):
-        return pfile.comments
+        return self.pfile.comments
 
     # this can be used like:
     # for p in reader.blockIterator():

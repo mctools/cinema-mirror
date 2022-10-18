@@ -22,6 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
+#include <typeinfo> //getTypeName
 
 namespace Prompt {
   std::vector<std::string> split(const std::string& text, char delimiter);
@@ -30,6 +31,7 @@ namespace Prompt {
   int ptstoi(const std::string& text);
   unsigned crc32(const char * buffer , int length);
   unsigned crc32(const std::string& str);
+  std::string getTypeName(const std::type_info& ti);
 
 }
 

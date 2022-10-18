@@ -105,3 +105,19 @@ unsigned Prompt::crc32(const std::string& str)
 {
   return crc32(str.c_str(),str.size());
 }
+
+#include <cxxabi.h> //__cxa_demangle
+std::string Prompt::getTypeName(const std::type_info& ti)
+{
+  // see https://panthema.net/2008/0901-stacktrace-demangled/cxa_demangle.html and
+  // https://gcc.gnu.org/onlinedocs/libstdc++/manual/ext_demangling.html
+
+  std::string tname (abi::__cxa_demangle(ti.name(), nullptr, nullptr, nullptr));
+
+  std::string substr = "Prompt::";
+  std::string::size_type i = tname.find(substr);
+  if (i != std::string::npos)
+     tname.erase(i, substr.length());
+
+  return std::move(tname);
+}
