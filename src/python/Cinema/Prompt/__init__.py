@@ -33,10 +33,10 @@ import numpy as np
 
 class PromptFileReader:
     def __init__(self, fn, particleBlocklength=10000, dumpHeader=True):
-        if dumpHeader:
-            f.dump_hdr()
         self.pfile = mcpl.MCPLFile(fn)
         self.particleBlocklength = particleBlocklength
+        if dumpHeader:
+            self.pfile.dump_hdr()
 
     def dataKeys(self):
         return self.pfile.blobs.keys()
@@ -45,14 +45,14 @@ class PromptFileReader:
         raw=BytesIO(self.pfile.blobs[k])
         return np.load(raw)
 
-     def getComments(self):
-         return pfile.comments
+    def getComments(self):
+        return pfile.comments
 
-     # this can be used like:
-     # for p in reader.blockIterator():
-     #     print( p.x, p.y, p.z, p.ekin )
-     def blockIterator(self):
-         return self.pfile.particle_blocks
+    # this can be used like:
+    # for p in reader.blockIterator():
+    #     print( p.x, p.y, p.z, p.ekin )
+    def blockIterator(self):
+     return self.pfile.particle_blocks
 
-     def particleIterator(self):
-         return self.pfile.particle_blocks
+    def particleIterator(self):
+     return self.pfile.particle_blocks
