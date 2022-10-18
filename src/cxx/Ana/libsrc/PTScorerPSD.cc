@@ -23,7 +23,7 @@
 Prompt::ScorerPSD::ScorerPSD(const std::string &name, double xmin, double xmax,
    unsigned nxbins, double ymin, double ymax, unsigned nybins, ScorerType type)
 :Scorer2D("ScorerPSD_"+name, Scorer::ScorerType::SURFACE,
-  std::make_unique<Hist2D>("ScorerPSD", xmin, xmax, nxbins, ymin, ymax, nybins)),
+  std::make_unique<Hist2D>("ScorerPSD_"+name, xmin, xmax, nxbins, ymin, ymax, nybins)),
  m_type(type)
 {}
 

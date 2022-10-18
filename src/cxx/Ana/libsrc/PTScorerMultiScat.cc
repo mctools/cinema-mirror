@@ -21,7 +21,7 @@
 #include "PTScorerMultiScat.hh"
 
 Prompt::ScorerMultiScat::ScorerMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear)
-:Scorer1D("ScorerMultiScat_"+ name, Scorer::ScorerType::PROPAGATE, std::make_unique<Hist1D>("ScorerMultiScat", xmin, xmax, nxbins, linear)), m_lasteventid(0), m_p_counter(0), m_p_weight(0)
+:Scorer1D("ScorerMultiScat_"+ name, Scorer::ScorerType::PROPAGATE, std::make_unique<Hist1D>("ScorerMultiScat_"+ name, xmin, xmax, nxbins, linear)), m_lasteventid(0), m_p_counter(0), m_p_weight(0)
 { }
 
 Prompt::ScorerMultiScat::~ScorerMultiScat() {}

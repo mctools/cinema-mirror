@@ -22,7 +22,7 @@
 
 
 Prompt::ScorerESpectrum::ScorerESpectrum(const std::string &name, double xmin, double xmax, unsigned nxbins)
-:Scorer1D("ScorerESpectrum_"+name, Scorer::ScorerType::ENTRY, std::make_unique<Hist1D>("ScorerESpectrum", xmin, xmax, nxbins))
+:Scorer1D("ScorerESpectrum_"+name, Scorer::ScorerType::ENTRY, std::make_unique<Hist1D>("ScorerESpectrum_"+name, xmin, xmax, nxbins))
 {}
 
 Prompt::ScorerESpectrum::~ScorerESpectrum() {}
