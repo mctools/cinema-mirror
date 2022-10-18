@@ -76,3 +76,32 @@ double Prompt::ptstod(const std::string& text)
     PROMPT_THROW2(BadInput, "ptstod failed to convert a double from the input string " << text);
   }
 }
+
+//Reversing CRC--Theory and Practice, HU Berlin Public Report, SAR-PR-2006-05.
+//constants are used in functions crc32,crc32_magic,crc32_append_6chars, and getFileCRC32.
+unsigned Prompt::crc32(const char * buffer , int length)
+{
+  const unsigned CRCPOLY = 0xEDB88320;
+  const unsigned INITXOR = 0xFFFFFFFF;
+  const unsigned FINALXOR = 0xFFFFFFFF;
+  int i , j;
+  unsigned int crcreg = INITXOR ;
+  for (j = 0; j < length ; ++ j ) {
+    char b  = (buffer [ j ]);
+    for (i = 0; i < 8; ++ i) {
+      if (( crcreg ^ b ) & 1) {
+        crcreg = ( crcreg >> 1) ^ CRCPOLY ;
+      } else {
+        crcreg >>= 1;
+      }
+      b >>= 1;
+    }
+  }
+  return crcreg ^ FINALXOR ;
+}
+
+
+unsigned Prompt::crc32(const std::string& str)
+{
+  return crc32(str.c_str(),str.size());
+}

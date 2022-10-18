@@ -64,7 +64,7 @@ void Prompt::BinaryWrite::addHeaderData(const std::string &dataname, const T *da
   std::string npdata;
   NumpyWriter::makeNumpyArrFromUChar(reinterpret_cast<const uint8_t*>(data), sizeof(T)*datasize, type, shape, npdata );
 
-  std::cout << "npdata type " << typeid(T).name()  << "\n " << npdata << std::endl;
+  // std::cout << "npdata type " << typeid(T).name()  << "\n " << npdata << std::endl;
 
    mcpl_hdr_add_data(m_file, dataname.c_str(), npdata.size(), npdata.c_str());
 }
