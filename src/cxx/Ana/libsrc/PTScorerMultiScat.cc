@@ -21,7 +21,7 @@
 #include "PTScorerMultiScat.hh"
 
 Prompt::ScorerMultiScat::ScorerMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear)
-:Scorer1D("ScorerMultiScat_"+ name, Scorer::ScorerType::PROPAGATE, std::make_unique<Hist1D>(xmin, xmax, nxbins, linear)), m_lasteventid(0), m_p_counter(0), m_p_weight(0)
+:Scorer1D("ScorerMultiScat_"+ name, Scorer::ScorerType::PROPAGATE, std::make_unique<Hist1D>("ScorerMultiScat", xmin, xmax, nxbins, linear)), m_lasteventid(0), m_p_counter(0), m_p_weight(0)
 { }
 
 Prompt::ScorerMultiScat::~ScorerMultiScat() {}
@@ -33,7 +33,7 @@ void Prompt::ScorerMultiScat::score(Particle &particle)
     m_p_counter++;
     particle.setNumScat(m_p_counter);
     m_p_weight=particle.getWeight();
-  } 
+  }
   else
   {
     if(m_p_counter==0)
@@ -52,5 +52,5 @@ void Prompt::ScorerMultiScat::score(Particle &particle)
       m_p_weight=particle.getWeight();
     }
   }
-    
+
 }

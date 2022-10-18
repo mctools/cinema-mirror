@@ -25,8 +25,8 @@
 #include "PTUtils.hh"
 #include "PTRandCanonical.hh"
 
-Prompt::Hist1D::Hist1D(double xmin, double xmax, unsigned nbins, bool linear)
-:HistBase(nbins), m_binfactor(0), m_linear(linear), m_logxmin(0)
+Prompt::Hist1D::Hist1D(const std::string &name, double xmin, double xmax, unsigned nbins, bool linear)
+:HistBase(name, nbins), m_binfactor(0), m_linear(linear), m_logxmin(0)
 {
   m_xmin=xmin, m_xmax=xmax, m_nbins=nbins;
   if(linear) {

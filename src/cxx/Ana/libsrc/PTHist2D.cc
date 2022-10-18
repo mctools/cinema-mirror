@@ -25,9 +25,9 @@
 #include "PTUtils.hh"
 #include "PTRandCanonical.hh"
 
-Prompt::Hist2D::Hist2D(double xmin, double xmax, unsigned xnbins,
+Prompt::Hist2D::Hist2D(const std::string &name, double xmin, double xmax, unsigned xnbins,
                        double ymin, double ymax, unsigned ynbins)
-:HistBase(xnbins*ynbins), m_xbinfactor(xnbins/(xmax-xmin)),
+:HistBase(name, xnbins*ynbins), m_xbinfactor(xnbins/(xmax-xmin)),
 m_ybinfactor(ynbins/(ymax-ymin))
 {
   m_xmin=xmin, m_xmax=xmax, m_xnbins=xnbins;

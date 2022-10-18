@@ -29,7 +29,7 @@ namespace pt = Prompt;
 
 TEST_CASE("test_isotropicgun")
 {
-auto hist = std::make_unique<pt::Hist1D>(0.0001, 180 , 100, false);
+  auto hist = std::make_unique<pt::Hist1D>("test_isotropicgun", 0.0001, 180 , 100, false);
   auto gun = pt::IsotropicGun(pt::Neutron(), 0.0253, pt::Vector(0.,0.,-12000.), pt::Vector(0.,0.,1.));
   double sum_theta = 0.0;
   double num = 10000;

@@ -29,7 +29,7 @@ namespace Prompt {
   class Hist2D : public HistBase {
   public:
 
-    explicit Hist2D(double xmin, double xmax, unsigned nxbins,
+    explicit Hist2D(const std::string &name, double xmin, double xmax, unsigned nxbins,
                  double ymin, double ymax, unsigned nybins);
     virtual ~Hist2D();
 

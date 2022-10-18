@@ -33,7 +33,7 @@ namespace Prompt {
 
   class HistBase {
   public:
-    explicit HistBase(unsigned nbins);
+    explicit HistBase(const std::string &name, unsigned nbins);
     virtual ~HistBase();
 
     virtual void merge(const HistBase &);
@@ -56,6 +56,7 @@ namespace Prompt {
 
     const std::vector<double>& getRaw() const {return m_data;}
     const std::vector<double>& getHit() const {return m_hit;}
+    const std::string& getName() const {return m_name;}
 
     virtual unsigned dimension() const = 0;
     virtual void save(const std::string &filename) const = 0;
@@ -70,6 +71,8 @@ namespace Prompt {
     double m_underflow;
     double m_overflow;
     uint32_t m_nbins;
+
+    std::string m_name;
 
   private:
     //Copy/assignment are forbidden to avoid troubles

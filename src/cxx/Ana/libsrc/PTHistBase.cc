@@ -22,8 +22,8 @@
 #include <stdexcept>
 #include <fstream>
 //fixme:
-Prompt::HistBase::HistBase(unsigned nbin)
-: m_data(nbin,0.), m_hit(nbin,0.), m_xmin(0), m_xmax(0),
+Prompt::HistBase::HistBase(const std::string &name, unsigned nbin)
+:m_name(name), m_data(nbin,0.), m_hit(nbin,0.), m_xmin(0), m_xmax(0),
  m_sumW(0), m_underflow(0), m_overflow(0),m_nbins(0)
 {
 

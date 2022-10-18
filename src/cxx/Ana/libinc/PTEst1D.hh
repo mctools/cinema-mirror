@@ -27,7 +27,7 @@
 namespace Prompt {
   class Est1D : public Hist1D {
   public:
-    explicit Est1D(double xmin, double xmax, unsigned nbins,bool linear=true);
+    explicit Est1D(const std::string &name, double xmin, double xmax, unsigned nbins,bool linear=true);
     virtual ~Est1D();
     void fill(double val) override;
     void fill(double val, double weight) override;
