@@ -23,7 +23,7 @@
 
 Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool linear)
-:Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>("ScorerNeutronSq", qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
+:Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>("ScorerNeutronSq_" + name, qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
 m_sourceSampleDist(sourceSampleDist)
 {
   if(stype==Scorer::ScorerType::ENTRY)

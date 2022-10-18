@@ -38,7 +38,7 @@ namespace Prompt {
     const std::string &getName() { return m_name; }
     ScorerType getType() { return m_type; }
     virtual void score(Particle &particle) = 0;
-    virtual void save(const std::string &fname) = 0;
+    virtual void save() = 0;
   protected:
     const std::string m_name;
     ScorerType m_type;
@@ -48,8 +48,8 @@ namespace Prompt {
   public:
     Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist)
     : Scorer(name, type), m_hist(std::move(hist)) {};
-    virtual ~Scorer1D() { save(m_name); }
-    void save(const std::string &fname) { m_hist->save(fname); }
+    virtual ~Scorer1D() { save(); }
+    void save() { m_hist->save(m_name); }
   protected:
     std::unique_ptr<Hist1D> m_hist;
   };
@@ -58,8 +58,8 @@ namespace Prompt {
   public:
     Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist)
     : Scorer(name, type), m_hist(std::move(hist)) {};
-    virtual ~Scorer2D() { save(m_name); }
-    void save(const std::string &fname) { m_hist->save(fname); }
+    virtual ~Scorer2D() { save(); }
+    void save() { m_hist->save(m_name); }
   protected:
     std::unique_ptr<Hist2D> m_hist;
   };

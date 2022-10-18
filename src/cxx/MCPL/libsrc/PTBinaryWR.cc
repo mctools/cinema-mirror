@@ -26,7 +26,7 @@
 
 
 Prompt::BinaryWrite::BinaryWrite(const std::string &fn, bool with_extra3double, bool with_extraUnsigned)
-:m_file(mcpl_create_outfile(fn.c_str())), m_particleSpace(nullptr), m_headerClosed(false)
+:m_filename(fn), m_file(mcpl_create_outfile(fn.c_str())), m_particleSpace(nullptr), m_headerClosed(false)
 {
     mcpl_hdr_set_srcname(m_file,"my_cool_program_name");
     mcpl_enable_doubleprec(m_file);

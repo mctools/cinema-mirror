@@ -27,7 +27,7 @@
 #include <stdexcept>
 #include <mutex>
 #include "PTException.hh"
-#include "NumpyWriter.hh"
+#include "PTBinaryWR.hh"
 
 namespace Prompt {
 
@@ -60,9 +60,11 @@ namespace Prompt {
 
     virtual unsigned dimension() const = 0;
     virtual void save(const std::string &filename) const = 0;
+    BinaryWrite *getBinaryWrite() { return m_bwr; }
 
   protected:
 
+    std::string m_name;
     mutable std::mutex m_hist_mutex;
     std::vector<double> m_data, m_hit;
     double m_xmin;
@@ -71,8 +73,7 @@ namespace Prompt {
     double m_underflow;
     double m_overflow;
     uint32_t m_nbins;
-
-    std::string m_name;
+    BinaryWrite *m_bwr;
 
   private:
     //Copy/assignment are forbidden to avoid troubles

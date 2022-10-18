@@ -21,16 +21,20 @@
 #include "PTHistBase.hh"
 #include <stdexcept>
 #include <fstream>
-//fixme:
+#include "PTRandCanonical.hh"
+
+
 Prompt::HistBase::HistBase(const std::string &name, unsigned nbin)
 :m_name(name), m_data(nbin,0.), m_hit(nbin,0.), m_xmin(0), m_xmax(0),
- m_sumW(0), m_underflow(0), m_overflow(0),m_nbins(0)
+ m_sumW(0), m_underflow(0), m_overflow(0),m_nbins(0), m_bwr(nullptr)
 {
-
+  auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
+  m_bwr = new BinaryWrite(m_name+"_seed"+std::to_string(seed));
 }
 
 Prompt::HistBase::~HistBase()
 {
+  delete m_bwr;
 }
 
 

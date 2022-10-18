@@ -37,7 +37,7 @@ class PromptFileReader:
         self.particleBlocklength = particleBlocklength
         if dumpHeader:
             self.pfile.dump_hdr()
-            print("comments:\n", self.getComments())    
+            print("comments:\n", self.getComments())
 
     def dataKeys(self):
         return self.pfile.blobs.keys()
@@ -57,3 +57,4 @@ class PromptFileReader:
 
     def particleIterator(self):
      return self.pfile.particle_blocks
+

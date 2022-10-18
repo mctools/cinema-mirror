@@ -41,8 +41,10 @@ namespace Prompt {
     void addHeaderData(const std::string &dataname, const T *data,
                       const std::vector<uint64_t> &shape, NumpyWriter::NPDataType type);
     constexpr void closeHeader() { m_headerClosed=true; }
+    const std::string& getFileName() { return m_filename; } 
 
   protected:
+    std::string m_filename;
     mcpl_outfile_t m_file;
     mcpl_particle_t *m_particleSpace;
     bool m_headerClosed;
