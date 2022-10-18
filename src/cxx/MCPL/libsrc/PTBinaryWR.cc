@@ -37,20 +37,14 @@ Prompt::BinaryWrite::BinaryWrite(const std::string &fn, bool with_extra3double, 
     m_particleSpace = mcpl_get_empty_particle(m_file);
 }
 
-// void Prompt::BinaryWrite::configHeaderAndData()
-// {
-//
-//   mcpl_hdr_add_comment(m_file,"It is created by the BinaryWrite class.");
-//   mcpl_hdr_add_comment(m_file,"By X.");
-//
-//   // mcpl_hdr_add_data is not endian safe...
-//
-//   // void mcpl_hdr_add_data(mcpl_outfile_t, const char * key,
-//   //                        uint32_t ldata, const char * data);
-//
-//   m_headerClosed = true;
-//
-// }
+
+void Prompt::BinaryWrite::addHeaderComment(const std::string &comment)
+{
+  if(m_headerClosed)
+      PROMPT_THROW(LogicError, "addHeaderComment can not operate on a file when the file header is closed ");
+
+  mcpl_hdr_add_comment(m_file, comment.c_str());
+}
 
 void Prompt::BinaryWrite::record(const Particle &p)
 {

@@ -81,17 +81,15 @@ namespace Prompt {
                       const std::vector<uint64_t> &shape, std::string &npArr) const;
 
     template <typename T>
-    void makeNumpyArr(const T *data, unsigned datasize, NPDataType type,
+    void makeNumpyArr(const T *data, size_t datasize, NPDataType type,
                       const std::vector<uint64_t> &shape, std::string &npArr) const;
 
     template <typename T>
     void writeNumpyFile(const std::string &filename, const std::vector<T> &data, NPDataType type,
                       const std::vector<uint64_t> &shape) const;
 
-  private:
-    const std::string m_fixed_magic;
-    void makeNumpyArr_real(const uint8_t  *data, unsigned len,
-                      NPDataType type, const std::vector<uint64_t> &shape, std::string &npArr) const;
+    static void makeNumpyArrFromUChar(const uint8_t  *data, size_t datalen,
+                      NPDataType type, const std::vector<uint64_t> &shape, std::string &npArr);
   private:
     //use the data_type to construct. getTypeString retures the ascii name of the type in npy format
     union U32toASCII {

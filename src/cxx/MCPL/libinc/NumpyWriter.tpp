@@ -33,13 +33,13 @@ template <typename T>
 void Prompt::NumpyWriter::makeNumpyArr(const std::vector<T> &data, Prompt::NumpyWriter::NPDataType type,
                               const std::vector<uint64_t> &shape, std::string &npArr) const
 {
-  makeNumpyArr_real( reinterpret_cast<const uint8_t*>(data.data()),
+  makeNumpyArrFromUChar( reinterpret_cast<const uint8_t*>(data.data()),
                 data.size()*sizeof(T), type, shape , npArr );
 }
 
 template <typename T>
-void Prompt::NumpyWriter::makeNumpyArr(const T *data, unsigned datasize, Prompt::NumpyWriter::NPDataType type,
+void Prompt::NumpyWriter::makeNumpyArr(const T *data, size_t datasize, Prompt::NumpyWriter::NPDataType type,
                               const std::vector<uint64_t> &shape, std::string &npArr) const
 {
-  makeNumpyArr_real( reinterpret_cast<const uint8_t*>(data), datasize*sizeof(T), type, shape , npArr );
+  makeNumpyArrFromUChar( reinterpret_cast<const uint8_t*>(data), datasize*sizeof(T), type, shape , npArr );
 }

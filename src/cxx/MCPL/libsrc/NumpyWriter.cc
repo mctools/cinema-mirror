@@ -22,7 +22,6 @@
 #include <cstring>
 
 Prompt::NumpyWriter::NumpyWriter()
-:m_fixed_magic( "\x93NUMPY")
 {
   //fixme: make sure it is a little endian system
 }
@@ -32,12 +31,14 @@ Prompt::NumpyWriter::~NumpyWriter()
 
 }
 
-void Prompt::NumpyWriter::makeNumpyArr_real(const uint8_t *data, unsigned len,
-                  Prompt::NumpyWriter::NPDataType dtype, const std::vector<uint64_t> &shape, std::string &npArr) const
+void Prompt::NumpyWriter::makeNumpyArrFromUChar(const uint8_t *data, size_t len,
+                  Prompt::NumpyWriter::NPDataType dtype, const std::vector<uint64_t> &shape, std::string &npArr)
 {
+  const std::string fixed_magic_string("\x93NUMPY");
+
   npArr.reserve(len + 128); //a guess of tot size
 
-  npArr = m_fixed_magic +'\x01'+'\x00' + "  ";
+  npArr = fixed_magic_string +'\x01'+'\x00' + "  ";
   npArr += "{'descr': '" + U32toASCII(dtype).getTypeString() + "', 'fortran_order': False, 'shape': (" ;
 
   for(auto v:shape)
