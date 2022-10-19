@@ -55,6 +55,7 @@ std::vector<double> Prompt::Hist1D::getEdge() const
 
 void Prompt::Hist1D::save(const std::string &filename) const
 {
+  std::cout << "saving hist1d\n"; 
 
   double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
   m_bwr->addHeaderComment(m_name);

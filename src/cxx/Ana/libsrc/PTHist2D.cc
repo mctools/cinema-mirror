@@ -68,6 +68,8 @@ std::vector<double> Prompt::Hist2D::getYEdge() const
 
 void Prompt::Hist2D::save(const std::string &filename) const
 {
+  std::cout << "saving hist2d\n";
+
   double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
   m_bwr->addHeaderComment(m_name);
   m_bwr->addHeaderComment(getTypeName(typeid(this)).c_str());
