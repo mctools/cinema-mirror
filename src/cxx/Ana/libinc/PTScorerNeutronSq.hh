@@ -24,6 +24,7 @@
 #include "PromptCore.hh"
 #include "PTScorer.hh"
 #include <fstream>
+#include "PTBinaryWR.hh"
 
 namespace Prompt {
 
@@ -39,6 +40,8 @@ namespace Prompt {
     const double m_sourceSampleDist;
     bool m_kill;
     std::ofstream m_dataout;
+    BinaryWrite *m_bwr;
+
   };
 }
 #endif

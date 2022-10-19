@@ -27,7 +27,7 @@
 namespace Prompt {
   class Hist1D : public HistBase {
   public:
-    explicit Hist1D(double xmin, double xmax, unsigned nbins,bool linear=true);
+    explicit Hist1D(const std::string &name, double xmin, double xmax, unsigned nbins,bool linear=true);
     virtual ~Hist1D();
 
     unsigned dimension() const override { return 1; }  ;

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <gdml>
-<!-- neutrons are generated in a xs biased sphere and hitting a box -->
+<!-- aneutron is generated in a xs biased sphere and hitting a box -->
     <userinfo>
       <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=0;moderator_height_y=0;moderator_positon_z=-400;slit_width_x=0;slit_height_y=0;slit_position_z=1;temperature=293.15" />
     </userinfo>
@@ -34,21 +34,21 @@
         <volume name="VolSphere">
             <solidref ref="SphereSolid" />
             <materialref ref="HWaterD2" />
-            <!-- <auxiliary auxtype="Scorer" auxvalue="VolFlux;waterSphereflux;1e-5;1.2;1000;0"/> -->
+            <!-- <auxiliary auxtype="Scorer" auxvalue="Scorer=VolFlux;name=Sflux;xmin=1e-5;xmax=1.2;numBins_x=100;volume=0"/> -->
         </volume>
 
         <volume name="VolBox">
             <solidref ref="boxSolid" />
             <materialref ref="HWater" />
-            <!-- <auxiliary auxtype="Scorer" auxvalue="VolFlux;waterBoxflux;1e-5;1.2;1000;0"/> -->
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=400;type=ENTRY;linear=no;Qmin=0.01; Qmax = 50; numbin=1000"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=VolFlux;name=Sflux;xmin=1e-5;xmax=1.2;numBins_x=100"/>
+            <!-- <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=400;type=ENTRY;linear=no;Qmin=0.01; Qmax = 50; numbin=1000"/> -->
         </volume>
 
 
         <volume name="VolWorld">
             <solidref ref="WorldSolid" />
             <materialref ref="Vacuum" />
-            <!-- <auxiliary auxtype="Scorer" auxvalue="VolFlux;waterflux;1e-5;1.2;1000;0"/> -->
+            <!-- <auxiliary auxtype="Scorer" auxvalue="Scorer=VolFlux;name=Sflux;xmin=1e-5;xmax=1.2;numBins_x=100;volume=0"/> -->
             <physvol name="PhysVol_Shere">
                 <volumeref ref="VolSphere" />
                 <position name="Position" unit="mm" x="0.0" y="0.0" z="0.0" />

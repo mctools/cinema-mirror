@@ -21,21 +21,28 @@
 #include "PTHistBase.hh"
 #include <stdexcept>
 #include <fstream>
-//fixme:
-Prompt::HistBase::HistBase(unsigned nbin)
-: m_data(nbin,0.), m_hit(nbin,0.), m_xmin(0), m_xmax(0),
- m_sumW(0), m_underflow(0), m_overflow(0),m_nbins(0)
-{
+#include "PTRandCanonical.hh"
 
+
+Prompt::HistBase::HistBase(const std::string &name, unsigned nbin)
+:m_name(name), m_data(nbin,0.), m_hit(nbin,0.), m_xmin(0), m_xmax(0),
+ m_sumW(0), m_underflow(0), m_overflow(0),m_nbins(0), m_bwr(nullptr)
+{
+  auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
+  m_bwr = new BinaryWrite(m_name+"_seed"+std::to_string(seed));
 }
 
 Prompt::HistBase::~HistBase()
 {
+  delete m_bwr;
 }
 
 
 void Prompt::HistBase::merge(const Prompt::HistBase &hist)
 {
+  if(m_name!=hist.m_name)
+    PROMPT_THROW2(CalcError, "m_name " << m_xmin << " is different with the m_xmin of another histogram " << hist.m_name);
+
   if(m_xmin!=hist.m_xmin)
     PROMPT_THROW2(CalcError, "m_xmin " << m_xmin << " is different with the m_xmin of another histogram " << hist.m_xmin);
 

@@ -21,7 +21,7 @@
 #include "PTScorerVolFlux.hh"
 
 Prompt::ScorerVolFlux::ScorerVolFlux(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear, double volme)
-:Scorer1D("ScorerVolFlux_"+ name, Scorer::ScorerType::PROPAGATE, std::make_unique<Hist1D>(xmin, xmax, nxbins, linear)), m_iVol(1./volme)
+:Scorer1D("ScorerVolFlux_"+ name, Scorer::ScorerType::PROPAGATE, std::make_unique<Hist1D>("ScorerVolFlux_"+ name, xmin, xmax, nxbins, linear)), m_iVol(1./volme)
 { }
 
 Prompt::ScorerVolFlux::~ScorerVolFlux() {}

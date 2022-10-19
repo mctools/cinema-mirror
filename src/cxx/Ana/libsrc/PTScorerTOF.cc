@@ -22,7 +22,7 @@
 
 
 Prompt::ScorerTOF::ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins)
-:Scorer1D("ScorerTOF_"+name, Scorer::ScorerType::ENTRY,std::make_unique<Hist1D>(xmin, xmax, nxbins))
+:Scorer1D("ScorerTOF_"+name, Scorer::ScorerType::ENTRY,std::make_unique<Hist1D>("ScorerTOF_"+name, xmin, xmax, nxbins))
 {}
 
 Prompt::ScorerTOF::~ScorerTOF() {}
@@ -31,4 +31,3 @@ void Prompt::ScorerTOF::score(Prompt::Particle &particle)
 {
   m_hist->fill(particle.getTime(), particle.getWeight());
 }
-

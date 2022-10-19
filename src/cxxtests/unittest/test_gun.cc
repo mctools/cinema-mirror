@@ -28,7 +28,7 @@ namespace pt = Prompt;
 
 TEST_CASE("test_maxwellgun")
 {
-  auto hist = std::make_unique<pt::Hist1D>(0.0001, 0.3 , 100, false);
+  auto hist = std::make_unique<pt::Hist1D>("test_maxwellgun", 0.0001, 0.3 , 100, false);
   auto gun = pt::MaxwellianGun(pt::Neutron(), 300, {1,1,-1400,1,1,0});
   for(unsigned i=0;i<10;i++)
   {

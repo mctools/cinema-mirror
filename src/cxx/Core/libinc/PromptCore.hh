@@ -42,6 +42,8 @@ namespace Prompt
   constexpr double ENERGYTOKEN_BIAS = -2.;
   constexpr double ENERGYTOKEN_SCORE = -3.;
 
+  static const std::string PTVersion = "v1.0.0";
+
   void printLogo();
   void printLogo2();
 }

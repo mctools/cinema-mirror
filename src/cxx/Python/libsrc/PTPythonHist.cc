@@ -29,7 +29,7 @@ namespace pt = Prompt;
 
 void* pt_Hist1D_new(double xmin, double xmax, unsigned nbins, bool linear)
 {
-    return static_cast<void *>(new pt::Hist1D(xmin, xmax, nbins, linear));
+    return static_cast<void *>(new pt::Hist1D("pt_Hist1D_new", xmin, xmax, nbins, linear));
 }
 
 void pt_Hist1D_getEdge(void* obj, double* edge)
@@ -81,7 +81,7 @@ void pt_Hist1D_delete(void* obj)
 void* pt_Hist2D_new(double xmin, double xmax, unsigned nxbins,
                     double ymin, double ymax, unsigned nybins)
 {
-  return static_cast<void *>(new pt::Hist2D(xmin, xmax, nxbins,
+  return static_cast<void *>(new pt::Hist2D("pt_Hist2D_new", xmin, xmax, nxbins,
                                             ymin, ymax, nybins));
 }
 
@@ -141,7 +141,7 @@ void pt_Hist2D_getDensity(void* obj, double* d)
 // Prompt::Hist1D
 void* pt_Est1D_new(double xmin, double xmax, unsigned nbins, bool linear)
 {
-  return static_cast<void *>(new pt::Est1D(xmin, xmax, nbins, linear));
+  return static_cast<void *>(new pt::Est1D("pt_Est1D_new", xmin, xmax, nbins, linear));
 }
 
 void pt_Est1D_delete(void* obj)

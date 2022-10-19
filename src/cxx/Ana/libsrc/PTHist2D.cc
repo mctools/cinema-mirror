@@ -19,10 +19,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTHist2D.hh"
+#include "PTMath.hh"
+#include "PTBinaryWR.hh"
+#include <typeinfo>
+#include "PTUtils.hh"
 
-Prompt::Hist2D::Hist2D(double xmin, double xmax, unsigned xnbins,
+Prompt::Hist2D::Hist2D(const std::string &name, double xmin, double xmax, unsigned xnbins,
                        double ymin, double ymax, unsigned ynbins)
-:HistBase(xnbins*ynbins), m_xbinfactor(xnbins/(xmax-xmin)),
+:HistBase(name, xnbins*ynbins), m_xbinfactor(xnbins/(xmax-xmin)),
 m_ybinfactor(ynbins/(ymax-ymin))
 {
   m_xmin=xmin, m_xmax=xmax, m_xnbins=xnbins;
@@ -51,35 +55,36 @@ void Prompt::Hist2D::operator+=(const Hist2D& hist)
     m_data[i]+=data[i];
 }
 
-#include<iostream>
-#include<fstream>
+std::vector<double> Prompt::Hist2D::getXEdge() const
+{
+  return linspace(m_xmin, m_xmax, m_xnbins+1);
+}
+
+std::vector<double> Prompt::Hist2D::getYEdge() const
+{
+  return linspace(m_ymin, m_ymax, m_ynbins+1);
+}
+
+
 void Prompt::Hist2D::save(const std::string &filename) const
 {
-  std::cout << "total count " << getTotalHist() << std::endl;
-  std::ofstream ofs;
-  ofs.open(filename, std::ios::out);
+  double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
+  m_bwr->addHeaderComment(m_name);
+  m_bwr->addHeaderComment(getTypeName(typeid(this)).c_str());
+  m_bwr->addHeaderComment(("Total hit: " + std::to_string(getTotalHit())).c_str());
 
-  for(uint32_t i=0;i<m_xnbins;i++)
-  {
-    for(uint32_t j=0;j<m_ynbins;j++)
-    {
-      ofs << m_data[i*m_ynbins + j] << " ";
-    }
-    ofs << "\n";
-  }
-  ofs.close();
+  m_bwr->addHeaderComment(("Integral weight: " + std::to_string(intergral )).c_str());
+  m_bwr->addHeaderComment(("Accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
+  m_bwr->addHeaderComment(("Overflow weight: " + std::to_string(overflow )).c_str());
+  m_bwr->addHeaderComment(("Underflow weight: " + std::to_string(underflow)).c_str());
 
-  ofs.open(filename+"_hit", std::ios::out);
+  m_bwr->addHeaderData("Overflow", &overflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+  m_bwr->addHeaderData("Underflow", &underflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
 
-  for(uint32_t i=0;i<m_xnbins;i++)
-  {
-    for(uint32_t j=0;j<m_ynbins;j++)
-    {
-      ofs << m_hit[i*m_ynbins + j] << " ";
-    }
-    ofs << "\n";
-  }
-  ofs.close();
+  m_bwr->addHeaderData("content", m_data.data(), {m_xnbins, m_ynbins}, Prompt::NumpyWriter::NPDataType::f8);
+  m_bwr->addHeaderData("hit", m_hit.data(), {m_xnbins, m_ynbins}, Prompt::NumpyWriter::NPDataType::f8);
+  m_bwr->addHeaderData("xedge", getXEdge().data(), {m_xnbins+1}, Prompt::NumpyWriter::NPDataType::f8);
+  m_bwr->addHeaderData("yedge", getYEdge().data(), {m_ynbins+1}, Prompt::NumpyWriter::NPDataType::f8);
 
   char buffer [1000];
   //fixme: add xy to dimansion

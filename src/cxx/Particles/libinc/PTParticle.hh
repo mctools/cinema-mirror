@@ -67,13 +67,15 @@ namespace Prompt {
     void kill(KillType t);
     bool isAlive();
 
+    int getPGD() const { return m_pgd; }
+
     virtual double calcSpeed() const;
   protected:
     friend class DeltaParticle;
     double m_ekin0, m_ekin, m_time;
     double m_step, m_deltaEn, m_wFactor;
     Vector m_dir, m_pos, m_localpos;
-    unsigned m_pgd;
+    int m_pgd;
     double m_weight;
     double m_rest_mass;
     bool m_alive;

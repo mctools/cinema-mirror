@@ -26,3 +26,35 @@
 from .Launcher import Launcher as Launcher
 from .Mesh import Mesh as Mesh
 from .Visualiser import Visualiser as Visualiser
+
+import mcpl
+from io import BytesIO
+import numpy as np
+
+class PromptFileReader:
+    def __init__(self, fn, particleBlocklength=10000, dumpHeader=True):
+        self.pfile = mcpl.MCPLFile(fn)
+        self.particleBlocklength = particleBlocklength
+        if dumpHeader:
+            self.pfile.dump_hdr()
+            print("comments:\n", self.getComments())
+
+    def dataKeys(self):
+        return self.pfile.blobs.keys()
+
+    def getData(self, k):
+        raw=BytesIO(self.pfile.blobs[k])
+        return np.load(raw)
+
+    def getComments(self):
+        return self.pfile.comments
+
+    # this can be used like:
+    # for p in reader.blockIterator():
+    #     print( p.x, p.y, p.z, p.ekin )
+    def blockIterator(self):
+     return self.pfile.particle_blocks
+
+    def particleIterator(self):
+     return self.pfile.particle_blocks
+

@@ -82,6 +82,29 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
     export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
   fi
 
+#MCPL
+if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libmcpl.so ]; then
+  read -r -p "Do you want to install MCPL into $CINEMAPATH/external? [y/N] " response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+      if [ ! -d $CINEMAPATH/external ]; then
+        mkdir $CINEMAPATH/external
+      fi
+      cd $CINEMAPATH/external
+      if [ -d mcpl ]; then
+        rm -rf mcpl
+      fi
+      git clone https://gitlab.com/cinema-developers/mcpl
+      cd -
+      mkdir $CINEMAPATH/external/mcpl/build && cd $CINEMAPATH/external/mcpl/build
+      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/mcpl/install ..
+      make -j ${NUMCPU} && make install
+      cd -
+      echo "installed  MCPL"
+    else
+      echo "Found MCPL"
+    fi
+  fi
+
 #install libxerces
 if [ ! -f $CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so ]; then
   read -r -p "Do you want to install libxerces into $CINEMAPATH/external? [y/N] " response

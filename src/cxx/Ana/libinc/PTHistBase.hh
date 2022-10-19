@@ -27,13 +27,13 @@
 #include <stdexcept>
 #include <mutex>
 #include "PTException.hh"
-#include "NumpyWriter.hh"
+#include "PTBinaryWR.hh"
 
 namespace Prompt {
 
   class HistBase {
   public:
-    explicit HistBase(unsigned nbins);
+    explicit HistBase(const std::string &name, unsigned nbins);
     virtual ~HistBase();
 
     virtual void merge(const HistBase &);
@@ -44,7 +44,7 @@ namespace Prompt {
     double getOverflow() const {return m_overflow;};
     double getUnderflow() const {return m_underflow;};
     uint32_t getNBin() const {return m_nbins;};
-    double getTotalHist() const {
+    double getTotalHit() const {
       double sum(0);
       for(auto v: m_hit)
         sum += v;
@@ -56,12 +56,14 @@ namespace Prompt {
 
     const std::vector<double>& getRaw() const {return m_data;}
     const std::vector<double>& getHit() const {return m_hit;}
+    const std::string& getName() const {return m_name;}
 
     virtual unsigned dimension() const = 0;
     virtual void save(const std::string &filename) const = 0;
 
   protected:
 
+    std::string m_name;
     mutable std::mutex m_hist_mutex;
     std::vector<double> m_data, m_hit;
     double m_xmin;
@@ -70,6 +72,7 @@ namespace Prompt {
     double m_underflow;
     double m_overflow;
     uint32_t m_nbins;
+    BinaryWrite *m_bwr;
 
   private:
     //Copy/assignment are forbidden to avoid troubles

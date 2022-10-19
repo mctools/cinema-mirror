@@ -20,9 +20,12 @@
 
 #include "PTHist1D.hh"
 #include "PTMath.hh"
+#include "PTBinaryWR.hh"
+#include <typeinfo>
+#include "PTUtils.hh"
 
-Prompt::Hist1D::Hist1D(double xmin, double xmax, unsigned nbins, bool linear)
-:HistBase(nbins), m_binfactor(0), m_linear(linear), m_logxmin(0)
+Prompt::Hist1D::Hist1D(const std::string &name, double xmin, double xmax, unsigned nbins, bool linear)
+:HistBase(name, nbins), m_binfactor(0), m_linear(linear), m_logxmin(0)
 {
   m_xmin=xmin, m_xmax=xmax, m_nbins=nbins;
   if(linear) {
@@ -50,32 +53,36 @@ std::vector<double> Prompt::Hist1D::getEdge() const
     return logspace(log10(m_xmin), log10(m_xmax), m_nbins+1);
 }
 
-#include "PTRandCanonical.hh"
-
 void Prompt::Hist1D::save(const std::string &filename) const
 {
-  auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
-  NumpyWriter nvt;
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_content.npy", m_data, NumpyWriter::data_type::f8,
-                   std::vector<uint64_t>{m_nbins});
+  double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
+  m_bwr->addHeaderComment(m_name);
+  m_bwr->addHeaderComment(getTypeName(typeid(this)).c_str());
+  m_bwr->addHeaderComment(("Total hit: " + std::to_string(getTotalHit())).c_str());
 
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_hit.npy", m_hit, NumpyWriter::data_type::f8,
-                  std::vector<uint64_t>{m_nbins});
+  m_bwr->addHeaderComment(("Integral weight: " + std::to_string(intergral )).c_str());
+  m_bwr->addHeaderComment(("Accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
+  m_bwr->addHeaderComment(("Overflow weight: " + std::to_string(overflow )).c_str());
+  m_bwr->addHeaderComment(("Underflow weight: " + std::to_string(underflow)).c_str());
 
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_edge.npy", getEdge(), NumpyWriter::data_type::f8,
-                   std::vector<uint64_t>{m_nbins+1});
+  m_bwr->addHeaderData("overflow", &overflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+  m_bwr->addHeaderData("underflow", &underflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+
+  m_bwr->addHeaderData("content", m_data.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
+  m_bwr->addHeaderData("hit", m_hit.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
+  m_bwr->addHeaderData("edge", getEdge().data(), {m_nbins+1}, Prompt::NumpyWriter::NPDataType::f8);
 
   char buffer [1000];
-
   int n =sprintf (buffer,
-    "import numpy as np\n"
+    "import numpy as np\nfrom Cinema.Prompt import PromptFileReader\n"
     "import matplotlib.pyplot as plt\n"
-    "x=np.load('%s_seed%ld_edge.npy')\n"
-    "y=np.load('%s_seed%ld_content.npy')\n"
-    "plt.%s(x[:-1],y/np.diff(x), label=f'integral={y.sum()}')\n"
+    "f = PromptFileReader('%s.mcpl.gz')\n"
+    "x=f.getData('edge')\n"
+    "y=f.getData('content')\n"
+    "plt.%s(x[:-1],y/np.diff(x), label=f'total weight={y.sum()}')\n"
     "plt.grid()\n"
     "plt.legend()\n"
-    "plt.show()\n", filename.c_str(), seed, filename.c_str(), seed, m_linear? "plot":"loglog");
+    "plt.show()\n", m_bwr->getFileName().c_str(), m_linear? "plot":"loglog");
 
   std::ofstream outfile(filename+"_view.py");
   outfile << buffer;

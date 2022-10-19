@@ -1,6 +1,3 @@
-#ifndef Prompt_Scorer_hh
-#define Prompt_Scorer_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,48 +18,53 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTParticle.hh"
-#include "PTHist1D.hh"
-#include "PTHist2D.hh"
+#include "NumpyWriter.hh"
+#include <cstring>
 
-namespace Prompt {
-
-
-  class Scorer {
-  public:
-    enum class ScorerType {SURFACE, ENTRY, PROPAGATE, ABSORB, EXIT};
-  public:
-    Scorer(const std::string& name, ScorerType type) : m_name(name), m_type(type) {};
-    virtual ~Scorer() {std::cout<<"Destructing Scorer " << m_name <<std::endl;};
-    const std::string &getName() { return m_name; }
-    ScorerType getType() { return m_type; }
-    virtual void score(Particle &particle) = 0;
-    virtual void save() = 0;
-  protected:
-    const std::string m_name;
-    ScorerType m_type;
-  };
-
-  class Scorer1D : public Scorer {
-  public:
-    Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist)
-    : Scorer(name, type), m_hist(std::move(hist)) {};
-    virtual ~Scorer1D() { save(); }
-    void save() { m_hist->save(m_name); }
-  protected:
-    std::unique_ptr<Hist1D> m_hist;
-  };
-
-  class Scorer2D : public Scorer {
-  public:
-    Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist)
-    : Scorer(name, type), m_hist(std::move(hist)) {};
-    virtual ~Scorer2D() { save(); }
-    void save() { m_hist->save(m_name); }
-  protected:
-    std::unique_ptr<Hist2D> m_hist;
-  };
+Prompt::NumpyWriter::NumpyWriter()
+{
+  //fixme: make sure it is a little endian system
 }
 
-#endif
+Prompt::NumpyWriter::~NumpyWriter()
+{
+
+}
+
+void Prompt::NumpyWriter::makeNumpyArrFromUChar(const uint8_t *data, size_t len,
+                  Prompt::NumpyWriter::NPDataType dtype, const std::vector<uint64_t> &shape, std::string &npArr)
+{
+  const std::string fixed_magic_string("\x93NUMPY");
+
+  npArr.reserve(len + 128); //a guess of tot size
+
+  npArr = fixed_magic_string +'\x01'+'\x00' + "  ";
+  npArr += "{'descr': '" + U32toASCII(dtype).getTypeString() + "', 'fortran_order': False, 'shape': (" ;
+
+  for(auto v:shape)
+    npArr += std::to_string(v) + ",";
+  if(shape.size()>1)
+    npArr.pop_back();
+
+  npArr += "), }";
+
+  unsigned dict_size = npArr.size();
+  if(dict_size>65535)
+    throw std::length_error("header in npy 1.0 format can't be larger than 65535 bytes, see https://docs.scipy.org/doc/numpy-1.14.2/neps/npy-format.html");
+
+  //total meta info size mush be evenly divisible by 64 for alignment purposes.
+  //-1, because terminated by a newline '\n'
+  unsigned tot = ((dict_size/64)+1)*64;
+
+  //sizeof("\x93NUMPY\x01\00")+sizeof(HEADER_LEN)=10 bytes
+  uint16_t header_len_with_padding = tot-10;
+
+  npArr[8] = ( unsigned char ) (header_len_with_padding & 0xff) ;
+  npArr[9] = ( unsigned char ) ((header_len_with_padding>>8) & 0xff);
+
+  unsigned padding_size = tot - dict_size - 1;
+  npArr.append(padding_size,'\x20');
+  npArr += "\n";
+
+  npArr.append(reinterpret_cast<const char* >(data),len);
+}
