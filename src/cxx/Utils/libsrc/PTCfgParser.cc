@@ -52,6 +52,8 @@ Prompt::CfgParser::ScorerCfg Prompt::CfgParser::getScorerCfg(const std::string& 
   for(const auto &s: strvec)
   {
     auto p = split(s, '=');
+    if(p.size()!=2)
+        PROMPT_THROW2(BadInput, " cfg section \""<< s << "\" is ill-defined" );
     cfg.parameters[p[0]] = p[1];
     // std::cout << s << std::endl;
   }

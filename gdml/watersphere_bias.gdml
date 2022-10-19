@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <gdml>
-<!-- aneutron is generated in a xs biased sphere and hitting a box -->
+<!-- neutrons are generated in a xs biased sphere and hitting a box -->
     <userinfo>
       <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=0;moderator_height_y=0;moderator_positon_z=-400;slit_width_x=0;slit_height_y=0;slit_position_z=1;temperature=293.15" />
     </userinfo>
