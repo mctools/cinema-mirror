@@ -26,24 +26,32 @@
 
 
 Prompt::BinaryWrite::BinaryWrite(const std::string &fn, bool enable_double, bool enable_extra3double, bool enable_extraUnsigned)
-:m_filename(fn), m_file(mcpl_create_outfile(fn.c_str())), m_particleInFile(nullptr), m_headerClosed(false)
-{
-    mcpl_hdr_set_srcname(m_file,"my_cool_program_name");
-    if(enable_double) mcpl_enable_doubleprec(m_file);
-    if(enable_extra3double)   mcpl_enable_polarisation(m_file);  // double[3]
-    if(enable_extraUnsigned)  mcpl_enable_userflags(m_file);    // uint32_t
+:m_filename(fn), m_file(mcpl_create_outfile(fn.c_str())), m_particleInFile(nullptr), m_enable_double(enable_double),
+ m_enable_extra3double(enable_extra3double), m_enable_extraUnsigned(enable_extraUnsigned),
+m_fileNotCreated(true), m_headerClosed(false) { }
 
-    mcpl_hdr_set_srcname(m_file, ("Prompt " + PTVersion).c_str());
-    m_particleInFile = mcpl_get_empty_particle(m_file);
+void Prompt::BinaryWrite::init()
+{
+  m_fileNotCreated = false;
+  mcpl_hdr_set_srcname(m_file,"Prompt");
+  if(m_enable_double) mcpl_enable_doubleprec(m_file);
+  if(m_enable_extra3double)   mcpl_enable_polarisation(m_file);  // double[3]
+  if(m_enable_extraUnsigned)  mcpl_enable_userflags(m_file);    // uint32_t
+
+  mcpl_hdr_set_srcname(m_file, ("Prompt " + PTVersion).c_str());
+  m_particleInFile = mcpl_get_empty_particle(m_file);
 }
+
 
 Prompt::BinaryWrite::~BinaryWrite()
 {
-  mcpl_closeandgzip_outfile(m_file);
+  if(!m_fileNotCreated)
+    mcpl_closeandgzip_outfile(m_file);
 }
 
 void Prompt::BinaryWrite::addHeaderComment(const std::string &comment)
 {
+  if(m_fileNotCreated) init();
   if(m_headerClosed)
       PROMPT_THROW(LogicError, "addHeaderComment can not operate on a file when the file header is closed ");
 
@@ -52,6 +60,9 @@ void Prompt::BinaryWrite::addHeaderComment(const std::string &comment)
 
 void Prompt::BinaryWrite::record(const PromtRecord &p)
 {
+  if(m_fileNotCreated) init();
+  m_headerClosed=true;
+
   //size 12 double, a 32-bit int and a 32-bit unsigned
   // 8*12+4*2=104
   memcpy ( m_particleInFile, &(p.mcplParticle), sizeof(*m_particleInFile));
@@ -60,6 +71,8 @@ void Prompt::BinaryWrite::record(const PromtRecord &p)
 
 void Prompt::BinaryWrite::record(const Particle &p)
 {
+  if(m_fileNotCreated) init();
+
   m_headerClosed=true;
   m_particleInFile->pdgcode = p.getPGD();
 

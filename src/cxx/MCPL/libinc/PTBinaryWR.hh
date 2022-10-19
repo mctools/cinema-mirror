@@ -97,7 +97,11 @@ namespace Prompt {
     std::string m_filename;
     mcpl_outfile_t m_file;
     mcpl_particle_t *m_particleInFile;
-    bool m_headerClosed;
+    bool m_enable_double, m_enable_extra3double, m_enable_extraUnsigned;
+    bool m_fileNotCreated, m_headerClosed;
+
+  private:
+    void init();
   };
 }
 

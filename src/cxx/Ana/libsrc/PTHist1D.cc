@@ -55,8 +55,6 @@ std::vector<double> Prompt::Hist1D::getEdge() const
 
 void Prompt::Hist1D::save(const std::string &filename) const
 {
-  std::cout << "saving hist1d\n"; 
-
   double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
   m_bwr->addHeaderComment(m_name);
   m_bwr->addHeaderComment(getTypeName(typeid(this)).c_str());
@@ -78,7 +76,7 @@ void Prompt::Hist1D::save(const std::string &filename) const
   int n =sprintf (buffer,
     "import numpy as np\nfrom Cinema.Prompt import PromptFileReader\n"
     "import matplotlib.pyplot as plt\n"
-    "f = PromptFileReader('%s')\n"
+    "f = PromptFileReader('%s.mcpl.gz')\n"
     "x=f.getData('edge')\n"
     "y=f.getData('content')\n"
     "plt.%s(x[:-1],y/np.diff(x), label=f'integral={y.sum()}')\n"
