@@ -124,7 +124,49 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     else if(ScorDef == "PSD")
     {
 
+      int parCount = 9;
+
+      bool force = true;
+
+      std::string name = cfg.find("name", force);
+      double xmin = ptstod(cfg.find("xmin", force));
+      double xmax = ptstod(cfg.find("xmax", force));
+      int nxbins = ptstoi(cfg.find("numBins_x", force));
+      double ymin = ptstod(cfg.find("ymin", force));
+      double ymax = ptstod(cfg.find("ymax", force));
+      int nybins = ptstoi(cfg.find("numBins_y", force));
+
+      ScorerPSD::ScorerType type = ScorerPSD::ScorerType::XY;
+      std::string typeInStr = cfg.find("type");
+      if(typeInStr.empty())
+        parCount--;
+      else
+      {
+        if(typeInStr=="XY")
+        {
+          type = ScorerPSD::ScorerType::XY;
+        }
+        else if(typeInStr=="XZ")
+        {
+          type = ScorerPSD::ScorerType::XZ;
+        }
+        else if(typeInStr=="YZ")
+        {
+          type = ScorerPSD::ScorerType::YZ;
+        }
+        else {
+          PROMPT_THROW(BadInput, "Scorer type can only be XY, XZ or YZ" );
+        }
+      }
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Scorer type PSD is missing or with extra config parameters" << cfg.size() << " " << parCount );
+      }
+
+      return std::make_shared<Prompt::ScorerPSD>(name, xmin, xmax, nxbins, ymin, ymax, nybins, type);
     }
+
     else if(ScorDef == "ESpectrum")
     {
       // example cfg
@@ -206,6 +248,38 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     }
     else if(ScorDef == "VolFlux")
     {
+      int parCount = 6;
+
+      bool force = true;
+      std::string name = cfg.find("name", force);
+      double xmin = ptstod(cfg.find("xmin", force));
+      double xmax = ptstod(cfg.find("xmax", force));
+      int nxbins = ptstoi(cfg.find("numBins_x", force));
+      
+      bool linear = true;
+      std::string linearInStr = cfg.find("linear");
+      if(linearInStr.empty())
+        parCount--;
+      else
+      {
+        if(linearInStr=="yes")
+        {
+          linear = true;
+        }
+        else if(linearInStr=="no")
+          linear = false;
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"linear\" should either be \"yes\" or \"no\"");
+        }
+
+      }
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Scorer type VolFlux is missing or with extra config parameters" << cfg.size() << " " << parCount );
+      }
+
+      return std::make_shared<Prompt::ScorerVolFlux>(name, xmin, xmax, nxbins, linear, vol);
 
     }
     else
