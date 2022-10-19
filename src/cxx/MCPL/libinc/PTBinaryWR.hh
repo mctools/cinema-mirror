@@ -63,7 +63,7 @@ namespace Prompt {
   };
 
 
-  struct PromtRecord
+  struct PromptRecord
   {
     PromtRecodeType type;
     union
@@ -89,7 +89,7 @@ namespace Prompt {
 
     // Particle list
     void record(const Particle &p);
-    void record(const PromtRecord &p);
+    void record(const PromptRecord &p);
 
     // const std::string& getFileName() { return m_filename; }
 

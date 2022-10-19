@@ -79,7 +79,7 @@ void Prompt::Hist1D::save(const std::string &filename) const
     "f = PromptFileReader('%s.mcpl.gz')\n"
     "x=f.getData('edge')\n"
     "y=f.getData('content')\n"
-    "plt.%s(x[:-1],y/np.diff(x), label=f'integral={y.sum()}')\n"
+    "plt.%s(x[:-1],y/np.diff(x), label=f'total weight={y.sum()}')\n"
     "plt.grid()\n"
     "plt.legend()\n"
     "plt.show()\n", m_bwr->getFileName().c_str(), m_linear? "plot":"loglog");

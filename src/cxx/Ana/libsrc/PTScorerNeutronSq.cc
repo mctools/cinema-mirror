@@ -68,7 +68,7 @@ void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
   << particle.getNumScat() << " "
   << particle.getWeight() <<  "\n";
 
-  PromtRecord recode;
+  PromptRecord recode;
   recode.type = PromtRecodeType::SCRSQ;
   recode.sqRecode.ekin = particle.getEKin();
   recode.sqRecode.q = q;

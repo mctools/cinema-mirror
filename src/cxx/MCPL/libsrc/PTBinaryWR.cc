@@ -58,7 +58,7 @@ void Prompt::BinaryWrite::addHeaderComment(const std::string &comment)
   mcpl_hdr_add_comment(m_file, comment.c_str());
 }
 
-void Prompt::BinaryWrite::record(const PromtRecord &p)
+void Prompt::BinaryWrite::record(const PromptRecord &p)
 {
   if(m_fileNotCreated) init();
   m_headerClosed=true;
