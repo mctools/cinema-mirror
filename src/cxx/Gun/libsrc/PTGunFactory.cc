@@ -91,21 +91,112 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
           std::array<double, 6> {moderator_width_x, moderator_height_y, moderator_positon_z,
                                  slit_width_x, slit_height_y, slit_position_z});
     }
-    else if(gunDef == "SimpleThermalGun")
+    else if(gunDef == "SimpleThermalGun" || gunDef == "IsotropicGun")
     {
-      PROMPT_THROW(LogicError, "not yet impletmented ")
-    }
-    else if(gunDef == "IsotropicGun")
-    {
-      PROMPT_THROW(LogicError, "not yet impletmented ")
+      // example cfgstr:
+      // gun=SimpleThermalGun;energy=0.0253;position=0,0,-500;direction=0,0,1
+      // gun=IsotropicGun;energy=0.0253;position=0,0,-10;direction=0,0,1
+
+      // energy and direction are optional with default value 0 and 0,0,1 separately
+      int parCount = 4;
+
+      // The mandatory parameters
+      bool force = true;
+      Vector position = string2vec(cfg.find("position", force));
+
+      // the optional parameters
+      double energy = 0;
+      std::string energyInStr = cfg.find("energy");
+      if(energyInStr.empty())
+        parCount--;
+      else
+      {
+        energy = ptstod(energyInStr);
+      }
+
+      Vector direction = Vector{0.,0.,1.};
+      std::string directionInStr = cfg.find("direction");
+      if(directionInStr.empty())
+        parCount--;
+      else
+      {
+        direction = string2vec(directionInStr);
+      }
+
+      if(gunDef == "SimpleThermalGun")
+      {
+        if(parCount!=cfg.size())
+        {
+          PROMPT_THROW2(BadInput, "SimpleThermalGun is missing or with extra config parameters" << cfg.size() << " " << parCount ); 
+        }
+
+        return std::make_shared<SimpleThermalGun>(Neutron(), energy, position, direction);
+
+      }
+      else if(gunDef == "IsotropicGun")
+      {
+        if(parCount!=cfg.size())
+        {
+          PROMPT_THROW2(BadInput, "IsotropicGun is missing or with extra config parameters" << cfg.size() << " " << parCount ); 
+        }
+
+        return std::make_shared<IsotropicGun>(Neutron(), energy, position, direction);
+      }
     }
     else if(gunDef == "UniModeratorGun")
     {
-      PROMPT_THROW(LogicError, "not yet impletmented ")
+      // example cfgstr:
+      // gun=UniModeratorGun;mean_wavelength=3.39;range_wavelength=0.3;moderator_width_x=100;moderator_height_y=50;moderator_positon_z=-400;
+      // slit_width_x=5;slit_height_y=10;slit_position_z=1
+      
+
+      int parCount = 9;
+
+      // The mandatory parameters
+      bool force = true;
+      double mean_wavelength = ptstod(cfg.find("mean_wavelength",force));
+      double range_wavelength = ptstod(cfg.find("range_wavelength",force));
+      double moderator_width_x = ptstod(cfg.find("moderator_width_x", force));
+      double moderator_height_y = ptstod(cfg.find("moderator_height_y", force));
+      double moderator_positon_z = ptstod(cfg.find("moderator_positon_z", force));
+      double slit_width_x = ptstod(cfg.find("slit_width_x", force));
+      double slit_height_y = ptstod(cfg.find("slit_height_y", force));
+      double slit_position_z = ptstod(cfg.find("slit_position_z", force));
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "UniModeratorGun is missing or with extra config parameters" << cfg.size() << " " << parCount );
+      }
+      
+      return std::make_shared<UniModeratorGun>(Neutron(), mean_wavelength, range_wavelength,
+            std::array<double, 6> {moderator_width_x, moderator_height_y, moderator_positon_z,
+                                 slit_width_x, slit_height_y, slit_position_z});
     }
-    else if(gunDef == "TMPIGun")
+    else if(gunDef == "MPIGun")
     {
-      PROMPT_THROW(LogicError, "not yet impletmented ")
+      // example cfgstr:
+      // gun=TMPIGun;moderator_width_x=100;moderator_height_y=50;moderator_positon_z=-400;
+      // slit_width_x=5;slit_height_y=10;slit_position_z=1
+
+      int parCount = 7;
+
+      // The mandatory parameters
+      bool force = true;
+      double moderator_width_x = ptstod(cfg.find("moderator_width_x", force));
+      double moderator_height_y = ptstod(cfg.find("moderator_height_y", force));
+      double moderator_positon_z = ptstod(cfg.find("moderator_positon_z", force));
+      double slit_width_x = ptstod(cfg.find("slit_width_x", force));
+      double slit_height_y = ptstod(cfg.find("slit_height_y", force));
+      double slit_position_z = ptstod(cfg.find("slit_position_z", force));
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "MPIGun is missing or with extra config parameters" << cfg.size() << " " << parCount );
+      }
+
+      return std::make_shared<MPIGun>(Neutron(),
+            std::array<double, 6> {moderator_width_x, moderator_height_y, moderator_positon_z,
+                                 slit_width_x, slit_height_y, slit_position_z});
     }
     else
       PROMPT_THROW2(BadInput, "Gun " << gunDef << " is not supported. ")
