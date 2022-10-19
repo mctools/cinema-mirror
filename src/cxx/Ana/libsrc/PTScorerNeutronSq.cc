@@ -24,7 +24,7 @@
 Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool linear)
 :Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>("ScorerNeutronSq_" + name, qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
-m_sourceSampleDist(sourceSampleDist), m_bwr(BinaryWrite("NeutronHistory"))
+m_sourceSampleDist(sourceSampleDist), m_bwr(nullptr)
 {
   if(stype==Scorer::ScorerType::ENTRY)
     m_kill=true;
@@ -32,12 +32,15 @@ m_sourceSampleDist(sourceSampleDist), m_bwr(BinaryWrite("NeutronHistory"))
     m_kill=false;
   else
     PROMPT_THROW(BadInput, "ScorerNeutronSq can only be Scorer::ScorerType::ENTRY or Scorer::ScorerType::ABSORB");
-    auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
-    m_dataout.open("ScorerNeutronSq_" + name + "_seed"+std::to_string(seed)+".wgt");
+  auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
+  m_dataout.open("ScorerNeutronSq_" + name + "_seed"+std::to_string(seed)+".wgt");
+
+  m_bwr = new BinaryWrite("ScorerNeutronSq_" + name + "_seed"+std::to_string(seed)+".record", false, true);
 }
 
 Prompt::ScorerNeutronSq::~ScorerNeutronSq()
 {
+  delete m_bwr;
   m_dataout.close();
 }
 
@@ -65,7 +68,20 @@ void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
   << particle.getNumScat() << " "
   << particle.getWeight() <<  "\n";
 
-  m_bwr.record(particle);
+  PromtRecord recode;
+  recode.type = PromtRecodeType::SCRSQ;
+  recode.sqRecode.ekin = particle.getEKin();
+  recode.sqRecode.q = q;
+  recode.sqRecode.qtrue = qtrue;
+  recode.sqRecode.ekin_atbirth = particle.getEKin0();
+  recode.sqRecode.ekin_tof = ekin;
+  recode.sqRecode.time = tof_us;
+  recode.sqRecode.weight = particle.getWeight();
+  recode.sqRecode.scatNum = particle.getNumScat();
+  m_bwr->record(recode);
+
+  // static inline Vector& asVect( double (&v)[3] ) { return *reinterpret_cast<Vector*>(&v); }
+  // static inline const Vector& asVect( const double (&v)[3] ) { return *reinterpret_cast<const Vector*>(&v); }
 
   // printf("Qe, Qtrue; Ekine , Ekin0 , Ekin; TOF; x y z\n");
   // printf("%f, %f, %.02e, %.02e, %.02e;  %.02f; %.02f %.02f %.02f\n\n", q, qtrue, ekin, particle.getEKin0(), particle.getEKin(),

@@ -30,12 +30,48 @@
 
 namespace Prompt {
 
+  enum class PromtRecodeType { MCPL, SCRSQ };
+
+  // typedef struct {
+  //   double ekin;            /* kinetic energy [MeV]             */
+  //   double polarisation[3]; /* polarisation vector              */
+  //   double position[3];     /* position [cm]                    */
+  //   double direction[3];    /* momentum direction (unit vector) */
+  //   double time;            /* time-stamp [millisecond]         */
+  //   double weight;          /* weight or intensity              */
+  //   int32_t pdgcode;    /* MC particle number from the Particle Data Group (2112=neutron, 22=gamma, ...)        */
+  //   uint32_t userflags; /* User flags (if used, the file header should probably contain information about how). */
+  // } mcpl_particle_t;
+
+  struct ScorerSqRecord {
+    double ekin;
+    double q, qtrue, ekin_atbirth;
+    double ekin_tof;
+    double dummy1[3];
+    double time;
+    double weight;
+
+    int32_t scatNum;
+    uint32_t dummy3;
+  };
+
+  struct PromtRecord
+  {
+    PromtRecodeType type;
+    union
+    {
+        mcpl_particle_t mcplParticle;
+        ScorerSqRecord sqRecode;
+    };
+  };
+
+
   class BinaryWrite {
   public:
-    BinaryWrite(const std::string &fn, bool enable_double=false, bool with_extra3double=false, bool with_extraUnsigned=false);
+    BinaryWrite(const std::string &fn, bool enable_double=false, bool enable_extra3double=false, bool enable_extraUnsigned=false);
     virtual ~BinaryWrite();
-    void record(const Particle &p);
 
+    // Header
     void addHeaderComment(const std::string &comment);
     template <typename T>
     void addHeaderData(const std::string &dataname, const T *data,
@@ -43,10 +79,16 @@ namespace Prompt {
     constexpr void closeHeader() { m_headerClosed=true; }
     const std::string& getFileName() { return m_filename; }
 
+    // Particle list
+    void record(const Particle &p);
+    void record(const PromtRecord &p);
+
+    // const std::string& getFileName() { return m_filename; }
+
   protected:
     std::string m_filename;
     mcpl_outfile_t m_file;
-    mcpl_particle_t *m_particleSpace;
+    mcpl_particle_t *m_particleInFile;
     bool m_headerClosed;
   };
 }

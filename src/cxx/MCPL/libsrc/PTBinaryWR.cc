@@ -25,16 +25,16 @@
 #include "PTBinaryWR.hh"
 
 
-Prompt::BinaryWrite::BinaryWrite(const std::string &fn, bool enable_double, bool with_extra3double, bool with_extraUnsigned)
-:m_filename(fn), m_file(mcpl_create_outfile(fn.c_str())), m_particleSpace(nullptr), m_headerClosed(false)
+Prompt::BinaryWrite::BinaryWrite(const std::string &fn, bool enable_double, bool enable_extra3double, bool enable_extraUnsigned)
+:m_filename(fn), m_file(mcpl_create_outfile(fn.c_str())), m_particleInFile(nullptr), m_headerClosed(false)
 {
     mcpl_hdr_set_srcname(m_file,"my_cool_program_name");
     if(enable_double) mcpl_enable_doubleprec(m_file);
-    if(with_extra3double)   mcpl_enable_polarisation(m_file);  // double[3]
-    if(with_extraUnsigned)  mcpl_enable_userflags(m_file);    // uint32_t
+    if(enable_extra3double)   mcpl_enable_polarisation(m_file);  // double[3]
+    if(enable_extraUnsigned)  mcpl_enable_userflags(m_file);    // uint32_t
 
     mcpl_hdr_set_srcname(m_file, ("Prompt " + PTVersion).c_str());
-    m_particleSpace = mcpl_get_empty_particle(m_file);
+    m_particleInFile = mcpl_get_empty_particle(m_file);
 }
 
 Prompt::BinaryWrite::~BinaryWrite()
@@ -50,32 +50,41 @@ void Prompt::BinaryWrite::addHeaderComment(const std::string &comment)
   mcpl_hdr_add_comment(m_file, comment.c_str());
 }
 
+void Prompt::BinaryWrite::record(const PromtRecord &p)
+{
+  //size 12 double, a 32-bit int and a 32-bit unsigned
+  // 8*12+4*2=104
+  memcpy ( m_particleInFile, &(p.mcplParticle), sizeof(*m_particleInFile));
+  mcpl_add_particle(m_file, m_particleInFile);
+}
+
 void Prompt::BinaryWrite::record(const Particle &p)
 {
-  m_particleSpace->pdgcode = p.getPGD();
+  m_headerClosed=true;
+  m_particleInFile->pdgcode = p.getPGD();
 
   //fixme: position in centimeters:
   const Vector &pos = p.getPosition();
-  m_particleSpace->position[0] = pos.x();
-  m_particleSpace->position[1] = pos.y();
-  m_particleSpace->position[2] = pos.z();
+  m_particleInFile->position[0] = pos.x();
+  m_particleInFile->position[1] = pos.y();
+  m_particleInFile->position[2] = pos.z();
 
   //fixme: kinetic energy in MeV:
-  m_particleSpace->ekin = p.getEKin();
+  m_particleInFile->ekin = p.getEKin();
 
   const Vector &dir = p.getDirection();
 
-  m_particleSpace->direction[0] = dir.x();
-  m_particleSpace->direction[1] = dir.y();
-  m_particleSpace->direction[2] = dir.z();
+  m_particleInFile->direction[0] = dir.x();
+  m_particleInFile->direction[1] = dir.y();
+  m_particleInFile->direction[2] = dir.z();
 
   //time in milliseconds:
-  m_particleSpace->time = p.getTime();
+  m_particleInFile->time = p.getTime();
 
   //weight in unspecified units:
-  m_particleSpace->weight = p.getWeight();
+  m_particleInFile->weight = p.getWeight();
 
   //modify userflags (unsigned_32) and polarisation (double[3]) as well, if enabled.
 
-  mcpl_add_particle(m_file, m_particleSpace);
+  mcpl_add_particle(m_file, m_particleInFile);
 }

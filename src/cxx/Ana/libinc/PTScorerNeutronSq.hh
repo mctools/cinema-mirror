@@ -40,7 +40,7 @@ namespace Prompt {
     const double m_sourceSampleDist;
     bool m_kill;
     std::ofstream m_dataout;
-    BinaryWrite m_bwr;
+    BinaryWrite *m_bwr;
 
   };
 }
