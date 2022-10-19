@@ -78,6 +78,7 @@ void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
   recode.sqRecode.time = tof_us;
   recode.sqRecode.weight = particle.getWeight();
   recode.sqRecode.scatNum = particle.getNumScat();
+  recode.sqRecode.filldummy();
   m_bwr->record(recode);
 
   // static inline Vector& asVect( double (&v)[3] ) { return *reinterpret_cast<Vector*>(&v); }

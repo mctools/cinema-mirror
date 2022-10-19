@@ -46,14 +46,21 @@ namespace Prompt {
   struct ScorerSqRecord {
     double ekin;
     double q, qtrue, ekin_atbirth;
-    double ekin_tof;
-    double dummy1[3];
+    double ekin_tof, dummy1, dummy2;
+    double dummyunitvector[3];
     double time;
     double weight;
 
     int32_t scatNum;
     uint32_t dummy3;
+
+    void filldummy() {
+      dummyunitvector[0] = 1.;
+      dummyunitvector[1] = 0.;
+      dummyunitvector[2] = 0.;
+    };
   };
+
 
   struct PromtRecord
   {
