@@ -1,7 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="UniModeratorGun;Neutron;3.39;0.3;50, 50, 0, 50, 50, 1000" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;
+        mean_wavelength=3.39;range_wavelength=0.3;moderator_width_x=50;
+        moderator_height_y=50;moderator_positon_z=0;slit_width_x=50;
+        slit_height_y=50;slit_position_z=1000" />
     </userinfo>
 
     <define>
@@ -41,16 +44,17 @@
 
         <volume name="logMonitor1">
             <solidref ref="Monitor1Solid"/>
-            <auxiliary auxtype="Scorer" auxvalue="PSD;Monitor1;-25;25;20;-25;25;20;XY"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=Monitor1;
+              xmin=-25;xmax=25;numBins_x=20;ymin=-25;ymax=25;numBins_y=20;type=XY"/>
             <materialref ref="Vaccum"/>
         </volume>
 
         <volume name="logMonitor2">
             <solidref ref="Monitor2Solid"/>
-            <auxiliary auxtype="Scorer" auxvalue="PSD;Monitor2;-35;35;20;-35;35;20;XY"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=Monitor2;
+              xmin=-35;xmax=35;numBins_x=20;ymin=-35;ymax=35;numBins_y=20;type=XY"/>
             <materialref ref="Vaccum"/>
         </volume>
-
 
         <volume name="worldVOL"><!-- World -->
             <solidref ref="WorldBox"/>
