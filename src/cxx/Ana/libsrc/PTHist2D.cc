@@ -89,20 +89,21 @@ void Prompt::Hist2D::save(const std::string &filename) const
   char buffer [1000];
   //fixme: add xy to dimansion
   int n =sprintf (buffer,
-    "import numpy as np\n"
+    "from Cinema.Prompt import PromptFileReader\n"
     "import matplotlib.pyplot as plt\n"
     "import matplotlib.colors as colors\n"
-    "data=np.loadtxt('%s')\n"
+    "f = PromptFileReader('%s.mcpl.gz')\n"
+    "data=f.getData('content')\n"
+    "count=f.getData('hit')\n"
     "fig=plt.figure()\n"
     "ax = fig.add_subplot(111)\n"
     "pcm = ax.pcolormesh(data.T, cmap=plt.cm.jet,shading='auto')\n"
     "#pcm = ax.pcolormesh(data.T, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=data.max()*1e-10, vmax=data.max()), shading='auto')\n"
     "fig.colorbar(pcm, ax=ax)\n"
-    "count=np.loadtxt('%s')\n"
     "count=count.sum()-count.max()\n"
     "integral= data.sum()\n"
     "plt.title(f'Integral {integral}, count {count}')\n"
-    "plt.show()\n", filename.c_str(), (filename+"_hit").c_str());
+    "plt.show()\n", m_bwr->getFileName().c_str());
 
   std::ofstream outfile(filename+"_view.py");
   outfile << buffer;
@@ -118,7 +119,6 @@ void Prompt::Hist2D::fill(double xval, double yval)
 
 void Prompt::Hist2D::fill(double xval, double yval, double w)
 {
-  std::lock_guard<std::mutex> guard(m_hist_mutex);
   fill_unguard(xval, yval, w);
 }
 
