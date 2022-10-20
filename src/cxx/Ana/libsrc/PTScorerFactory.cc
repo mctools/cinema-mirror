@@ -210,16 +210,16 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     else if(ScorDef == "MultiScat")
     {
       // example cfg
-      // ""Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; numbin=5; linear=yes""
+      // ""Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; linear=yes""
       // the default value for linear is yes
-      int parCount = 6;
+      int parCount = 5;
 
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
       double minNumber = ptstod(cfg.find("Numbermin", force));
       double maxNumber = ptstod(cfg.find("Numbermax", force));
-      int numBin = ptstoi(cfg.find("numbin", force));
+      int numBin = maxNumber-minNumber+1;
 
       // the optional parameters
       bool linear = true;
