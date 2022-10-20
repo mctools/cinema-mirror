@@ -83,7 +83,7 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
   fi
 
 #MCPL
-if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libmcpl.so ]; then
+if [ ! -f $CINEMAPATH/external/mcpl/install/lib/libmcpl.so ]; then
   read -r -p "Do you want to install MCPL into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       if [ ! -d $CINEMAPATH/external ]; then
