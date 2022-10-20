@@ -90,7 +90,7 @@ std::shared_ptr<Prompt::BoundaryPhysics> Prompt::PhysicsFactory::createBoundaryP
         m = ptstod(mInStr);
       }
 
-      double threshold = 1.0;
+      double threshold = 1e-3;
       std::string thresholdInStr = cfg.find("threshold");
       if(thresholdInStr.empty())
         parCount--;

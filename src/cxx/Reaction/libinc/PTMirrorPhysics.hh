@@ -38,10 +38,10 @@ namespace Prompt {
       void setReflectionNormal(const Vector &nor) {m_refNorm=nor;}
 
     private:
-      std::shared_ptr<LookUpTable> m_table;
-      double m_wcut;
-      Vector m_refNorm;
+      const double m_wcut;
       mutable double m_wAtQ;
+      std::shared_ptr<LookUpTable> m_table;
+      Vector m_refNorm;
 
   };
 
