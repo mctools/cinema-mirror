@@ -60,7 +60,7 @@
     <box name="DetectorSolid" x="500" y="500" z="0.00001" />
     <box name="sideDetSolid" x="1e-4" y="600" z="5000" />
 
-    <hype name="SampleTubeSolid" rmin="0" rmax="r_sample" z="400" inst="0" outst="3.8" />
+    <hype name="SampleTubeSolid" rmin="0" rmax="r_sample" z="350" inst="0" outst="3.58" />
     <!-- <tube name="GuideEntrySolid" rmin="0" rmax="50" z="0.0001" startphi="0" deltaphi="360" aunit="deg"/> -->
     <box name="GuideEntrySolid" x="100" y="100" z="0.0001" />
     <box name="worldSolid" x="1600.0" y="600.0" z="5000.0" />
