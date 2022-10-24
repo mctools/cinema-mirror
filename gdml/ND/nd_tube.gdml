@@ -10,8 +10,8 @@
    <define>
     <position name="DetectorPos" x="0" y="0" z="999." />
     <rotation name="rot_sample" unit="deg" x="90" y="0" z="0" />
-    <position name="shift_sample" x="89.5" y="0" z="0" />
-    <constant name="r_sample" value="90" />
+    <position name="shift_sample" x="28.5" y="0" z="0" />
+    <constant name="r_sample" value="30" />
   </define>
 
   <materials>
