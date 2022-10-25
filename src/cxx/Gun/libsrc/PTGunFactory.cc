@@ -127,7 +127,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       {
         if(parCount!=cfg.size())
         {
-          PROMPT_THROW2(BadInput, "SimpleThermalGun is missing or with extra config parameters" << cfg.size() << " " << parCount ); 
+          PROMPT_THROW2(BadInput, "SimpleThermalGun is missing or with extra config parameters" << cfg.size() << " " << parCount );
         }
 
         return std::make_shared<SimpleThermalGun>(Neutron(), energy, position, direction);
@@ -137,7 +137,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       {
         if(parCount!=cfg.size())
         {
-          PROMPT_THROW2(BadInput, "IsotropicGun is missing or with extra config parameters" << cfg.size() << " " << parCount ); 
+          PROMPT_THROW2(BadInput, "IsotropicGun is missing or with extra config parameters" << cfg.size() << " " << parCount );
         }
 
         return std::make_shared<IsotropicGun>(Neutron(), energy, position, direction);
@@ -148,7 +148,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       // example cfgstr:
       // gun=UniModeratorGun;mean_wavelength=3.39;range_wavelength=0.3;moderator_width_x=100;moderator_height_y=50;moderator_positon_z=-400;
       // slit_width_x=5;slit_height_y=10;slit_position_z=1
-      
+
 
       int parCount = 9;
 
@@ -167,7 +167,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       {
         PROMPT_THROW2(BadInput, "UniModeratorGun is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
-      
+
       return std::make_shared<UniModeratorGun>(Neutron(), mean_wavelength, range_wavelength,
             std::array<double, 6> {moderator_width_x, moderator_height_y, moderator_positon_z,
                                  slit_width_x, slit_height_y, slit_position_z});
@@ -201,45 +201,8 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
     else
       PROMPT_THROW2(BadInput, "Gun " << gunDef << " is not supported. ")
   }
+  assert(false);
+  //a return statement here to stop compiler warning, it should never reach here
+  return std::make_shared<IsotropicGun>(Neutron(), 1, Vector{0,0,0}, Vector{1,0,0});
 
-
-        // auto words = split(info.GetValue(), ';');
-        // if(words[0]=="MaxwellianGun")
-        // {
-        //   double temp = ptstod(words[2]);
-        //   auto positions = split(words[3], ',');
-        //
-        //   m_gun = std::make_shared<MaxwellianGun>(Neutron(), temp,
-        //     std::array<double, 6> {ptstod(positions[0]), ptstod(positions[1]), ptstod(positions[2]),
-        //                            ptstod(positions[3]), ptstod(positions[4]), ptstod(positions[5])});
-        // }
-        // else if(words[0]=="MPIGun")
-        // {
-        //   auto positions = split(words[2], ',');
-        //   m_gun = std::make_shared<MPIGun>(Neutron(),
-        //     std::array<double, 6> {ptstod(positions[0]), ptstod(positions[1]), ptstod(positions[2]),
-        //                            ptstod(positions[3]), ptstod(positions[4]), ptstod(positions[5])});
-        // }
-        // else if(words[0]=="UniModeratorGun")
-        // {
-        //   double wl0 = ptstod(words[2]);
-        //   double wl_dlt = ptstod(words[3]);
-        //   auto positions = split(words[4], ',');
-        //
-        //   m_gun = std::make_shared<UniModeratorGun>(Neutron(), wl0, wl_dlt,
-        //     std::array<double, 6> {ptstod(positions[0]), ptstod(positions[1]), ptstod(positions[2]),
-        //                            ptstod(positions[3]), ptstod(positions[4]), ptstod(positions[5])});
-        // }
-        // else if(words[0]=="SimpleThermalGun")
-        // {
-        //   double ekin = ptstod(words[2]);
-        //   m_gun = std::make_shared<SimpleThermalGun>(Neutron(), ekin, string2vec(words[3]), string2vec(words[4]));
-        // }
-        // else if(words[0]=="IsotropicGun")
-        // {
-        //   double ekin = ptstod(words[2]);
-        //   m_gun = std::make_shared<IsotropicGun>(Neutron(), ekin, string2vec(words[3]), string2vec(words[4]));
-        // }
-        // else
-        //   PROMPT_THROW2(BadInput, "No such gun");
 }
