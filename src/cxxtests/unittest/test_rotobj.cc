@@ -18,26 +18,15 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerPSD.hh"
+#include <chrono>
+#include <iostream>
 
-Prompt::ScorerPSD::ScorerPSD(const std::string &name, double xmin, double xmax,
-   unsigned nxbins, double ymin, double ymax, unsigned nybins, PSDType type)
-:Scorer2D("ScorerPSD_"+name, Scorer::ScorerType::SURFACE,
-  std::make_unique<Hist2D>("ScorerPSD_"+name, xmin, xmax, nxbins, ymin, ymax, nybins)),
- m_type(type)
-{}
+#include "PTRotatingObj.hh"
+namespace pt = Prompt;
 
-Prompt::ScorerPSD::~ScorerPSD() {}
-
-void Prompt::ScorerPSD::score(Prompt::Particle &particle)
+#include "../doctest.h"
+TEST_CASE("RotationObj")
 {
-  const Vector &vec = particle.getLocalPosition();
-  if (m_type==PSDType::XY)
-    m_hist->fill(vec.x(), vec.y(), particle.getWeight() );
-  else if (m_type==PSDType::YZ)
-    m_hist->fill(vec.y(), vec.z(), particle.getWeight() );
-  else if (m_type==PSDType::XZ)
-    m_hist->fill(vec.x(), vec.z(), particle.getWeight() );
-  else
-    PROMPT_THROW2(BadInput, m_name << " not support type");
+  auto obj = pt::RotatingObj("name", {1.,0,0}, {0,0,0},  1000 );
+  std::cout << obj.getLinearVelocity({0,0.1,0.1}) << std::endl;
 }

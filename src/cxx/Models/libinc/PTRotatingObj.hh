@@ -1,3 +1,6 @@
+#ifndef Prompt_RotatingObj_hh
+#define Prompt_RotatingObj_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,26 +21,44 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerPSD.hh"
+#include "PromptCore.hh"
+#include "PTDiscreteModel.hh"
+#include <memory>
 
-Prompt::ScorerPSD::ScorerPSD(const std::string &name, double xmin, double xmax,
-   unsigned nxbins, double ymin, double ymax, unsigned nybins, PSDType type)
-:Scorer2D("ScorerPSD_"+name, Scorer::ScorerType::SURFACE,
-  std::make_unique<Hist2D>("ScorerPSD_"+name, xmin, xmax, nxbins, ymin, ymax, nybins)),
- m_type(type)
-{}
+namespace Prompt {
 
-Prompt::ScorerPSD::~ScorerPSD() {}
+  // The rational axis is parameterised as L(t) = A+tD, where A is a point on the
+  // axis, t is a factor, D is the direction.
+  // The closest line of point P to L is R,
+  // then t0 = D.(P-A)/(D.D), R = P-L(t0)
+  // In the case where D is a unit vector, and B = P-A
+  // R = (1-D.B)B
+  // the velocity at the point P is then 2\pi\omega R
 
-void Prompt::ScorerPSD::score(Prompt::Particle &particle)
-{
-  const Vector &vec = particle.getLocalPosition();
-  if (m_type==PSDType::XY)
-    m_hist->fill(vec.x(), vec.y(), particle.getWeight() );
-  else if (m_type==PSDType::YZ)
-    m_hist->fill(vec.y(), vec.z(), particle.getWeight() );
-  else if (m_type==PSDType::XZ)
-    m_hist->fill(vec.x(), vec.z(), particle.getWeight() );
-  else
-    PROMPT_THROW2(BadInput, m_name << " not support type");
+
+  class RotatingObj  : public DiscreteModel {
+  public:
+    RotatingObj(const std::string &cfgstringAsName, const Vector &dir, const Vector &point, double rotFreq);
+    virtual ~RotatingObj();
+
+    virtual double getCrossSection(double ekin) const override;
+    virtual double getCrossSection(double ekin, const Vector &dir) const override;
+    virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
+
+    Vector getLinearVelocity(const Vector &pos);
+
+
+  private:
+    const Vector m_dir, m_point;
+    double m_angularfreq;
+  };
+
 }
+
+inline Prompt::Vector Prompt::RotatingObj::getLinearVelocity(const Vector &pos)
+{
+  Vector B = pos - m_point;
+  return (B-m_dir*(m_dir.dot(B)))*m_angularfreq;
+}
+
+#endif

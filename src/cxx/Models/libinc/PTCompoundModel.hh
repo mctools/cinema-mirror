@@ -44,6 +44,7 @@ namespace Prompt {
   // This class is used to represent a collection of models.
   // The upstream should make should it is the right one for the material
   // Only discrete models for now.
+  // This class processes the biasing factor
 
   class CompoundModel  {
   public:

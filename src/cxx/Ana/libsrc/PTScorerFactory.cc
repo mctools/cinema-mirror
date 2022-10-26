@@ -136,7 +136,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double ymax = ptstod(cfg.find("ymax", force));
       int nybins = ptstoi(cfg.find("numBins_y", force));
 
-      ScorerPSD::ScorerType type = ScorerPSD::ScorerType::XY;
+      ScorerPSD::PSDType type = ScorerPSD::PSDType::XY;
       std::string typeInStr = cfg.find("type");
       if(typeInStr.empty())
         parCount--;
@@ -144,15 +144,15 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       {
         if(typeInStr=="XY")
         {
-          type = ScorerPSD::ScorerType::XY;
+          type = ScorerPSD::PSDType::XY;
         }
         else if(typeInStr=="XZ")
         {
-          type = ScorerPSD::ScorerType::XZ;
+          type = ScorerPSD::PSDType::XZ;
         }
         else if(typeInStr=="YZ")
         {
-          type = ScorerPSD::ScorerType::YZ;
+          type = ScorerPSD::PSDType::YZ;
         }
         else {
           PROMPT_THROW(BadInput, "Scorer type can only be XY, XZ or YZ" );
@@ -255,7 +255,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double xmin = ptstod(cfg.find("xmin", force));
       double xmax = ptstod(cfg.find("xmax", force));
       int nxbins = ptstoi(cfg.find("numBins_x", force));
-      
+
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
       if(linearInStr.empty())

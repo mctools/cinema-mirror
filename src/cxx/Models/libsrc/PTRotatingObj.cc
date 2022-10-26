@@ -18,26 +18,42 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerPSD.hh"
+#include <limits>
 
-Prompt::ScorerPSD::ScorerPSD(const std::string &name, double xmin, double xmax,
-   unsigned nxbins, double ymin, double ymax, unsigned nybins, PSDType type)
-:Scorer2D("ScorerPSD_"+name, Scorer::ScorerType::SURFACE,
-  std::make_unique<Hist2D>("ScorerPSD_"+name, xmin, xmax, nxbins, ymin, ymax, nybins)),
- m_type(type)
-{}
+#include "PTRotatingObj.hh"
+#include "PTUnitSystem.hh"
+#include "PTRandCanonical.hh"
 
-Prompt::ScorerPSD::~ScorerPSD() {}
 
-void Prompt::ScorerPSD::score(Prompt::Particle &particle)
+Prompt::RotatingObj::RotatingObj(const std::string &cfgstringAsName, const Vector &dir, const Vector &point, double rotFreq)
+:Prompt::DiscreteModel(cfgstringAsName, const_neutron_pgd,
+                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV, 1.),
+                      m_dir(dir), m_point(point), m_angularfreq(2*M_PI*rotFreq)
+
 {
-  const Vector &vec = particle.getLocalPosition();
-  if (m_type==PSDType::XY)
-    m_hist->fill(vec.x(), vec.y(), particle.getWeight() );
-  else if (m_type==PSDType::YZ)
-    m_hist->fill(vec.y(), vec.z(), particle.getWeight() );
-  else if (m_type==PSDType::XZ)
-    m_hist->fill(vec.x(), vec.z(), particle.getWeight() );
-  else
-    PROMPT_THROW2(BadInput, m_name << " not support type");
+  //fixme use m_dir.normalise() to make sure the accuracy of the conversion
+  if(!floateq(m_dir.mag(),1., 1e-5, 1e-5))
+    PROMPT_THROW(BadInput, "direction must be a unit vector");
+}
+
+
+Prompt::RotatingObj::~RotatingObj()
+{
+  std::cout<<"Destructing RotatingObj " << m_modelName <<std::endl;
+}
+
+
+double Prompt::RotatingObj::getCrossSection(double ekin) const
+{
+  return 0;
+}
+
+double Prompt::RotatingObj::getCrossSection(double ekin, const Prompt::Vector &dir) const
+{
+  return 0;
+}
+
+
+void Prompt::RotatingObj::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
+{
 }

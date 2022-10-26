@@ -41,8 +41,11 @@ namespace Prompt {
 
     virtual void moveForward(double length);
 
-    virtual void setDirection(const Vector& dir);
+    virtual void setDirection(const Vector& dir); //fixme: m_deltaEn is not calculated
     const Vector &getDirection() const { return m_dir; }
+
+    virtual void setVelocity(const Vector& Velocity);
+    const Vector getVelocity() const { return m_dir*calcSpeed(); }
 
     void setPosition(const Vector& pos);
     const Vector &getPosition() const { return m_pos; }
@@ -116,6 +119,13 @@ inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& 
   m_weight(1.), m_rest_mass(0), m_alive(true), m_eventid(0), m_id(0), m_parentid(0), m_counter(0)
 {
   m_dir.normalise();
+}
+
+inline void Prompt::Particle::setVelocity(const Vector& Velocity)
+{
+  double v(0.);
+  Velocity.magdir(v, m_dir);
+  m_ekin = 0.5*m_rest_mass*v*v;
 }
 
 inline void Prompt::Particle::moveForward(double length)
