@@ -21,14 +21,16 @@
 #include "PTScorerVolFlux.hh"
 
 Prompt::ScorerVolFlux::ScorerVolFlux(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear, double volme)
-:Scorer1D("ScorerVolFlux_"+ name, Scorer::ScorerType::PROPAGATE, std::make_unique<Hist1D>("ScorerVolFlux_"+ name, xmin, xmax, nxbins, linear)), m_iVol(1./volme)
+:Scorer1D("ScorerVolFlux_"+ name, Scorer::ScorerType::PROPAGATE, std::make_unique<Hist1D>("ScorerVolFlux_"+ name, xmin, xmax, nxbins, linear)), m_iVol(1./volme), m_weight(-1.)
 { }
 
 Prompt::ScorerVolFlux::~ScorerVolFlux() {}
 
 void Prompt::ScorerVolFlux::score(Particle &particle)
 {
-  if(particle.getWeightFactor()!=1.)
+  if(m_weight == -1.) m_weight=particle.getWeight();
+
+  if(particle.getWeight()!=m_weight)
     PROMPT_THROW(LogicError, "ScorerVolFlux is incorrect in the cross section biasing model. The D value for the material within the solid of insterest should be unity");
   m_hist->fill(particle.getEKin()+particle.getEnergyChange(), m_iVol*particle.getStep());
 }

@@ -60,8 +60,7 @@ namespace Prompt {
     double getEKin() const { return m_ekin; }
     double getEKin0() const { return m_ekin0; }
     double getWeight() const { return m_weight; }
-    double getWeightFactor() const { return m_wFactor; }
-    void scaleWeight(double factor) { m_weight *= factor; m_wFactor = factor; }
+    void scaleWeight(double factor) { m_weight *= factor; }
     unsigned long long getEventID() const { return m_eventid; }
     void setNumScat(int counter);
     int getNumScat() const { return m_counter; }
@@ -76,7 +75,7 @@ namespace Prompt {
   protected:
     friend class DeltaParticle;
     double m_ekin0, m_ekin, m_time;
-    double m_step, m_deltaEn, m_wFactor;
+    double m_step, m_deltaEn;
     Vector m_dir, m_pos, m_localpos;
     int m_pgd;
     double m_weight;
