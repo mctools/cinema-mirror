@@ -74,16 +74,16 @@ namespace Prompt {
     virtual double calcSpeed() const;
   protected:
     friend class DeltaParticle;
+    Vector m_dir, m_pos, m_localpos;
     double m_ekin0, m_ekin, m_time;
     double m_step, m_deltaEn;
-    Vector m_dir, m_pos, m_localpos;
-    int m_pgd;
     double m_weight;
     double m_rest_mass;
-    bool m_alive;
     unsigned long long m_eventid, m_id, m_parentid;
+    int m_pgd;
     int m_counter;
     KillType m_killtype;
+    bool m_alive;
   };
 
   struct DeltaParticle {
