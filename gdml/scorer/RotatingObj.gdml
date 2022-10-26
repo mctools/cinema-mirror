@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<gdml>
+
+  <userinfo>
+    <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=0.0253;
+      position=0,0,-100;direction=0,0,1" />
+  </userinfo>
+
+   <define>
+    <rotation name="rot" unit="deg" x="-90" y="0" z="0" />
+  </define>
+
+  <materials>
+    <material name="Vacuum">
+      <atom value="vacuum.ncmat"/>
+    </material>
+
+    <material name="Sans">
+      <atom value="nanodiamond.ncmat"/>
+    </material>
+
+  </materials>
+
+  <solids>
+    <tube name="SampleSolid" rmin="0" rmax="5" z="10" startphi="0" deltaphi="360" aunit="deg"/>
+    <box name="worldSolid" x="150.0" y="150.0" z="300.0" />
+  </solids>
+
+  <structure>
+    <volume name="Sample">
+      <materialref ref="Vacuum"/>
+      <solidref ref="SampleSolid"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=ro1;
+        rotation_axis=0,1,0;point_on_axis=0,0,0;rot_fre=100;type=PROPAGATE"/>
+    </volume>
+    <!-- PROPAGATE, ENTRY, EXIT -->
+
+    <volume name="World">
+      <materialref ref="Vacuum"/>
+      <solidref ref="worldSolid"/>
+
+      <physvol>
+        <volumeref ref="Sample"/>
+        <rotationref ref="rot" />
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="default" version="1.0">
+    <world ref="World"/>
+  </setup>
+
+
+</gdml>

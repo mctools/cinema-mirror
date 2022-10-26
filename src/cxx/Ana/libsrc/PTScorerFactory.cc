@@ -28,6 +28,8 @@
 #include "PTScorerTOF.hh"
 #include "PTScorerVolFlux.hh"
 #include "PTScorerMultiScat.hh"
+#include "PTScorerRotatingObj.hh"
+
 
 Prompt::ScorerFactory::ScorerFactory()
 {}
@@ -281,6 +283,38 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
       return std::make_shared<Prompt::ScorerVolFlux>(name, xmin, xmax, nxbins, linear, vol);
 
+    }
+    else if(ScorDef == "RotatingObj")
+    {
+      // "Scorer=RotatingObj;name=ro1;rotation_axis=0,1,0;point_on_axis=0,0,0;rot_fre=100;type=Entry or Proprogate or Exit"/
+
+      int parCount = 6;
+      bool force = true;
+
+      std::string name = cfg.find("name", force);
+      auto rotAxis = string2vec(cfg.find("rotation_axis", force));
+      auto pointAxis = string2vec(cfg.find("point_on_axis", force));
+      double rotFreq = ptstod(cfg.find("rot_fre", force));
+      auto typeInStr = cfg.find("type", force);
+      Scorer::ScorerType type = Scorer::ScorerType::ENTRY;
+
+      if(typeInStr=="ENTRY")
+      {
+        type = Scorer::ScorerType::ENTRY;
+      }
+      else if(typeInStr=="EXIT")
+      {
+        type = Scorer::ScorerType::EXIT;
+      }
+      else if(typeInStr=="PROPAGATE")
+      {
+        type = Scorer::ScorerType::PROPAGATE;
+      }
+      else {
+        PROMPT_THROW(BadInput, "Scorer type can only be PROPAGATE, ENTRY or EXIT" );
+      }
+
+      return std::make_shared<Prompt::ScorerRotatingObj>(name, rotAxis, pointAxis, rotFreq, type);
     }
     else
       PROMPT_THROW2(BadInput, "Scorer type " << ScorDef << " is not supported. ")
