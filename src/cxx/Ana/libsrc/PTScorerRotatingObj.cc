@@ -20,28 +20,64 @@
 
 #include "PTScorerRotatingObj.hh"
 
+Prompt::Vector Prompt::ScorerRotatingObj::m_vel0 = Prompt::Vector{0,0,1};
+
 Prompt::ScorerRotatingObj::ScorerRotatingObj(const std::string &name, const Vector &dir, const Vector &point,
   double rotFreq, Scorer::ScorerType type)
 :Scorer1D("ScorerRotatingObj_"+name, type,
   std::make_unique<Hist1D>("ScorerRotatingObj_"+name, 0, 1, 100)),
-  m_dir(dir), m_point(point), m_angularfreq(2*M_PI*rotFreq)
-
+  m_rotaxis(dir), m_point(point), m_angularfreq(2*M_PI*rotFreq)
 {
-  //fixme use m_dir.normalise() to make sure the accuracy of the conversion
-  if(!floateq(m_dir.mag(),1., 1e-5, 1e-5))
+  //fixme use m_rotaxis.normalise() to make sure the accuracy of the conversion
+  if(!m_rotaxis.isUnitVector(1e-5))
     PROMPT_THROW(BadInput, "direction must be a unit vector");
+
+  if(!(m_type==Scorer::ScorerType::PROPAGATE || m_type== Scorer::ScorerType::ENTRY
+    || m_type== Scorer::ScorerType::EXIT))
+    PROMPT_THROW2(BadInput, "Constructing unexptected ScorerType " << static_cast<int>(m_type));
+
 }
 
 
 Prompt::ScorerRotatingObj::~ScorerRotatingObj() {}
 
-void Prompt::ScorerRotatingObj::score(Prompt::Particle &particle)
-{
-  std::cout << "RotatingObj " << particle.getPosition() << " " << particle.getStep() << std::endl;
-}
+// The rational axis is parameterised as L(t) = A+tD, where A is a point on the
+// axis, t is a factor, D is the direction.
+// The closest line of point P to L is R,
+// then t0 = D.(P-A)/(D.D), R = P-L(t0)
+// In the case where D is a unit vector, and B = P-A
+// R = (1-D.B)B
+// velDir = RX
+// the velocity at the point P is then 2\pi\omega R
 
 Prompt::Vector Prompt::ScorerRotatingObj::getLinearVelocity(const Vector &pos)
 {
   Vector B = pos - m_point;
-  return (B-m_dir*(m_dir.dot(B)))*m_angularfreq;
+  Vector R= (B-m_rotaxis*(m_rotaxis.dot(B)));
+  Vector dir = R.cross(m_rotaxis)*m_angularfreq;
+  return dir;
+}
+
+
+void Prompt::ScorerRotatingObj::score(Prompt::Particle &particle)
+{
+  if(m_type==Scorer::ScorerType::PROPAGATE)
+  {
+    // m_vel0  = m_vel0 + particle.getVelocity();
+    // particle.setVelocity(m_vel0-getLinearVelocity(particle.getPosition()));
+  }
+  else if(m_type==Scorer::ScorerType::ENTRY)
+  {
+    // m_vel0 = particle.getVelocity();
+    // particle.setVelocity(m_vel0-getLinearVelocity(particle.getPosition()));
+  }
+  else //exit
+  {
+    // particle.setVelocity(m_vel0);
+    // std::cout << "ekin out " << particle.getEKin() << std::endl;
+  }
+  std::cout << "lv " << getLinearVelocity(particle.getPosition()) << "old vel " << m_vel0 << std::endl;
+
+
+  // std::cout << "RotatingObj " << particle.getPosition() << " " << particle.getStep() << std::endl;
 }

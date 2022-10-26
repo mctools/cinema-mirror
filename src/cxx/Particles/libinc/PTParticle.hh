@@ -41,11 +41,14 @@ namespace Prompt {
 
     virtual void moveForward(double length);
 
-    virtual void setDirection(const Vector& dir); //fixme: m_deltaEn is not calculated
+    virtual void setDirection(const Vector& dir);
     const Vector &getDirection() const { return m_dir; }
 
-    virtual void setVelocity(const Vector& Velocity);
-    const Vector getVelocity() const { return m_dir*calcSpeed(); }
+    bool hasEffEnergy() const { return !m_effdir.isStrictNullVector(); }
+    double getEffEnergy() const { return m_effekin; }
+    void setEffEnergy(double e)  { m_effekin=e; }
+    virtual void setEffDirection(const Vector& dir);
+    const Vector &getEffDirection() const { return m_effdir; }
 
     void setPosition(const Vector& pos);
     const Vector &getPosition() const { return m_pos; }
@@ -72,10 +75,12 @@ namespace Prompt {
     int getPGD() const { return m_pgd; }
 
     virtual double calcSpeed() const;
+    virtual double calcEffSpeed() const;
+
   protected:
     friend class DeltaParticle;
-    Vector m_dir, m_pos, m_localpos;
-    double m_ekin0, m_ekin, m_time;
+    Vector m_dir, m_effdir, m_pos, m_localpos;
+    double m_ekin0, m_ekin, m_effekin, m_time;
     double m_step, m_deltaEn;
     double m_weight;
     double m_rest_mass;
@@ -109,23 +114,17 @@ namespace Prompt {
 
 
 inline Prompt::Particle::Particle()
-  :m_ekin0(0.), m_ekin(0.), m_time(0.), m_dir(), m_pos(), m_pgd(0),
+  :m_ekin0(0.), m_ekin(0.), m_effekin(0.), m_time(0.), m_dir(), m_effdir(), m_pos(), m_pgd(0),
   m_weight(1.), m_rest_mass(0.), m_alive(true), m_eventid(0), m_id(0), m_parentid(0), m_counter(0)
 {}
 
 inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& pos)
-  :m_ekin0(ekin), m_ekin(ekin), m_time(0.), m_dir(dir), m_pos(pos), m_pgd(0),
+  :m_ekin0(ekin), m_ekin(ekin), m_effekin(0.), m_time(0.), m_dir(dir), m_effdir(), m_pos(pos), m_pgd(0),
   m_weight(1.), m_rest_mass(0), m_alive(true), m_eventid(0), m_id(0), m_parentid(0), m_counter(0)
 {
   m_dir.normalise();
 }
 
-inline void Prompt::Particle::setVelocity(const Vector& Velocity)
-{
-  double v(0.);
-  Velocity.magdir(v, m_dir);
-  m_ekin = 0.5*m_rest_mass*v*v;
-}
 
 inline void Prompt::Particle::moveForward(double length)
 {
@@ -146,6 +145,11 @@ inline void Prompt::Particle::setPosition(const Vector& pos)
   m_pos = pos;
 }
 
+inline void Prompt::Particle::setEffDirection(const Vector& dir)
+{
+  m_effdir = dir;
+}
+
 inline void Prompt::Particle::setDirection(const Vector& dir)
 {
   m_dir = dir;
@@ -154,6 +158,11 @@ inline void Prompt::Particle::setDirection(const Vector& dir)
 inline double Prompt::Particle::calcSpeed() const
 {
     return std::sqrt(2*m_ekin/m_rest_mass);
+}
+
+inline double Prompt::Particle::calcEffSpeed() const
+{
+    return std::sqrt(2*m_effekin/m_rest_mass);
 }
 
 inline void Prompt::Particle::setNumScat(int counter)

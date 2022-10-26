@@ -41,7 +41,7 @@ namespace Prompt {
     virtual void save() = 0;
   protected:
     const std::string m_name;
-    ScorerType m_type;
+    const ScorerType m_type;
   };
 
   class Scorer1D : public Scorer {

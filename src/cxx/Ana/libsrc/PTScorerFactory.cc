@@ -311,7 +311,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         type = Scorer::ScorerType::PROPAGATE;
       }
       else {
-        PROMPT_THROW(BadInput, "Scorer type can only be PROPAGATE, ENTRY or EXIT" );
+        PROMPT_THROW(BadInput, "**Scorer type can only be PROPAGATE, ENTRY or EXIT" );
       }
 
       return std::make_shared<Prompt::ScorerRotatingObj>(name, rotAxis, pointAxis, rotFreq, type);

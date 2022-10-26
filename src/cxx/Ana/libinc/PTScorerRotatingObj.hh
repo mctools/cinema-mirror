@@ -23,6 +23,7 @@
 
 #include "PromptCore.hh"
 #include "PTScorer.hh"
+#include "PTVector.hh"
 
 namespace Prompt {
 
@@ -32,12 +33,11 @@ namespace Prompt {
       double rotFreq, Scorer::ScorerType type);
     virtual ~ScorerRotatingObj();
     virtual void score(Particle &particle) override;
+    static Vector m_vel0;
   private:
     Vector getLinearVelocity(const Vector &pos);
-    const Vector m_dir, m_point;
+    const Vector m_rotaxis, m_point;
     double m_angularfreq;
-    ScorerType m_type;
-    Vector m_parLabDir;
   };
 }
 #endif
