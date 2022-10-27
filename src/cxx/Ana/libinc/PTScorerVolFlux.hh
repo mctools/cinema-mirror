@@ -33,7 +33,7 @@ namespace Prompt {
     virtual ~ScorerVolFlux();
     virtual void score(Particle &particle) override;
   private:
-    double m_iVol;
+    double m_iVol, m_weight;
   };
 }
 #endif

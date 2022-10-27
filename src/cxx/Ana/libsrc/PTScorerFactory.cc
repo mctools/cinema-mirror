@@ -28,6 +28,8 @@
 #include "PTScorerTOF.hh"
 #include "PTScorerVolFlux.hh"
 #include "PTScorerMultiScat.hh"
+#include "PTScorerRotatingObj.hh"
+
 
 Prompt::ScorerFactory::ScorerFactory()
 {}
@@ -137,7 +139,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double ymax = ptstod(cfg.find("ymax", force));
       int nybins = ptstoi(cfg.find("numBins_y", force));
 
-      ScorerPSD::ScorerType type = ScorerPSD::ScorerType::XY;
+      ScorerPSD::PSDType type = ScorerPSD::PSDType::XY;
       std::string typeInStr = cfg.find("type");
       if(typeInStr.empty())
         parCount--;
@@ -145,15 +147,15 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       {
         if(typeInStr=="XY")
         {
-          type = ScorerPSD::ScorerType::XY;
+          type = ScorerPSD::PSDType::XY;
         }
         else if(typeInStr=="XZ")
         {
-          type = ScorerPSD::ScorerType::XZ;
+          type = ScorerPSD::PSDType::XZ;
         }
         else if(typeInStr=="YZ")
         {
-          type = ScorerPSD::ScorerType::YZ;
+          type = ScorerPSD::PSDType::YZ;
         }
         else {
           PROMPT_THROW(BadInput, "Scorer type can only be XY, XZ or YZ" );
@@ -264,7 +266,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double xmin = ptstod(cfg.find("xmin", force));
       double xmax = ptstod(cfg.find("xmax", force));
       int nxbins = ptstoi(cfg.find("numBins_x", force));
-      
+
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
       if(linearInStr.empty())
@@ -291,65 +293,40 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       return std::make_shared<Prompt::ScorerVolFlux>(name, xmin, xmax, nxbins, linear, vol);
 
     }
+    else if(ScorDef == "RotatingObj")
+    {
+      // "Scorer=RotatingObj;name=ro1;rotation_axis=0,1,0;point_on_axis=0,0,0;rot_fre=100;type=Entry or Proprogate or Exit"/
+
+      int parCount = 6;
+      bool force = true;
+
+      std::string name = cfg.find("name", force);
+      auto rotAxis = string2vec(cfg.find("rotation_axis", force));
+      auto pointAxis = string2vec(cfg.find("point_on_axis", force));
+      double rotFreq = ptstod(cfg.find("rot_fre", force));
+      auto typeInStr = cfg.find("type", force);
+      Scorer::ScorerType type = Scorer::ScorerType::ENTRY;
+
+      if(typeInStr=="ENTRY")
+      {
+        type = Scorer::ScorerType::ENTRY;
+      }
+      else if(typeInStr=="EXIT")
+      {
+        type = Scorer::ScorerType::EXIT;
+      }
+      else if(typeInStr=="PROPAGATE")
+      {
+        type = Scorer::ScorerType::PROPAGATE;
+      }
+      else {
+        PROMPT_THROW(BadInput, "**Scorer type can only be PROPAGATE, ENTRY or EXIT" );
+      }
+
+      return std::make_shared<Prompt::ScorerRotatingObj>(name, rotAxis, pointAxis, rotFreq, type);
+    }
     else
       PROMPT_THROW2(BadInput, "Scorer type " << ScorDef << " is not supported. ")
   }
 
-  // if(words[0]=="NeutronSq")
-  // {
-  //   //type
-  //   auto samplePos = string2vec(words[2]);
-  //   auto beamDir = string2vec(words[3]);
-  //   double moderator2SampleDist = ptstod(words[4]);
-  //   double minQ = ptstod(words[5]);
-  //   double maxQ = ptstod(words[6]);
-  //   int numBin = std::stoi(words[7]);
-  //   if(words[8]=="ABSORB")
-  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ScorerType::ABSORB);
-  //   else if(words[8]=="ENTRY")
-  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ScorerType::ENTRY);
-  //   else
-  //   {
-  //     PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerNeutronSq");
-  //     return std::make_shared<Prompt::ScorerNeutronSq>(words[1], samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, Prompt::Scorer::ScorerType::ENTRY);
-  //   }
-  // }
-  // else if(words[0]=="PSD")
-  // {
-  //   if(words[8]=="XY")
-  //       return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
-  //                                         ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::XY );
-  //   else if(words[8]=="XZ")
-  //       return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
-  //                                         ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::XZ );
-  //   else if(words[8]=="YZ")
-  //       return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
-  //                                         ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::YZ );
-  //   else
-  //   {
-  //     PROMPT_THROW2(BadInput, words[8] << " type is not supported by ScorerPSD");
-  //     return std::make_shared<ScorerPSD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) ,
-  //                                       ptstod(words[5]) , ptstod(words[6]) , std::stoi(words[7]), ScorerPSD::YZ );
-  //   }
-  // }
-  // else if(words[0]=="ESD")
-  // {
-  //   return std::make_shared<ScorerESD>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) );
-  // }
-  // else if(words[0]=="TOF")
-  // {
-  //   return std::make_shared<ScorerTOF>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) );
-  // }
-  // else if(words[0]=="MultiScat")
-  // {
-  //   return std::make_shared<ScorerMultiScat>(words[1], ptstod(words[2]) , ptstod(words[3]) , std::stoi(words[4]) );
-  // }
-  // else if(words[0]=="VolFlux")
-  // {
-  //   return std::make_shared<Prompt::ScorerVolFlux>(words[1], ptstod(words[2]) ,
-  //               ptstod(words[3]) , std::stoi(words[4]) ,  std::stoi(words[5]),
-  //               vol );
-  // }
-  // else
-  //   PROMPT_THROW2(BadInput, "Scorer type " << words[0] << " is not supported. ")
 }

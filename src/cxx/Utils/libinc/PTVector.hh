@@ -65,6 +65,7 @@ namespace Prompt {
     double angle(const Vector&) const;//slow
     double angle_highres(const Vector&) const;//very slow, but precise even for small angles
     double mag() const;//slow
+    void magdir(double &mag, Vector &dir) const; //slow
     double mag2() const;//better
     void set(double x, double y, double z);
     void setMag(double );//slow
@@ -135,6 +136,22 @@ inline void Prompt::Vector::set(double xx, double yy, double zz)
 inline double Prompt::Vector::mag() const
 {
   return std::sqrt( m_x*m_x + m_y*m_y + m_z*m_z );
+}
+
+inline void Prompt::Vector::magdir(double &mag, Vector &dir) const
+{
+  double themag2 = mag2();
+  if (themag2==1.0)
+  {
+    mag=1.;
+    dir.set(m_x, m_y, m_z);
+    return;
+  }
+  if (!themag2)
+    PROMPT_THROW(CalcError,"PTVector::magdir(): Can't scale null-vector.");
+  mag = std::sqrt(themag2);
+  double f = 1./mag;
+  dir.set(m_x*f, m_y*f, m_z*f);
 }
 
 inline double Prompt::Vector::mag2() const

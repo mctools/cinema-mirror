@@ -1,3 +1,6 @@
+#ifndef Prompt_ScorerRotatingObj_hh
+#define Prompt_ScorerRotatingObj_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,26 +21,23 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerPSD.hh"
+#include "PromptCore.hh"
+#include "PTScorer.hh"
+#include "PTVector.hh"
 
-Prompt::ScorerPSD::ScorerPSD(const std::string &name, double xmin, double xmax,
-   unsigned nxbins, double ymin, double ymax, unsigned nybins, PSDType type)
-:Scorer2D("ScorerPSD_"+name, Scorer::ScorerType::SURFACE,
-  std::make_unique<Hist2D>("ScorerPSD_"+name, xmin, xmax, nxbins, ymin, ymax, nybins)),
- m_type(type)
-{}
+namespace Prompt {
 
-Prompt::ScorerPSD::~ScorerPSD() {}
-
-void Prompt::ScorerPSD::score(Prompt::Particle &particle)
-{
-  const Vector &vec = particle.getLocalPosition();
-  if (m_type==PSDType::XY)
-    m_hist->fill(vec.x(), vec.y(), particle.getWeight() );
-  else if (m_type==PSDType::YZ)
-    m_hist->fill(vec.y(), vec.z(), particle.getWeight() );
-  else if (m_type==PSDType::XZ)
-    m_hist->fill(vec.x(), vec.z(), particle.getWeight() );
-  else
-    PROMPT_THROW2(BadInput, m_name << " not support type");
+  class ScorerRotatingObj  : public Scorer1D {
+  public:
+    ScorerRotatingObj(const std::string &name, const Vector &dir, const Vector &point,
+      double rotFreq, Scorer::ScorerType type);
+    virtual ~ScorerRotatingObj();
+    virtual void score(Particle &particle) override;
+    static Vector m_vel0;
+  private:
+    Vector getLinearVelocity(const Vector &pos);
+    const Vector m_rotaxis, m_point;
+    double m_angularfreq;
+  };
 }
+#endif

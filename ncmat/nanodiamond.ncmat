@@ -1,0 +1,22 @@
+NCMAT v6
+#
+# nano-diamond of density 0.65755 g/cm3, 2.5nm mean radius
+# ref: M. Teshigawara et. al., Measurement of neutron scattering cross section of nano-diamond with
+# particle diameter of approximately 5 nm in energy range of 0.2 meV to 100 meV, NIMA, 2019
+#
+
+@DYNINFO
+  element  N
+  fraction 0.78
+  type     freegas
+@DYNINFO
+  element  O
+  fraction 0.22
+  type     freegas
+@DENSITY
+  0.000001225 kg_per_m3
+@OTHERPHASES
+  0.187 C_sg227_Diamond.ncmat
+@CUSTOM_HARDSPHERESANS
+  #sphere radius in Angstrom:
+  25
