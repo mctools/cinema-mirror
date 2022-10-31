@@ -2,12 +2,12 @@
 <gdml>
 
   <userinfo>
-    <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=1e-3;
-      position=-0,0,-300;direction=0,0,1" />
+    <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=1e-2;
+      position=-0,0,-300;direction=0,0,1" /> -->
 
-    <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;
+    <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;
       moderator_width_x=100;moderator_height_y=100;moderator_positon_z=-1499.99;
-      slit_width_x=50;slit_height_y=100;slit_position_z=0;temperature=300;" /> -->
+      slit_width_x=50;slit_height_y=100;slit_position_z=0;temperature=300;" />
 
     <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;
       mean_wavelength=6;range_wavelength=1e-6;
@@ -43,12 +43,12 @@
     <volume name="Sample">
       <materialref ref="Sans"/>
       <solidref ref="SampleSolid"/>
-      <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=roen;
-        rotation_axis=0,1,0;point_on_axis=0,0,0;rot_fre=300;type=ENTRY"/>
+      <!-- <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=roen;
+        rotation_axis=0,1,0;point_on_axis=95,0,0;rot_fre=300;type=ENTRY"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=ropr;
-        rotation_axis=0,1,0;point_on_axis=0,0,0;rot_fre=300;type=PROPAGATE"/>
+        rotation_axis=0,1,0;point_on_axis=95,0,0;rot_fre=300;type=PROPAGATE"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=roex;
-        rotation_axis=0,1,0;point_on_axis=0,0,0;rot_fre=300;type=EXIT"/>
+        rotation_axis=0,1,0;point_on_axis=95,0,0;rot_fre=300;type=EXIT"/> -->
     </volume>
     <!-- PROPAGATE, ENTRY, EXIT -->
 

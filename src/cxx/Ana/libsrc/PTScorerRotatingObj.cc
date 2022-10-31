@@ -60,15 +60,11 @@ Prompt::Vector Prompt::ScorerRotatingObj::getLinearVelocity(const Vector &pos)
 
 void Prompt::ScorerRotatingObj::score(Prompt::Particle &particle)
 {
-  // double getEffEKin() const { return m_effekin; }
-  // void setEffEKin(double e)  { m_effekin=e; }
-  // virtual void setEffDirection(const Vector& dir);
-  // const Vector &getEffDirection() const { return m_effdir; }
 
   if(m_type==Scorer::ScorerType::EXIT)
   {
+    // std::cout << "EXIT: realekin " <<  particle.getEKin() << ", effekin " << particle.getEffEKin() << " " << particle.getEventID() <<"\n";
     particle.setEffDirection(Vector());
-    // std::cout << "EXIT: real ekin " <<  particle.getEKin() <<"\n";
   }
   else
   {
@@ -78,30 +74,11 @@ void Prompt::ScorerRotatingObj::score(Prompt::Particle &particle)
     double comovingSpeed = comovingVel.mag();
     particle.setEffEKin(0.5*comovingSpeed*comovingSpeed*particle.getMass());
     particle.setEffDirection(comovingVel.unit());
-    // std::cout << "score: EffEKin " << particle.getEffEKin() << ", ekin "
-    //  << particle.getEKin() << " , vrot " << vrot << " dis "
-    //  << std::sqrt(particle.getPosition().x()*particle.getPosition().x()+
-    //  particle.getPosition().z()*particle.getPosition().z())<< std::endl;
-
   }
 
-
-  // if(m_type==Scorer::ScorerType::PROPAGATE)
+  // if(m_type==Scorer::ScorerType::ENTRY)
   // {
-  //   // m_vel0  = m_vel0 + particle.getVelocity();
-  //   // particle.setVelocity(m_vel0-getLinearVelocity(particle.getPosition()));
-  // }
-  // else if(m_type==Scorer::ScorerType::ENTRY)
-  // {
-  //   // m_vel0 = particle.getVelocity();
-  //   // particle.setVelocity(m_vel0-getLinearVelocity(particle.getPosition()));
-  // }
-  // else //exit
-  // {
-  //   // particle.setVelocity(m_vel0);
-  //   // std::cout << "ekin out " << particle.getEKin() << std::endl;
+  //   std::cout << "ENTRY: realekin " <<  particle.getEKin() << ", effekin " << particle.getEffEKin() << " " << particle.getEventID()  <<"\n";
   // }
 
-
-  // std::cout << "RotatingObj " << particle.getPosition() << " " << particle.getStep() << std::endl;
 }

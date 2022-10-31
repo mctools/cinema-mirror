@@ -60,26 +60,33 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
     m_compModel->generate(ekineff, direff, comove_ekin, comove_dir);
     if(lab_ekin!=-1) //non-capture fixme: this should not be called when EXITing
     {
-      Vector v_comoving = comove_dir*std::sqrt(2*comove_ekin/particle.getMass());
 
+      Vector v_comoving = comove_dir*std::sqrt(2*comove_ekin/particle.getMass());
       // the rotatioal velocity
       auto v_rot = particle.getDirection()*particle.calcSpeed()-particle.getEffDirection()*particle.calcEffSpeed();
 
+      particle.setEffEKin(comove_ekin);
+      particle.setEffDirection(comove_dir);
+
       // bring back to the lab
-      auto v_final = v_comoving + v_rot;
+      auto v_lab = v_comoving + v_rot;
 
       // set the final value in the lab frame
       double speed(0);
-      v_final.magdir(speed, lab_dir);
+      v_lab.magdir(speed, lab_dir);
       // lab_ekin = particle.getEKin();
       lab_ekin = 0.5*particle.getMass()*speed*speed;
-      // std::cout << particle.getEKin() << " " << lab_dir << " "<<  particle.getEffEKin()  << " " << lab_ekin << "\n";
     }
   }
   else
   {
     m_compModel->generate(particle.getEKin(), particle.getDirection(), lab_ekin, lab_dir);
   }
+
+  // fixme: when a particle exiting a volume, a reaction channel is forced to sampled at the moment
+  // lab_ekin could be -1 in those cases, but the transport keeps going, that is very confusing.
+  // std::cout << particle.getEventID() << ", is alive? " << particle.isAlive() << ", wall? "<< hitWall<<
+  //  ", labEkin " << lab_ekin   << ", effEkin " << particle.getEffEKin() << "\n";
 
   if(!hitWall)
   {
