@@ -3,11 +3,23 @@
 
   <userinfo>
     <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=1e-3;
-      position=0,0,-101;direction=0,0,1" />
+      position=-0,0,-300;direction=0,0,1" />
+
+    <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;
+      moderator_width_x=100;moderator_height_y=100;moderator_positon_z=-1499.99;
+      slit_width_x=50;slit_height_y=100;slit_position_z=0;temperature=300;" /> -->
+
+    <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;
+      mean_wavelength=6;range_wavelength=1e-6;
+      moderator_width_x=100;moderator_height_y=100;moderator_positon_z=-1499.99;
+      slit_width_x=50;slit_height_y=100;slit_position_z=0" /> -->
+
   </userinfo>
 
    <define>
     <rotation name="rot" unit="deg" x="-90" y="0" z="0" />
+    <position name="DetectorPos" x="0" y="0" z="1499.99" />
+    <position name="SamplePos" x="95" y="0" z="0." />
   </define>
 
   <materials>
@@ -22,13 +34,14 @@
   </materials>
 
   <solids>
-    <tube name="SampleSolid" rmin="0" rmax="50" z="50" startphi="0" deltaphi="360" aunit="deg"/>
-    <box name="worldSolid" x="150.0" y="150.0" z="300.0" />
+    <tube name="SampleSolid" rmin="0" rmax="100" z="100" startphi="0" deltaphi="360" aunit="deg"/>
+    <box name="worldSolid" x="500.0" y="500.0" z="3000.0" />
+    <box name="DetectorSolid" x="500" y="500" z="0.00001" />
   </solids>
 
   <structure>
     <volume name="Sample">
-      <materialref ref="Vacuum"/>
+      <materialref ref="Sans"/>
       <solidref ref="SampleSolid"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=roen;
         rotation_axis=0,1,0;point_on_axis=0,0,0;rot_fre=300;type=ENTRY"/>
@@ -39,14 +52,30 @@
     </volume>
     <!-- PROPAGATE, ENTRY, EXIT -->
 
+    <volume name="Detector">
+      <materialref ref="Vacuum"/>
+      <solidref ref="DetectorSolid"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap;
+        xmin=-250;xmax=250;numBins_x=51;ymin=-250;ymax=250;numBins_y=51;type=XY"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=TOF; Tmin=0.0; Tmax=0.002; numbin=200"/>
+    </volume>
+
+
     <volume name="World">
       <materialref ref="Vacuum"/>
       <solidref ref="worldSolid"/>
 
       <physvol>
         <volumeref ref="Sample"/>
+        <positionref ref="SamplePos"/>
         <rotationref ref="rot" />
       </physvol>
+
+      <physvol>
+        <volumeref ref="Detector"/>
+        <positionref ref="DetectorPos"/>
+      </physvol>
+
     </volume>
   </structure>
 

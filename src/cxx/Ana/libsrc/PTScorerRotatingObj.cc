@@ -20,7 +20,6 @@
 
 #include "PTScorerRotatingObj.hh"
 
-Prompt::Vector Prompt::ScorerRotatingObj::m_vel0 = Prompt::Vector{0,0,1};
 
 Prompt::ScorerRotatingObj::ScorerRotatingObj(const std::string &name, const Vector &dir, const Vector &point,
   double rotFreq, Scorer::ScorerType type)
@@ -53,7 +52,7 @@ Prompt::ScorerRotatingObj::~ScorerRotatingObj() {}
 Prompt::Vector Prompt::ScorerRotatingObj::getLinearVelocity(const Vector &pos)
 {
   Vector B = pos - m_point;
-  Vector R= (B-m_rotaxis*(m_rotaxis.dot(B)));
+  Vector R= m_rotaxis*(m_rotaxis.dot(B))-B;
   Vector dir = R.cross(m_rotaxis)*m_angularfreq;
   return dir;
 }
@@ -61,22 +60,47 @@ Prompt::Vector Prompt::ScorerRotatingObj::getLinearVelocity(const Vector &pos)
 
 void Prompt::ScorerRotatingObj::score(Prompt::Particle &particle)
 {
-  if(m_type==Scorer::ScorerType::PROPAGATE)
+  // double getEffEKin() const { return m_effekin; }
+  // void setEffEKin(double e)  { m_effekin=e; }
+  // virtual void setEffDirection(const Vector& dir);
+  // const Vector &getEffDirection() const { return m_effdir; }
+
+  if(m_type==Scorer::ScorerType::EXIT)
   {
-    // m_vel0  = m_vel0 + particle.getVelocity();
-    // particle.setVelocity(m_vel0-getLinearVelocity(particle.getPosition()));
+    particle.setEffDirection(Vector());
+    // std::cout << "EXIT: real ekin " <<  particle.getEKin() <<"\n";
   }
-  else if(m_type==Scorer::ScorerType::ENTRY)
+  else
   {
-    // m_vel0 = particle.getVelocity();
-    // particle.setVelocity(m_vel0-getLinearVelocity(particle.getPosition()));
+    Vector vrot = getLinearVelocity(particle.getPosition());
+    Vector labVel = particle.getDirection()* particle.calcSpeed();
+    Vector comovingVel = labVel-vrot;
+    double comovingSpeed = comovingVel.mag();
+    particle.setEffEKin(0.5*comovingSpeed*comovingSpeed*particle.getMass());
+    particle.setEffDirection(comovingVel.unit());
+    // std::cout << "score: EffEKin " << particle.getEffEKin() << ", ekin "
+    //  << particle.getEKin() << " , vrot " << vrot << " dis "
+    //  << std::sqrt(particle.getPosition().x()*particle.getPosition().x()+
+    //  particle.getPosition().z()*particle.getPosition().z())<< std::endl;
+
   }
-  else //exit
-  {
-    // particle.setVelocity(m_vel0);
-    // std::cout << "ekin out " << particle.getEKin() << std::endl;
-  }
-  std::cout << "lv " << getLinearVelocity(particle.getPosition()) << "old vel " << m_vel0 << std::endl;
+
+
+  // if(m_type==Scorer::ScorerType::PROPAGATE)
+  // {
+  //   // m_vel0  = m_vel0 + particle.getVelocity();
+  //   // particle.setVelocity(m_vel0-getLinearVelocity(particle.getPosition()));
+  // }
+  // else if(m_type==Scorer::ScorerType::ENTRY)
+  // {
+  //   // m_vel0 = particle.getVelocity();
+  //   // particle.setVelocity(m_vel0-getLinearVelocity(particle.getPosition()));
+  // }
+  // else //exit
+  // {
+  //   // particle.setVelocity(m_vel0);
+  //   // std::cout << "ekin out " << particle.getEKin() << std::endl;
+  // }
 
 
   // std::cout << "RotatingObj " << particle.getPosition() << " " << particle.getStep() << std::endl;

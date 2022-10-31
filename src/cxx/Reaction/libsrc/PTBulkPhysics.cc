@@ -32,19 +32,61 @@ Prompt::BulkPhysics::~BulkPhysics() { }
 
 double Prompt::BulkPhysics::macroCrossSection(const Prompt::Particle &particle) const
 {
-  return m_numdensity*m_compModel->totalCrossSection(particle.getEKin(), particle.getDirection());
+  double ekin = particle.hasEffEnergy() ? particle.getEffEKin() : particle.getEKin();
+  const auto &dir = particle.hasEffEnergy() ? particle.getEffDirection() : particle.getDirection();
+  return m_numdensity*m_compModel->totalCrossSection(ekin, dir);
 }
 
 void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
 {
-  double final_ekin;
-  Vector final_dir;
-  m_compModel->generate(particle.getEKin(), particle.getDirection(), final_ekin, final_dir);
+  if(!particle.isAlive())
+    return;
+
+  double lab_ekin;
+  Vector lab_dir;
+
+  if(particle.hasEffEnergy())
+  // if(false)
+  {
+    double ekineff =  particle.getEffEKin();
+    const auto &direff = particle.getEffDirection();
+
+    double comove_ekin;
+    Vector comove_dir;
+
+    // SURE CHANGE REAL AND EFF both
+
+    // sample in the comoving frame
+    m_compModel->generate(ekineff, direff, comove_ekin, comove_dir);
+    if(lab_ekin!=-1) //non-capture fixme: this should not be called when EXITing
+    {
+      Vector v_comoving = comove_dir*std::sqrt(2*comove_ekin/particle.getMass());
+
+      // the rotatioal velocity
+      auto v_rot = particle.getDirection()*particle.calcSpeed()-particle.getEffDirection()*particle.calcEffSpeed();
+
+      // bring back to the lab
+      auto v_final = v_comoving + v_rot;
+
+      // set the final value in the lab frame
+      double speed(0);
+      v_final.magdir(speed, lab_dir);
+      // lab_ekin = particle.getEKin();
+      lab_ekin = 0.5*particle.getMass()*speed*speed;
+      // std::cout << particle.getEKin() << " " << lab_dir << " "<<  particle.getEffEKin()  << " " << lab_ekin << "\n";
+    }
+  }
+  else
+  {
+    m_compModel->generate(particle.getEKin(), particle.getDirection(), lab_ekin, lab_dir);
+  }
+
   if(!hitWall)
   {
-    particle.setEKin(final_ekin);
-    particle.setDirection(final_dir);
-    if(final_ekin==-1.) // fixme: are we sure all -1 means capture??
+
+    particle.setEKin(lab_ekin);
+    particle.setDirection(lab_dir);
+    if(lab_ekin==-1.) // fixme: are we sure all -1 means capture??
     {
       particle.kill(Particle::KillType::ABSORB);
     }

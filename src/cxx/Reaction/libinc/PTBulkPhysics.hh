@@ -40,7 +40,7 @@ namespace Prompt {
     double macroCrossSection(const Prompt::Particle &particle) const;
     double calNumDensity(const std::string &cfg);
     SingletonPTRand &m_rng;
-    std::shared_ptr<CompoundModel> m_compModel;
+    std::unique_ptr<CompoundModel> m_compModel;
     double m_numdensity;
 
   };

@@ -33,7 +33,6 @@ namespace Prompt {
       double rotFreq, Scorer::ScorerType type);
     virtual ~ScorerRotatingObj();
     virtual void score(Particle &particle) override;
-    static Vector m_vel0;
   private:
     Vector getLinearVelocity(const Vector &pos);
     const Vector m_rotaxis, m_point;

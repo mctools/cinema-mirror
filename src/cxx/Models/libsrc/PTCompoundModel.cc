@@ -78,7 +78,16 @@ double Prompt::CompoundModel::totalCrossSection(double ekin, const Vector &dir) 
 void Prompt::CompoundModel::generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const
 {
   if(!sameInquiryAsLastTime(ekin, dir))
-    printf("WARNING, sampling event with different incident energy and/or direction\n");
+  {
+    //fixme:!!
+    // printf("WARNING, sampling event with different incident energy and/or direction\n");
+    final_ekin = ekin;
+    final_dir = dir;
+    return;
+  }
+
+
+        // std::cout << "generate "<< ekin << " "<< dir << " " <<  "**\n";
 
   //if xs is zero, do nothing
   if(!m_cache.tot)
@@ -101,6 +110,7 @@ void Prompt::CompoundModel::generate(double ekin, const Vector &dir, double &fin
   m_cache.selectedBias = m_models[i]->getBias();
   // std::cout << "selected model " << m_models[i]->getName() << " "
   // << " total model num " << m_models.size() << std::endl;
+
 }
 
 //this shoule be called right after cross section is updated
@@ -116,6 +126,6 @@ double Prompt::CompoundModel::calculateWeight(double lengthRho, bool hitWall)
   }
   // std::cout << "selectedBias " << m_cache.selectedBias << " factor " << factor
   // << std::endl;
-  assert(m_cache.selectedBias);
-  return (m_cache.selectedBias!=1. && !hitWall ) ?  (factor/m_cache.selectedBias) : factor;
+  // assert(m_cache.selectedBias);
+  return (m_cache.selectedBias!=0 && m_cache.selectedBias!=1. && !hitWall ) ?  (factor/m_cache.selectedBias) : factor;
 }

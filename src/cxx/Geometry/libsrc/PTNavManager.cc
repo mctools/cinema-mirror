@@ -186,7 +186,11 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   std::swap(m_currState, m_nextState);
 
   bool sameVolume (step == stepLength);
-  assert(stepLength >= step);
+  // assert(stepLength >= step);
+  if(stepLength < step)
+    PROMPT_THROW2(BadInput, "stepLength < step " << stepLength << " " << step << "\n");
+
+
   if (verbose && !sameVolume) { std::cout << "hitDaugherBoundary\n";}
 
   //Move next step

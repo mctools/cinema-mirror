@@ -45,8 +45,8 @@ namespace Prompt {
     const Vector &getDirection() const { return m_dir; }
 
     bool hasEffEnergy() const { return !m_effdir.isStrictNullVector(); }
-    double getEffEnergy() const { return m_effekin; }
-    void setEffEnergy(double e)  { m_effekin=e; }
+    double getEffEKin() const { return m_effekin; }
+    void setEffEKin(double e)  { m_effekin=e; }
     virtual void setEffDirection(const Vector& dir);
     const Vector &getEffDirection() const { return m_effdir; }
 
@@ -76,6 +76,8 @@ namespace Prompt {
 
     virtual double calcSpeed() const;
     virtual double calcEffSpeed() const;
+
+    double getMass() const { return m_rest_mass; }
 
   protected:
     friend class DeltaParticle;
