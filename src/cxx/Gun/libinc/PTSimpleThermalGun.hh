@@ -30,7 +30,7 @@ namespace Prompt {
   class SimpleThermalGun : public PrimaryGun {
   public:
     SimpleThermalGun(const Particle &aParticle, double ekin=0.0253, const Vector &pos=Vector{0.,0.,-12000.}, const Vector &dir=Vector{0.,0.,1.} )
-    : PrimaryGun(aParticle), m_ekin(ekin), m_pos(pos), m_dir(dir) {};
+    : PrimaryGun(aParticle), m_ekin(ekin), m_pos(pos), m_dir(dir.unit()) {};
     virtual ~SimpleThermalGun() {};
     virtual void sampleEnergy(double &ekin)
     {
