@@ -40,7 +40,7 @@
     <volume name="Detector">
       <materialref ref="Vacuum"/>
       <solidref ref="DetectorSolid"/>
-      <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap;xmin=-250;xmax=250;numBins_x=100;ymin=-250;ymax=250;numBins_y=100;type=YZ"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap;xmin=-250;xmax=250;numBins_x=100;ymin=-250;ymax=250;numBins_y=100;type=XY"/>
       <!-- <auxiliary auxtype="Scorer" auxvalue="PSD;NeutronHistMap;-250;250;100;-250;250;100;XY"/> -->
     </volume>
 
