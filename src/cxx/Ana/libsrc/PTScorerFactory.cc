@@ -125,6 +125,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
     else if(ScorDef == "PSD")
     {
+      // PSD: position sensitive detector
 
       int parCount = 9;
 
@@ -171,8 +172,10 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
     else if(ScorDef == "ESpectrum")
     {
+      // ESpectrum: energy spectrum
       // example cfg
       // ""Scorer=ESD; name=detector; Emin=0.0; Emax=0.0253; numbin=100""
+
       int parCount = 5;
 
       // The mandatory parameters
@@ -191,8 +194,10 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     }
     else if(ScorDef == "TOF")
     {
+      // TOF: time-of-flight
       // example cfg
       // ""Scorer=TOF; name=detector; Tmin=0.0; Tmax=0.5; numbin=1000""
+
       int parCount = 5;
 
       // The mandatory parameters
@@ -211,9 +216,11 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     }
     else if(ScorDef == "MultiScat")
     {
+      // MultiScat: multiple scattering
       // example cfg
       // ""Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; linear=yes""
       // the default value for linear is yes
+
       int parCount = 5;
 
       // The mandatory parameters
@@ -250,6 +257,8 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     }
     else if(ScorDef == "VolFlux")
     {
+      // VolFlux: volume flux
+      
       int parCount = 6;
 
       bool force = true;
