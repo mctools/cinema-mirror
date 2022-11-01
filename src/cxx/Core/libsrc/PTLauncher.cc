@@ -126,7 +126,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       navman.scoreEntry(particle);
 
       //! within the next while loop, particle should move in the same volume
-      while(navman.proprogateInAVolume(particle, 0) )
+      while(navman.proprogateInAVolume(particle) )
       {
         // score if any scorer is available
         if(navman.hasPropagateScorer())

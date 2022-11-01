@@ -62,7 +62,7 @@ TEST_CASE("GeoManager")
       navman.setupVolumePhysics();
 
       //! the next while loop, particle should move in the same volume
-      while(navman.proprogateInAVolume(neutron, 0))
+      while(navman.proprogateInAVolume(neutron))
       {
         if(neutron.isAlive())
           continue;

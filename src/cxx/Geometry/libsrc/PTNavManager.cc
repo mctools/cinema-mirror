@@ -162,20 +162,14 @@ bool Prompt::NavManager::hasBoundaryPhyiscs()
   return m_matphysscor->boundaryPhysics.use_count();
 }
 
-bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
+bool Prompt::NavManager::proprogateInAVolume(Particle &particle)
 {
   if(!particle.isAlive())
     return false;
 
   const Vector &p = particle.getPosition();
   const Vector &dir = particle.getDirection();
-  if (verbose) {
-    std::cout << m_currPV->GetLogicalVolume()->GetName() << ", id " << m_currPV->GetLogicalVolume()->id() << std::endl;
-    std::cout << "initial conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << std::endl;
-  }
-
   double stepLength = m_matphysscor->bulkPhysics->sampleStepLength(particle);
-
 
   //! updates m_nextState to contain information about the next hitting boundary:
   //!   - if a daugher is hit: m_nextState.Top() will be daughter
@@ -190,22 +184,14 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle, bool verbose )
   if(stepLength < step)
     PROMPT_THROW2(BadInput, "stepLength < step " << stepLength << " " << step << "\n");
 
-
-  if (verbose && !sameVolume) { std::cout << "hitDaugherBoundary\n";}
-
   //Move next step
   const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
   particle.moveForward(sameVolume ? step : (step + resolution) );
-
-  if (verbose) {
-    std::cout << "scattered conditions: pos " << p << " , dir "  << dir  << " ekin " << particle.getEKin() << " step " << step << std::endl << std::endl;
-  }
 
   if(sameVolume)
   {
     //sample the interaction at the location
     m_matphysscor->bulkPhysics->sampleFinalState(particle, step, false);
-    // std::cout << particle.getEventID() << ", particle  weight " << particle.getWeight() <<std::endl;
     return true;
   }
   else

@@ -38,7 +38,7 @@ namespace Prompt {
   class NavManager  {
   public:
     //return false if the track is terminated, i.e. exist world
-    bool proprogateInAVolume(Particle &particle, bool verbose = true);
+    bool proprogateInAVolume(Particle &particle);
     void locateLogicalVolume(const Vector &p);
     bool exitWorld();
     void setupVolumePhysics();
