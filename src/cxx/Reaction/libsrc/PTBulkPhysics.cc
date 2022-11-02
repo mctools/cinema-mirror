@@ -54,8 +54,6 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
     double comove_ekin;
     Vector comove_dir;
 
-    // SURE CHANGE REAL AND EFF both
-
     // sample in the comoving frame
     m_compModel->generate(ekineff, direff, comove_ekin, comove_dir);
     if(lab_ekin!=-1) //non-capture fixme: this should not be called when EXITing

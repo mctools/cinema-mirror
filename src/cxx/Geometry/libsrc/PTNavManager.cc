@@ -167,8 +167,8 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle)
   if(!particle.isAlive())
     return false;
 
-  const Vector &p = particle.getPosition();
-  const Vector &dir = particle.getDirection();
+  const auto *p = reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&particle.getPosition());
+  const auto *dir = reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&particle.getDirection());
   double stepLength = m_matphysscor->bulkPhysics->sampleStepLength(particle);
 
   //! updates m_nextState to contain information about the next hitting boundary:
@@ -176,7 +176,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle)
   //!   - if ray leaves volume: m_nextState.Top() will point to current volume
   //!   - if step limit > step: m_nextState == in_state
   //!   ComputeStep is essentialy equal to ComputeStepAndPropagatedState without the relaction part
-  double step = m_currPV->GetLogicalVolume()->GetNavigator()->ComputeStepAndPropagatedState({p.x(), p.y(), p.z()}, {dir.x(), dir.y(), dir.z()}, stepLength, *m_currState, *m_nextState);
+  double step = m_currPV->GetLogicalVolume()->GetNavigator()->ComputeStepAndPropagatedState(*p, *dir, stepLength, *m_currState, *m_nextState);
   std::swap(m_currState, m_nextState);
 
   bool sameVolume (step == stepLength);
