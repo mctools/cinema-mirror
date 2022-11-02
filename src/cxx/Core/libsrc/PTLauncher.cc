@@ -22,6 +22,7 @@
 
 #include "PTGeoManager.hh"
 #include "PTNavManager.hh"
+#include "PTStackManager.hh"
 #include "PTMath.hh"
 #include "PTParticle.hh"
 #include "PTProgressMonitor.hh"
@@ -83,6 +84,8 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
   //create navigation manager
   auto &navman = Singleton<NavManager>::getInstance();
 
+  auto &stackManager = Singleton<StackManager>::getInstance();
+
   if(!m_gun.use_count())
   {
     std::cout << "PrimaryGun is not set, fallback to the neutron SimpleThermalGun\n";
@@ -94,62 +97,67 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
     moni = new ProgressMonitor("Prompt simulation", numParticle, printPrecent);
   for(size_t i=0;i<numParticle;i++)
   {
-    //double ekin, const Vector& dir, const Vector& pos
-    auto particle = m_gun->generate();
+    //add a primary particle into the stack 
+    stackManager.add(m_gun->generate());
 
-    if(recordTrj)
+    while(!stackManager.empty())
     {
-      std::vector<Vector> tmp;
-      tmp.reserve(m_trajectory.size());
-      m_trajectory.swap(tmp);
-    }
+      auto particle = *(stackManager.pop()).get();
 
-    //! allocate the point in a volume
-    navman.locateLogicalVolume(particle.getPosition());
-    while(!navman.exitWorld() && particle.isAlive())
-    {
+      if(recordTrj)
+      {
+        std::vector<Vector> tmp;
+        tmp.reserve(m_trajectory.size());
+        m_trajectory.swap(tmp);
+      }
+
+      //! allocate the point in a volume
+      navman.locateLogicalVolume(particle.getPosition());
+      while(!navman.exitWorld() && particle.isAlive())
+      {
+        if(recordTrj)
+        {
+          m_trajectory.push_back(particle.getPosition());
+        }
+
+        //! first step of a particle in a volume
+        // std::cout << navman.getVolumeName() << " " << particle.getPosition() << std::endl;
+        navman.setupVolumePhysics();
+        navman.scoreSurface(particle);
+
+        //if reflected or absorbed
+        if(navman.surfaceReaction(particle))
+        {
+          // std::cout << "reflection weight " << particle.getWeight() << "\n";
+        }
+        navman.scoreEntry(particle);
+
+        //! within the next while loop, particle should move in the same volume
+        while(navman.proprogateInAVolume(particle) )
+        {
+          // score if any scorer is available
+          if(navman.hasPropagateScorer())
+          {
+            navman.scorePropagate(particle);
+          }
+          if(recordTrj)
+            m_trajectory.push_back(particle.getPosition());
+        }
+        navman.scoreExit(particle);
+      }
+
+      if(!navman.exitWorld() && !particle.isAlive())
+      {
+        if(particle.getKillType()==Particle::KillType::ABSORB)
+        {
+          navman.scoreAbsorb(particle);
+        }
+      }
+
       if(recordTrj)
       {
         m_trajectory.push_back(particle.getPosition());
       }
-
-      //! first step of a particle in a volume
-      // std::cout << navman.getVolumeName() << " " << particle.getPosition() << std::endl;
-      navman.setupVolumePhysics();
-      navman.scoreSurface(particle);
-
-      //if reflected or absorbed
-      if(navman.surfaceReaction(particle))
-      {
-        // std::cout << "reflection weight " << particle.getWeight() << "\n";
-      }
-      navman.scoreEntry(particle);
-
-      //! within the next while loop, particle should move in the same volume
-      while(navman.proprogateInAVolume(particle) )
-      {
-        // score if any scorer is available
-        if(navman.hasPropagateScorer())
-        {
-          navman.scorePropagate(particle);
-        }
-        if(recordTrj)
-          m_trajectory.push_back(particle.getPosition());
-      }
-      navman.scoreExit(particle);
-    }
-
-    if(!navman.exitWorld() && !particle.isAlive())
-    {
-      if(particle.getKillType()==Particle::KillType::ABSORB)
-      {
-        navman.scoreAbsorb(particle);
-      }
-    }
-
-    if(recordTrj)
-    {
-      m_trajectory.push_back(particle.getPosition());
     }
     if(timer)
       moni->OneTaskCompleted();

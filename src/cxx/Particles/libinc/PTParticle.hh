@@ -24,6 +24,7 @@
 #include "PTVector.hh"
 #include "PTMath.hh"
 #include "PTUnitSystem.hh"
+#include <ostream>
 
 //! Particle is neutron with pgd code of 2112 by defult. Proton (2212) is also supported.
 //! fixme: support Gamma (22) as well.
@@ -78,6 +79,8 @@ namespace Prompt {
     virtual double calcEffSpeed() const;
 
     double getMass() const { return m_rest_mass; }
+
+    friend std::ostream& operator << (std::ostream &, const Particle&);
 
   protected:
     friend class DeltaParticle;

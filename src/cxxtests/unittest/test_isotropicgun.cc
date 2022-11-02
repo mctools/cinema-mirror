@@ -36,12 +36,12 @@ TEST_CASE("test_isotropicgun")
   for(unsigned i=0;i<num;i++)
   {
     auto p = gun.generate();
-    const pt::Vector& direction = p.getDirection();
+    const pt::Vector& direction = p->getDirection();
     double theta = direction.angle(pt::Vector(0.,0.,1))*180/M_PI;
     sum_theta += theta;
 
-    std::cout << "event id " << p.getEventID()
-    << " " << p.getDirection()
+    std::cout << "event id " << p->getEventID()
+    << " " << p->getDirection()
     << " " << theta << std::endl;
     hist->fill(theta);
   }

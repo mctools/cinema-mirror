@@ -21,7 +21,7 @@
 #include "PTPrimaryGun.hh"
 
 
-Prompt::Particle Prompt::PrimaryGun::generate()
+std::unique_ptr<Prompt::Particle> Prompt::PrimaryGun::generate()
 {
   sampleEnergy(m_ekin);
   m_ekin0=m_ekin;
@@ -29,5 +29,7 @@ Prompt::Particle Prompt::PrimaryGun::generate()
   m_eventid++;
   m_weight=1.;
   m_alive=true;
-  return *this;
+  auto p = std::make_unique<Particle>();
+  *p.get() = *this;
+  return std::move(p);
 }

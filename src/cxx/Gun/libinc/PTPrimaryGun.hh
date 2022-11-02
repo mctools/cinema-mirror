@@ -32,7 +32,7 @@ namespace Prompt {
     PrimaryGun(const Particle &aParticle)
     : Particle(aParticle), m_rng(Singleton<SingletonPTRand>::getInstance()) {};
     virtual ~PrimaryGun() {};
-    virtual Particle generate();
+    virtual std::unique_ptr<Particle> generate();
     virtual void sampleEnergy(double &ekin) = 0;
     virtual void samplePosDir(Vector &pos, Vector &dir) = 0;
 

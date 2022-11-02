@@ -33,10 +33,10 @@ TEST_CASE("test_maxwellgun")
   for(unsigned i=0;i<10;i++)
   {
     auto p = gun.generate();
-    std::cout << "event id " << p.getEventID()
-    << " " << p.getPosition()
-    << " " << p.getDirection()<< std::endl;
-    hist->fill(p.getEKin());
+    std::cout << "event id " << p->getEventID()
+    << " " << p->getPosition()
+    << " " << p->getDirection()<< std::endl;
+    hist->fill(p->getEKin());
   }
   std::cout << "integral " << hist->getIntegral() << std::endl;
   hist->save("test_maxwellgun");

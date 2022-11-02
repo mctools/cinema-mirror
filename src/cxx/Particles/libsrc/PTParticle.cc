@@ -30,3 +30,9 @@ bool Prompt::Particle::isAlive()
 {
   return m_alive;
 }
+
+std::ostream& Prompt::operator << (std::ostream &o, const Prompt::Particle& p)
+{
+  return o<<"Particle: { " << p.getEventID() <<", ekin" << p.getEKin() << ", position"
+          << p.getPosition() << ", direction" << p.getDirection() << " }";
+}

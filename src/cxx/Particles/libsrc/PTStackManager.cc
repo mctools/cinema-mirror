@@ -18,14 +18,23 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTTrack.hh"
-#include "PTParticle.hh"
+#include "PTStackManager.hh"
 
-Prompt::Track::Track(Prompt::Particle &&particle, size_t eventid, size_t motherid, bool saveSpaceTime)
-:Particle(std::move(particle)), m_eventid(eventid), m_motherid(motherid), m_totLength(0.),
-m_saveSpaceTime(saveSpaceTime)
+
+void Prompt::StackManager::add(std::unique_ptr<Prompt::Particle> aParticle)
 {
-  update();
+  m_stack.emplace_back(std::move(aParticle));
 }
 
-Prompt::Track::~Track() {}
+std::unique_ptr<Prompt::Particle> Prompt::StackManager::pop()
+{
+  auto p = std::move(m_stack.back());
+  m_stack.pop_back();
+  return p;
+}
+
+
+bool Prompt::StackManager::empty() const
+{
+  return m_stack.empty();
+}
