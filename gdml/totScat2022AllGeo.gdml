@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+<gdml>
 
     <userinfo>
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
-      <auxiliary auxtype="PrimaryGun" auxvalue="MPIGun;Neutron;500, 500, -30000, 20, 40, 0" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MPIGun;moderator_width_x=500;moderator_height_y=500;moderator_positon_z=-30000;slit_width_x=20;slit_height_y=40;slit_position_z=0" />
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;1.0; 0,0,-30000; 0,0,1" /> -->
     </userinfo>
    <define>
@@ -86,7 +86,7 @@
         <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleStick" rmax="2.2" rmin="0.0" startphi="0.0" z="14.3376" /> -->
         <!-- Vanadium Stick -->
         <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleStick" rmax="3.175" rmin="0.0" startphi="0.0" z="60.0" /> -->
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleHolder" rmax="4.7658" rmin="4.4758" startphi="0.0" z="60.0" />
+        <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleHolder" rmax="4.7658" rmin="4.4758" startphi="0.0" z="60.0" /> -->
         <box lunit="mm" name="MonitorIn" x="40.0" y="40.0" z="1.0" />
         <box lunit="mm" name="Module300_L" x="25.4" y="211.2" z="300" />
         <box lunit="mm" name="Module300_G" x="300" y="211.2" z="25.4" />
@@ -104,29 +104,29 @@
         <volume name="LV_Tube_SampleStick">
             <solidref ref="SampleStick" />
             <materialref ref="HeavyWater" />
-            <auxiliary auxtype="Scorer" auxvalue="MultiScat;HW;0.5;10.5;10"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=10; linear=yes"/>
             <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
         </volume>
 
-        <volume name="LV_Tube_SampleHolder">
+        <!-- <volume name="LV_Tube_SampleHolder">
             <solidref ref="SampleHolder" />
             <materialref ref="V" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-        </volume>
+        </volume> -->
 
         <volume name="LV_MonitorIn">
             <solidref ref="MonitorIn" />
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Scorer" auxvalue="ESD;MonitorIn;0.00;5.0;207"/>
-            <auxiliary auxtype="Scorer" auxvalue="TOF;MonitorIn;0.00;5.0;207"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=MonitorIn; Emin=0.0; Emax=5.0; numbin=207"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=MonitorIn; Tmin=0.0; Tmax=5.0; numbin=207"/>
         </volume>
 
         <volume name="LV_Tube300_He">
             <solidref ref="Tube300_He" />
             <materialref ref="G4_He" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Scorer" auxvalue="NeutronSq;SofQ_300;0,0,0;0,0,1;30000.;0.1;120;1000;ABSORB"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_300;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=30000;type=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
         </volume>
 
         <volume name="LV_Tube300_Wall">
@@ -149,7 +149,7 @@
 
         <volume name="LV_Tube500_He">
             <solidref ref="Tube500_He" />
-            <auxiliary auxtype="Scorer" auxvalue="NeutronSq;SofQ_500;0,0,0;0,0,1;30000.;0.1;120;1000;ABSORB"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_500;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=30000;type=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
             <materialref ref="G4_He" />
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
         </volume>
@@ -176,7 +176,7 @@
             <solidref ref="Module300_L" />
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
-            <auxiliary auxtype="Scorer" auxvalue="PSD;NeutronHistMapM300;-170;170;68;-125;125;50;YZ"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMapM300;xmin=-170;xmax=170;numBins_x=68;ymin=-125;ymax=125;numBins_y=50;type=YZ"/>
             <physvol name="LV_Tube300_1">
                 <volumeref ref="LV_Tube300" />
                 <positionref ref="P_LV_Tube_1" />
@@ -215,7 +215,7 @@
             <solidref ref="Module500_L" />
             <materialref ref="Vacuum" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
-            <auxiliary auxtype="Scorer" auxvalue="PSD;NeutronHistMapM500;-270;270;108;-125;125;50;YZ"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMapM500;xmin=-270;xmax=270;numBins_x=108;ymin=-125;ymax=125;numBins_y=50;type=YZ"/>
             <physvol name="LV_Tube500_1">
                 <volumeref ref="LV_Tube500" />
                 <positionref ref="P_LV_Tube_1" />
@@ -1624,10 +1624,10 @@
                 <rotationref ref="R_LV_SampleStick" />
             </physvol>
 
-            <physvol name="LV_Tube_SampleHolder">
+            <!-- <physvol name="LV_Tube_SampleHolder">
                 <volumeref ref="LV_Tube_SampleHolder" />
                 <rotationref ref="R_LV_SampleHolder" />
-            </physvol>
+            </physvol> -->
 
             <physvol name="LV_MonitorIn">
                 <volumeref ref="LV_MonitorIn" />
