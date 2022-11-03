@@ -91,13 +91,13 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
           std::array<double, 6> {moderator_width_x, moderator_height_y, moderator_positon_z,
                                  slit_width_x, slit_height_y, slit_position_z});
     }
-    else if(gunDef == "SimpleThermalGun" || gunDef == "IsotropicGun")
+    else if(gunDef == "SimpleThermalGun")
     {
       // example cfgstr:
       // gun=SimpleThermalGun;energy=0.0253;position=0,0,-500;direction=0,0,1
-      // gun=IsotropicGun;energy=0.0253;position=0,0,-10;direction=0,0,1
 
       // energy and direction are optional with default value 0 and 0,0,1 separately
+
       int parCount = 4;
 
       // The mandatory parameters
@@ -123,25 +123,44 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
         direction = string2vec(directionInStr);
       }
 
-      if(gunDef == "SimpleThermalGun")
+      if(parCount!=cfg.size())
       {
-        if(parCount!=cfg.size())
-        {
-          PROMPT_THROW2(BadInput, "SimpleThermalGun is missing or with extra config parameters" << cfg.size() << " " << parCount );
-        }
-
-        return std::make_shared<SimpleThermalGun>(Neutron(), energy, position, direction);
-
+        PROMPT_THROW2(BadInput, "SimpleThermalGun is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
-      else if(gunDef == "IsotropicGun")
+
+      return std::make_shared<SimpleThermalGun>(Neutron(), energy, position, direction);
+    }
+    else if(gunDef == "IsotropicGun")
+    {
+      // example cfgstr:
+      // gun=IsotropicGun;energy=0.0253;position=0,0,-10
+
+      // energy is optional with default value 0 
+
+      int parCount = 3;
+
+      // The mandatory parameters
+      bool force = true;
+      Vector position = string2vec(cfg.find("position", force));
+
+      // the optional parameters
+      double energy = 0;
+      std::string energyInStr = cfg.find("energy");
+      if(energyInStr.empty())
+        parCount--;
+      else
       {
-        if(parCount!=cfg.size())
-        {
-          PROMPT_THROW2(BadInput, "IsotropicGun is missing or with extra config parameters" << cfg.size() << " " << parCount );
-        }
-
-        return std::make_shared<IsotropicGun>(Neutron(), energy, position, direction);
+        energy = ptstod(energyInStr);
       }
+
+      Vector direction = Vector{0.,0.,1.};
+      
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "IsotropicGun is missing or with extra config parameters" << cfg.size() << " " << parCount );
+      }
+
+      return std::make_shared<IsotropicGun>(Neutron(), energy, position, direction);
     }
     else if(gunDef == "UniModeratorGun")
     {
@@ -175,7 +194,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
     else if(gunDef == "MPIGun")
     {
       // example cfgstr:
-      // gun=TMPIGun;moderator_width_x=100;moderator_height_y=50;moderator_positon_z=-400;
+      // gun=MPIGun;moderator_width_x=100;moderator_height_y=50;moderator_positon_z=-400;
       // slit_width_x=5;slit_height_y=10;slit_position_z=1
 
       int parCount = 7;
