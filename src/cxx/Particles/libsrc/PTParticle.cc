@@ -26,10 +26,6 @@ void Prompt::Particle::kill(KillType t)
   m_killtype = t;
 }
 
-bool Prompt::Particle::isAlive()
-{
-  return m_alive;
-}
 
 std::ostream& Prompt::operator << (std::ostream &o, const Prompt::Particle& p)
 {

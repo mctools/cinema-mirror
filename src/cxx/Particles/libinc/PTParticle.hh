@@ -175,4 +175,9 @@ inline void Prompt::Particle::setNumScat(int counter)
   m_counter = counter;
 }
 
+inline bool Prompt::Particle::isAlive()
+{
+  return m_alive;
+}
+
 #endif
