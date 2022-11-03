@@ -194,7 +194,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
     else if(gunDef == "MPIGun")
     {
       // example cfgstr:
-      // gun=TMPIGun;moderator_width_x=100;moderator_height_y=50;moderator_positon_z=-400;
+      // gun=MPIGun;moderator_width_x=100;moderator_height_y=50;moderator_positon_z=-400;
       // slit_width_x=5;slit_height_y=10;slit_position_z=1
 
       int parCount = 7;
