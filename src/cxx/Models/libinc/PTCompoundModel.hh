@@ -48,7 +48,7 @@ namespace Prompt {
 
   class CompoundModel  {
   public:
-    CompoundModel();
+    CompoundModel(int gpd);
     virtual ~CompoundModel();
 
     double totalCrossSection(double ekin, const Vector &dir) const;
@@ -59,10 +59,13 @@ namespace Prompt {
     void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const;
     double calculateWeight(double lengthRho, bool hitWall);
 
+    int getSupportedGPD() const { return m_forgpd; }
+
   private:
     std::vector<std::shared_ptr<DiscreteModel> > m_models;
     mutable XSCache m_cache;
-    bool m_oriented;
+    bool m_containsOriented;
+    int m_forgpd;
 
     SingletonPTRand &m_rng;
   };
@@ -70,7 +73,7 @@ namespace Prompt {
 
 inline bool Prompt::CompoundModel::sameInquiryAsLastTime(double ekin, const Vector &dir) const
 {
-  return m_oriented ? (m_cache.ekin==ekin && m_cache.dir == dir) : m_cache.ekin==ekin;
+  return m_containsOriented ? (m_cache.ekin==ekin && m_cache.dir == dir) : m_cache.ekin==ekin;
 }
 
 #endif

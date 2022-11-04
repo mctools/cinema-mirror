@@ -30,25 +30,35 @@
 
 namespace Prompt {
 
+  struct ModelValidity
+  {
+    int supportPGD;
+    double minEkin, maxEkin;
+    bool rightParticleType(int pgd) const
+    {
+      return supportPGD==pgd;
+    }
+
+    bool isValid(int pgd, double ekin) const
+    {
+      return pgd==supportPGD && (ekin > minEkin && ekin < maxEkin);
+    }
+  };
+
   class PhysicsBase {
   public:
     PhysicsBase(const std::string &name);
-    PhysicsBase(const std::string &name, unsigned gdp, double emin, double emax);
+    PhysicsBase(const std::string &name, int gdp, double emin, double emax);
     virtual ~PhysicsBase() = default;
     const std::string &getName() { return m_modelName; }
     bool isOriented();
-    void getEnergyRange(double &ekinMin, double &ekinMax) ;
-    void setEnergyRange(double ekinMin, double ekinMax);
-    virtual bool applicable(unsigned pgd) const;
-    virtual bool applicable(unsigned pgd, double ekin) const;
+    ModelValidity& getModelValidity() { return m_modelvalid; }
     virtual double getCrossSection(double ekin) const ;
     virtual double getCrossSection(double ekin, const Vector &dir) const;
 
-
   protected:
     std::string m_modelName;
-    unsigned m_supportPGD;
-    double m_minEkin, m_maxEkin;
+    ModelValidity m_modelvalid;
     bool m_oriented;
     SingletonPTRand &m_rng;
   };

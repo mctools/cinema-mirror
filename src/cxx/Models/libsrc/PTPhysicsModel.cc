@@ -23,10 +23,10 @@
 Prompt::PhysicsBase::PhysicsBase(const std::string &name)
  :m_modelName(name), m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance()) {};
 
-Prompt::PhysicsBase::PhysicsBase(const std::string &name, unsigned gdp,
+Prompt::PhysicsBase::PhysicsBase(const std::string &name, int gdp,
              double emin, double emax)
- :m_modelName(name), m_supportPGD(gdp), m_minEkin(emin),
-  m_maxEkin(emax), m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance())  {};
+ :m_modelName(name), m_modelvalid{gdp, emin, emax},
+  m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance())  {};
 
 Prompt::PhysicsModel::PhysicsModel(const std::string &name)
 :PhysicsBase(name) {}
@@ -35,28 +35,9 @@ Prompt::PhysicsModel::PhysicsModel(const std::string &name, unsigned gdp,
              double emin, double emax)
 :PhysicsBase(name, gdp, emin, emax) { }
 
-bool Prompt::PhysicsBase::applicable(unsigned pgd) const
-{ return m_supportPGD==pgd; }
 
 bool Prompt::PhysicsBase::isOriented()
 {return m_oriented;}
-
-void Prompt::PhysicsBase::getEnergyRange(double &ekinMin, double &ekinMax)
-{
-  m_minEkin = ekinMin;
-  m_maxEkin = ekinMax;
-};
-
-void Prompt::PhysicsBase::setEnergyRange(double ekinMin, double ekinMax)
-{
-  ekinMin = m_minEkin;
-  ekinMax = m_maxEkin;
-};
-
-bool Prompt::PhysicsBase::applicable(unsigned pgd, double ekin) const
-{
-  return pgd==m_supportPGD && (ekin > m_minEkin && ekin < m_maxEkin);
-}
 
 double Prompt::PhysicsBase::getCrossSection(double ekin) const
 {

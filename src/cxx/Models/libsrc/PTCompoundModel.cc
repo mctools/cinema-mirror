@@ -23,8 +23,9 @@
 #include "PTNCrystalAbs.hh"
 #include "PTPhysicsModel.hh"
 
-Prompt::CompoundModel::CompoundModel()
-:m_cache({}), m_oriented(false), m_rng( Singleton<SingletonPTRand>::getInstance() )
+Prompt::CompoundModel::CompoundModel(int gpd)
+:m_cache({}), m_containsOriented(false), m_rng( Singleton<SingletonPTRand>::getInstance() ),
+ m_forgpd(gpd)
 {}
 
 Prompt::CompoundModel::~CompoundModel() {}
@@ -36,18 +37,24 @@ void Prompt::CompoundModel::addPhysicsModel(const std::string &cfg, double bias)
 
   // fixme: absoption should be seperated once ENDF data model is available
   m_models.emplace_back(std::make_shared<NCrystalAbs>(cfg, bias));
+  if(!m_models.back()->getModelValidity().rightParticleType(m_forgpd))
+    PROMPT_THROW2(BadInput, "the model is not aimed for suitable for particle GPD " << m_forgpd);
+
   // cache_xs and bias will be updated once a calculation is required.
   // so the initial value can be arbitrary.
   m_cache.cache_xs.push_back(0.);
   m_cache.bias.push_back(1.);
   if(m_models.back()->isOriented())
-    m_oriented=true;
+    m_containsOriented=true;
 
   m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, bias));
+  if(!m_models.back()->getModelValidity().rightParticleType(m_forgpd))
+    PROMPT_THROW2(BadInput, "the model is not aimed for suitable for particle GPD " << m_forgpd);
+
   m_cache.cache_xs.push_back(0.);
   m_cache.bias.push_back(1.);
   if(m_models.back()->isOriented())
-    m_oriented=true;
+    m_containsOriented=true;
 }
 
 
@@ -62,7 +69,7 @@ double Prompt::CompoundModel::totalCrossSection(double ekin, const Vector &dir) 
     double xs(0.);
     for(unsigned i=0;i<m_models.size();i++)
     {
-      double channelxs = m_oriented ? m_models[i]->getCrossSection(ekin, dir) :
+      double channelxs = m_models[i]->isOriented() ? m_models[i]->getCrossSection(ekin, dir) :
                                       m_models[i]->getCrossSection(ekin);
       m_cache.cache_xs[i] = channelxs;
       m_cache.bias[i] = m_models[i]->getBias();

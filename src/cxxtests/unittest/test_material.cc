@@ -24,7 +24,7 @@
 
 TEST_CASE("BulkPhysics")
 {
-  auto mat = Prompt::BulkPhysics() ;
+  auto mat = Prompt::BulkPhysics("test bulk physics") ;
   mat.setComposition("LiquidWaterH2O_T293.6K.ncmat", 1); //LiquidWaterH2O_T293.6K, Be_sg194, Al_sg225, UO2_sg225_UraniumDioxide
   double ekin  = 0.0253;
   auto n = Prompt::Neutron(ekin, Prompt::Vector(1,0,0), Prompt::Vector(0,0,0) );

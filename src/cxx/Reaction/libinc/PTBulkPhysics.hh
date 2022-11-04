@@ -29,7 +29,7 @@
 namespace Prompt {
   class BulkPhysics  {
   public:
-    BulkPhysics();
+    BulkPhysics(const std::string& name);
     virtual ~BulkPhysics();
 
     double sampleStepLength(const Prompt::Particle &particle) const;
@@ -39,6 +39,7 @@ namespace Prompt {
   private:
     double macroCrossSection(const Prompt::Particle &particle) const;
     double calNumDensity(const std::string &cfg);
+    std::string m_name;
     SingletonPTRand &m_rng;
     std::unique_ptr<CompoundModel> m_compModel;
     double m_numdensity;

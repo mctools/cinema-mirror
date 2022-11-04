@@ -233,7 +233,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     {
       std::cout << "Creating model " << mat.name << ", "
                 << mat.attributes.find("atomValue")->second << volume.GetName() << std::endl;
-      std::shared_ptr<BulkPhysics> model = std::make_shared<BulkPhysics>();
+      std::shared_ptr<BulkPhysics> model = std::make_shared<BulkPhysics>("neutron bulk physics"); //it should be a dict later
       m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<BulkPhysics>>(std::string(mat.name) , std::move(model) ) );
 
       auto theNewPhysics = getBulkPhysics(mat.name);

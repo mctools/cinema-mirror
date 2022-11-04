@@ -19,14 +19,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTBulkPhysics.hh"
+#include "PTUnitSystem.hh" //const_neutron_pgd
+
 #include <cmath>
 #include <limits>
 #include "NCrystal/NCrystal.hh"
 
-Prompt::BulkPhysics::BulkPhysics()
+Prompt::BulkPhysics::BulkPhysics(const std::string& name)
 :m_rng(Singleton<SingletonPTRand>::getInstance()),
-m_compModel(std::make_unique<CompoundModel>()),
-m_numdensity(0.) { }
+m_compModel(std::make_unique<CompoundModel>(const_neutron_pgd)), //fixme:  neutron only for now, should be a dict later
+m_numdensity(0.), m_name(name) { }
 
 Prompt::BulkPhysics::~BulkPhysics() { }
 
@@ -39,6 +41,9 @@ double Prompt::BulkPhysics::macroCrossSection(const Prompt::Particle &particle) 
 
 void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
 {
+  if(m_compModel->getSupportedGPD()!=particle.getPGD())
+    PROMPT_THROW2(CalcError, "BulkPhysics " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
+
   if(!particle.isAlive())
     return;
 
@@ -90,7 +95,7 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
   {
     // if it is an absorption reaction, the state of the particle is set,
     // but the energy and direction are kept for the subsequent capture scorers.
-    if(lab_ekin==-1.) 
+    if(lab_ekin==-1.)
     {
       particle.kill(Particle::KillType::ABSORB);
     }
@@ -108,6 +113,9 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
 
 double Prompt::BulkPhysics::sampleStepLength(const Prompt::Particle &particle) const
 {
+  if(m_compModel->getSupportedGPD()!=particle.getPGD())
+    PROMPT_THROW2(CalcError, "BulkPhysics " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
+
   double mxs = macroCrossSection(particle);
   if(mxs)
   {

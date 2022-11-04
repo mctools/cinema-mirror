@@ -25,7 +25,7 @@
 TEST_CASE("CompoundModel")
 {
 
-  auto collection = Prompt::CompoundModel() ;
+  auto collection = Prompt::CompoundModel(2112) ;
   collection.addPhysicsModel("Al_sg225.ncmat;dcutoff=0.5;temp=25C");
 
   double xs(0.);
