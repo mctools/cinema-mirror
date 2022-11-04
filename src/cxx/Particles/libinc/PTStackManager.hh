@@ -43,6 +43,8 @@ namespace Prompt {
     ~StackManager() = default;
     std::vector<std::unique_ptr<Particle> > m_stack;
   };
+
+  std::ostream& operator << (std::ostream &, const StackManager&);
 }
 
 #endif

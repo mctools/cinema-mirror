@@ -21,6 +21,18 @@
 #include "PTStackManager.hh"
 
 
+std::ostream& Prompt::operator << (std::ostream &o, const StackManager&s)
+{
+  o<<"********StackManager*****************\n";
+
+  for(auto it=s.m_stack.begin();it!=s.m_stack.end();++it)
+  {
+    o<< *it->get() << std::endl;
+    o<<"*************************\n";
+  }
+  return o;
+}
+
 void Prompt::StackManager::add(std::unique_ptr<Prompt::Particle> aParticle)
 {
   m_stack.emplace_back(std::move(aParticle));

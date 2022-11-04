@@ -96,25 +96,7 @@ namespace Prompt {
     bool m_alive;
   };
 
-  struct DeltaParticle {
-    double dlt_ekin, dlt_time;
-    Vector dlt_dir, dlt_pos;
-    Particle lastParticle;
-    void setLastParticle(const Particle &p)
-    {
-      lastParticle=p;
-    }
-
-    void calcDeltaParticle(const Particle &p)
-    {
-      dlt_ekin=p.m_ekin-lastParticle.m_ekin;
-      dlt_time=p.m_time-lastParticle.m_time;
-      dlt_dir=p.m_dir-lastParticle.m_dir;
-      dlt_pos=p.m_pos-lastParticle.m_pos;
-      lastParticle = p;
-    }
-  };
-
+  std::ostream& operator << (std::ostream &, const Particle&);
 }
 
 

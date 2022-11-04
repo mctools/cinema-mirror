@@ -36,6 +36,7 @@ TEST_CASE("Particle")
 
   auto n = pt::Neutron(0., pt::Vector(1,0,0), pt::Vector(0,0,0) );
   auto p = pt::Proton(0., pt::Vector(1,0,0), pt::Vector(0,0,0) );
+  std::cout << n << std::endl;
 
   for(auto en : en_vec)
   {
