@@ -47,6 +47,8 @@ Prompt::ScorerNeutronSq::~ScorerNeutronSq()
 
 void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
 {
+  // fixme: the angle of cosine should be calculated as which line of code?
+  // double angle_cos = (m_samplePos-particle.getPosition()).angleCos(m_refDir);
   double angle_cos = particle.getDirection().angleCos(m_refDir);
   double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();
   double v = dist/particle.getTime();
