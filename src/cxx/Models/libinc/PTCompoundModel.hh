@@ -50,18 +50,17 @@ namespace Prompt {
   public:
     CompoundModel(int gpd);
     virtual ~CompoundModel();
+    
+    void addPhysicsModel(const std::string &cfg, double bias=1.);
 
     double totalCrossSection(double ekin, const Vector &dir) const;
-
-    void addPhysicsModel(const std::string &cfg, double bias=1.);
-    bool sameInquiryAsLastTime(double ekin, const Vector &dir) const;
-
-    void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const;
     double calculateWeight(double lengthRho, bool hitWall);
-
+    void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const;
     int getSupportedGPD() const { return m_forgpd; }
 
   private:
+    bool sameInquiryAsLastTime(double ekin, const Vector &dir) const;
+
     std::vector<std::shared_ptr<DiscreteModel> > m_models;
     mutable XSCache m_cache;
     bool m_containsOriented;

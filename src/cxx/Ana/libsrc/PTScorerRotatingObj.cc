@@ -22,18 +22,14 @@
 
 
 Prompt::ScorerRotatingObj::ScorerRotatingObj(const std::string &name, const Vector &dir, const Vector &point,
-  double rotFreq, Scorer::ScorerType type)
-:Scorer1D("ScorerRotatingObj_"+name, type,
+  double rotFreq)
+:Scorer1D("ScorerRotatingObj_"+name, Scorer::ScorerType::ENTRY2EXIT,
   std::make_unique<Hist1D>("ScorerRotatingObj_"+name, 0, 1, 100)),
   m_rotaxis(dir), m_point(point), m_angularfreq(2*M_PI*rotFreq)
 {
   //fixme use m_rotaxis.normalise() to make sure the accuracy of the conversion
   if(!m_rotaxis.isUnitVector(1e-5))
     PROMPT_THROW(BadInput, "direction must be a unit vector");
-
-  if(!(m_type==Scorer::ScorerType::PROPAGATE || m_type== Scorer::ScorerType::ENTRY
-    || m_type== Scorer::ScorerType::EXIT))
-    PROMPT_THROW2(BadInput, "Constructing unexptected ScorerType " << static_cast<int>(m_type));
 
 }
 
@@ -60,25 +56,11 @@ Prompt::Vector Prompt::ScorerRotatingObj::getLinearVelocity(const Vector &pos)
 
 void Prompt::ScorerRotatingObj::score(Prompt::Particle &particle)
 {
-
-  if(m_type==Scorer::ScorerType::EXIT)
-  {
-    // std::cout << "EXIT: realekin " <<  particle.getEKin() << ", effekin " << particle.getEffEKin() << " " << particle.getEventID() <<"\n";
-    particle.setEffDirection(Vector());
-  }
-  else
-  {
-    Vector vrot = getLinearVelocity(particle.getPosition());
-    Vector labVel = particle.getDirection()* particle.calcSpeed();
-    Vector comovingVel = labVel-vrot;
-    double comovingSpeed = comovingVel.mag();
-    particle.setEffEKin(0.5*comovingSpeed*comovingSpeed*particle.getMass());
-    particle.setEffDirection(comovingVel.unit());
-  }
-
-  // if(m_type==Scorer::ScorerType::ENTRY)
-  // {
-  //   std::cout << "ENTRY: realekin " <<  particle.getEKin() << ", effekin " << particle.getEffEKin() << " " << particle.getEventID()  <<"\n";
-  // }
-
+  // when exiting Prompt::NavManager::scoreExit sets the effdirection to null vector
+  Vector vrot = getLinearVelocity(particle.getPosition());
+  Vector labVel = particle.getDirection()* particle.calcSpeed();
+  Vector comovingVel = labVel-vrot;
+  double comovingSpeed = comovingVel.mag();
+  particle.setEffEKin(0.5*comovingSpeed*comovingSpeed*particle.getMass());
+  particle.setEffDirection(comovingVel.unit());
 }

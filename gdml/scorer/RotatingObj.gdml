@@ -22,13 +22,18 @@
     <position name="SamplePos" x="95" y="0" z="-0" />
   </define>
 
-  <material name="Cd">
-    <atom value="Cd.ncmat"/>
-  </material>
 
   <materials>
     <material name="Vacuum">
       <atom value="vacuum.ncmat"/>
+    </material>
+
+    <material name="Cd">
+      <atom value="Cd.ncmat"/>
+    </material>
+
+    <material name="dia">
+      <atom value="C_sg227_Diamond.ncmat;density=0.1x"/>
     </material>
 
     <material name="Sans">
@@ -50,11 +55,7 @@
       <materialref ref="Sans"/>
       <solidref ref="SampleSolid"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=roen;
-        rotation_axis=0,1,0;point_on_axis=95,0,-0;rot_fre=1000;type=ENTRY"/>
-      <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=ropr;
-        rotation_axis=0,1,0;point_on_axis=95,0,-0;rot_fre=1000;type=PROPAGATE"/>
-      <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=roex;
-        rotation_axis=0,1,0;point_on_axis=95,0,-0;rot_fre=1000;type=EXIT"/>
+        rotation_axis=0,1,0;point_on_axis=95,0,-0;rot_fre=-150"/>
     </volume>
     <!-- PROPAGATE, ENTRY, EXIT -->
 

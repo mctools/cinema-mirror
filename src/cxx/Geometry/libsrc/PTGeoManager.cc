@@ -301,6 +301,13 @@ void Prompt::VolumePhysicsScorer::sortScorers()
       absorb_scorers.push_back(v);
       std::cout << "Added ABSORB type scorer: " << v->getName() << std::endl;
     }
+    else if(type==Scorer::ScorerType::ENTRY2EXIT)
+    {
+      entry_scorers.push_back(v);
+      propagate_scorers.push_back(v);
+      exit_scorers.push_back(v);
+      std::cout << "Added ENTRY2EXIT type scorer: " << v->getName() << std::endl;
+    }
     else
       PROMPT_THROW2(BadInput, "unknown scorer type " << static_cast<int>(type) );
   }

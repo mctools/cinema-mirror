@@ -153,10 +153,16 @@ void Prompt::NavManager::scoreExit(Prompt::Particle &particle)
   {
     for(auto &v:m_matphysscor->exit_scorers)
     {
-      v->score(particle);
+      // to act along with the Prompt::ScorerRotatingObj::score method,
+      // disable the effective energy and direction, by setting the direction to null
+      if(particle.hasEffEnergy())
+          particle.setEffDirection(Vector());
+      else
+          v->score(particle);
     }
   }
 }
+
 bool Prompt::NavManager::hasBoundaryPhyiscs()
 {
   return m_matphysscor->boundaryPhysics.use_count();
