@@ -97,7 +97,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
     moni = new ProgressMonitor("Prompt simulation", numParticle, printPrecent);
   for(size_t i=0;i<numParticle;i++)
   {
-    //add a primary particle into the stack 
+    //add a primary particle into the stack
     stackManager.add(m_gun->generate());
 
     while(!stackManager.empty())
@@ -153,6 +153,8 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
           navman.scoreAbsorb(particle);
         }
       }
+      else
+        pt_assert(false);
 
       if(recordTrj)
       {

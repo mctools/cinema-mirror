@@ -86,9 +86,6 @@ void Prompt::CompoundModel::generate(double ekin, const Vector &dir, double &fin
     return;
   }
 
-
-        // std::cout << "generate "<< ekin << " "<< dir << " " <<  "**\n";
-
   //if xs is zero, do nothing
   if(!m_cache.tot)
   {

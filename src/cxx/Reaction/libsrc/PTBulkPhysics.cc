@@ -88,12 +88,16 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
 
   if(!hitWall)
   {
-
-    particle.setEKin(lab_ekin);
-    particle.setDirection(lab_dir);
-    if(lab_ekin==-1.) // fixme: are we sure all -1 means capture??
+    // if it is an absorption reaction, the state of the particle is set,
+    // but the energy and direction are kept for the subsequent capture scorers.
+    if(lab_ekin==-1.) 
     {
       particle.kill(Particle::KillType::ABSORB);
+    }
+    else
+    {
+      particle.setEKin(lab_ekin);
+      particle.setDirection(lab_dir);
     }
   }
 
