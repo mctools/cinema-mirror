@@ -29,10 +29,6 @@
 
 #include "NCrystal/NCrystal.hh"
 
-namespace NCrystal {
-    class Scatter;
-}
-
 namespace Prompt {
 
   //NCrystalScat is in fact a scatterer of NCrystal

@@ -26,7 +26,6 @@
 #include "PromptCore.hh"
 #include "PTVector.hh"
 
-#include "NCrystal/NCrystal.hh"
 #include "PTRandCanonical.hh"
 
 namespace Prompt {
@@ -36,6 +35,15 @@ namespace Prompt {
     PhysicsBase(const std::string &name);
     PhysicsBase(const std::string &name, unsigned gdp, double emin, double emax);
     virtual ~PhysicsBase() = default;
+    const std::string &getName() { return m_modelName; }
+    bool isOriented();
+    void getEnergyRange(double &ekinMin, double &ekinMax) ;
+    void setEnergyRange(double ekinMin, double ekinMax);
+    virtual bool applicable(unsigned pgd) const;
+    virtual bool applicable(unsigned pgd, double ekin) const;
+    virtual double getCrossSection(double ekin) const ;
+    virtual double getCrossSection(double ekin, const Vector &dir) const;
+
 
   protected:
     std::string m_modelName;
@@ -50,16 +58,6 @@ namespace Prompt {
     PhysicsModel(const std::string &name);
     PhysicsModel(const std::string &name, unsigned gdp, double emin, double emax);
     virtual ~PhysicsModel() = default;
-
-    const std::string &getName() { return m_modelName; }
-    bool isOriented();
-    void getEnergyRange(double &ekinMin, double &ekinMax) ;
-    void setEnergyRange(double ekinMin, double ekinMax);
-
-    virtual bool applicable(unsigned pgd) const;
-    virtual bool applicable(unsigned pgd, double ekin) const;
-    virtual double getCrossSection(double ekin) const;
-    virtual double getCrossSection(double ekin, const Vector &dir) const;
 
     // final_ekin -1., propose kill because of an absorb event
     // final_ekin -2., propose kill because of a biasing event

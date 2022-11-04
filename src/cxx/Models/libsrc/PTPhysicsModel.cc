@@ -35,36 +35,36 @@ Prompt::PhysicsModel::PhysicsModel(const std::string &name, unsigned gdp,
              double emin, double emax)
 :PhysicsBase(name, gdp, emin, emax) { }
 
-bool Prompt::PhysicsModel::applicable(unsigned pgd) const
+bool Prompt::PhysicsBase::applicable(unsigned pgd) const
 { return m_supportPGD==pgd; }
 
-bool Prompt::PhysicsModel::isOriented()
+bool Prompt::PhysicsBase::isOriented()
 {return m_oriented;}
 
-void Prompt::PhysicsModel::getEnergyRange(double &ekinMin, double &ekinMax)
+void Prompt::PhysicsBase::getEnergyRange(double &ekinMin, double &ekinMax)
 {
   m_minEkin = ekinMin;
   m_maxEkin = ekinMax;
 };
 
-void Prompt::PhysicsModel::setEnergyRange(double ekinMin, double ekinMax)
+void Prompt::PhysicsBase::setEnergyRange(double ekinMin, double ekinMax)
 {
   ekinMin = m_minEkin;
   ekinMax = m_maxEkin;
 };
 
-bool Prompt::PhysicsModel::applicable(unsigned pgd, double ekin) const
+bool Prompt::PhysicsBase::applicable(unsigned pgd, double ekin) const
 {
   return pgd==m_supportPGD && (ekin > m_minEkin && ekin < m_maxEkin);
 }
 
-double Prompt::PhysicsModel::getCrossSection(double ekin) const
+double Prompt::PhysicsBase::getCrossSection(double ekin) const
 {
   PROMPT_THROW(LogicError, "getCrossSection is not impletmented ")
   return 0.;
 }
 
-double Prompt::PhysicsModel::getCrossSection(double ekin, const Vector &dir) const
+double Prompt::PhysicsBase::getCrossSection(double ekin, const Vector &dir) const
 {
   PROMPT_THROW(LogicError, "getCrossSection is not impletmented ")
   return 0.;

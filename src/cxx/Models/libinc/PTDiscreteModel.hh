@@ -27,12 +27,6 @@
 #include "PTPhysicsModel.hh"
 #include <memory>
 
-#include "NCrystal/NCrystal.hh"
-
-namespace NCrystal {
-    class Scatter;
-}
-
 namespace Prompt {
 
   class DiscreteModel  : public PhysicsModel {

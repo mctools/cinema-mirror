@@ -27,11 +27,8 @@
 #include "PTDiscreteModel.hh"
 #include <memory>
 
-#include "NCrystal/NCrystal.hh"
 
-namespace NCrystal {
-    class Scatter;
-}
+#include "NCrystal/NCrystal.hh"
 
 namespace Prompt {
 
