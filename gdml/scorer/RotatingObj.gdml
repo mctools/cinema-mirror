@@ -2,22 +2,13 @@
 <gdml>
 
   <userinfo>
-    <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=2.27e-3;
-      position=0,0,-1000;direction=0.1,0,1" /> -->
-
     <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;
       moderator_width_x=100;moderator_height_y=100;moderator_positon_z=-15000.;
       slit_width_x=5;slit_height_y=5;slit_position_z=0;temperature=300;" />
-
-    <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;
-      mean_wavelength=10;range_wavelength=1e-6;
-      moderator_width_x=100;moderator_height_y=100;moderator_positon_z=-15000.;
-      slit_width_x=5;slit_height_y=5;slit_position_z=0;" /> -->
-
   </userinfo>
 
    <define>
-    <rotation name="rot" unit="deg" x="-90" y="0" z="0" />
+    <rotation name="SampleRot" unit="deg" x="-90" y="0" z="0" />
     <position name="DetectorPos" x="-280" y="0" z="350" />
     <position name="SamplePos" x="95" y="0" z="-0" />
   </define>
@@ -28,23 +19,13 @@
       <atom value="vacuum.ncmat"/>
     </material>
 
-    <material name="Cd">
-      <atom value="Cd.ncmat"/>
-    </material>
-
-    <material name="dia">
-      <atom value="C_sg227_Diamond.ncmat;density=0.1x"/>
-    </material>
-
     <material name="Sans">
       <atom value="nanodiamond.ncmat;density=0.7x"/>
     </material>
-
   </materials>
 
   <solids>
     <tube name="SampleSolid" rmin="80" rmax="100" z="20" startphi="0" deltaphi="360" aunit="deg"/>
-    <!-- <hype name="SampleSolid" rmin="0" rmax="100" z="20" inst="0" outst="0.2" /> -->
     <box name="worldSolid" x="2000.0" y="2000.0" z="30001.0" />
     <box name="DetectorSolid" x="500" y="500" z="0.00001" />
 
@@ -77,7 +58,7 @@
       <physvol>
         <volumeref ref="Sample"/>
         <positionref ref="SamplePos"/>
-        <rotationref ref="rot" />
+        <rotationref ref="SampleRot" />
       </physvol>
 
       <physvol>

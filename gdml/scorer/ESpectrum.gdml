@@ -7,7 +7,7 @@
 
    <define>
     <position name="DetectorPos" x="0" y="0" z="50." />
-    <rotation name="rot" unit="deg" x="90" y="0" z="0" />
+    <rotation name="SampleRot" unit="deg" x="90" y="0" z="0" />
   </define>
 
   <materials>
@@ -15,14 +15,9 @@
       <atom value="vacuum.ncmat"/>
     </material>
 
-    <material name="Al">
-      <atom value="Al_sg225.ncmat"/>
-    </material>
-
     <material name="HeavyWater">
       <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat"/>
     </material>
-
   </materials>
 
   <solids>
@@ -48,6 +43,7 @@
       <solidref ref="worldSolid"/>
       <physvol>
         <volumeref ref="Sample"/>
+        <rotationref ref="SampleRot"/>
       </physvol>
 
       <physvol>

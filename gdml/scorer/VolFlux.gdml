@@ -17,11 +17,6 @@
           <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat;density=1.0gcm3"/>
           <D value="1"/>
         </material>
-
-        <material name="HWaterD2">
-          <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat;density=1.0gcm3"/>
-          <D value="2"/>
-        </material>
     </materials>
 
     <solids>
@@ -33,22 +28,20 @@
     <structure>
         <volume name="VolSphere">
             <solidref ref="SphereSolid" />
-            <materialref ref="HWaterD2" />
-            <!-- <auxiliary auxtype="Scorer" auxvalue="Scorer=VolFlux;name=Sflux;xmin=1e-5;xmax=1.2;numBins_x=100;volume=0"/> -->
+            <materialref ref="HWater" />
         </volume>
 
         <volume name="VolBox">
             <solidref ref="boxSolid" />
             <materialref ref="HWater" />
             <auxiliary auxtype="Scorer" auxvalue="Scorer=VolFlux;name=Sflux;xmin=1e-5;xmax=1.2;numBins_x=100"/>
-            <!-- <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=400;type=ENTRY;linear=no;Qmin=0.01; Qmax = 50; numbin=1000"/> -->
         </volume>
 
 
         <volume name="VolWorld">
             <solidref ref="WorldSolid" />
             <materialref ref="Vacuum" />
-            <!-- <auxiliary auxtype="Scorer" auxvalue="Scorer=VolFlux;name=Sflux;xmin=1e-5;xmax=1.2;numBins_x=100;volume=0"/> -->
+
             <physvol name="PhysVol_Shere">
                 <volumeref ref="VolSphere" />
                 <position name="Position" unit="mm" x="0.0" y="0.0" z="0.0" />
