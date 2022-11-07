@@ -27,7 +27,6 @@
 #include "PTDiscreteModel.hh"
 #include <memory>
 
-
 #include "NCrystal/NCrystal.hh"
 
 namespace Prompt {

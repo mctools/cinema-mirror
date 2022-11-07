@@ -21,18 +21,55 @@
 #include "PTPhysicsFactory.hh"
 #include "PTUtils.hh"
 #include "PTCfgParser.hh"
-
 #include "PTMirrorPhysics.hh"
+#include "NCrystal/NCrystal.hh"
 
-std::shared_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics(const std::string &cfgstr)
+
+bool Prompt::PhysicsFactory::pureNCrystalCfg(const std::string &cfgstr)
+{
+  try
+  {
+    auto &ps = Singleton<CfgParser>::getInstance();
+    CfgParser::ScorerCfg cfg = ps.parse(cfgstr);
+  }
+  catch (Prompt::Error::BadInput& e)
+  {
+    return true;
+  }
+  return false;
+
+}
+
+double Prompt::PhysicsFactory::calNumDensity(const std::string &nccfgstr)
+{
+    NCrystal::MatCfg matcfg(nccfgstr);
+    auto info = NCrystal::createInfo(matcfg);
+    if(info->hasNumberDensity())
+      return info->getNumberDensity().get() / Unit::Aa3;
+    else
+    {
+      PROMPT_THROW2(CalcError, "material has no number density " << nccfgstr);
+      return 0.;
+    }
+}
+
+
+std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics(const std::string &cfgstr)
 {
   std::cout << "Parsing config string for a CompoundModel: \n";
-  auto &ps = Singleton<CfgParser>::getInstance();
-  auto cfg = ps.getScorerCfg(cfgstr);
-  std::cout << "Parsed cfg: \n";
-  cfg.print();
+  auto &cps = Singleton<CfgParser>::getInstance();
 
+  CfgParser::ScorerCfg cfg = cps.parse(cfgstr);
+  std::unique_ptr<Prompt::CompoundModel> compmod;
   std::string physDef = cfg.find("physics");
+
+  // catch (Prompt::Error::BadInput& e)
+  // {
+  //   // treat raw ncrystal cfg
+  //   compmod = std::make_unique<Prompt::CompoundModel>(const_neutron_pgd);
+  //   compmod->addPhysicsModel(cfgstr);
+  //   return compmod;
+  // }
 
   if(physDef.empty())
   {
@@ -45,6 +82,8 @@ std::shared_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics
     if(physDef == "ncrystal")
     {
       std::string nccfg = cfg.find("nccfg", true);
+
+
     }
   }
 }
@@ -55,7 +94,7 @@ std::shared_ptr<Prompt::BoundaryPhysics> Prompt::PhysicsFactory::createBoundaryP
   std::cout << "Parsing config string for a physics model: \n";
 
   auto &ps = Singleton<CfgParser>::getInstance();
-  auto cfg = ps.getScorerCfg(cfgstr);
+  auto cfg = ps.parse(cfgstr);
   std::cout << "Parsed cfg: \n";
   cfg.print();
 
