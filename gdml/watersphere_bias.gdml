@@ -5,9 +5,6 @@
       <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=0;moderator_height_y=0;moderator_positon_z=-400;slit_width_x=0;slit_height_y=0;slit_position_z=1;temperature=293.15" />
     </userinfo>
 
-    <define>
-    </define>
-
     <materials>
         <material name="Vacuum">
           <atom value="vacuum.ncmat"/>

@@ -1,8 +1,8 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0"?>
 <gdml>
 
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;2.0; 0,0,-250; 0,0,1" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=2.0;position=0,0,-250;direction=0,0,1" />
     </userinfo>
 
     <define>
