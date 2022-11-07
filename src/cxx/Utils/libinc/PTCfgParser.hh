@@ -42,6 +42,22 @@ namespace Prompt {
       {
         return parameters.size();
       }
+
+
+      // // if key is not found, the default value will be used
+      // template <typename T>
+      // T getIfExist(const std::string &key, T &defaultv, int &parCount)
+      // {
+      //   T value = defaultv;
+      //   std::string thresholdInStr = cfg.find(key);
+      //   if(thresholdInStr.empty())
+      //     parCount--;
+      //   else
+      //   {
+      //     value = ptstod(thresholdInStr);
+      //   }
+      //   return T;
+      // }
     };
   public:
     ScorerCfg parse(const std::string& cfgstr);

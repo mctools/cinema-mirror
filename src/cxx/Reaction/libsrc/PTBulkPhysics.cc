@@ -140,5 +140,5 @@ void Prompt::BulkPhysics::setComposition(const std::string &cfgstr, double bias)
   else
     m_compModel =  Singleton<PhysicsFactory>::getInstance().createBulkPhysics(cfgstr);
 
-  m_numdensity = pfact.calNumDensity(cfgstr); //fieme: should move to the factory
+  m_numdensity = pfact.calNumDensity(cfgstr); 
 }

@@ -61,6 +61,8 @@ void Prompt::ScorerRotatingObj::score(Prompt::Particle &particle)
   Vector labVel = particle.getDirection()* particle.calcSpeed();
   Vector comovingVel = labVel-vrot;
   double comovingSpeed = comovingVel.mag();
-  particle.setEffEKin(0.5*comovingSpeed*comovingSpeed*particle.getMass());
+  double comvEkin = 0.5*comovingSpeed*comovingSpeed*particle.getMass();
+  particle.setEffEKin(comvEkin);
   particle.setEffDirection(comovingVel.unit());
+  m_hist->fill(comvEkin, particle.getWeight());
 }
