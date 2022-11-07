@@ -34,6 +34,7 @@ namespace Prompt {
   private:
     std::string m_name;
     double m_numTask, m_currentTask, m_completedRatio, m_interval, m_estimated_ms;
+    double m_i_numTask;
     std::chrono::steady_clock::time_point m_begin;
   };
 }
