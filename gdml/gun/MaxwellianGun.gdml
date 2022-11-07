@@ -1,12 +1,9 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0"?>
 <gdml>
 <!-- aneutron is generated in a xs biased sphere and hitting a box -->
     <userinfo>
       <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=100;moderator_height_y=50;moderator_positon_z=-400;slit_width_x=5;slit_height_y=10;slit_position_z=1;temperature=293.15;" />
     </userinfo>
-
-    <define>
-    </define>
 
     <materials>
         <material name="Vacuum">
