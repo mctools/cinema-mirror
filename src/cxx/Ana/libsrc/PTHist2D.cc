@@ -86,7 +86,7 @@ void Prompt::Hist2D::save(const std::string &filename) const
   m_bwr->addHeaderData("xedge", getXEdge().data(), {m_xnbins+1}, Prompt::NumpyWriter::NPDataType::f8);
   m_bwr->addHeaderData("yedge", getYEdge().data(), {m_ynbins+1}, Prompt::NumpyWriter::NPDataType::f8);
 
-  char buffer [1000];
+  char buffer [2000];
   //fixme: add xy to dimansion
   int n =sprintf (buffer,
     "from Cinema.Prompt import PromptFileReader\n"
@@ -99,7 +99,7 @@ void Prompt::Hist2D::save(const std::string &filename) const
     "args=parser.parse_args()\n"
     "data=f.getData('content')\n"
     "count=f.getData('hit')\n"
-    "X=f.getData('xedge'); Y=f.getData('yedge'); X, Y = np.meshgrid(X, Y)\n"
+    "x=f.getData('xedge'); y=f.getData('yedge'); X, Y = np.meshgrid(x, y)\n"
     "fig=plt.figure()\n"
     "ax = fig.add_subplot(111)\n"
     "if args.logscale:\n"
@@ -109,8 +109,16 @@ void Prompt::Hist2D::save(const std::string &filename) const
     "fig.colorbar(pcm, ax=ax)\n"
     "count=count.sum()\n"
     "integral= data.sum()\n"
-    "plt.title(f'Integral {integral}, count {count}')\n"
-    "plt.show()\n", m_bwr->getFileName().c_str());
+    "plt.title(f'%s, integral {integral}, count {count}')\n"
+    "plt.figure()\n"
+    "plt.subplot(211)\n"
+    "plt.plot(x[:-1]+np.diff(x)*0.5, data.sum(axis=0))\n"
+    "plt.xlabel('integral x')\n"
+    "plt.title('%s')\n"
+    "plt.subplot(212)\n"
+    "plt.plot(y[:-1]+np.diff(x)*0.5, data.sum(axis=1))\n"
+    "plt.xlabel('integral y')\n"
+    "plt.show()\n", m_bwr->getFileName().c_str(), m_bwr->getFileName().c_str(), m_bwr->getFileName().c_str());
 
   std::ofstream outfile(filename+"_view.py");
   outfile << buffer;

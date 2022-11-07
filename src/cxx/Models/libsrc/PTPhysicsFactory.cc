@@ -63,14 +63,6 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics
   std::unique_ptr<Prompt::CompoundModel> compmod;
   std::string physDef = cfg.find("physics");
 
-  // catch (Prompt::Error::BadInput& e)
-  // {
-  //   // treat raw ncrystal cfg
-  //   compmod = std::make_unique<Prompt::CompoundModel>(const_neutron_pgd);
-  //   compmod->addPhysicsModel(cfgstr);
-  //   return compmod;
-  // }
-
   if(physDef.empty())
   {
     PROMPT_THROW2(BadInput, "Config string " << cfgstr << " does not define the scorer by the key \"physics\" ")
@@ -120,7 +112,7 @@ std::shared_ptr<Prompt::BoundaryPhysics> Prompt::PhysicsFactory::createBoundaryP
       int parCount = 3;
 
       // optional parameters
-      double m = 1.0;
+      double m = 0;
       if(!cfg.getDoubleIfExist("m", m))
         parCount--;
 
