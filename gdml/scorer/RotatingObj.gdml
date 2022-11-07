@@ -28,8 +28,8 @@
       <atom value="vacuum.ncmat"/>
     </material>
 
-    <material name="Cd">
-      <atom value="Cd.ncmat"/>
+    <material name="Al">
+      <atom value="Al_sg225.ncmat"/>
     </material>
 
     <material name="dia">
@@ -44,6 +44,7 @@
 
   <solids>
     <tube name="SampleSolid" rmin="80" rmax="100" z="20" startphi="0" deltaphi="360" aunit="deg"/>
+    <tube name="CaseSolid" rmin="100" rmax="105" z="20" startphi="0" deltaphi="360" aunit="deg"/>
     <!-- <hype name="SampleSolid" rmin="0" rmax="100" z="20" inst="0" outst="0.2" /> -->
     <box name="worldSolid" x="2000.0" y="2000.0" z="30001.0" />
     <box name="DetectorSolid" x="500" y="500" z="0.00001" />
@@ -55,9 +56,15 @@
       <materialref ref="Sans"/>
       <solidref ref="SampleSolid"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=roen;
-        rotation_axis=0,1,0;point_on_axis=95,0,-0;rot_fre=-150"/>
+        rotation_axis=0,1,0;point_on_axis=95,0,-0;rot_fre=300"/>
     </volume>
-    <!-- PROPAGATE, ENTRY, EXIT -->
+
+    <volume name="Case">
+      <materialref ref="Al"/>
+      <solidref ref="CaseSolid"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=roen_case;
+        rotation_axis=0,1,0;point_on_axis=95,0,-0;rot_fre=300"/>
+    </volume>
 
     <volume name="Detector">
       <materialref ref="Vacuum"/>
@@ -76,6 +83,12 @@
 
       <physvol>
         <volumeref ref="Sample"/>
+        <positionref ref="SamplePos"/>
+        <rotationref ref="rot" />
+      </physvol>
+
+      <physvol>
+        <volumeref ref="Case"/>
         <positionref ref="SamplePos"/>
         <rotationref ref="rot" />
       </physvol>
