@@ -35,7 +35,6 @@
   <solids>
     <tube name="SampleSolid" rmin="80" rmax="100" z="20" startphi="0" deltaphi="360" aunit="deg"/>
     <tube name="CaseSolid" rmin="100" rmax="105" z="20" startphi="0" deltaphi="360" aunit="deg"/>
-    <!-- <hype name="SampleSolid" rmin="0" rmax="100" z="20" inst="0" outst="0.2" /> -->
     <box name="worldSolid" x="2000.0" y="2000.0" z="30001.0" />
     <box name="DetectorSolid" x="500" y="500" z="0.00001" />
 
