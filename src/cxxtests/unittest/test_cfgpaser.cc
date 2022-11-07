@@ -33,6 +33,6 @@ TEST_CASE("CfgParser")
 {
   auto &ps = pt::Singleton<pt::CfgParser>::getInstance();
   std::cout << pt::getTypeName(typeid(pt::CfgParser)) << std::endl;
-  auto cfg = ps.getScorerCfg("Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=30000;ScorerType=ENTRY;linear=true");
+  auto cfg = ps.parse("Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=30000;ScorerType=ENTRY;linear=true");
   cfg.print();
 }

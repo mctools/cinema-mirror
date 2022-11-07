@@ -25,6 +25,8 @@
 #include <limits>
 #include "NCrystal/NCrystal.hh"
 
+#include "PTPhysicsFactory.hh"
+
 Prompt::BulkPhysics::BulkPhysics(const std::string& name)
 :m_rng(Singleton<SingletonPTRand>::getInstance()),
 m_compModel(std::make_unique<CompoundModel>(const_neutron_pgd)), //fixme:  neutron only for now, should be a dict later
@@ -128,22 +130,15 @@ double Prompt::BulkPhysics::sampleStepLength(const Prompt::Particle &particle) c
 }
 
 
-double Prompt::BulkPhysics::calNumDensity(const std::string &cfg)
-{
-  NCrystal::MatCfg matcfg(cfg);
-  auto info = NCrystal::createInfo(matcfg);
-  if(info->hasNumberDensity())
-    return info->getNumberDensity().get() / Unit::Aa3;
-  else
-  {
-    PROMPT_THROW2(CalcError, "material has no number density " << cfg);
-    return 0.;
-  }
-}
 
-void Prompt::BulkPhysics::setComposition(const std::string &cfg, double bias)
+void Prompt::BulkPhysics::setComposition(const std::string &cfgstr, double bias)
 {
   assert(!m_numdensity);
-  m_compModel->addPhysicsModel(cfg, bias);
-  m_numdensity = calNumDensity(cfg);
+  auto &pfact = Singleton<PhysicsFactory>::getInstance();
+  if(pfact.pureNCrystalCfg(cfgstr))
+    m_compModel->addPhysicsModel(cfgstr, bias);
+  else
+    m_compModel =  Singleton<PhysicsFactory>::getInstance().createBulkPhysics(cfgstr);
+
+  m_numdensity = pfact.calNumDensity(cfgstr); //fieme: should move to the factory
 }

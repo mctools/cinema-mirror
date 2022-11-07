@@ -39,9 +39,12 @@ namespace Prompt {
       ENDF_ABSORB
     };
   public:
-    std::shared_ptr<BoundaryPhysics> createBoundaryPhysics(const std::string &cfg);
-    std::shared_ptr<CompoundModel> createBulkPhysics(const std::string &cfg);
-    PhysicsType checkPhysicsType(const std::string &cfg) const;
+    bool pureNCrystalCfg(const std::string &cfgstr);
+    double calNumDensity(const std::string &nccfgstr); // ncrystal cfg string
+
+    std::shared_ptr<BoundaryPhysics> createBoundaryPhysics(const std::string &cfgstr);
+    std::unique_ptr<CompoundModel> createBulkPhysics(const std::string &cfgstr);
+    PhysicsType checkPhysicsType(const std::string &cfgstr) const;
 
   private:
     friend class Singleton<PhysicsFactory>;

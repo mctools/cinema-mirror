@@ -44,7 +44,7 @@ Prompt::CfgParser::CfgParser()
 {
 }
 
-Prompt::CfgParser::ScorerCfg Prompt::CfgParser::getScorerCfg(const std::string& cfgstr)
+Prompt::CfgParser::ScorerCfg Prompt::CfgParser::parse(const std::string& cfgstr)
 {
   auto strvec = split(cfgstr, ';');
   ScorerCfg cfg;

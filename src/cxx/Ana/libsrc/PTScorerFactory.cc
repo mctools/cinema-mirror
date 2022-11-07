@@ -42,7 +42,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
   //fixme check number of input config
 
   auto &ps = Singleton<CfgParser>::getInstance();
-  auto cfg = ps.getScorerCfg(cfgstr);
+  auto cfg = ps.parse(cfgstr);
   std::cout << "Parsed cfg: \n";
   cfg.print();
 

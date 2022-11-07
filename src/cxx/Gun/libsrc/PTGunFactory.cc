@@ -40,7 +40,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
   //fixme check number of input config
 
   auto &ps = Singleton<CfgParser>::getInstance();
-  auto cfg = ps.getScorerCfg(cfgstr);
+  auto cfg = ps.parse(cfgstr);
   std::cout << "Parsed cfg: \n";
   cfg.print();
 

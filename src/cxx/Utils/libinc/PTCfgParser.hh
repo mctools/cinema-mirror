@@ -44,7 +44,7 @@ namespace Prompt {
       }
     };
   public:
-    ScorerCfg getScorerCfg(const std::string& cfgstr);
+    ScorerCfg parse(const std::string& cfgstr);
   private:
     friend class Singleton<CfgParser>;
     CfgParser();

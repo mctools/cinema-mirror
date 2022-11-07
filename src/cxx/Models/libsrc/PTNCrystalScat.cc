@@ -44,7 +44,7 @@ Prompt::NCrystalScat::~NCrystalScat()
 double Prompt::NCrystalScat::getCrossSection(double ekin) const
 {
   if( m_scat.isOriented() ) {
-    PROMPT_THROW(CalcError, "no incident direction, material can not be oriented");
+    PROMPT_THROW(CalcError, "direction should be provided for oriented material");
   }
   else
   {

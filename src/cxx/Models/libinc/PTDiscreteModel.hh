@@ -38,7 +38,7 @@ namespace Prompt {
     { return m_bias; }
 
   protected:
-    double m_bias;
+    mutable double m_bias;
   };
 
 }
