@@ -23,8 +23,9 @@
 
 #include <string>
 #include <map>
-#include "PTSingleton.hh"
 #include <iostream>
+#include "PTSingleton.hh"
+#include "PTUtils.hh"
 
 namespace Prompt {
   class CfgParser {
@@ -43,21 +44,58 @@ namespace Prompt {
         return parameters.size();
       }
 
+      bool getStringIfExist(const std::string &key, std::string& str)
+      {
+        std::string strAsStr = find(key);
+        if(strAsStr.empty())
+          return false;
+        else
+        {
+          std::swap(str,strAsStr);
+          return true;
+        }
+      }
 
-      // // if key is not found, the default value will be used
-      // template <typename T>
-      // T getIfExist(const std::string &key, T &defaultv, int &parCount)
-      // {
-      //   T value = defaultv;
-      //   std::string thresholdInStr = cfg.find(key);
-      //   if(thresholdInStr.empty())
-      //     parCount--;
-      //   else
-      //   {
-      //     value = ptstod(thresholdInStr);
-      //   }
-      //   return T;
-      // }
+      bool getDoubleIfExist(const std::string &key, double &vale)
+      {
+        std::string valueAsStr = find(key);
+        if(!getStringIfExist(key, valueAsStr))
+          return false;
+        else
+        {
+          vale = ptstod(valueAsStr);
+          return true;
+        }
+      }
+
+      bool getIntIfExist(const std::string &key, int &vale)
+      {
+        std::string valueAsStr = find(key);
+        if(!getStringIfExist(key, valueAsStr))
+          return false;
+        else
+        {
+          vale = ptstoi(valueAsStr);
+          return true;
+        }
+      }
+
+      bool getVectorIfExist(const std::string &key, Vector &vale)
+      {
+        std::string valueAsStr = find(key);
+        if(!getStringIfExist(key, valueAsStr))
+          return false;
+        else
+        {
+          vale = string2vec(valueAsStr);
+          return true;
+        }
+      }
+
+
+
+
+
     };
   public:
     ScorerCfg parse(const std::string& cfgstr);

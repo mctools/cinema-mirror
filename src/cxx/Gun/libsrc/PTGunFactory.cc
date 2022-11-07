@@ -106,22 +106,12 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
 
       // the optional parameters
       double energy = 0;
-      std::string energyInStr = cfg.find("energy");
-      if(energyInStr.empty())
+      if(!cfg.getDoubleIfExist("energy", energy))
         parCount--;
-      else
-      {
-        energy = ptstod(energyInStr);
-      }
 
       Vector direction = Vector{0.,0.,1.};
-      std::string directionInStr = cfg.find("direction");
-      if(directionInStr.empty())
+      if(!cfg.getVectorIfExist("direction", direction))
         parCount--;
-      else
-      {
-        direction = string2vec(directionInStr);
-      }
 
       if(parCount!=cfg.size())
       {
@@ -135,7 +125,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       // example cfgstr:
       // gun=IsotropicGun;energy=0.0253;position=0,0,-10
 
-      // energy is optional with default value 0 
+      // energy is optional with default value 0
 
       int parCount = 3;
 
@@ -154,7 +144,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       }
 
       Vector direction = Vector{0.,0.,1.};
-      
+
       if(parCount!=cfg.size())
       {
         PROMPT_THROW2(BadInput, "IsotropicGun is missing or with extra config parameters" << cfg.size() << " " << parCount );

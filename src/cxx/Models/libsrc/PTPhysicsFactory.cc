@@ -121,22 +121,12 @@ std::shared_ptr<Prompt::BoundaryPhysics> Prompt::PhysicsFactory::createBoundaryP
 
       // optional parameters
       double m = 1.0;
-      std::string mInStr = cfg.find("m");
-      if(mInStr.empty())
+      if(!cfg.getDoubleIfExist("m", m))
         parCount--;
-      else
-      {
-        m = ptstod(mInStr);
-      }
 
       double threshold =  1e-3;
-      std::string thresholdInStr = cfg.find("threshold");
-      if(thresholdInStr.empty())
+      if(!cfg.getDoubleIfExist("threshold", threshold))
         parCount--;
-      else
-      {
-        threshold = ptstod(thresholdInStr);
-      }
 
       if(parCount!=cfg.size())
       {
