@@ -29,5 +29,5 @@ for i in range(0,8):
     print(res)
     np.testing.assert_allclose(res, valuelist[i], rtol=1e-15)
 
-print('passed prompt_gun test')
+print('passed prompt_scorer test')
 
