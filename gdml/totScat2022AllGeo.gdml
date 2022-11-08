@@ -2,14 +2,11 @@
 <gdml>
 
     <userinfo>
-      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
+      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=600;moderator_height_y=600;moderator_positon_z=-30000;slit_width_x=10;slit_height_y=10;slit_position_z=-1000;temperature=300.;" /> -->
       <auxiliary auxtype="PrimaryGun" auxvalue="gun=MPIGun;moderator_width_x=500;moderator_height_y=500;moderator_positon_z=-30000;slit_width_x=20;slit_height_y=40;slit_position_z=0" />
-      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;1.0; 0,0,-30000; 0,0,1" /> -->
+      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=0.0253;position=0,0,-30000;direction=0,0,1" /> -->
     </userinfo>
    <define>
-        <constant name="HALFPI" value="pi/2." />
-        <constant name="PI" value="1.*pi" />
-        <constant name="TWOPI" value="2.*pi" />
         <position name="P_LV_Tube_1" unit="mm" y="-92.4" />
         <position name="P_LV_Tube_2" unit="mm" y="-66.0" />
         <position name="P_LV_Tube_3" unit="mm" y="-39.6" />
@@ -31,8 +28,8 @@
           <D value="1"/>
         </material>
 
-        <material name="Cd">
-          <atom value="Cd.ncmat"/>
+        <material name="B4C">
+          <atom value="B4C.ncmat"/>
         </material>
 
         <material name="HeavyWater">
@@ -105,19 +102,16 @@
             <solidref ref="SampleStick" />
             <materialref ref="HeavyWater" />
             <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=10; linear=yes"/>
-            <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
         </volume>
 
         <!-- <volume name="LV_Tube_SampleHolder">
             <solidref ref="SampleHolder" />
             <materialref ref="V" />
-            <auxiliary auxtype="Color" auxvalue="#00ff1700" />
         </volume> -->
 
         <volume name="LV_MonitorIn">
             <solidref ref="MonitorIn" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Color" auxvalue="#00ff1700" />
             <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=MonitorIn; Emin=0.0; Emax=5.0; numbin=207"/>
             <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=MonitorIn; Tmin=0.0; Tmax=5.0; numbin=207"/>
         </volume>
@@ -125,20 +119,17 @@
         <volume name="LV_Tube300_He">
             <solidref ref="Tube300_He" />
             <materialref ref="G4_He" />
-            <auxiliary auxtype="Color" auxvalue="#00ff1700" />
             <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_300;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=30000;type=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
         </volume>
 
         <volume name="LV_Tube300_Wall">
             <solidref ref="Tube300_Wall" />
             <materialref ref="Al" />
-            <auxiliary auxtype="Color" auxvalue="#00ff8400" />
         </volume>
 
         <volume name="LV_Tube300">
             <solidref ref="Tube300" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
             <physvol name="LV_Tube300_Wall">
                 <volumeref ref="LV_Tube300_Wall" />
             </physvol>
@@ -151,19 +142,16 @@
             <solidref ref="Tube500_He" />
             <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_500;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=30000;type=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
             <materialref ref="G4_He" />
-            <auxiliary auxtype="Color" auxvalue="#00ff1700" />
         </volume>
 
         <volume name="LV_Tube500_Wall">
             <solidref ref="Tube500_Wall" />
             <materialref ref="Al" />
-            <auxiliary auxtype="Color" auxvalue="#00ff8400" />
         </volume>
 
         <volume name="LV_Tube500">
             <solidref ref="Tube500" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
             <physvol name="LV_Tube500_Wall">
                 <volumeref ref="LV_Tube500_Wall" />
             </physvol>
@@ -175,7 +163,6 @@
         <volume name="LV_Box_Module300_L">
             <solidref ref="Module300_L" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
             <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMapM300;xmin=-170;xmax=170;numBins_x=68;ymin=-125;ymax=125;numBins_y=50;type=YZ"/>
             <physvol name="LV_Tube300_1">
                 <volumeref ref="LV_Tube300" />
@@ -214,7 +201,6 @@
         <volume name="LV_Box_Module500_L">
             <solidref ref="Module500_L" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
             <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMapM500;xmin=-270;xmax=270;numBins_x=108;ymin=-125;ymax=125;numBins_y=50;type=YZ"/>
             <physvol name="LV_Tube500_1">
                 <volumeref ref="LV_Tube500" />
@@ -253,7 +239,6 @@
         <volume name="LV_Box_Module300">
             <solidref ref="Module300_G" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
             <physvol name="Module300_Local">
                 <volumeref ref="LV_Box_Module300_L" />
                 <rotationref ref="R_LV_Module" />
@@ -263,7 +248,6 @@
         <volume name="LV_Box_Module500">
             <solidref ref="Module500_G" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
             <physvol name="Module500_Local">
                 <volumeref ref="LV_Box_Module500_L" />
                 <rotationref ref="R_LV_Module" />
@@ -272,14 +256,12 @@
 
         <volume name="LV_Foil">
             <solidref ref="Foil" />
-            <materialref ref="Cd" />
-            <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
+            <materialref ref="B4C" />
         </volume>
 
         <volume name="LV_Collimator">
             <solidref ref="Collimator" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Color" auxvalue="#00ff1700" />
 
             <physvol name="LV_Foil_Left001">
                 <volumeref ref="LV_Foil" />
@@ -1617,7 +1599,6 @@
         <volume name="worldVOL">
             <solidref ref="WorldBox" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
 
             <physvol name="LV_Tube_SampleStick">
                 <volumeref ref="LV_Tube_SampleStick" />

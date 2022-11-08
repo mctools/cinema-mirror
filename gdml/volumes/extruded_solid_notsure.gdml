@@ -1,12 +1,9 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0"?>
 <gdml>
 
     <userinfo>
       <auxiliary auxtype="PrimaryGun" auxvalue="gun=IsotropicGun;energy=0.001;position=0,0,0" />
     </userinfo>
-
-    <define>
-    </define>
 
     <materials>
         <material name="Vacuum">

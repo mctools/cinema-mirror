@@ -1,11 +1,7 @@
-<?xml version='1.0' encoding='utf-8'?>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
-
+<?xml version="1.0"?>
+<gdml>
     <userinfo>
-      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
-      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MPIGun;Neutron;500, 500, -30000, 20, 40, 0" /> -->
-      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;1.5; 0,0,-30000; 0,0,1" /> -->
-      <auxiliary auxtype="PrimaryGun" auxvalue="SimpleThermalGun;Neutron;2.0; 0,0,-300; 0,0,1" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=2.0;position=0,0,-300;direction=0,0,1" />
     </userinfo>
 
     <define>

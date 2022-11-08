@@ -1,12 +1,9 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0"?>
 <gdml>
 <!-- aneutron is generated in a xs biased sphere and hitting a box -->
     <userinfo>
       <auxiliary auxtype="PrimaryGun" auxvalue="gun=IsotropicGun;energy=0.0253;position=0,0,-10" />
     </userinfo>
-
-    <define>
-    </define>
 
     <materials>
         <material name="Vacuum">
@@ -36,7 +33,6 @@
             <materialref ref="HWater" />
             <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=10;type=ENTRY;linear=no;Qmin=0.01;Qmax=50;numbin=1000"/>
         </volume>
-
 
         <volume name="VolWorld">
             <solidref ref="WorldSolid" />
