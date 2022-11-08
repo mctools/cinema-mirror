@@ -64,4 +64,17 @@ TEST_CASE("NCrystal")
 
   pc.generate(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;
+
+  //test info
+  NCrystal::MatCfg matcfg("Al_sg225.ncmat;dcutoff=0.5;temp=25C" );
+  auto info = NCrystal::createInfo(matcfg);
+  const NCrystal::Info::Composition & comp = info->getComposition();
+
+  for(const NCrystal::Info::CompositionEntry &v : comp)
+  {
+    double frac = v.fraction;
+    const auto& atom = v.atom.data();
+    std::cout << atom.elementName() << ": A " << atom.A() << ", Z " << atom.Z() << ", fraction " << frac << std::endl;
+  }
+
 }

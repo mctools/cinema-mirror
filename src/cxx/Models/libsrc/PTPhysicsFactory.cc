@@ -42,15 +42,32 @@ bool Prompt::PhysicsFactory::pureNCrystalCfg(const std::string &cfgstr)
 
 double Prompt::PhysicsFactory::calNumDensity(const std::string &nccfgstr)
 {
-    NCrystal::MatCfg matcfg(nccfgstr);
-    auto info = NCrystal::createInfo(matcfg);
-    if(info->hasNumberDensity())
-      return info->getNumberDensity().get() / Unit::Aa3;
-    else
-    {
-      PROMPT_THROW2(CalcError, "material has no number density " << nccfgstr);
-      return 0.;
-    }
+  showComposition(nccfgstr);
+  NCrystal::MatCfg matcfg(nccfgstr);
+  auto info = NCrystal::createInfo(matcfg);
+  if(info->hasNumberDensity())
+    return info->getNumberDensity().get() / Unit::Aa3;
+  else
+  {
+    PROMPT_THROW2(CalcError, "material has no number density " << nccfgstr);
+    return 0.;
+  }
+}
+
+void Prompt::PhysicsFactory::showComposition(const std::string &nccfgstr)
+{
+  NCrystal::MatCfg matcfg(nccfgstr);
+  auto info = NCrystal::createInfo(matcfg);
+  const NCrystal::Info::Composition & comp = info->getComposition();
+
+
+  for(const NCrystal::Info::CompositionEntry &v : comp)
+  {
+    double frac = v.fraction;
+    const auto& atom = v.atom.data();
+    std::cout << atom.elementName() << ": A " << atom.A() << ", Z " << atom.Z() << ", fraction " << frac << std::endl;
+  }
+
 }
 
 
