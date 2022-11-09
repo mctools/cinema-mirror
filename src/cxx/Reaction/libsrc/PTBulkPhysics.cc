@@ -138,7 +138,7 @@ void Prompt::BulkPhysics::setComposition(const std::string &cfgstr, double bias)
   if(pfact.pureNCrystalCfg(cfgstr))
     m_compModel->addPhysicsModel(cfgstr, bias);
   else
-    m_compModel =  Singleton<PhysicsFactory>::getInstance().createBulkPhysics(cfgstr);
+    m_compModel =  pfact.createBulkPhysics(cfgstr);
 
   m_numdensity = pfact.calNumDensity(cfgstr); 
 }

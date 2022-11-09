@@ -52,6 +52,7 @@ namespace Prompt {
     virtual ~CompoundModel();
     
     void addPhysicsModel(const std::string &cfg, double bias=1.);
+    void addPhysicsModel(std::shared_ptr<DiscreteModel> model);
 
     double totalCrossSection(double ekin, const Vector &dir) const;
     double calculateWeight(double lengthRho, bool hitWall);

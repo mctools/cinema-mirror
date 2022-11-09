@@ -44,8 +44,30 @@ Prompt::CfgParser::CfgParser()
 {
 }
 
-Prompt::CfgParser::ScorerCfg Prompt::CfgParser::parse(const std::string& cfgstr)
+Prompt::CfgParser::ScorerCfg Prompt::CfgParser::parse(const std::string& cfgstrinput)
 {
+  std::string cfgstr = cfgstrinput; 
+  //find this substrings inside ' '
+  std::map<std::string, std::string> strRlcDict;
+  std::vector<size_t> pos;
+  size_t found = cfgstr.find(char(39)); //39 for '
+  while(found!=std::string::npos)
+  {
+    pos.push_back(found);
+    found = cfgstr.find(char(39), pos.back()+1);
+  }
+  if(pos.size()%2==1)
+    PROMPT_THROW(BadInput, " bad input caused by '");
+
+  
+  for(size_t i= 0; i<pos.size();i=i+2)
+  {
+    std::string sub=cfgstr.substr(pos[i]+1,pos[i+1]-pos[i]-1);
+    std::string magicstr = "magicsubstring"+std::to_string(i);
+    cfgstr.replace(pos[i], pos[i+1]-pos[i]+1, magicstr);
+    strRlcDict.emplace(magicstr, sub);
+  }  
+
   auto strvec = split(cfgstr, ';');
   ScorerCfg cfg;
   cfg.name=strvec[0];
@@ -57,5 +79,13 @@ Prompt::CfgParser::ScorerCfg Prompt::CfgParser::parse(const std::string& cfgstr)
     cfg.parameters[p[0]] = p[1];
     // std::cout << s << std::endl;
   }
+
+  for(auto it=cfg.parameters.begin();it!=cfg.parameters.end();++it)
+  {
+    auto itstr = strRlcDict.find(it->second);
+    if(itstr!=strRlcDict.end())
+      it->second = itstr->second;
+  }
+
   return std::move(cfg);
 }

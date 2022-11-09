@@ -66,7 +66,7 @@ TEST_CASE("NCrystal")
   std::cout << final << " " << out << std::endl;
 
   //test info
-  NCrystal::MatCfg matcfg("Al_sg225.ncmat;dcutoff=0.5;temp=25C" );
+  NCrystal::MatCfg matcfg("LiquidHeavyWaterD2O_T293.6K.ncmat" );
   auto info = NCrystal::createInfo(matcfg);
   const NCrystal::Info::Composition & comp = info->getComposition();
 

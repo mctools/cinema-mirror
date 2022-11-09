@@ -30,6 +30,7 @@ Prompt::CompoundModel::CompoundModel(int gpd)
 
 Prompt::CompoundModel::~CompoundModel() {}
 
+// to be remove, or move to the physics factory 
 void Prompt::CompoundModel::addPhysicsModel(const std::string &cfg, double bias)
 {
   if(bias!=1.)
@@ -56,6 +57,21 @@ void Prompt::CompoundModel::addPhysicsModel(const std::string &cfg, double bias)
   if(m_models.back()->isOriented())
     m_containsOriented=true;
 }
+
+void Prompt::CompoundModel::addPhysicsModel(std::shared_ptr<Prompt::DiscreteModel> model)
+{
+  if(!model->getModelValidity().rightParticleType(m_forgpd))
+    PROMPT_THROW2(BadInput, "the model is not aimed for suitable for particle GPD " << m_forgpd);
+  m_models.emplace_back(model);
+  
+  // cache_xs and bias will be updated once a calculation is required.
+  // so the initial value can be arbitrary.
+  m_cache.cache_xs.push_back(0.);
+  m_cache.bias.push_back(1.);
+  if(m_models.back()->isOriented())
+    m_containsOriented=true;
+}
+
 
 
 double Prompt::CompoundModel::totalCrossSection(double ekin, const Vector &dir) const
