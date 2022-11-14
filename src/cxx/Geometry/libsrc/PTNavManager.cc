@@ -100,6 +100,16 @@ const vecgeom::VPlacedVolume *Prompt::NavManager::getVolume()
   return m_currPV;
 }
 
+
+Prompt::GeoTranslator Prompt::NavManager::make_translator()
+{
+  GeoTranslator translator;
+  auto trans = translator.getTransformMatrix();
+  m_currState->TopMatrixImpl(m_currState->GetNavIndex(), trans);
+  return std::move(translator);
+}
+
+
 void Prompt::NavManager::scoreEntry(Prompt::Particle &particle)
 {
   if(m_matphysscor->entry_scorers.size())

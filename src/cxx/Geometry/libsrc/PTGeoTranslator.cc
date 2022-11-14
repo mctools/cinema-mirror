@@ -1,6 +1,3 @@
-#ifndef Prompt_NavManager_hh
-#define Prompt_NavManager_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,58 +18,38 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <string>
-#include <map>
-#include "PromptCore.hh"
-#include "PTCompoundModel.hh"
-#include "PTSingleton.hh"
-#include "PTParticle.hh"
-#include "PTBulkPhysics.hh"
-#include "PTScorer.hh"
-#include "PTHist2D.hh"
-#include <VecGeom/management/GeoManager.h>
-#include "PTGeoManager.hh"
 #include "PTGeoTranslator.hh"
+#include <cstring>
 
-namespace Prompt {
-
-  class NavManager  {
-  public:
-    //return false if the track is terminated, i.e. exist world
-    bool proprogateInAVolume(Particle &particle);
-    void locateLogicalVolume(const Vector &p);
-    bool exitWorld();
-    void setupVolumePhysics();
-    size_t getVolumeID();
-    std::string getVolumeName();
-    const vecgeom::VPlacedVolume *getVolume();
-
-    void scoreEntry(Particle &particle);
-    void scorePropagate(Particle &particle);
-    void scoreExit(Particle &particle);
-    void scoreSurface(Particle &particle);
-    void scoreAbsorb(Particle &particle);
-
-    bool hasPropagateScorer() {return m_matphysscor->propagate_scorers.size(); };
-
-    bool hasBoundaryPhyiscs();
-    bool surfaceReaction(Particle &particle);
-
-    GeoTranslator make_translator();
-
-  private:
-    friend class Singleton<NavManager>;
-    NavManager();
-    ~NavManager();
-
-    vecgeom::GeoManager &m_geo;
-    const vecgeom::VPlacedVolume *m_currPV;
-    std::shared_ptr<VolumePhysicsScorer> m_matphysscor;
-    // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
-    // It is NavStatePath otherwise
-    vecgeom::NavigationState *m_currState, *m_nextState;
-  };
-
+Prompt::GeoTranslator::GeoTranslator()
+:m_trans()
+{
 }
 
-#endif
+Prompt::GeoTranslator::~GeoTranslator()
+{
+}
+
+Prompt::Vector Prompt::GeoTranslator::global2Local(const Prompt::Vector& glo)
+{
+  auto loc = m_trans.Transform(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&glo));
+  return *reinterpret_cast<const Prompt::Vector*>(&loc);
+}
+
+Prompt::Vector Prompt::GeoTranslator::local2Global(const Prompt::Vector& loc)
+{
+  auto glo = m_trans.InverseTransform(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&loc));
+  return *reinterpret_cast<const Prompt::Vector*>(&glo);
+}
+
+Prompt::Vector Prompt::GeoTranslator::global2Local_direction(const Prompt::Vector&glo_dir)
+{
+  auto loc_dir = m_trans.TransformDirection(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&glo_dir));
+  return *reinterpret_cast<const Prompt::Vector*>(&loc_dir);
+}
+
+Prompt::Vector Prompt::GeoTranslator::local2Global_direction(const Prompt::Vector& loc_dir)
+{
+  auto glo_dir = m_trans.InverseTransformDirection(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&loc_dir));
+  return *reinterpret_cast<const Prompt::Vector*>(&glo_dir);
+}

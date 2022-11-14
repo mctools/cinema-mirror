@@ -1,5 +1,5 @@
-#ifndef Prompt_NavManager_hh
-#define Prompt_NavManager_hh
+#ifndef Prompt_GeoTranslator_hh
+#define Prompt_GeoTranslator_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,58 +21,27 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <string>
-#include <map>
 #include "PromptCore.hh"
-#include "PTCompoundModel.hh"
-#include "PTSingleton.hh"
-#include "PTParticle.hh"
-#include "PTBulkPhysics.hh"
-#include "PTScorer.hh"
-#include "PTHist2D.hh"
-#include <VecGeom/management/GeoManager.h>
-#include "PTGeoManager.hh"
-#include "PTGeoTranslator.hh"
+#include <VecGeom/navigation/BVHNavigator.h>
 
 namespace Prompt {
 
-  class NavManager  {
+  class GeoTranslator  {
   public:
-    //return false if the track is terminated, i.e. exist world
-    bool proprogateInAVolume(Particle &particle);
-    void locateLogicalVolume(const Vector &p);
-    bool exitWorld();
-    void setupVolumePhysics();
-    size_t getVolumeID();
-    std::string getVolumeName();
-    const vecgeom::VPlacedVolume *getVolume();
+    GeoTranslator();
+    ~GeoTranslator();
 
-    void scoreEntry(Particle &particle);
-    void scorePropagate(Particle &particle);
-    void scoreExit(Particle &particle);
-    void scoreSurface(Particle &particle);
-    void scoreAbsorb(Particle &particle);
+    vecgeom::Transformation3D& getTransformMatrix() { return m_trans; };
 
-    bool hasPropagateScorer() {return m_matphysscor->propagate_scorers.size(); };
+    Vector global2Local(const Vector&);
+    Vector local2Global(const Vector&);
 
-    bool hasBoundaryPhyiscs();
-    bool surfaceReaction(Particle &particle);
-
-    GeoTranslator make_translator();
+    Vector global2Local_direction(const Vector&);
+    Vector local2Global_direction(const Vector&);
 
   private:
-    friend class Singleton<NavManager>;
-    NavManager();
-    ~NavManager();
-
-    vecgeom::GeoManager &m_geo;
-    const vecgeom::VPlacedVolume *m_currPV;
-    std::shared_ptr<VolumePhysicsScorer> m_matphysscor;
-    // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
-    // It is NavStatePath otherwise
-    vecgeom::NavigationState *m_currState, *m_nextState;
+    vecgeom::Transformation3D m_trans;
   };
-
 }
 
 #endif
