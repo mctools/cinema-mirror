@@ -24,10 +24,8 @@
 #include <string>
 #include <map>
 #include "PromptCore.hh"
-#include "PTCompoundModel.hh"
 #include "PTSingleton.hh"
 #include "PTParticle.hh"
-#include "PTBulkPhysics.hh"
 #include "PTScorer.hh"
 #include "PTHist2D.hh"
 #include <VecGeom/management/GeoManager.h>
@@ -58,7 +56,9 @@ namespace Prompt {
     bool hasBoundaryPhyiscs();
     bool surfaceReaction(Particle &particle);
 
-    GeoTranslator make_translator();
+    //geotranslator
+    const GeoTranslator& getTranslator();
+    void make_translator();
 
   private:
     friend class Singleton<NavManager>;
@@ -71,6 +71,7 @@ namespace Prompt {
     // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
     // It is NavStatePath otherwise
     vecgeom::NavigationState *m_currState, *m_nextState;
+    GeoTranslator m_translator;
   };
 
 }

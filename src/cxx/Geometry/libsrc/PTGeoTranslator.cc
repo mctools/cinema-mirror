@@ -30,25 +30,25 @@ Prompt::GeoTranslator::~GeoTranslator()
 {
 }
 
-Prompt::Vector Prompt::GeoTranslator::global2Local(const Prompt::Vector& glo)
+Prompt::Vector Prompt::GeoTranslator::global2Local(const Prompt::Vector& glo) const
 {
   auto loc = m_trans.Transform(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&glo));
   return *reinterpret_cast<const Prompt::Vector*>(&loc);
 }
 
-Prompt::Vector Prompt::GeoTranslator::local2Global(const Prompt::Vector& loc)
+Prompt::Vector Prompt::GeoTranslator::local2Global(const Prompt::Vector& loc) const
 {
   auto glo = m_trans.InverseTransform(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&loc));
   return *reinterpret_cast<const Prompt::Vector*>(&glo);
 }
 
-Prompt::Vector Prompt::GeoTranslator::global2Local_direction(const Prompt::Vector&glo_dir)
+Prompt::Vector Prompt::GeoTranslator::global2Local_direction(const Prompt::Vector&glo_dir) const
 {
   auto loc_dir = m_trans.TransformDirection(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&glo_dir));
   return *reinterpret_cast<const Prompt::Vector*>(&loc_dir);
 }
 
-Prompt::Vector Prompt::GeoTranslator::local2Global_direction(const Prompt::Vector& loc_dir)
+Prompt::Vector Prompt::GeoTranslator::local2Global_direction(const Prompt::Vector& loc_dir) const
 {
   auto glo_dir = m_trans.InverseTransformDirection(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&loc_dir));
   return *reinterpret_cast<const Prompt::Vector*>(&glo_dir);

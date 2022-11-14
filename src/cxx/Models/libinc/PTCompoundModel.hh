@@ -28,6 +28,7 @@
 #include "PTRandCanonical.hh"
 #include "PTDiscreteModel.hh"
 
+
 namespace Prompt {
 
   class PhysicsModel;
@@ -50,7 +51,7 @@ namespace Prompt {
   public:
     CompoundModel(int gpd);
     virtual ~CompoundModel();
-    
+
     void addPhysicsModel(const std::string &cfg, double bias=1.);
     void addPhysicsModel(std::shared_ptr<DiscreteModel> model);
 
@@ -66,6 +67,7 @@ namespace Prompt {
     mutable XSCache m_cache;
     bool m_containsOriented;
     int m_forgpd;
+    mutable Vector m_localdir;
 
     SingletonPTRand &m_rng;
   };

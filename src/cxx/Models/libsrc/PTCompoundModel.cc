@@ -22,6 +22,7 @@
 #include "PTNCrystalScat.hh"
 #include "PTNCrystalAbs.hh"
 #include "PTPhysicsModel.hh"
+#include "PTNavManager.hh"
 
 Prompt::CompoundModel::CompoundModel(int gpd)
 :m_cache({}), m_containsOriented(false), m_rng( Singleton<SingletonPTRand>::getInstance() ),
@@ -30,7 +31,7 @@ Prompt::CompoundModel::CompoundModel(int gpd)
 
 Prompt::CompoundModel::~CompoundModel() {}
 
-// to be remove, or move to the physics factory 
+// to be remove, or move to the physics factory
 void Prompt::CompoundModel::addPhysicsModel(const std::string &cfg, double bias)
 {
   if(bias!=1.)
@@ -63,7 +64,7 @@ void Prompt::CompoundModel::addPhysicsModel(std::shared_ptr<Prompt::DiscreteMode
   if(!model->getModelValidity().rightParticleType(m_forgpd))
     PROMPT_THROW2(BadInput, "the model is not aimed for suitable for particle GPD " << m_forgpd);
   m_models.emplace_back(model);
-  
+
   // cache_xs and bias will be updated once a calculation is required.
   // so the initial value can be arbitrary.
   m_cache.cache_xs.push_back(0.);
@@ -85,8 +86,16 @@ double Prompt::CompoundModel::totalCrossSection(double ekin, const Vector &dir) 
     double xs(0.);
     for(unsigned i=0;i<m_models.size();i++)
     {
-      double channelxs = m_models[i]->isOriented() ? m_models[i]->getCrossSection(ekin, dir) :
-                                      m_models[i]->getCrossSection(ekin);
+      double channelxs(0);
+      if(m_models[i]->isOriented())
+      {
+        auto &navMan = Singleton<NavManager>::getInstance();
+        m_localdir =  navMan.getTranslator().global2Local_direction(dir);
+        channelxs = m_models[i]->getCrossSection(ekin, m_localdir) ;
+      }
+      else  {
+        channelxs = m_models[i]->getCrossSection(ekin);
+      }
       m_cache.cache_xs[i] = channelxs;
       m_cache.bias[i] = m_models[i]->getBias();
       xs += channelxs;
@@ -103,7 +112,7 @@ void Prompt::CompoundModel::generate(double ekin, const Vector &dir, double &fin
   if(!sameInquiryAsLastTime(ekin, dir))
   {
     //fixme:!!
-    // printf("WARNING, sampling event with different incident energy and/or direction\n");
+    printf("WARNING, sampling event with different incident energy and/or direction\n");
     final_ekin = ekin;
     final_dir = dir;
     return;
@@ -126,7 +135,16 @@ void Prompt::CompoundModel::generate(double ekin, const Vector &dir, double &fin
     if(p > r1)
       break;
   }
-  m_models[i]->generate(ekin, dir, final_ekin, final_dir);
+
+  if(m_models[i]->isOriented())
+  {
+    auto &navMan = Singleton<NavManager>::getInstance();
+    m_models[i]->generate(ekin, m_localdir, final_ekin, final_dir);
+    final_dir =  navMan.getTranslator().local2Global_direction(final_dir);
+  }
+  else
+    m_models[i]->generate(ekin, dir, final_ekin, final_dir);
+    
   m_cache.selectedBias = m_models[i]->getBias();
   // std::cout << "selected model " << m_models[i]->getName() << " "
   // << " total model num " << m_models.size() << std::endl;

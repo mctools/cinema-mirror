@@ -65,6 +65,16 @@ TEST_CASE("NCrystal")
   pc.generate(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;
 
+
+  //
+  NCrystal::MatCfg gecfg("Ge_sg227.ncmat;dcutoff=0.5;mos=40arcsec;dir1=@crys_hkl:5,1,1@lab:0,0,1;dir2=@crys_hkl:0,-1,1@lab:0,1,0" );
+  auto ge = NCrystal::createScatter(gecfg);
+
+  auto wl = NCrystal::NeutronWavelength{1.540};
+  auto xsect = ge.crossSection( wl, { 0.0, 1.0, 1.0 } );
+  std::cout << "single crystal Ge x-sect at "<<wl<<" Aa is "<<xsect<<" barn (orientation 1)"<<std::endl;
+
+
   //test info
   NCrystal::MatCfg matcfg("LiquidHeavyWaterD2O_T293.6K.ncmat" );
   auto info = NCrystal::createInfo(matcfg);

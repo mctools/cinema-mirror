@@ -31,13 +31,18 @@ namespace Prompt {
     GeoTranslator();
     ~GeoTranslator();
 
+    void print() const {
+      m_trans.Print();
+      std::cout << "\n";
+    }
+
     vecgeom::Transformation3D& getTransformMatrix() { return m_trans; };
 
-    Vector global2Local(const Vector&);
-    Vector local2Global(const Vector&);
+    Vector global2Local(const Vector&) const;
+    Vector local2Global(const Vector&) const;
 
-    Vector global2Local_direction(const Vector&);
-    Vector local2Global_direction(const Vector&);
+    Vector global2Local_direction(const Vector&) const;
+    Vector local2Global_direction(const Vector&) const;
 
   private:
     vecgeom::Transformation3D m_trans;

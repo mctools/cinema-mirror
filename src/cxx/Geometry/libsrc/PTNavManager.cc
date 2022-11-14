@@ -61,6 +61,9 @@ void Prompt::NavManager::setupVolumePhysics()
   m_currPV = m_currState->Top();
   auto &geo = Singleton<GeoManager>::getInstance();
   m_matphysscor = geo.getVolumePhysicsScorer(getVolumeID())->second;
+
+
+  make_translator(); //set up the global to local translator for this volume
 }
 
 bool Prompt::NavManager::surfaceReaction(Particle &particle)
@@ -83,7 +86,10 @@ bool Prompt::NavManager::surfaceReaction(Particle &particle)
     return false;
 }
 
-
+const Prompt::GeoTranslator& Prompt::NavManager::getTranslator()
+{
+  return m_translator;
+}
 
 size_t Prompt::NavManager::getVolumeID()
 {
@@ -101,12 +107,10 @@ const vecgeom::VPlacedVolume *Prompt::NavManager::getVolume()
 }
 
 
-Prompt::GeoTranslator Prompt::NavManager::make_translator()
+void Prompt::NavManager::make_translator()
 {
-  GeoTranslator translator;
-  auto trans = translator.getTransformMatrix();
-  m_currState->TopMatrixImpl(m_currState->GetNavIndex(), trans);
-  return std::move(translator);
+  auto& trans = m_translator.getTransformMatrix();
+  m_currState->DeltaTransformation(1, trans); //this is the difference between the world and the volume
 }
 
 
@@ -201,7 +205,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle)
     PROMPT_THROW2(BadInput, "stepLength < step " << stepLength << " " << step << "\n");
 
   //Move next step
-  const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
+  const double resolution = 100*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
   particle.moveForward(sameVolume ? step : (step + resolution) );
 
   if(sameVolume)
