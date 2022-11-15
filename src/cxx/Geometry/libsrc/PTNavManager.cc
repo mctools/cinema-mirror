@@ -62,8 +62,8 @@ void Prompt::NavManager::setupVolumePhysics()
   auto &geo = Singleton<GeoManager>::getInstance();
   m_matphysscor = geo.getVolumePhysicsScorer(getVolumeID())->second;
 
-
-  make_translator(); //set up the global to local translator for this volume
+  if(m_matphysscor->bulkPhysics->containOrentied())
+    make_translator(); //set up the global to local translator for this volume
 }
 
 bool Prompt::NavManager::surfaceReaction(Particle &particle)
@@ -205,7 +205,7 @@ bool Prompt::NavManager::proprogateInAVolume(Particle &particle)
     PROMPT_THROW2(BadInput, "stepLength < step " << stepLength << " " << step << "\n");
 
   //Move next step
-  const double resolution = 100*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
+  const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
   particle.moveForward(sameVolume ? step : (step + resolution) );
 
   if(sameVolume)

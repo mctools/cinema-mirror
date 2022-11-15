@@ -35,6 +35,7 @@ namespace Prompt {
     double sampleStepLength(const Prompt::Particle &particle) const;
     void sampleFinalState(Prompt::Particle &particle, double stepLength=0., bool hitWall=false) const;
     void setComposition(const std::string &cfg, double bias=1.0);
+    bool containOrentied() const { return m_compModel->containOriented(); }
 
   private:
     double macroCrossSection(const Prompt::Particle &particle) const;

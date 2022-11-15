@@ -59,6 +59,7 @@ namespace Prompt {
     double calculateWeight(double lengthRho, bool hitWall);
     void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const;
     int getSupportedGPD() const { return m_forgpd; }
+    bool containOriented() const { return m_containsOriented; }
 
   private:
     bool sameInquiryAsLastTime(double ekin, const Vector &dir) const;
