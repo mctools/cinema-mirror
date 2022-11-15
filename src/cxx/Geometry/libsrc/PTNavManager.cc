@@ -110,7 +110,7 @@ const vecgeom::VPlacedVolume *Prompt::NavManager::getVolume()
 void Prompt::NavManager::make_translator()
 {
   auto& trans = m_translator.getTransformMatrix();
-  m_currState->DeltaTransformation(1, trans); //this is the difference between the world and the volume
+  m_currState->DeltaTransformation(1, trans); //this is the difference between the volume and the world
 }
 
 
@@ -130,8 +130,6 @@ void Prompt::NavManager::scoreSurface(Prompt::Particle &particle)
   auto localposition = particle.getPosition();
   if(m_matphysscor->surface_scorers.size())
   {
-    auto loc = m_currState->GlobalToLocal({localposition.x(), localposition.y(), localposition.z()});
-    particle.setLocalPosition(Prompt::Vector(loc[0], loc[1], loc[2])); //fixme: should use the geotranslator  
     for(auto &v:m_matphysscor->surface_scorers)
     {
       v->score(particle);

@@ -54,9 +54,6 @@ namespace Prompt {
     void setPosition(const Vector& pos);
     const Vector &getPosition() const { return m_pos; }
 
-    void setLocalPosition(const Vector& pos) { m_localpos=pos; }
-    const Vector &getLocalPosition() const { return m_localpos; }
-
     double getTime() const { return m_time; }
     double getStep() const { return m_step; }
     double getEnergyChange() const { return m_deltaEn; }
@@ -84,7 +81,7 @@ namespace Prompt {
 
   protected:
     friend class DeltaParticle;
-    Vector m_dir, m_effdir, m_pos, m_localpos;
+    Vector m_dir, m_effdir, m_pos;
     double m_ekin0, m_ekin, m_effekin, m_time;
     double m_step, m_deltaEn;
     double m_weight;

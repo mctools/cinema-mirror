@@ -19,6 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTScorerPSD.hh"
+#include "PTNavManager.hh"
 
 Prompt::ScorerPSD::ScorerPSD(const std::string &name, double xmin, double xmax,
    unsigned nxbins, double ymin, double ymax, unsigned nybins, PSDType type)
@@ -31,7 +32,9 @@ Prompt::ScorerPSD::~ScorerPSD() {}
 
 void Prompt::ScorerPSD::score(Prompt::Particle &particle)
 {
-  const Vector &vec = particle.getLocalPosition();
+  auto &navMan = Singleton<NavManager>::getInstance();
+  Vector vec = navMan.getTranslator().global2Local(particle.getPosition());
+
   if (m_type==PSDType::XY)
     m_hist->fill(vec.x(), vec.y(), particle.getWeight() );
   else if (m_type==PSDType::YZ)
