@@ -62,8 +62,7 @@ void Prompt::NavManager::setupVolumePhysics()
   auto &geo = Singleton<GeoManager>::getInstance();
   m_matphysscor = geo.getVolumePhysicsScorer(getVolumeID())->second;
 
-  if(m_matphysscor->bulkPhysics->containOrentied())
-    make_translator(); //set up the global to local translator for this volume
+  make_translator(); //set up the global to local translator for this volume
 }
 
 bool Prompt::NavManager::surfaceReaction(Particle &particle)
