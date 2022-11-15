@@ -79,7 +79,7 @@
       <physvol>
         <volumeref ref="Case"/>
         <positionref ref="SamplePos"/>
-        <rotationref ref="rot" />
+        <rotationref ref="SampleRot" />
       </physvol>
 
       <physvol>

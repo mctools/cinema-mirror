@@ -1,3 +1,6 @@
+#ifndef Prompt_GeoTranslator_hh
+#define Prompt_GeoTranslator_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,29 +21,32 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerPSD.hh"
-#include "PTNavManager.hh"
+#include "PromptCore.hh"
+#include <VecGeom/navigation/BVHNavigator.h>
 
-Prompt::ScorerPSD::ScorerPSD(const std::string &name, double xmin, double xmax,
-   unsigned nxbins, double ymin, double ymax, unsigned nybins, PSDType type)
-:Scorer2D("ScorerPSD_"+name, Scorer::ScorerType::SURFACE,
-  std::make_unique<Hist2D>("ScorerPSD_"+name, xmin, xmax, nxbins, ymin, ymax, nybins)),
- m_type(type)
-{}
+namespace Prompt {
 
-Prompt::ScorerPSD::~ScorerPSD() {}
+  class GeoTranslator  {
+  public:
+    GeoTranslator();
+    ~GeoTranslator();
 
-void Prompt::ScorerPSD::score(Prompt::Particle &particle)
-{
-  auto &navMan = Singleton<NavManager>::getInstance();
-  Vector vec = navMan.getTranslator().global2Local(particle.getPosition());
+    void print() const {
+      m_trans.Print();
+      std::cout << "\n";
+    }
 
-  if (m_type==PSDType::XY)
-    m_hist->fill(vec.x(), vec.y(), particle.getWeight() );
-  else if (m_type==PSDType::YZ)
-    m_hist->fill(vec.y(), vec.z(), particle.getWeight() );
-  else if (m_type==PSDType::XZ)
-    m_hist->fill(vec.x(), vec.z(), particle.getWeight() );
-  else
-    PROMPT_THROW2(BadInput, m_name << " not support type");
+    vecgeom::Transformation3D& getTransformMatrix() { return m_trans; };
+
+    Vector global2Local(const Vector&) const;
+    Vector local2Global(const Vector&) const;
+
+    Vector global2Local_direction(const Vector&) const;
+    Vector local2Global_direction(const Vector&) const;
+
+  private:
+    vecgeom::Transformation3D m_trans;
+  };
 }
+
+#endif

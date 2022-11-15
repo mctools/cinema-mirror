@@ -28,6 +28,7 @@
 #include "PTRandCanonical.hh"
 #include "PTDiscreteModel.hh"
 
+
 namespace Prompt {
 
   class PhysicsModel;
@@ -50,13 +51,15 @@ namespace Prompt {
   public:
     CompoundModel(int gpd);
     virtual ~CompoundModel();
-    
+
     void addPhysicsModel(const std::string &cfg, double bias=1.);
+    void addPhysicsModel(std::shared_ptr<DiscreteModel> model);
 
     double totalCrossSection(double ekin, const Vector &dir) const;
     double calculateWeight(double lengthRho, bool hitWall);
     void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const;
     int getSupportedGPD() const { return m_forgpd; }
+    bool containOriented() const { return m_containsOriented; }
 
   private:
     bool sameInquiryAsLastTime(double ekin, const Vector &dir) const;
@@ -65,6 +68,7 @@ namespace Prompt {
     mutable XSCache m_cache;
     bool m_containsOriented;
     int m_forgpd;
+    mutable Vector m_localdir;
 
     SingletonPTRand &m_rng;
   };

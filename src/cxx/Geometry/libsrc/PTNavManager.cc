@@ -61,6 +61,9 @@ void Prompt::NavManager::setupVolumePhysics()
   m_currPV = m_currState->Top();
   auto &geo = Singleton<GeoManager>::getInstance();
   m_matphysscor = geo.getVolumePhysicsScorer(getVolumeID())->second;
+
+  if(m_matphysscor->bulkPhysics->containOrentied())
+    make_translator(); //set up the global to local translator for this volume
 }
 
 bool Prompt::NavManager::surfaceReaction(Particle &particle)
@@ -83,7 +86,10 @@ bool Prompt::NavManager::surfaceReaction(Particle &particle)
     return false;
 }
 
-
+const Prompt::GeoTranslator& Prompt::NavManager::getTranslator()
+{
+  return m_translator;
+}
 
 size_t Prompt::NavManager::getVolumeID()
 {
@@ -99,6 +105,14 @@ const vecgeom::VPlacedVolume *Prompt::NavManager::getVolume()
 {
   return m_currPV;
 }
+
+
+void Prompt::NavManager::make_translator()
+{
+  auto& trans = m_translator.getTransformMatrix();
+  m_currState->DeltaTransformation(1, trans); //this is the difference between the volume and the world
+}
+
 
 void Prompt::NavManager::scoreEntry(Prompt::Particle &particle)
 {
@@ -116,8 +130,6 @@ void Prompt::NavManager::scoreSurface(Prompt::Particle &particle)
   auto localposition = particle.getPosition();
   if(m_matphysscor->surface_scorers.size())
   {
-    auto loc = m_currState->GlobalToLocal({localposition.x(), localposition.y(), localposition.z()});
-    particle.setLocalPosition(Prompt::Vector(loc[0], loc[1], loc[2]));
     for(auto &v:m_matphysscor->surface_scorers)
     {
       v->score(particle);

@@ -26,6 +26,7 @@
 #include "NCrystal/NCrystal.hh"
 
 #include "PTPhysicsFactory.hh"
+#include "PTNavManager.hh"
 
 Prompt::BulkPhysics::BulkPhysics(const std::string& name)
 :m_rng(Singleton<SingletonPTRand>::getInstance()),
@@ -36,6 +37,17 @@ Prompt::BulkPhysics::~BulkPhysics() { }
 
 double Prompt::BulkPhysics::macroCrossSection(const Prompt::Particle &particle) const
 {
+  // if(m_compModel->containOriented())
+  // {
+  //   auto &navMan = Singleton<NavManager>::getInstance();
+  //
+  //   std::cout << "global dir " << particle.getDirection() << ", pos " << particle.getPosition() << std::endl;
+  //   std::cout << "local dir " << navMan.getTranslator().global2Local_direction(particle.getDirection())
+  //             << ", pos " << navMan.getTranslator().global2Local(particle.getPosition()) << std::endl;
+  //   std::cout << "local dir back " << navMan.getTranslator().local2Global_direction(particle.getDirection())
+  //         << ", pos " << navMan.getTranslator().local2Global(particle.getPosition()) << std::endl;
+  // }
+
   double ekin = particle.hasEffEnergy() ? particle.getEffEKin() : particle.getEKin();
   const auto &dir = particle.hasEffEnergy() ? particle.getEffDirection() : particle.getDirection();
   return m_numdensity*m_compModel->totalCrossSection(ekin, dir);
@@ -138,7 +150,7 @@ void Prompt::BulkPhysics::setComposition(const std::string &cfgstr, double bias)
   if(pfact.pureNCrystalCfg(cfgstr))
     m_compModel->addPhysicsModel(cfgstr, bias);
   else
-    m_compModel =  Singleton<PhysicsFactory>::getInstance().createBulkPhysics(cfgstr);
+    m_compModel =  pfact.createBulkPhysics(cfgstr);
 
-  m_numdensity = pfact.calNumDensity(cfgstr); 
+  m_numdensity = pfact.calNumDensity(cfgstr);
 }

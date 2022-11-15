@@ -23,6 +23,8 @@
 #include "PTCfgParser.hh"
 #include "PTMirrorPhysics.hh"
 #include "NCrystal/NCrystal.hh"
+#include "PTNCrystalScat.hh"
+#include "PTNCrystalAbs.hh"
 
 
 bool Prompt::PhysicsFactory::pureNCrystalCfg(const std::string &cfgstr)
@@ -40,26 +42,54 @@ bool Prompt::PhysicsFactory::pureNCrystalCfg(const std::string &cfgstr)
 
 }
 
-double Prompt::PhysicsFactory::calNumDensity(const std::string &nccfgstr)
+double Prompt::PhysicsFactory::calNumDensity(const std::string &cfgstr)
 {
-    NCrystal::MatCfg matcfg(nccfgstr);
-    auto info = NCrystal::createInfo(matcfg);
-    if(info->hasNumberDensity())
-      return info->getNumberDensity().get() / Unit::Aa3;
-    else
-    {
-      PROMPT_THROW2(CalcError, "material has no number density " << nccfgstr);
-      return 0.;
-    }
+  std::string nccfgstr = cfgstr;
+  if(!pureNCrystalCfg(cfgstr))
+  {
+    CfgParser::ScorerCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
+    if(!cfg.getStringIfExist("nccfg", nccfgstr))
+      PROMPT_THROW(BadInput, "NCrystal cfg string is not found");
+  }
+
+  // fixme: encounter what():  Assertion failure: isSingleIsotope() from NCrystal::AtomData::A when 
+  // the material is LiquidHeavyWaterD2O_T293.6K.ncmat
+  // showComposition(nccfgstr); 
+
+  NCrystal::MatCfg matcfg(nccfgstr);
+  auto info = NCrystal::createInfo(matcfg);
+  if(info->hasNumberDensity())
+    return info->getNumberDensity().get() / Unit::Aa3;
+  else
+  {
+    PROMPT_THROW2(CalcError, "material has no number density " << nccfgstr);
+    return 0.;
+  }
+}
+
+void Prompt::PhysicsFactory::showComposition(const std::string &nccfgstr)
+{
+  NCrystal::MatCfg matcfg(nccfgstr);
+  auto info = NCrystal::createInfo(matcfg);
+  const NCrystal::Info::Composition & comp = info->getComposition();
+
+
+  for(const NCrystal::Info::CompositionEntry &v : comp)
+  {
+    double frac = v.fraction;
+    const auto& atom = v.atom.data();
+    std::cout << atom.elementName() << ": A " << atom.A() << ", Z " << atom.Z() << ", fraction " << frac << std::endl;
+  }
+
 }
 
 
 std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics(const std::string &cfgstr)
 {
   std::cout << "Parsing config string for a CompoundModel: \n";
-  auto &cps = Singleton<CfgParser>::getInstance();
+  CfgParser::ScorerCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
+  cfg.print();
 
-  CfgParser::ScorerCfg cfg = cps.parse(cfgstr);
   std::unique_ptr<Prompt::CompoundModel> compmod;
   std::string physDef = cfg.find("physics");
 
@@ -73,9 +103,33 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics
     // physics=ncrystal; nccfg="LiquidHeavyWaterD2O_T293.6K.ncmat;density=1.0gcm3";scatter_bias=1.0;abs_bias=1.0;
     if(physDef == "ncrystal")
     {
+      int parCount = 4; 
       std::string nccfg = cfg.find("nccfg", true);
 
+      double scatter_bias = 0.;
+      if(!cfg.getDoubleIfExist("scatter_bias", scatter_bias))
+        parCount--;
 
+      double abs_bias = 0.;
+      if(!cfg.getDoubleIfExist("abs_bias", abs_bias))
+        parCount--;
+
+      if(!scatter_bias && !abs_bias)  
+      {
+        PROMPT_THROW2(BadInput, "At lease one of the \"scatter_bias\" and \"abs_bias\" key shoule be set to a non-zero positive value" );
+      }
+
+      auto compm = std::make_unique<CompoundModel> (2112);
+      if(scatter_bias)
+      {
+        compm->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias));
+      }
+      if(abs_bias)
+      {
+        compm->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias));
+      }
+
+      return compm;   
     }
   }
 }
