@@ -131,7 +131,7 @@ void Prompt::NavManager::scoreSurface(Prompt::Particle &particle)
   if(m_matphysscor->surface_scorers.size())
   {
     auto loc = m_currState->GlobalToLocal({localposition.x(), localposition.y(), localposition.z()});
-    particle.setLocalPosition(Prompt::Vector(loc[0], loc[1], loc[2]));
+    particle.setLocalPosition(Prompt::Vector(loc[0], loc[1], loc[2])); //fixme: should use the geotranslator  
     for(auto &v:m_matphysscor->surface_scorers)
     {
       v->score(particle);
