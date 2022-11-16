@@ -65,7 +65,6 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
   Vector lab_dir;
 
   if(particle.hasEffEnergy())
-  // if(false)
   {
     double ekineff =  particle.getEffEKin();
     const auto &direff = particle.getEffDirection();
@@ -75,9 +74,8 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
 
     // sample in the comoving frame
     m_compModel->generate(ekineff, direff, comove_ekin, comove_dir);
-    if(lab_ekin!=-1) //non-capture fixme: this should not be called when EXITing
+    if(comove_ekin!=-1) //non-capture fixme: this should not be called when EXITing
     {
-
       Vector v_comoving = comove_dir*std::sqrt(2*comove_ekin/particle.getMass());
       // the rotatioal velocity
       auto v_rot = particle.getDirection()*particle.calcSpeed()-particle.getEffDirection()*particle.calcEffSpeed();
@@ -94,6 +92,8 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
       // lab_ekin = particle.getEKin();
       lab_ekin = 0.5*particle.getMass()*speed*speed;
     }
+    else
+      particle.kill(Particle::KillType::ABSORB);
   }
   else
   {
