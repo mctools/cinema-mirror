@@ -59,9 +59,20 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
     PROMPT_THROW2(CalcError, "BulkPhysics " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
 
   if(!particle.isAlive())
-    return;
+    PROMPT_THROW(CalcError, "Particle is not alive");
 
-  double lab_ekin;
+  //if particle is escaped to the the next volume
+  if(hitWall)
+  {
+    if(stepLength)
+    {
+      particle.scaleWeight(m_compModel->calculateWeight(stepLength*m_numdensity, true));
+    }
+    return;
+  }
+
+  //else
+  double lab_ekin(0), comove_ekin(0);
   Vector lab_dir;
 
   if(particle.hasEffEnergy())
@@ -69,7 +80,6 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
     double ekineff =  particle.getEffEKin();
     const auto &direff = particle.getEffDirection();
 
-    double comove_ekin;
     Vector comove_dir;
 
     // sample in the comoving frame
@@ -92,8 +102,6 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
       // lab_ekin = particle.getEKin();
       lab_ekin = 0.5*particle.getMass()*speed*speed;
     }
-    else
-      particle.kill(Particle::KillType::ABSORB);
   }
   else
   {
@@ -105,24 +113,92 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
   // std::cout << particle.getEventID() << ", is alive? " << particle.isAlive() << ", wall? "<< hitWall<<
   //  ", labEkin " << lab_ekin   << ", effEkin " << particle.getEffEKin() << "\n";
 
-  if(!hitWall)
+  // if it is an absorption reaction, the state of the particle is set,
+  // but the energy and direction are kept for the subsequent capture scorers.
+  if(lab_ekin==-1. || comove_ekin==-1.)
   {
-    // if it is an absorption reaction, the state of the particle is set,
-    // but the energy and direction are kept for the subsequent capture scorers.
-    if(lab_ekin==-1.)
-    {
-      particle.kill(Particle::KillType::ABSORB);
-    }
-    else
-    {
-      particle.setEKin(lab_ekin);
-      particle.setDirection(lab_dir);
-    }
+    particle.kill(Particle::KillType::ABSORB);
   }
-
-  if(stepLength)
-    particle.scaleWeight(m_compModel->calculateWeight(stepLength*m_numdensity, hitWall));
+  else
+  {
+    particle.setEKin(lab_ekin);
+    particle.setDirection(lab_dir);
+  }
+  particle.scaleWeight(m_compModel->calculateWeight(stepLength*m_numdensity, false));
+  
 }
+
+
+// void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
+// {
+//   if(m_compModel->getSupportedGPD()!=particle.getPGD())
+//     PROMPT_THROW2(CalcError, "BulkPhysics " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
+
+//   if(!particle.isAlive())
+//     return;
+
+//   double lab_ekin;
+//   Vector lab_dir;
+
+//   if(particle.hasEffEnergy())
+//   {
+//     double ekineff =  particle.getEffEKin();
+//     const auto &direff = particle.getEffDirection();
+
+//     double comove_ekin;
+//     Vector comove_dir;
+
+//     // sample in the comoving frame
+//     m_compModel->generate(ekineff, direff, comove_ekin, comove_dir);
+//     if(comove_ekin!=-1) //non-capture fixme: this should not be called when EXITing
+//     {
+//       Vector v_comoving = comove_dir*std::sqrt(2*comove_ekin/particle.getMass());
+//       // the rotatioal velocity
+//       auto v_rot = particle.getDirection()*particle.calcSpeed()-particle.getEffDirection()*particle.calcEffSpeed();
+
+//       particle.setEffEKin(comove_ekin);
+//       particle.setEffDirection(comove_dir);
+
+//       // bring back to the lab
+//       auto v_lab = v_comoving + v_rot;
+
+//       // set the final value in the lab frame
+//       double speed(0);
+//       v_lab.magdir(speed, lab_dir);
+//       // lab_ekin = particle.getEKin();
+//       lab_ekin = 0.5*particle.getMass()*speed*speed;
+//     }
+//     else
+//       particle.kill(Particle::KillType::ABSORB);
+//   }
+//   else
+//   {
+//     m_compModel->generate(particle.getEKin(), particle.getDirection(), lab_ekin, lab_dir);
+//   }
+
+//   // fixme: when a particle exiting a volume, a reaction channel is forced to sampled at the moment
+//   // lab_ekin could be -1 in those cases, but the transport keeps going, that is very confusing.
+//   // std::cout << particle.getEventID() << ", is alive? " << particle.isAlive() << ", wall? "<< hitWall<<
+//   //  ", labEkin " << lab_ekin   << ", effEkin " << particle.getEffEKin() << "\n";
+
+//   if(!hitWall)
+//   {
+//     // if it is an absorption reaction, the state of the particle is set,
+//     // but the energy and direction are kept for the subsequent capture scorers.
+//     if(lab_ekin==-1.)
+//     {
+//       particle.kill(Particle::KillType::ABSORB);
+//     }
+//     else
+//     {
+//       particle.setEKin(lab_ekin);
+//       particle.setDirection(lab_dir);
+//     }
+//   }
+
+//   if(stepLength)
+//     particle.scaleWeight(m_compModel->calculateWeight(stepLength*m_numdensity, hitWall));
+// }
 
 
 double Prompt::BulkPhysics::sampleStepLength(const Prompt::Particle &particle) const

@@ -119,19 +119,23 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics
         PROMPT_THROW2(BadInput, "At lease one of the \"scatter_bias\" and \"abs_bias\" key shoule be set to a non-zero positive value" );
       }
 
-      auto compm = std::make_unique<CompoundModel> (2112);
+      compmod = std::make_unique<CompoundModel> (2112);
       if(scatter_bias)
       {
-        compm->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias));
+        compmod->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias));
       }
       if(abs_bias)
       {
-        compm->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias));
+        compmod->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias));
       }
 
-      return compm;   
+      return compmod;   
     }
   }
+ 
+  PROMPT_THROW(LogicError, "The code shouldn't reach here" );
+  return compmod;   
+
 }
 
 
