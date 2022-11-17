@@ -5,11 +5,11 @@ import os
 from Cinema.Prompt import PromptFileReader
 
 guntest_dict ={}
-guntest_dict['SimpleThermalGun'] = {'gdml': 'SimpleThermalGun.gdml', 'mcpl': 'ScorerNeutronSq_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 14., 14.]}
-guntest_dict['IsotropicGun'] = {'gdml': 'IsotropicGun.gdml', 'mcpl': 'ScorerNeutronSq_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 55., 55.]}
-guntest_dict['UniModeratorGun'] = {'gdml': 'UniModeratorGun.gdml', 'mcpl': 'ScorerNeutronSq_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 790., 790.]}
-guntest_dict['MPIGun'] = {'gdml': 'MPIGun.gdml', 'mcpl': 'ScorerNeutronSq_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 855., 855.]}
-guntest_dict['MaxwellianGun'] = {'gdml': 'MaxwellianGun.gdml', 'mcpl': 'ScorerNeutronSq_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 850., 850.]}
+guntest_dict['SimpleThermalGun'] = {'gdml': 'SimpleThermalGun.gdml', 'mcpl': 'ScorerNeutronSq_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 16., 16.]}
+guntest_dict['IsotropicGun'] = {'gdml': 'IsotropicGun.gdml', 'mcpl': 'ScorerNeutronSq_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 68., 68.]}
+guntest_dict['UniModeratorGun'] = {'gdml': 'UniModeratorGun.gdml', 'mcpl': 'ScorerNeutronSq_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 795., 795.]}
+guntest_dict['MPIGun'] = {'gdml': 'MPIGun.gdml', 'mcpl': 'ScorerNeutronSq_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 866., 866.]}
+guntest_dict['MaxwellianGun'] = {'gdml': 'MaxwellianGun.gdml', 'mcpl': 'ScorerNeutronSq_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 825., 825.]}
 
 for gunname in guntest_dict:
     gun = guntest_dict[gunname]
