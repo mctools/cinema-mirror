@@ -31,6 +31,22 @@ import mcpl
 from io import BytesIO
 import numpy as np
 
+_recodedict = {}
+_recodedict['ekin'] = 'ekin'
+_recodedict['q'] = 'polx'
+_recodedict['qtrue'] = 'poly'
+_recodedict['ekin_atbirth'] = 'polz'
+_recodedict['ekin_tof'] = 'x'
+# _recodedict['dummy1'] = 'y'
+# _recodedict['dummy1'] = 'z'
+# _recodedict['dummyvector1'] = 'ux'
+# _recodedict['dummyvector2'] = 'uy'
+# _recodedict['dummyvector3'] = 'uz'
+_recodedict['time'] = 'time'
+_recodedict['weight'] = 'weight'
+_recodedict['scatNum'] = 'pdgcode'
+# _recodedict['dummy3'] = 'userflags'
+
 class PromptFileReader:
     def __init__(self, fn, particleBlocklength=10000, dumpHeader=True):
         self.pfile = mcpl.MCPLFile(fn)
@@ -58,3 +74,9 @@ class PromptFileReader:
     def particleIterator(self):
      return self.pfile.particle_blocks
 
+    def getRecordKeys(self):
+        return _recodedict.keys()
+
+    def getRecordData(self, pb, recordkey):
+        value = getattr(pb, _recodedict[recordkey])
+        return value
