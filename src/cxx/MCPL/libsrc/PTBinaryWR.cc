@@ -98,6 +98,8 @@ void Prompt::BinaryWrite::record(const Particle &p)
   m_particleInFile->weight = p.getWeight();
 
   //modify userflags (unsigned_32) and polarisation (double[3]) as well, if enabled.
+  if(m_enable_extraUnsigned)
+    m_particleInFile->userflags = p.getEventID();
 
   mcpl_add_particle(m_file, m_particleInFile);
 }
