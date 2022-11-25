@@ -43,7 +43,7 @@ namespace Prompt {
   //   uint32_t userflags; /* User flags (if used, the file header should probably contain information about how). */
   // } mcpl_particle_t;
 
-  //the direction[3] must be unit vector, otherwise mpcl should raise an error
+  //direction[3] must be a unit vector, otherwise mpcl should raise an error
   struct ScorerSqRecord {
     double ekin;
     double q, qtrue, ekin_atbirth;

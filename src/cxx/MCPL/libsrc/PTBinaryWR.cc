@@ -76,14 +76,14 @@ void Prompt::BinaryWrite::record(const Particle &p)
   m_headerClosed=true;
   m_particleInFile->pdgcode = p.getPGD();
 
-  //fixme: position in centimeters:
+  //position in centimeters:
   const Vector &pos = p.getPosition();
-  m_particleInFile->position[0] = pos.x();
-  m_particleInFile->position[1] = pos.y();
-  m_particleInFile->position[2] = pos.z();
+  m_particleInFile->position[0] = pos.x()*10;
+  m_particleInFile->position[1] = pos.y()*10;
+  m_particleInFile->position[2] = pos.z()*10;
 
-  //fixme: kinetic energy in MeV:
-  m_particleInFile->ekin = p.getEKin();
+  //kinetic energy in MeV:
+  m_particleInFile->ekin = p.getEKin()*1e-6;
 
   const Vector &dir = p.getDirection();
 
@@ -92,7 +92,7 @@ void Prompt::BinaryWrite::record(const Particle &p)
   m_particleInFile->direction[2] = dir.z();
 
   //time in milliseconds:
-  m_particleInFile->time = p.getTime();
+  m_particleInFile->time = p.getTime()*1e-3;
 
   //weight in unspecified units:
   m_particleInFile->weight = p.getWeight();
