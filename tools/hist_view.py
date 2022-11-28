@@ -3,7 +3,7 @@ from Cinema.Prompt import PromptFileReader
 import matplotlib.pyplot as plt
 from Cinema.Interface import plotStyle
 
-# example for analyzing data in ScorerNeutronSq_SofQ_He_seed.mcpl.gz 
+# example for analyzing data in ScorerNeutronSq_SofQ_He_seed.mcpl.gz
 file = PromptFileReader('/home/yangni/gitlabDev/cinema/gd2/ScorerNeutronSq_SofQ_He_seed4096.mcpl.gz')
 hist_edge = file.getData('edge')
 hist_content = file.getData('content')
