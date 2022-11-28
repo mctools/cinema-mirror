@@ -23,6 +23,7 @@
 #include "PTBinaryWR.hh"
 #include <typeinfo>
 #include "PTUtils.hh"
+#include "PTBinaryWR.hh"
 
 Prompt::Hist1D::Hist1D(const std::string &name, double xmin, double xmax, unsigned nbins, bool linear)
 :HistBase(name, nbins), m_binfactor(0), m_linear(linear), m_logxmin(0)
@@ -55,22 +56,25 @@ std::vector<double> Prompt::Hist1D::getEdge() const
 
 void Prompt::Hist1D::save(const std::string &filename) const
 {
+  //fixme: filename should be removed
+  auto bwr = new BinaryWrite(m_mcpl_file_name);
+
   double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
-  m_bwr->addHeaderComment(m_name);
-  m_bwr->addHeaderComment(getTypeName(typeid(this)).c_str());
-  m_bwr->addHeaderComment(("Total hit: " + std::to_string(getTotalHit())).c_str());
+  bwr->addHeaderComment(m_name);
+  bwr->addHeaderComment(getTypeName(typeid(this)).c_str());
+  bwr->addHeaderComment(("Total hit: " + std::to_string(getTotalHit())).c_str());
 
-  m_bwr->addHeaderComment(("Integral weight: " + std::to_string(intergral )).c_str());
-  m_bwr->addHeaderComment(("Accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
-  m_bwr->addHeaderComment(("Overflow weight: " + std::to_string(overflow )).c_str());
-  m_bwr->addHeaderComment(("Underflow weight: " + std::to_string(underflow)).c_str());
+  bwr->addHeaderComment(("Integral weight: " + std::to_string(intergral )).c_str());
+  bwr->addHeaderComment(("Accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
+  bwr->addHeaderComment(("Overflow weight: " + std::to_string(overflow )).c_str());
+  bwr->addHeaderComment(("Underflow weight: " + std::to_string(underflow)).c_str());
 
-  m_bwr->addHeaderData("overflow", &overflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
-  m_bwr->addHeaderData("underflow", &underflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("overflow", &overflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("underflow", &underflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
 
-  m_bwr->addHeaderData("content", m_data.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
-  m_bwr->addHeaderData("hit", m_hit.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
-  m_bwr->addHeaderData("edge", getEdge().data(), {m_nbins+1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("content", m_data.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("hit", m_hit.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("edge", getEdge().data(), {m_nbins+1}, Prompt::NumpyWriter::NPDataType::f8);
 
   char buffer [1000];
   int n =sprintf (buffer,
@@ -82,8 +86,9 @@ void Prompt::Hist1D::save(const std::string &filename) const
     "plt.%s(x[:-1],y/np.diff(x), label=f'total weight={y.sum()}')\n"
     "plt.grid()\n"
     "plt.legend()\n"
-    "plt.show()\n", m_bwr->getFileName().c_str(), m_linear? "plot":"loglog");
+    "plt.show()\n", bwr->getFileName().c_str(), m_linear? "plot":"loglog");
 
+  delete bwr;
   std::ofstream outfile(filename+"_view.py");
   outfile << buffer;
   outfile.close();

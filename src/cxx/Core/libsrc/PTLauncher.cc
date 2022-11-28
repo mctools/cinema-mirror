@@ -165,4 +165,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
 
   if(timer)
     delete moni;
+
+  auto &geoman = Singleton<GeoManager>::getInstance();
+  geoman.writeScorer2Disk();
 }

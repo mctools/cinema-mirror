@@ -271,7 +271,9 @@ void Prompt::VolumePhysicsScorer::sortScorers()
   exit_scorers.clear();
   surface_scorers.clear();
   absorb_scorers.clear();
-
+  
+  if(scorers.size())
+    std::cout << "Sorting "<< scorers.size() << " scorers \n\n";
 
   for(auto &v : scorers)
   {
@@ -310,5 +312,18 @@ void Prompt::VolumePhysicsScorer::sortScorers()
     }
     else
       PROMPT_THROW2(BadInput, "unknown scorer type " << static_cast<int>(type) );
+  }
+  std::cout << "\n";
+}
+
+
+void Prompt::GeoManager::writeScorer2Disk()
+{  
+  for(auto it=m_logVolID2physcorer.begin();it!=m_logVolID2physcorer.end();++it)
+  {
+    for(auto &v : it->second->scorers)
+    {
+      v->save_mcpl();
+    }
   }
 }

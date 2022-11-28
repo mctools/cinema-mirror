@@ -58,6 +58,7 @@ namespace Prompt {
     size_t numScorer() {return m_globelScorers.size();}
     std::string getLogicalVolumeScorerName(unsigned logid);
     const std::string &getLogicalVolumeMaterialName(unsigned logid);
+    void writeScorer2Disk();
 
     VPSMap::const_iterator getVolumePhysicsScorer(size_t logid)
     {
