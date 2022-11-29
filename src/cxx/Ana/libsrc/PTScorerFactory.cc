@@ -29,7 +29,7 @@
 #include "PTScorerVolFlux.hh"
 #include "PTScorerMultiScat.hh"
 #include "PTScorerRotatingObj.hh"
-
+#include "PTScorerWlSpectrum.hh"
 
 Prompt::ScorerFactory::ScorerFactory()
 {}
@@ -191,6 +191,28 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       }
 
       return std::make_shared<ScorerESpectrum>(name, minE, maxE, numBin);
+    }
+    else if(ScorDef == "WlSpectrum")
+    {
+      // ESpectrum: energy spectrum
+      // example cfg
+      // ""Scorer=ESD; name=detector; Emin=0.0; Emax=0.0253; numbin=100""
+
+      int parCount = 5;
+
+      // The mandatory parameters
+      bool force = true;
+      std::string name = cfg.find("name", force);
+      double minWl = ptstod(cfg.find("Wlmin", force));
+      double maxWl = ptstod(cfg.find("Wlmax", force));
+      int numBin = ptstoi(cfg.find("numbin", force));
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Scorer type ESpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
+      }
+
+      return std::make_shared<ScorerWlSpectrum>(name, minWl, maxWl, numBin);
     }
     else if(ScorDef == "TOF")
     {
