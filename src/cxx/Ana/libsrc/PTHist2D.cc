@@ -98,7 +98,6 @@ void Prompt::Hist2D::save(const std::string &filename) const
     "import matplotlib.colors as colors\nimport numpy as np\n"
     "import argparse\nparser = argparse.ArgumentParser()\n"
     "parser.add_argument('-l', '--linear', action='store_true', dest='logscale', help='colour bar in log scale')\n"
-    "args=parser.parse_args()\n"
     "f = PromptFileReader('%s.mcpl.gz')\n"
     "args=parser.parse_args()\n"
     "data=f.getData('content')\n"

@@ -80,13 +80,20 @@ void Prompt::Hist1D::save(const std::string &filename) const
   int n =sprintf (buffer,
     "import numpy as np\nfrom Cinema.Prompt import PromptFileReader\n"
     "import matplotlib.pyplot as plt\n"
+    "import argparse\n"
+    "parser = argparse.ArgumentParser()\n"
+    "parser.add_argument('-l', '--linear', action='store_true', dest='logscale', help='colour bar in log scale')\n"
+    "args=parser.parse_args()\n"
     "f = PromptFileReader('%s.mcpl.gz')\n"
     "x=f.getData('edge')\n"
     "y=f.getData('content')\n"
-    "plt.%s(x[:-1],y/np.diff(x), label=f'total weight={y.sum()}')\n"
+    "if args.logscale:\n"
+    "  plt.semilogy(x[:-1],y/np.diff(x), label=f'total weight={y.sum()}')\n"
+    "else:\n"
+    "  plt.plot(x[:-1],y/np.diff(x), label=f'total weight={y.sum()}')\n"
     "plt.grid()\n"
     "plt.legend()\n"
-    "plt.show()\n", bwr->getFileName().c_str(), m_linear? "plot":"loglog");
+    "plt.show()\n", bwr->getFileName().c_str());
 
   delete bwr;
   std::ofstream outfile(filename+"_view.py");
