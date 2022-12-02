@@ -17,8 +17,8 @@ guntest_dict['MaxwellianGun'] = {'gdml': 'MaxwellianGun.gdml', 'mcpl': 'ScorerNe
 
 for gunname in guntest_dict:
     gun = guntest_dict[gunname]
-    os.system('rm %s'%gun['mcpl'])
-    os.system('prompt -g %s -s 103 -n 1e3'%gun['gdml'])
+    os.system('rm %s' % gun['mcpl'])
+    os.system('prompt.py -g %s -s 103 -n 1e3' % gun['gdml'])
     
     record_hist = SQTrueHist(recordname)
     record_qtrue, record_s, record_err = record_hist.fillHist(xmin=0.01, xmax=50.0, numbin=1000, linear=False)

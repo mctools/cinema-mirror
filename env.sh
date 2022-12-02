@@ -1,16 +1,20 @@
 #!/bin/bash
 
+set -e
+
 DOCKER=false
 while getopts hi:x:d option
 do
-case "${option}"
-in
-h) echo "$USAGE"
-   exit 0;;
-x) INPUT=${OPTARG};;
-i) ARGS=${OPTARG};;
-d) DOCKER=true;;
-esac
+  case "${option}"
+  in
+    h) echo "$USAGE"
+       exit 0;;
+    x) INPUT=${OPTARG};;
+    i) ARGS=${OPTARG};;
+    d) DOCKER=true;;
+    *) echo "$USAGE"
+      exit 0;;
+  esac
 done
 
 
