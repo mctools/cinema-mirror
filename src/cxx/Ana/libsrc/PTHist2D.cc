@@ -23,6 +23,7 @@
 #include "PTBinaryWR.hh"
 #include <typeinfo>
 #include "PTUtils.hh"
+#include "PTBinaryWR.hh"
 
 Prompt::Hist2D::Hist2D(const std::string &name, double xmin, double xmax, unsigned xnbins,
                        double ymin, double ymax, unsigned ynbins)
@@ -68,23 +69,26 @@ std::vector<double> Prompt::Hist2D::getYEdge() const
 
 void Prompt::Hist2D::save(const std::string &filename) const
 {
+  //fixme: filename should be removed
+  std::cout << "saving 2d\n";
+  auto bwr = new BinaryWrite(m_mcpl_file_name);
   double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
-  m_bwr->addHeaderComment(m_name);
-  m_bwr->addHeaderComment(getTypeName(typeid(this)).c_str());
-  m_bwr->addHeaderComment(("Total hit: " + std::to_string(getTotalHit())).c_str());
+  bwr->addHeaderComment(m_name);
+  bwr->addHeaderComment(getTypeName(typeid(this)).c_str());
+  bwr->addHeaderComment(("Total hit: " + std::to_string(getTotalHit())).c_str());
 
-  m_bwr->addHeaderComment(("Integral weight: " + std::to_string(intergral )).c_str());
-  m_bwr->addHeaderComment(("Accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
-  m_bwr->addHeaderComment(("Overflow weight: " + std::to_string(overflow )).c_str());
-  m_bwr->addHeaderComment(("Underflow weight: " + std::to_string(underflow)).c_str());
+  bwr->addHeaderComment(("Integral weight: " + std::to_string(intergral )).c_str());
+  bwr->addHeaderComment(("Accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
+  bwr->addHeaderComment(("Overflow weight: " + std::to_string(overflow )).c_str());
+  bwr->addHeaderComment(("Underflow weight: " + std::to_string(underflow)).c_str());
 
-  m_bwr->addHeaderData("Overflow", &overflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
-  m_bwr->addHeaderData("Underflow", &underflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("Overflow", &overflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("Underflow", &underflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
 
-  m_bwr->addHeaderData("content", m_data.data(), {m_xnbins, m_ynbins}, Prompt::NumpyWriter::NPDataType::f8);
-  m_bwr->addHeaderData("hit", m_hit.data(), {m_xnbins, m_ynbins}, Prompt::NumpyWriter::NPDataType::f8);
-  m_bwr->addHeaderData("xedge", getXEdge().data(), {m_xnbins+1}, Prompt::NumpyWriter::NPDataType::f8);
-  m_bwr->addHeaderData("yedge", getYEdge().data(), {m_ynbins+1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("content", m_data.data(), {m_xnbins, m_ynbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("hit", m_hit.data(), {m_xnbins, m_ynbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("xedge", getXEdge().data(), {m_xnbins+1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("yedge", getYEdge().data(), {m_ynbins+1}, Prompt::NumpyWriter::NPDataType::f8);
 
   char buffer [2000];
   //fixme: add xy to dimansion
@@ -94,7 +98,6 @@ void Prompt::Hist2D::save(const std::string &filename) const
     "import matplotlib.colors as colors\nimport numpy as np\n"
     "import argparse\nparser = argparse.ArgumentParser()\n"
     "parser.add_argument('-l', '--linear', action='store_true', dest='logscale', help='colour bar in log scale')\n"
-    "args=parser.parse_args()\n"
     "f = PromptFileReader('%s.mcpl.gz')\n"
     "args=parser.parse_args()\n"
     "data=f.getData('content')\n"
@@ -118,8 +121,9 @@ void Prompt::Hist2D::save(const std::string &filename) const
     "plt.subplot(212)\n"
     "plt.plot(y[:-1]+np.diff(x)*0.5, data.sum(axis=1))\n"
     "plt.xlabel('integral y')\n"
-    "plt.show()\n", m_bwr->getFileName().c_str(), m_bwr->getFileName().c_str(), m_bwr->getFileName().c_str());
+    "plt.show()\n", bwr->getFileName().c_str(), bwr->getFileName().c_str(), bwr->getFileName().c_str());
 
+  delete bwr;
   std::ofstream outfile(filename+"_view.py");
   outfile << buffer;
   outfile.close();

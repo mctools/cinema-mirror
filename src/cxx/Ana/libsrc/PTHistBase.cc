@@ -26,15 +26,14 @@
 
 Prompt::HistBase::HistBase(const std::string &name, unsigned nbin)
 :m_name(name), m_data(nbin,0.), m_hit(nbin,0.), m_xmin(0), m_xmax(0),
- m_sumW(0), m_underflow(0), m_overflow(0),m_nbins(0), m_bwr(nullptr)
+ m_sumW(0), m_underflow(0), m_overflow(0),m_nbins(0)
 {
   auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
-  m_bwr = new BinaryWrite(m_name+"_seed"+std::to_string(seed));
+  m_mcpl_file_name = m_name+"_seed"+std::to_string(seed);
 }
 
 Prompt::HistBase::~HistBase()
 {
-  delete m_bwr;
 }
 
 
@@ -67,7 +66,6 @@ void Prompt::HistBase::merge(const Prompt::HistBase &hist)
 
 void Prompt::HistBase::scale(double scalefact)
 {
-  std::lock_guard<std::mutex> guard(m_hist_mutex);
 
   for(unsigned i=0;i<m_nbins;i++)
     m_data[i] *= scalefact;

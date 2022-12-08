@@ -27,7 +27,6 @@
 #include <stdexcept>
 #include <mutex>
 #include "PTException.hh"
-#include "PTBinaryWR.hh"
 
 namespace Prompt {
 
@@ -72,7 +71,7 @@ namespace Prompt {
     double m_underflow;
     double m_overflow;
     uint32_t m_nbins;
-    BinaryWrite *m_bwr;
+    std::string m_mcpl_file_name;
 
   private:
     //Copy/assignment are forbidden to avoid troubles

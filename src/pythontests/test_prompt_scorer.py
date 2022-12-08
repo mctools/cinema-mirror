@@ -17,7 +17,7 @@ scorertest_dict['guide'] = {'gdml': 'guide.gdml', 'mcpl': 'ScorerPSD_Monitor2_se
 for scorername in scorertest_dict:
     scorer = scorertest_dict[scorername]
     os.system('rm %s'%scorer['mcpl'])
-    os.system('prompt -g %s -s 113 -n 1e3'%scorer['gdml'])
+    os.system('prompt.py -g %s -s 113 -n 1e3' % scorer['gdml'])
     
     f = PromptFileReader(scorer['mcpl'])
     hist_weight = f.getData('content').sum()

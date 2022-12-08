@@ -1,5 +1,5 @@
-#ifndef Prompt_Scorer_hh
-#define Prompt_Scorer_hh
+#ifndef Prompt_ScorerWlSpectrum_hh
+#define Prompt_ScorerWlSpectrum_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -22,46 +22,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
-#include "PTParticle.hh"
-#include "PTHist1D.hh"
-#include "PTHist2D.hh"
+#include "PTScorer.hh"
 
 namespace Prompt {
 
-
-  class Scorer {
+  class ScorerWlSpectrum  : public Scorer1D {
   public:
-    enum class ScorerType {SURFACE, ENTRY, PROPAGATE, EXIT, ENTRY2EXIT, ABSORB};
-  public:
-    Scorer(const std::string& name, ScorerType type) : m_name(name), m_type(type) {};
-    virtual ~Scorer() {std::cout<<"Destructing Scorer " << m_name <<std::endl;};
-    const std::string &getName() { return m_name; }
-    ScorerType getType() { return m_type; }
-    virtual void score(Particle &particle) = 0;
-    virtual void save_mcpl() = 0;
-  protected:
-    const std::string m_name;
-    const ScorerType m_type;
-  };
-
-  class Scorer1D : public Scorer {
-  public:
-    Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist)
-    : Scorer(name, type), m_hist(std::move(hist)) {};
-    virtual ~Scorer1D() {  }
-    void save_mcpl() override { m_hist->save(m_name); }
-  protected:
-    std::unique_ptr<Hist1D> m_hist;
-  };
-
-  class Scorer2D : public Scorer {
-  public:
-    Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist)
-    : Scorer(name, type), m_hist(std::move(hist)) {};
-    virtual ~Scorer2D() {  }
-    void save_mcpl() override { m_hist->save(m_name); }
-  protected:
-    std::unique_ptr<Hist2D> m_hist;
+    ScorerWlSpectrum(const std::string &name, double xmin, double xmax, unsigned nxbins);
+    virtual ~ScorerWlSpectrum();
+    virtual void score(Particle &particle) override;
   };
 }
 
