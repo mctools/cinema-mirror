@@ -127,7 +127,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // PSD: position sensitive detector
 
-      int parCount = 9;
+      int parCount = 10;
 
       bool force = true;
 
@@ -138,6 +138,41 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double ymin = ptstod(cfg.find("ymin", force));
       double ymax = ptstod(cfg.find("ymax", force));
       int nybins = ptstoi(cfg.find("numBins_y", force));
+
+      Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        if(ptstateInStr=="ENTRY")
+        {
+          ptstate = Scorer::ScorerType::ENTRY;
+        }
+        else if(ptstateInStr=="ABSORB")
+        {
+          ptstate = Scorer::ScorerType::ABSORB;
+        }
+        else if(ptstateInStr=="SURFACE")
+        {
+          ptstate = Scorer::ScorerType::SURFACE;
+        }
+        else if(ptstateInStr=="PROPAGATE")
+        {
+          ptstate = Scorer::ScorerType::PROPAGATE;
+        }
+        else if(ptstateInStr=="EXIT")
+        {
+          ptstate = Scorer::ScorerType::EXIT;
+        }
+        else if(ptstateInStr=="ENTRY2EXIT")
+        {
+          ptstate = Scorer::ScorerType::ENTRY2EXIT;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "ptstate does not support" << " " << ptstateInStr);
+        }
+      }
 
       ScorerPSD::PSDType type = ScorerPSD::PSDType::XY;
       std::string typeInStr = cfg.find("type");
@@ -167,7 +202,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type PSD is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerPSD>(name, xmin, xmax, nxbins, ymin, ymax, nybins, type);
+      return std::make_shared<Prompt::ScorerPSD>(name, xmin, xmax, nxbins, ymin, ymax, nybins, ptstate,type);
     }
 
     else if(ScorDef == "ESpectrum")
