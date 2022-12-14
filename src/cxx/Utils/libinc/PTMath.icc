@@ -34,13 +34,14 @@ inline constexpr bool Prompt::floateq(double a, double b, double rtol, double at
 
 inline constexpr double Prompt::neutronEKin2k(double ekin)
 {
-  assert(ekin>=0.);
+  pt_assert(ekin>=0.);
   return std::sqrt(ekin*Unit::eV*const_eV2kk);
 }
 
 inline constexpr double Prompt::neutronAngleCosine2Q(double angle_cos, double enin_eV, double enout_eV)
 {
-  double ratio = enout_eV/enin_eV;
+  pt_assert(enin_eV!=1);
+  double ratio = enin_eV == enout_eV ? 1 : enout_eV/enin_eV;
   double k0=neutronEKin2k(enin_eV);
   double scale = sqrt(1.+ ratio - 2*angle_cos *sqrt(ratio) );
   return k0*scale;
