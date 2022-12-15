@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerNeutronSq_hh
-#define Prompt_ScorerNeutronSq_hh
+#ifndef Prompt_ScorerAngular_hh
+#define Prompt_ScorerAngular_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -22,22 +22,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
-#include "PTScorer.hh"
+#include "PTScorerNeutronSq.hh"
 
 namespace Prompt {
 
-  class ScorerNeutronSq  : public Scorer1D {
+  class ScorerAngular  : public ScorerNeutronSq {
   public:
-    ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin,
+    ScorerAngular(const std::string &name, const Vector &samplePos, const Vector &refDir,
+      double sourceSampleDist, double angle_min, double angle_max, unsigned numbin,
       ScorerType stype=Scorer::ScorerType::ENTRY, bool linear=true);
-    virtual ~ScorerNeutronSq();
+    virtual ~ScorerAngular();
     virtual void score(Particle &particle) override;
-  protected:
-    const Vector m_samplePos, m_refDir;
-    const double m_sourceSampleDist;
-    bool m_kill;
-
   };
 }
 #endif
