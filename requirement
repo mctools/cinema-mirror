@@ -4,6 +4,8 @@ numba==0.55.1
 #required packages for Prompt visualisation
 pyvista==0.34.1
 matplotlib
+tetgen #tetrahedralise function in pyvista 
+pymeshfix #reconstruct a manifold clean surface
 
 #required packages for post-analysis
 scipy
