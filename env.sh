@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 DOCKER=false
 while getopts hi:x:d option
 do

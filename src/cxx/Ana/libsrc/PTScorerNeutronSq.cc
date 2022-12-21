@@ -19,7 +19,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTScorerNeutronSq.hh"
-#include "PTRandCanonical.hh"
 
 Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool qtrue, bool linear)
@@ -41,20 +40,17 @@ Prompt::ScorerNeutronSq::~ScorerNeutronSq()
 
 void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
 {
-  if(particle.getPGD()!=2022)
+  if(particle.getPGD()!=const_proton_pgd)
     return; // for neutron only
     
   // bool m_qtrue=true; //fixme: this parameter should be defined in the constructor
-  double angle_cos = particle.getDirection().angleCos(m_refDir);
+  double angle_cos = (m_samplePos-particle.getPosition()).angleCos(m_refDir);
   if(m_qtrue)
   {
     m_hist->fill(neutronAngleCosine2Q(angle_cos,  particle.getEKin0(), particle.getEKin()), particle.getWeight());
   }
   else //static approximation
   {
-    // fixme: the angle of cosine should be calculated as which line of code?
-    // double angle_cos = (m_samplePos-particle.getPosition()).angleCos(m_refDir);
-
     double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();
     double v = dist/particle.getTime();
     double ekin = 0.5*const_neutron_mass_evc2*v*v;

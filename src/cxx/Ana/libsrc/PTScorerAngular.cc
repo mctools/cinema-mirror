@@ -1,6 +1,3 @@
-#ifndef Prompt_ScorerNeutronSq_hh
-#define Prompt_ScorerNeutronSq_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,24 +18,27 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTScorer.hh"
+#include "PTScorerAngular.hh"
 
-namespace Prompt {
-
-  class ScorerNeutronSq  : public Scorer1D {
-  public:
-    ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin,
-      ScorerType stype=Scorer::ScorerType::ENTRY, bool qtrue=true, bool linear=true);
-    virtual ~ScorerNeutronSq();
-    virtual void score(Particle &particle) override;
-  protected:
-    const Vector m_samplePos, m_refDir;
-    const double m_sourceSampleDist;
-    bool m_kill;
-    bool m_qtrue;
-
-  };
+Prompt::ScorerAngular::ScorerAngular(const std::string &name, const Vector &samplePos, const Vector &refDir,
+      double sourceSampleDist, double angle_min, double angle_max, unsigned numbin, ScorerType stype, bool linear)
+:ScorerNeutronSq(name, samplePos, refDir, sourceSampleDist, angle_min, angle_max, numbin, stype, linear )
+{
+  if(angle_max>180 || angle_min<0 || angle_min>=angle_max)
+    PROMPT_THROW2(BadInput, "angular range should be within 0 to 180 degrees" )
 }
-#endif
+
+Prompt::ScorerAngular::~ScorerAngular()
+{
+}
+
+
+void Prompt::ScorerAngular::score(Prompt::Particle &particle)
+{
+    
+  double angle_cos = (m_samplePos-particle.getPosition()).angleCos(m_refDir);
+  m_hist->fill(std::acos(angle_cos)*const_rad2deg, particle.getWeight());
+
+  if(m_kill)
+    particle.kill(Particle::KillType::SCORE);
+}

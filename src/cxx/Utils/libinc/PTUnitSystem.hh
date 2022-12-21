@@ -48,11 +48,14 @@ namespace Prompt {
     constexpr double g = 1.;
     constexpr double kg = 1.e3*g;
     constexpr double kelvin = 1.;
+
   }
 
   constexpr int const_neutron_pgd = 2112;
   constexpr int const_proton_pgd = 2212;
   constexpr double const_deg2rad = M_PI/180;
+  constexpr double const_rad2deg = 180/M_PI;
+
 
   constexpr double const_eV2kk = 1.0/2.072124652399821e-3;
 
