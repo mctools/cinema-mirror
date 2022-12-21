@@ -43,11 +43,10 @@ void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
   if(particle.getPGD()!=const_neutron_pgd)
     return; // for neutron only
     
-  // bool m_qtrue=true; //fixme: this parameter should be defined in the constructor
-  double angle_cos = (m_samplePos-particle.getPosition()).angleCos(m_refDir);
+  double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
   if(m_qtrue)
   {
-    m_hist->fill(neutronAngleCosine2Q(angle_cos,  particle.getEKin0(), particle.getEKin()), particle.getWeight());
+    m_hist->fill(neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin()), particle.getWeight());
   }
   else //static approximation
   {
