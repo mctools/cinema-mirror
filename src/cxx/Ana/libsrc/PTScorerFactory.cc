@@ -64,7 +64,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // where type can be ENTRY(default) or ABSORB, the default value for linear is yes
 
 
-      int parCount = 10;
+      int parCount = 11;
 
       // The mandatory parameters
       bool force = true;
@@ -78,6 +78,24 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
 
       // the optional parameters
+      bool qtrue = true;
+      std::string qtrueInStr = cfg.find("Qtrue");
+      if(qtrueInStr.empty())
+        parCount--;
+      else
+      {
+        if(qtrueInStr=="yes")
+        {
+          qtrue = true;
+        }
+        else if(qtrueInStr=="no")
+          qtrue = false;
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"Qtrue\" should either be \"yes\" or \"no\"");
+        }
+
+      }
+
       Scorer::ScorerType type = Scorer::ScorerType::ENTRY;
       std::string typeInStr = cfg.find("type");
       if(typeInStr.empty())
@@ -120,7 +138,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type NeutronSq is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, type, linear);
+      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, type, qtrue, linear);
     }
 
     else if(ScorDef == "PSD")
