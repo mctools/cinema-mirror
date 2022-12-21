@@ -40,7 +40,7 @@ Prompt::ScorerNeutronSq::~ScorerNeutronSq()
 
 void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
 {
-  if(particle.getPGD()!=const_proton_pgd)
+  if(particle.getPGD()!=const_neutron_pgd)
     return; // for neutron only
     
   // bool m_qtrue=true; //fixme: this parameter should be defined in the constructor
