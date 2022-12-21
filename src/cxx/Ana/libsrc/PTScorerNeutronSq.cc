@@ -22,9 +22,9 @@
 #include "PTRandCanonical.hh"
 
 Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool linear)
-:Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>("ScorerNeutronSq_" + name, qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir),
-m_sourceSampleDist(sourceSampleDist)
+      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool qtrue, bool linear)
+:Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>("ScorerNeutronSq_" + name, qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir), 
+m_sourceSampleDist(sourceSampleDist), m_qtrue(qtrue)
 {
   if(stype==Scorer::ScorerType::ENTRY)
     m_kill=true;
@@ -44,7 +44,7 @@ void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
   if(particle.getPGD()!=2022)
     return; // for neutron only
     
-  bool m_qtrue=true; //fixme: this parameter should be defined in the constructor
+  // bool m_qtrue=true; //fixme: this parameter should be defined in the constructor
   double angle_cos = particle.getDirection().angleCos(m_refDir);
   if(m_qtrue)
   {
