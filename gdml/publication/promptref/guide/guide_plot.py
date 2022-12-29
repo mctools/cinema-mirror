@@ -37,14 +37,15 @@ plt.subplot(111)
 pixel_width = 0.0035 #in m, 70mm against 20 pixels
 
 incidentNum = PromptFileReader('ScorerPSD_Monitor1_seed4096.mcpl.gz').getData('content').sum()
-plt.plot(x[:-1]+np.diff(x)*0.5, data.sum(axis=0)/incidentNum/pixel_width, label='Promt')
+x=(x[:-1]+np.diff(x)*0.5)*1e-3
+plt.plot(x, data.sum(axis=0)/incidentNum/pixel_width, label='Promt')
 
 mcstas_monitor1_flux = (np.loadtxt('Monitor1_xt_1672190448.x_y')[:20,:]).sum()
 
-plt.plot(x[:-1]+np.diff(x)*0.5, mcstas_data.sum(axis=0)/mcstas_monitor1_flux/pixel_width, 'o', label='McStas')
+plt.plot(x, mcstas_data.sum(axis=0)/mcstas_monitor1_flux/pixel_width, 'o', label='McStas')
 plt.legend()
-plt.xlabel(r'Integral intensity $\int f(x,y) \mathrm{d}x$, m')
-plt.ylabel(r'Weight, n$^{-1}$ m$^{-1}$')
+plt.xlabel(r'y, m')
+plt.ylabel(r'Intensity $\int f(x,y) \mathrm{d}x$, n$^{-1}$ m$^{-1}$')
 
 plt.tight_layout()
 

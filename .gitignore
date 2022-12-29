@@ -5,6 +5,7 @@ __pycache__
 cinemabin
 external
 rundir
+docs
 
 # Prerequisites
 *.d
