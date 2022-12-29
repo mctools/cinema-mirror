@@ -11,19 +11,20 @@ class GdmlElement():
     '''
     
     '''
-    def __init__(self):
+    def __init__(self, world_size = [100.0, 100.0, 100.0]):
         
+        self.solid_counter = 0
         self.gdml = etree.Element('gdml')
         self.userinfo = etree.SubElement(self.gdml, 'userinfo')
         self.materials = etree.SubElement(self.gdml, 'materials')
         self.define = etree.SubElement(self.gdml, 'define')
         self.solids = etree.SubElement(self.gdml, 'solids')
         self.structure = etree.SubElement(self.gdml, 'structure')
-        self.set_world()
+        self.__set_world(world_size)
 
-    def set_world(self, xyz = [100.0, 100.0, 100.0], type = 'box'):
+    def __set_world(self, xyz):
 
-        sol_world = etree.SubElement(self.solids, type)
+        sol_world = etree.SubElement(self.solids, 'box')
         sol_world.set('lunit', 'mm')
         sol_world.set('name', 'sol_world')
         sol_world.set('x', f'{xyz[0]}')
@@ -38,7 +39,7 @@ class GdmlElement():
         self.setup_world.set('ref', f'vol_{sol_world.get("name")}')
         self.structure.append(self.world_vol)
 
-    def set_position(self, name, xyz = [], element = None):
+    def set_position(self, name, xyz = [0.0, 0.0, 0.0], element = None):
 
         position = etree.Element('position')
         position.set('name', name)
@@ -51,9 +52,20 @@ class GdmlElement():
             element.append(position)
         else:
             raise TypeError('Setting position subelement failed. Please check element.')
-            
+    
+    def set_rotation(self, name, xyz = [0.0, 0.0, 0.0], unit = 'deg'):
+
+        rot = etree.Element('rotation')
+        rot.set('name', name)
+        rot.set('x', f'{xyz[0]}')
+        rot.set('y', f'{xyz[1]}')
+        rot.set('z', f'{xyz[2]}')
+        rot.set('unit', str(unit))
+        self.define.append(rot)
+
     def set_tetrahedron(self, cells, coordinates):
         
+        self.solid_counter = self.solid_counter + 1
         from copy import deepcopy
         
         i_cell = 0
@@ -66,10 +78,10 @@ class GdmlElement():
                 self.set_position(f'cell{i_cell}_vertex{i_point}', coordinates[point])
             tetrahedron = etree.Element('tet')
             tetrahedron.set('name', f'cell{i_cell}')
-            tetrahedron.set('vertex1', f'cell{i_cell}_v1')
-            tetrahedron.set('vertex2', f'cell{i_cell}_v2')
-            tetrahedron.set('vertex3', f'cell{i_cell}_v3')
-            tetrahedron.set('vertex4', f'cell{i_cell}_v4')
+            tetrahedron.set('vertex1', f'cell{i_cell}_vertex1')
+            tetrahedron.set('vertex2', f'cell{i_cell}_vertex2')
+            tetrahedron.set('vertex3', f'cell{i_cell}_vertex3')
+            tetrahedron.set('vertex4', f'cell{i_cell}_vertex4')
             self.solids.append(tetrahedron)
             sol.append(deepcopy(tetrahedron))
         return sol
@@ -104,58 +116,59 @@ class GdmlElement():
         atom.set('value', value)
         self.materials.append(mat)
 
-    def set_physical(self, sol, position = [0.0, 0.0, 0.0], parent = None):
+    def set_physical(self, sol, position, rotation, parent = None):
 
         if not sol:
             iterator = self.solids.iterchildren(tag=etree.Element)
         else:
             iterator = sol.iterchildren(tag=etree.Element)
 
+        self.set_position(f'p_sol_{self.solid_counter}', xyz=position)
+        self.set_rotation(f'r_sol_{self.solid_counter}', xyz=rotation)
         for child in iterator:
             pVol = etree.Element('physvol')
             volRef = etree.SubElement(pVol, 'volumeref')
             volRef.set('ref', f'vol_{child.get("name")}')
-            positionVol = etree.SubElement(pVol, 'position')
-            positionVol.set('name', f'p_{child.get("name")}')
-            positionVol.set('unit', 'mm')
-            positionVol.set('x', f'{position[0]}')
-            positionVol.set('y', f'{position[1]}')
-            positionVol.set('z', f'{position[2]}')
+            positionVol = etree.SubElement(pVol, 'positionref')
+            positionVol.set('ref', f'p_sol_{self.solid_counter}')
+            rotationVol = etree.SubElement(pVol, 'rotationref')
+            rotationVol.set('ref', f'r_sol_{self.solid_counter}')
         
             if not parent:
                 self.world_vol.append(pVol)
             else:
                 parent.append(pVol)
     
-    def export_gdml(self):
+    def export_gdml(self, file = 'user.gdml'):
 
         self.sort_before_export()
         output = etree.tostring(self.gdml, pretty_print=True)
-        with open('user.gdml', 'wb') as file:
+        with open(file, 'wb') as file:
             file.write(output)
 
     def sort_before_export(self):
 
         if self.structure[0].get('name') == "vol_sol_world":
-            self.structure[-1] = self.structure[0]
+            self.structure.append(self.structure[0])
 
 
 pv.set_plot_theme('document')
 
-bunny = pv.read('../../files/bunny/reconstruction/bun_zipper_res4.ply')
+bunny = pv.read('../../files/bunny/reconstruction/bun_zipper_res3.ply')
 # bunny.plot()
 tet = tetgen.TetGen(bunny)
 tet.make_manifold()
 tet.tetrahedralize(order=1, mindihedral=20, minratio=1.5)
 grid = tet.grid #grid is of UnstructuredGrid type
-exploded = grid.explode() # explode view
-# exploded.plot(show_axes=True)
+# grid = grid.explode() # explode view
+grid.plot(show_axes=True)
 
 # pter = pv.Plotter()
-# pter.add_mesh(grid, style='wireframe', opacity=0.5)
+# pter.add_mesh(grid)
+# pter.show_axes()
 # pter.add_mesh(exploded, show_edges=True)
+# pter.save_graphic('rabbit.svg', title='Stanford Bunny')
 # pter.show()
-
 
 # celltypes``VTK_TETRA = 10``
 # See   https://vtk.org/doc/nightly/html/vtkCellType_8h_source.html
@@ -171,18 +184,18 @@ connectivity=connectivity.reshape(grid.n_cells,-1)
 #now the "connectivity" is a numpy array with size [n_cells, 4]
 # print(grid.n_cells)
 # XML processor
-Gdml = GdmlElement()
+Gdml = GdmlElement([1.0, 1.0, 60.0])
 Solid = Gdml.set_tetrahedron(connectivity, points)
 Gdml.set_material('Vacuum', 'vacuum.ncmat')
 Gdml.set_material('B', 'B4C.ncmat')
 Gdml.set_logical('B', Solid)
-Gdml.set_physical(Solid)
-Gdml.export_gdml()
+Gdml.set_physical(Solid, position=[0.025, -0.1, 29.0], rotation=[0.0, 180.0, 0.0])
+Gdml.export_gdml('res3.gdml')
 
 # for pointsid in connectivity:
 #     c_cell = c_cell + 1
 #     print(f'There should be 4 points for cell {c_cell}, they are {points[pointsid[0]]} {points[pointsid[1]]} {points[pointsid[2]]} {points[pointsid[3]]}')
 
 print(
-    'The following sections should be worked out manually:\n - materials\n - userinfo\n - setup\n'
+    'The following sections should be worked out manually:\n - gun\n - scorer\n'
 )
