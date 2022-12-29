@@ -1,5 +1,4 @@
-#import pyvista as pv
-#mesh = pv.read('reconstruction/bun_zipper.ply')
+!/usr/bin/env python3
 
 
 import pyvista as pv
