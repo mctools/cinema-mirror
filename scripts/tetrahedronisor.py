@@ -70,18 +70,18 @@ class GdmlElement():
         
         i_cell = 0
         sol = etree.Element('solids')
+        for point in range(len(coordinates)):
+            self.set_position(f'point{point + 1}', coordinates[point])
+
         for cell in cells:
             i_cell = i_cell + 1
             i_point = 0
-            for point in cell:
-                i_point = i_point + 1
-                self.set_position(f'cell{i_cell}_vertex{i_point}', coordinates[point])
             tetrahedron = etree.Element('tet')
             tetrahedron.set('name', f'cell{i_cell}')
-            tetrahedron.set('vertex1', f'cell{i_cell}_vertex1')
-            tetrahedron.set('vertex2', f'cell{i_cell}_vertex2')
-            tetrahedron.set('vertex3', f'cell{i_cell}_vertex3')
-            tetrahedron.set('vertex4', f'cell{i_cell}_vertex4')
+            for point in cell:
+                i_point = i_point + 1
+                tetrahedron.set(f'vertex{i_point}', f'point{point}')
+
             self.solids.append(tetrahedron)
             sol.append(deepcopy(tetrahedron))
         return sol
@@ -154,14 +154,14 @@ class GdmlElement():
 
 pv.set_plot_theme('document')
 
-bunny = pv.read('../../files/bunny/reconstruction/bun_zipper_res3.ply')
+bunny = pv.read('../../files/bunny/reconstruction/bun_zipper_res2.ply')
 # bunny.plot()
 tet = tetgen.TetGen(bunny)
 tet.make_manifold()
 tet.tetrahedralize(order=1, mindihedral=20, minratio=1.5)
 grid = tet.grid #grid is of UnstructuredGrid type
 # grid = grid.explode() # explode view
-grid.plot(show_axes=True)
+# grid.plot(show_axes=True)
 
 # pter = pv.Plotter()
 # pter.add_mesh(grid)
@@ -190,7 +190,7 @@ Gdml.set_material('Vacuum', 'vacuum.ncmat')
 Gdml.set_material('B', 'B4C.ncmat')
 Gdml.set_logical('B', Solid)
 Gdml.set_physical(Solid, position=[0.025, -0.1, 29.0], rotation=[0.0, 180.0, 0.0])
-Gdml.export_gdml('res3.gdml')
+Gdml.export_gdml('res2.gdml')
 
 # for pointsid in connectivity:
 #     c_cell = c_cell + 1
