@@ -26,26 +26,12 @@ Prompt::MirrorPhyiscs::MirrorPhyiscs(double mvalue, double weightCut)
 {
   std::cout << "constructor mirror physics " << std::endl;
   //parameters sync with mcastas 2.7 guide component default value
-  double m_i=mvalue;
-  double R0=0.99;
-  double Qc=0.0219;
-  double alpha=6.07;
-  double W=0.003;
-  unsigned q_arr_size=1000;
-  double q_max = 10;
-  std::vector<double> q(q_arr_size);
-  std::vector<double> r(q_arr_size);
-
-  for(unsigned i=0;i<q_arr_size;i++)
-  {
-    q[i]=i*(q_max/q_arr_size);
-    if(q[i]<Qc)
-      r[i]=R0;
-    else
-      r[i]=0.5*R0*(1-tanh(( q[i]-m_i*Qc)/W))*(1-alpha*( q[i]-Qc));
-  }
-  m_table = std::make_shared<LookUpTable>(q, r, LookUpTable::kConst_Zero);
-  std::cout << "constructor mirror physics completed" << std::endl;
+  m_m=mvalue;
+  m_R0=0.99;
+  m_Qc=0.0219;
+  m_alpha=6.07;
+  m_W=0.003;
+  m_i_W=1/0.003;
 }
 
 void Prompt::MirrorPhyiscs::sampleFinalState(Prompt::Particle &particle) const
@@ -58,7 +44,7 @@ void Prompt::MirrorPhyiscs::sampleFinalState(Prompt::Particle &particle) const
   particle.setDirection(newDir);
 
   double Q = neutronAngleCosine2Q(angleCos, ekin, ekin); // elastic reflection
-  m_wAtQ =  m_table->get(Q);
+  m_wAtQ = Q<m_Qc ? m_R0 : 0.5*m_R0*(1-tanh(( Q-m_m*m_Qc)*m_i_W))*(1-m_alpha*( Q-m_Qc));
 
   // std::cout << "Q " << Q << " scale " << scaleWeight << std::endl;
   if(m_wcut > m_wAtQ)

@@ -9,7 +9,6 @@
 
     <define>
         <position name="Monitor1Pos" x="0" y="0" z="1000.0" />
-        <position name="GuidePos" x="0" y="0" z="1600.0" />
         <position name="Monitor2Pos" x="0" y="0" z="3100.0" />
     </define>
 
@@ -25,22 +24,33 @@
 
     <solids>
         <box name="WorldBox" x="70.0" y="70" z="7000.0" lunit="mm"/>
-        <box name="Guider1_outer" z="1000" y="53" x="53" lunit="mm"/>
+        <!-- <box name="Guider1_outer" z="1000" y="53" x="53" lunit="mm"/>
         <box name="Guider1_inner" z="1000" y="50" x="50" lunit="mm"/>
         <subtraction name="Guider1">
             <first ref="Guider1_outer"/>
             <second ref="Guider1_inner"/>
-        </subtraction>
+        </subtraction> -->
+
+        <box name="Guider_piece1" z="1000" y="50" x="3" lunit="mm"/>
+        <box name="Guider_piece2" z="1000" y="3" x="50" lunit="mm"/>
+
         <box name="Monitor1Solid" x="50" y="50" z="0.00001" />
         <box name="Monitor2Solid" x="70" y="70" z="0.00001" />
     </solids>
 
     <structure>
         <volume name="LV_Guider1">
-            <solidref ref="Guider1"/>
+            <solidref ref="Guider_piece1"/>
             <materialref ref="Cd"/>
             <auxiliary auxtype="BoundaryPhysics" auxvalue="physics=MirrorPhyiscs;m=1.0"/>
         </volume>
+
+        <volume name="LV_Guider2">
+            <solidref ref="Guider_piece2"/>
+            <materialref ref="Cd"/>
+            <auxiliary auxtype="BoundaryPhysics" auxvalue="physics=MirrorPhyiscs;m=1.0"/>
+        </volume>
+
 
         <volume name="logMonitor1">
             <solidref ref="Monitor1Solid"/>
@@ -60,11 +70,31 @@
             <solidref ref="WorldBox"/>
             <materialref ref="Vaccum"/>
 
-            <physvol name="Guider_1">
+            <!-- <physvol name="Guider_1">
                 <volumeref ref="LV_Guider1"/>
                 <positionref ref="GuidePos"/>
+            </physvol> -->
+
+            <physvol name="Guider_1_1">
+                <volumeref ref="LV_Guider1"/>
+                <position name="GuidePos1" x="26.5" y="0" z="1600.0"/>
             </physvol>
 
+            <physvol name="Guider_1_2">
+                <volumeref ref="LV_Guider1"/>
+                <position name="GuidePos2" x="-26.5" y="0" z="1600.0"/>
+            </physvol>
+
+            <physvol name="Guider_2_1">
+                <volumeref ref="LV_Guider2"/>
+                <position name="GuidePos3" x="0" y="26.5" z="1600.0"/>
+            </physvol>
+
+            <physvol name="Guider_2_2">
+                <volumeref ref="LV_Guider2"/>
+                <position name="GuidePos4" x="0" y="-26.5" z="1600.0"/>
+            </physvol>
+            
             <physvol name="Monitor1">
                 <volumeref ref="logMonitor1"/>
                 <positionref ref="Monitor1Pos"/>
@@ -80,5 +110,6 @@
 
     <setup name="Default" version="1.0">
         <world ref="worldVOL"/>
+        <positionref ref="Monitor2Pos"/>
     </setup>
 </gdml>

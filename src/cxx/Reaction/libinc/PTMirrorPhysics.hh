@@ -24,7 +24,6 @@
 #include <string>
 
 #include "PromptCore.hh"
-#include "PTLookUpTable.hh"
 #include "PTBoundaryPhysics.hh"
 
 namespace Prompt {
@@ -38,9 +37,9 @@ namespace Prompt {
       void setReflectionNormal(const Vector &nor) {m_refNorm=nor;}
 
     private:
+      double m_m, m_R0, m_Qc, m_alpha, m_W, m_i_W;
       const double m_wcut;
       mutable double m_wAtQ;
-      std::shared_ptr<LookUpTable> m_table;
       Vector m_refNorm;
 
   };
