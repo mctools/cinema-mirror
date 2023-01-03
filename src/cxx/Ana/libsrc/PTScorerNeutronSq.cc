@@ -42,7 +42,7 @@ void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
 {
   if(particle.getPGD()!=const_neutron_pgd)
     return; // for neutron only
-    
+  
   double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
   if(m_qtrue)
   {
