@@ -1,4 +1,4 @@
-!/usr/bin/env python3
+#!/usr/bin/env python3
 
 
 import pyvista as pv
@@ -153,7 +153,7 @@ class GdmlElement():
 
 pv.set_plot_theme('document')
 
-bunny = pv.read('../../files/bunny/reconstruction/bun_zipper_res2.ply')
+bunny = pv.read('../../files/bunny/reconstruction/bun_zipper.ply')
 # bunny.plot()
 tet = tetgen.TetGen(bunny)
 tet.make_manifold()
@@ -189,7 +189,7 @@ Gdml.set_material('Vacuum', 'vacuum.ncmat')
 Gdml.set_material('B', 'B4C.ncmat')
 Gdml.set_logical('B', Solid)
 Gdml.set_physical(Solid, position=[0.025, -0.1, 29.0], rotation=[0.0, 180.0, 0.0])
-Gdml.export_gdml('res2.gdml')
+Gdml.export_gdml('res1.gdml')
 
 # for pointsid in connectivity:
 #     c_cell = c_cell + 1
