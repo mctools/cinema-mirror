@@ -64,7 +64,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // where type can be ENTRY(default) or ABSORB, the default value for linear is yes
 
 
-      int parCount = 11;
+      int parCount = 12;
 
       // The mandatory parameters
       bool force = true;
@@ -75,6 +75,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double minQ = ptstod(cfg.find("Qmin", force));
       double maxQ = ptstod(cfg.find("Qmax", force));
       int numBin = ptstoi(cfg.find("numbin", force));
+      
 
 
       // the optional parameters
@@ -94,6 +95,21 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
           PROMPT_THROW2(BadInput, "The value for \"Qtrue\" should either be \"yes\" or \"no\"");
         }
 
+      }
+
+      int scatnum = -1;
+      if(cfg.find("scatnum")=="") 
+        parCount--;
+      else
+      {
+        int scatnumInInt = ptstoi(cfg.find("scatnum"));
+        if(scatnumInInt>=-1 )
+        {
+          scatnum = scatnumInInt;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"scatnum\" should an integer greater than or equal to -1");
+        }
       }
 
       Scorer::ScorerType type = Scorer::ScorerType::ENTRY;
@@ -138,7 +154,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type NeutronSq is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, type, qtrue, linear);
+      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, type, qtrue, scatnum, linear);
     }
 
     else if(ScorDef == "PSD")
