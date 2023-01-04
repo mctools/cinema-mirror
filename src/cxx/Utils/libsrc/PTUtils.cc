@@ -59,7 +59,7 @@ int Prompt::ptstoi(const std::string& text)
   catch(...)
   {
     // std::invalid_argument, std::out_of_range
-    PROMPT_THROW2(BadInput, "ptstod filed to a int from the input string " << text);
+    PROMPT_THROW2(BadInput, "ptstod failed to convert an int from the input string " << text);
   }
 }
 
