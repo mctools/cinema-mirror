@@ -112,22 +112,22 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         }
       }
 
-      Scorer::ScorerType type = Scorer::ScorerType::ENTRY;
-      std::string typeInStr = cfg.find("type");
-      if(typeInStr.empty())
+      Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
         parCount--;
       else
       {
-        if(typeInStr=="ENTRY")
+        if(ptstateInStr=="ENTRY")
         {
-          type = Scorer::ScorerType::ENTRY;
+          ptstate = Scorer::ScorerType::ENTRY;
         }
-        else if(typeInStr=="ABSORB")
+        else if(ptstateInStr=="ABSORB")
         {
-          type = Scorer::ScorerType::ABSORB;
+          ptstate = Scorer::ScorerType::ABSORB;
         }
         else {
-          PROMPT_THROW(BadInput, "Scorer type can only be ENTRY or ABSORB" );
+          PROMPT_THROW(BadInput, "ptstate can only be ENTRY or ABSORB" );
         }
       }
 
@@ -154,7 +154,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type NeutronSq is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, type, qtrue, scatnum, linear);
+      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, ptstate, qtrue, scatnum, linear);
     }
 
     else if(ScorDef == "PSD")
