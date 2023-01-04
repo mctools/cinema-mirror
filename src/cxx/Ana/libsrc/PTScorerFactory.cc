@@ -309,10 +309,10 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // MultiScat: multiple scattering
       // example cfg
-      // ""Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; linear=yes""
+      // ""Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; ptstate=PROPAGATE; linear=yes""
       // the default value for linear is yes
 
-      int parCount = 5;
+      int parCount = 6;
 
       // The mandatory parameters
       bool force = true;
@@ -322,6 +322,40 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       int numBin = maxNumber-minNumber+1;
 
       // the optional parameters
+      Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        if(ptstateInStr=="ENTRY")
+        {
+          ptstate = Scorer::ScorerType::ENTRY;
+        }
+        else if(ptstateInStr=="ABSORB")
+        {
+          ptstate = Scorer::ScorerType::ABSORB;
+        }
+        else if(ptstateInStr=="SURFACE")
+        {
+          ptstate = Scorer::ScorerType::SURFACE;
+        }
+        else if(ptstateInStr=="PROPAGATE")
+        {
+          ptstate = Scorer::ScorerType::PROPAGATE;
+        }
+        else if(ptstateInStr=="EXIT")
+        {
+          ptstate = Scorer::ScorerType::EXIT;
+        }
+        else if(ptstateInStr=="ENTRY2EXIT")
+        {
+          ptstate = Scorer::ScorerType::ENTRY2EXIT;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "ptstate does not support" << " " << ptstateInStr);
+        }
+      }
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
       if(linearInStr.empty())
@@ -344,7 +378,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type MultiScat is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerMultiScat>(name, minNumber-0.5, maxNumber+0.5, numBin, linear);
+      return std::make_shared<ScorerMultiScat>(name, minNumber-0.5, maxNumber+0.5, numBin, ptstate, linear);
     }
     else if(ScorDef == "VolFlux")
     {
