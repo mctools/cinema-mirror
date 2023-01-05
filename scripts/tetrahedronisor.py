@@ -42,9 +42,9 @@ class GdmlElement():
 
         position = etree.Element('position')
         position.set('name', name)
-        position.set('x', f'{xyz[0]}')
-        position.set('y', f'{xyz[1]}')
-        position.set('z', f'{xyz[2]}')
+        position.set('x', f'{"%.6f"%xyz[0]}')
+        position.set('y', f'{"%.6f"%xyz[1]}')
+        position.set('z', f'{"%.6f"%xyz[2]}')
         if not element:
             self.define.append(position)
         elif isinstance(element, etree.Element):
@@ -79,7 +79,7 @@ class GdmlElement():
             tetrahedron.set('name', f'cell{i_cell}')
             for point in cell:
                 i_point = i_point + 1
-                tetrahedron.set(f'vertex{i_point}', f'point{point}')
+                tetrahedron.set(f'vertex{i_point}', f'point{point+1}')
 
             self.solids.append(tetrahedron)
             sol.append(deepcopy(tetrahedron))
@@ -150,6 +150,11 @@ class GdmlElement():
         if self.structure[0].get('name') == "vol_sol_world":
             self.structure.append(self.structure[0])
 
+# def closest_pair_naive(points):
+
+#     import numpy as np
+#     points = np.array(points)
+#     points
 
 pv.set_plot_theme('document')
 
@@ -157,7 +162,7 @@ bunny = pv.read('../../files/bunny/reconstruction/bun_zipper.ply')
 # bunny.plot()
 tet = tetgen.TetGen(bunny)
 tet.make_manifold()
-tet.tetrahedralize(order=1, mindihedral=20, minratio=1.5)
+tet.tetrahedralize(order=1, mindihedral=40, minratio=1.5)
 grid = tet.grid #grid is of UnstructuredGrid type
 # grid = grid.explode() # explode view
 # grid.plot(show_axes=True)
@@ -188,7 +193,7 @@ Solid = Gdml.set_tetrahedron(connectivity, points)
 Gdml.set_material('Vacuum', 'vacuum.ncmat')
 Gdml.set_material('B', 'B4C.ncmat')
 Gdml.set_logical('B', Solid)
-Gdml.set_physical(Solid, position=[0.025, -0.1, 29.0], rotation=[0.0, 180.0, 0.0])
+Gdml.set_physical(Solid, position=[0.0, -0.1, 29.0], rotation=[0.0, 180.0, 0.0])
 Gdml.export_gdml('res1.gdml')
 
 # for pointsid in connectivity:
