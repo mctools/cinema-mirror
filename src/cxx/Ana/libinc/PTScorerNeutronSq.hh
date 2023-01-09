@@ -32,7 +32,6 @@ namespace Prompt {
       double sourceSampleDist, double qmin, double qmax, unsigned numbin,
       ScorerType stype=Scorer::ScorerType::ENTRY, bool qtrue=true, int scatnum=-1, bool linear=true);
     virtual ~ScorerNeutronSq();
-    virtual void qtruehist(Particle &particle);
     virtual void score(Particle &particle) override;
   protected:
     const Vector m_samplePos, m_refDir;

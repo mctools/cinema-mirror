@@ -37,71 +37,26 @@ Prompt::ScorerNeutronSq::~ScorerNeutronSq()
 {
 }
 
-void Prompt::ScorerNeutronSq::qtruehist(Prompt::Particle &particle)
-{
-  double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
-  if(m_qtrue)
-    m_hist->fill(neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin()), particle.getWeight());
-  else //static approximation
-  {
-    double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();
-    double v = dist/particle.getTime();
-    double ekin = 0.5*const_neutron_mass_evc2*v*v;
-    double q = neutronAngleCosine2Q(angle_cos, ekin, ekin);
-    m_hist->fill(q, particle.getWeight());
-  }
-}
-
 void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
 {
   if(particle.getPGD()!=const_neutron_pgd)
     return; // for neutron only
-
-  if(m_scatnum==-1)
-    qtruehist(particle);
-  else if (m_scatnum>-1)
+  
+  if(m_scatnum==-1||particle.getNumScat()==m_scatnum)
   {
-    if(particle.getNumScat()==m_scatnum)
-      qtruehist(particle);
+    double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
+    if(m_qtrue)
+      m_hist->fill(neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin()), particle.getWeight()); 
+    else //static approximation
+    {
+      double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();
+      double v = dist/particle.getTime();
+      double ekin = 0.5*const_neutron_mass_evc2*v*v;
+      double q = neutronAngleCosine2Q(angle_cos, ekin, ekin);
+      m_hist->fill(q, particle.getWeight());
+    }
   }
-
+  
   if(m_kill)
     particle.kill(Particle::KillType::SCORE);
 }
-
-
-
-// void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
-// {
-//   if(particle.getPGD()!=const_neutron_pgd)
-//     return; // for neutron only
-  
-//   double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
-//   if(m_qtrue)
-//   {
-//     if(m_scatnum==-1)
-//       m_hist->fill(neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin()), particle.getWeight());
-//     else if (m_scatnum>-1)
-//     {
-//       if(particle.getNumScat()==m_scatnum)
-//        m_hist->fill(neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin()), particle.getWeight());
-//     }
-//   }
-//   else //static approximation
-//   {
-//     double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();
-//     double v = dist/particle.getTime();
-//     double ekin = 0.5*const_neutron_mass_evc2*v*v;
-//     double q = neutronAngleCosine2Q(angle_cos, ekin, ekin);
-//     if(m_scatnum==-1)
-//       m_hist->fill(q, particle.getWeight());
-//     else if (m_scatnum>-1)
-//     {
-//       if(particle.getNumScat()==m_scatnum)
-//        m_hist->fill(q, particle.getWeight());
-//     }
-//   }
-
-//   if(m_kill)
-//     particle.kill(Particle::KillType::SCORE);
-// }
