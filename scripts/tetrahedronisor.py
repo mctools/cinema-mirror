@@ -5,6 +5,7 @@ import pyvista as pv
 import tetgen
 import numpy as np
 from lxml import etree
+from copy import deepcopy
 
 class GdmlElement():
     '''
@@ -24,7 +25,7 @@ class GdmlElement():
     def __set_world(self, xyz):
 
         sol_world = etree.SubElement(self.solids, 'box')
-        sol_world.set('lunit', 'mm')
+        sol_world.set('lunit', 'm')
         sol_world.set('name', 'sol_world')
         sol_world.set('x', f'{xyz[0]}')
         sol_world.set('y', f'{xyz[1]}')
@@ -45,6 +46,7 @@ class GdmlElement():
         position.set('x', f'{xyz[0]}')
         position.set('y', f'{xyz[1]}')
         position.set('z', f'{xyz[2]}')
+        position.set('unit', 'm')
         if not element:
             self.define.append(position)
         elif isinstance(element, etree.Element):
@@ -65,12 +67,11 @@ class GdmlElement():
     def set_tetrahedron(self, cells, coordinates):
         
         self.solid_counter = self.solid_counter + 1
-        from copy import deepcopy
         
         i_cell = 0
         sol = etree.Element('solids')
-        for point in range(len(coordinates)):
-            self.set_position(f'point{point + 1}', coordinates[point])
+        for p in range(len(coordinates)):
+            self.set_position(f'point{p + 1}', coordinates[p])
 
         for cell in cells:
             i_cell = i_cell + 1
@@ -79,20 +80,21 @@ class GdmlElement():
             tetrahedron.set('name', f'cell{i_cell}')
             for point in cell:
                 i_point = i_point + 1
-                tetrahedron.set(f'vertex{i_point}', f'point{point}')
+                tetrahedron.set(f'vertex{i_point}', f'point{point + 1}')
 
             self.solids.append(tetrahedron)
             sol.append(deepcopy(tetrahedron))
         return sol
 
-    def set_logical(self, mat_name, sol = None, return_vol = False):
+    def set_logical(self, mat_name, sol = None, scorer = False,  return_vol = False):
 
         if not sol:
             iterator = self.solids.iterchildren(tag=etree.Element)
         else:
             iterator = sol.iterchildren(tag=etree.Element)
-
+        
         for sol in iterator:
+
             vol = etree.Element('volume')
             vol.set('name', f'vol_{sol.get("name")}')
 
@@ -101,6 +103,8 @@ class GdmlElement():
 
             mat = etree.SubElement(vol, 'materialref')
             mat.set('ref', mat_name)
+            if scorer:
+                Gdml.set_scorer(vol)
 
             if return_vol:
                 return vol
@@ -115,7 +119,7 @@ class GdmlElement():
         atom.set('value', value)
         self.materials.append(mat)
 
-    def set_physical(self, sol, position, rotation, parent = None):
+    def set_physical(self, sol, position, rotation = [0,0,0], parent = None):
 
         if not sol:
             iterator = self.solids.iterchildren(tag=etree.Element)
@@ -150,14 +154,45 @@ class GdmlElement():
         if self.structure[0].get('name') == "vol_sol_world":
             self.structure.append(self.structure[0])
 
+    def set_gun(self):
+
+        gun = etree.SubElement(self.userinfo, 'auxiliary')
+        gun.set('auxtype', 'PrimaryGun')
+        gun.set('auxvalue', 'gun=MaxwellianGun;moderator_width_x=300;moderator_height_y=200;moderator_positon_z=0.0;slit_width_x=300;slit_height_y=200;slit_position_z=1e100;temperature=293.15;')
+
+    def set_scorer(self, volume):
+
+        scorer = etree.SubElement(volume, 'auxiliary')
+        scorer.set('auxtype', 'Scorer')
+        scorer.set('auxvalue', 'Scorer=PSD;name=BunnyImage;xmin=-200;xmax=200;numBins_x=500;ymin=-150;ymax=150;numBins_y=500;ptstate=ENTRY;type=XY')
+
+    def set_box(self, name, xyz, unit):
+
+        self.solid_counter = self.solid_counter + 1
+        box = etree.Element('box')
+        box.set('lunit', unit)
+        box.set('name', name)
+        box.set('x', f'{xyz[0]}')
+        box.set('y', f'{xyz[1]}')
+        box.set('z', f'{xyz[2]}')
+        self.solids.append(deepcopy(box))
+        sol = etree.Element('solids')
+        sol.append(box)
+        return sol
+
+# def closest_pair_naive(points):
+
+#     import numpy as np
+#     points = np.array(points)
+#     points
 
 pv.set_plot_theme('document')
 
-bunny = pv.read('../../files/bunny/reconstruction/bun_zipper.ply')
+bunny = pv.read('../cinemavirenv/bunny/reconstruction/bun_zipper.ply')
 # bunny.plot()
 tet = tetgen.TetGen(bunny)
 tet.make_manifold()
-tet.tetrahedralize(order=1, mindihedral=20, minratio=1.5)
+tet.tetrahedralize(order=1)
 grid = tet.grid #grid is of UnstructuredGrid type
 # grid = grid.explode() # explode view
 # grid.plot(show_axes=True)
@@ -183,12 +218,16 @@ connectivity=connectivity.reshape(grid.n_cells,-1)
 #now the "connectivity" is a numpy array with size [n_cells, 4]
 # print(grid.n_cells)
 # XML processor
-Gdml = GdmlElement([1.0, 1.0, 60.0])
-Solid = Gdml.set_tetrahedron(connectivity, points)
+Gdml = GdmlElement([0.5, 0.5, 5.0])
+Gdml.set_gun()
 Gdml.set_material('Vacuum', 'vacuum.ncmat')
-Gdml.set_material('B', 'B4C.ncmat')
-Gdml.set_logical('B', Solid)
-Gdml.set_physical(Solid, position=[0.025, -0.1, 29.0], rotation=[0.0, 180.0, 0.0])
+Gdml.set_material('V', 'V_sg229.ncmat')
+Solid = Gdml.set_tetrahedron(connectivity, points)
+Gdml.set_logical('V', Solid)
+Gdml.set_physical(Solid, position=[0.0, -0.1, 2.0], rotation=[0.0, 180.0, 0.0])
+Detector = Gdml.set_box('detector', [0.4, 0.3, 0.01], 'm')
+Gdml.set_logical('V', Detector, scorer=True)
+Gdml.set_physical(Detector, position=[0.0, 0.0, 2.25])
 Gdml.export_gdml('res1.gdml')
 
 # for pointsid in connectivity:
@@ -196,5 +235,5 @@ Gdml.export_gdml('res1.gdml')
 #     print(f'There should be 4 points for cell {c_cell}, they are {points[pointsid[0]]} {points[pointsid[1]]} {points[pointsid[2]]} {points[pointsid[3]]}')
 
 print(
-    'The following sections should be worked out manually:\n - gun\n - scorer\n'
+    'Done'
 )
