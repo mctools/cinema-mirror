@@ -30,7 +30,7 @@ namespace Prompt {
   public:
     ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin,
-      ScorerType stype=Scorer::ScorerType::ENTRY, bool qtrue=true, bool linear=true);
+      ScorerType stype=Scorer::ScorerType::ENTRY, bool qtrue=true, int scatnum=-1, bool linear=true);
     virtual ~ScorerNeutronSq();
     virtual void score(Particle &particle) override;
   protected:
@@ -38,6 +38,7 @@ namespace Prompt {
     const double m_sourceSampleDist;
     bool m_kill;
     bool m_qtrue;
+    int m_scatnum;
 
   };
 }

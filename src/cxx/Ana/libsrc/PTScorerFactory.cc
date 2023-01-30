@@ -64,7 +64,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // where type can be ENTRY(default) or ABSORB, the default value for linear is yes
 
 
-      int parCount = 11;
+      int parCount = 12;
 
       // The mandatory parameters
       bool force = true;
@@ -75,6 +75,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double minQ = ptstod(cfg.find("Qmin", force));
       double maxQ = ptstod(cfg.find("Qmax", force));
       int numBin = ptstoi(cfg.find("numbin", force));
+      
 
 
       // the optional parameters
@@ -96,22 +97,37 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
       }
 
-      Scorer::ScorerType type = Scorer::ScorerType::ENTRY;
-      std::string typeInStr = cfg.find("type");
-      if(typeInStr.empty())
+      int scatnum = -1;
+      if(cfg.find("scatnum")=="") 
         parCount--;
       else
       {
-        if(typeInStr=="ENTRY")
+        int scatnumInInt = ptstoi(cfg.find("scatnum"));
+        if(scatnumInInt>=-1 )
         {
-          type = Scorer::ScorerType::ENTRY;
-        }
-        else if(typeInStr=="ABSORB")
-        {
-          type = Scorer::ScorerType::ABSORB;
+          scatnum = scatnumInInt;
         }
         else {
-          PROMPT_THROW(BadInput, "Scorer type can only be ENTRY or ABSORB" );
+          PROMPT_THROW2(BadInput, "The value for \"scatnum\" should an integer greater than or equal to -1");
+        }
+      }
+
+      Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        if(ptstateInStr=="ENTRY")
+        {
+          ptstate = Scorer::ScorerType::ENTRY;
+        }
+        else if(ptstateInStr=="ABSORB")
+        {
+          ptstate = Scorer::ScorerType::ABSORB;
+        }
+        else {
+          PROMPT_THROW(BadInput, "ptstate can only be ENTRY or ABSORB" );
         }
       }
 
@@ -138,7 +154,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type NeutronSq is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, type, qtrue, linear);
+      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, ptstate, qtrue, scatnum, linear);
     }
 
     else if(ScorDef == "PSD")
@@ -293,10 +309,10 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // MultiScat: multiple scattering
       // example cfg
-      // ""Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; linear=yes""
+      // ""Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; ptstate=PROPAGATE; linear=yes""
       // the default value for linear is yes
 
-      int parCount = 5;
+      int parCount = 6;
 
       // The mandatory parameters
       bool force = true;
@@ -306,6 +322,40 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       int numBin = maxNumber-minNumber+1;
 
       // the optional parameters
+      Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        if(ptstateInStr=="ENTRY")
+        {
+          ptstate = Scorer::ScorerType::ENTRY;
+        }
+        else if(ptstateInStr=="ABSORB")
+        {
+          ptstate = Scorer::ScorerType::ABSORB;
+        }
+        else if(ptstateInStr=="SURFACE")
+        {
+          ptstate = Scorer::ScorerType::SURFACE;
+        }
+        else if(ptstateInStr=="PROPAGATE")
+        {
+          ptstate = Scorer::ScorerType::PROPAGATE;
+        }
+        else if(ptstateInStr=="EXIT")
+        {
+          ptstate = Scorer::ScorerType::EXIT;
+        }
+        else if(ptstateInStr=="ENTRY2EXIT")
+        {
+          ptstate = Scorer::ScorerType::ENTRY2EXIT;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "ptstate does not support" << " " << ptstateInStr);
+        }
+      }
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
       if(linearInStr.empty())
@@ -328,7 +378,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type MultiScat is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerMultiScat>(name, minNumber-0.5, maxNumber+0.5, numBin, linear);
+      return std::make_shared<ScorerMultiScat>(name, minNumber-0.5, maxNumber+0.5, numBin, ptstate, linear);
     }
     else if(ScorDef == "VolFlux")
     {
