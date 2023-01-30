@@ -41,3 +41,7 @@ docs
 *.app
 
 bigdata
+
+
+#vscode
+*.json
