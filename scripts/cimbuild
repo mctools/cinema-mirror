@@ -24,7 +24,7 @@ cd $CINEMAPATH/cinemabin
 if [ -z ${BUILDTYPE} ]; then
   cmake ..
 else
-  cmake -DCMAKE_BUILD_TYPE=${BUILDTYPE} ..
+  cmake -DCMAKE_BUILD_TYPE=${BUILDTYPE} -DCMAKE_CXX_FLAGS_DEBUG="-g -O0 " -DCMAKE_C_FLAGS_DEBUG="-g -O0" ..
 fi
 
 if [ -z ${TESTFLAG} ]; then
