@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<gdml>
+    <userinfo>
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=20;moderator_height_y=20;moderator_positon_z=-10000;slit_width_x=1;slit_height_y=1;slit_position_z=-1000;temperature=293.15" />
+    </userinfo>
+
+    <define>
+        <rotation name="SampleRot" x="90" y="0" z="0" unit="deg" />
+        <rotation name="DetectorRot" x="90" y="0" z="0" unit="deg" />
+    </define>
+
+    <materials>
+        <material name="Vacuum">
+          <atom value="vacuum.ncmat"/>
+        </material>
+
+        <material name="HeavyWater">
+          <atom value="physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=1.0;abs_bias=0"/>
+        </material>
+
+        <material name="V">
+          <atom value="physics=ncrystal;nccfg='V_sg229.ncmat;bragg=0';scatter_bias=1.0;abs_bias=0"/>
+        </material>
+
+        <material name="He3_20bar">
+          <atom value="freegas::He/2.691217kgm3/He_is_He3"/>
+        </material>
+    </materials>
+
+    <solids>
+        <box  name="WorldSolid" x="1050.0" y="1050.0" z="20100.0" lunit="mm"/>
+        <tube name="SampleSolid" rmin="0" rmax="2.0" z="14.0" startphi="0" deltaphi="360" aunit="deg" lunit="mm"/>
+        <tube name="DetectorSolid" rmin="200.0" rmax="225.0" z="1000.0" startphi="280" deltaphi="150" aunit="deg" lunit="mm"/>
+    </solids>
+
+    <structure>
+        <!-- Sample HeavyWater -->
+        <volume name="Sample">
+          <materialref ref="HeavyWater"/>
+          <solidref ref="SampleSolid"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat;name=HW;Numbermin=1;Numbermax=8;ptstate=PROPAGATE;linear=yes"/>
+        </volume>
+
+        <!-- Sample Vanadium -->
+        <!-- <volume name="Sample">
+          <materialref ref="V"/>
+          <solidref ref="SampleSolid"/>
+        </volume> -->
+
+        <volume name="Detector">
+          <materialref ref="He3_20bar"/>
+          <solidref ref="DetectorSolid"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_HW;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=-1;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ1_HW;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=1;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ2_HW;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=2;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ3_HW;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=3;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
+          <!-- <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_V;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=-1;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/> -->
+        </volume>
+
+        <volume name="World">
+            <solidref ref="WorldSolid" />
+            <materialref ref="Vacuum" />
+
+            <physvol>
+              <volumeref ref="Sample"/>
+              <rotationref ref="SampleRot"/>
+            </physvol>
+
+            <physvol>
+              <volumeref ref="Detector"/>
+              <rotationref ref="DetectorRot"/>
+            </physvol>
+        </volume>
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="World" />
+    </setup>
+</gdml>
