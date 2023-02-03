@@ -115,11 +115,11 @@ void Prompt::Hist2D::save(const std::string &filename) const
     "plt.title(f'%s, integral {integral}, count {count}')\n"
     "plt.figure()\n"
     "plt.subplot(211)\n"
-    "plt.plot(x[:-1]+np.diff(x)*0.5, data.sum(axis=0))\n"
+    "plt.plot(x[:-1]+np.diff(x)*0.5, data.sum(axis=1))\n"
     "plt.xlabel('integral x')\n"
     "plt.title('%s')\n"
     "plt.subplot(212)\n"
-    "plt.plot(y[:-1]+np.diff(x)*0.5, data.sum(axis=1))\n"
+    "plt.plot(y[:-1]+np.diff(y)*0.5, data.sum(axis=0))\n"
     "plt.xlabel('integral y')\n"
     "plt.show()\n", bwr->getFileName().c_str(), bwr->getFileName().c_str(), bwr->getFileName().c_str());
 
