@@ -98,10 +98,10 @@ class McplAnalysor2D(PromptFileReader):
 # psd.plotHist(x_hist, y_hist, content_hist, hit_hist)  
 
 psd = McplAnalysor2D('/home/yangni/gitlabDev/cinema/gd3/*ScorerPSD_NeutronHistMapM300_seed*.mcpl.gz')
-x_hist, y_hist, content_hist = psd.getHistMany(seedStart=1, seedEnd=15) 
+x_hist, y_hist, content_hist, hit_hist = psd.getHistMany(seedStart=1, seedEnd=15) 
 print(x_hist.shape)
 print(y_hist.shape)
 print(content_hist.shape)   
-psd.plotHist(x_hist, y_hist, content_hist)  
+psd.plotHist(x_hist, y_hist, content_hist, hit_hist)  
 
 
