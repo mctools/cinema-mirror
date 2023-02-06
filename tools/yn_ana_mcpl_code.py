@@ -27,7 +27,7 @@ class McplAnalysor1D(PromptFileReader):
         content_sum = 0
         for i in range(seedStart-1, seedEnd):
             self.filePath = files[i]
-            edge, content, hit = self.getHist()
+            edge, content = self.getHist()
             content_sum += content
         return edge, content_sum
     
