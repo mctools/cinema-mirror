@@ -1,0 +1,8 @@
+NCMAT v2
+@DYNINFO
+  element  Cd
+  fraction 1.
+  type     freegas
+
+@DENSITY
+  8650.0 kg_per_m3
