@@ -25,9 +25,10 @@
 #include "PTRandCanonical.hh"
 
 
-Prompt::IdealElaScat::IdealElaScat(const std::string &cfgstring, double bias)
-:Prompt::DiscreteModel(cfgstring, const_neutron_pgd,
-                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV, bias)
+Prompt::IdealElaScat::IdealElaScat(double xs, double bias)
+:Prompt::DiscreteModel("IdealElaScat", const_neutron_pgd,
+                      std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), bias),
+m_xs(xs*Unit::barn*m_bias)
 {
 
 }
@@ -40,12 +41,12 @@ Prompt::IdealElaScat::~IdealElaScat()
 
 double Prompt::IdealElaScat::getCrossSection(double ekin) const
 {
-    return 1*Unit::barn*m_bias;
+  return m_xs;
 }
 
 double Prompt::IdealElaScat::getCrossSection(double ekin, const Prompt::Vector &) const
 {
-  return getCrossSection(ekin);
+  return m_xs;
 }
 
 
@@ -63,5 +64,5 @@ void Prompt::IdealElaScat::generate(double ekin, const Prompt::Vector &dir,
   double v = temp*cos(2*M_PI*r2);
   double w = temp*sin(2*M_PI*r2);
 
-  final_dir = Vector(u, v, w);
+  final_dir.set(u, v, w);
 }
