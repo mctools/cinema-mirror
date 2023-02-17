@@ -237,15 +237,8 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
       m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<BulkPhysics>>(std::string(mat.name) , std::move(model) ) );
 
       auto theNewPhysics = getBulkPhysics(mat.name);
-      double bias (1.);
-      auto itbias = mat.attributes.find("D");
-
-      if(itbias!=mat.attributes.end())
-      {
-        bias = ptstod(itbias->second);
-      }
       const std::string &cfg = mat.attributes.find("atomValue")->second;
-      theNewPhysics->addPhysicsModel(cfg, bias);
+      theNewPhysics->addPhysicsModel(cfg);
       vps->bulkPhysics=theNewPhysics;
     }
 
