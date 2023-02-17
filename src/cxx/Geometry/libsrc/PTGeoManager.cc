@@ -238,7 +238,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
       auto theNewPhysics = getBulkPhysics(mat.name);
       const std::string &cfg = mat.attributes.find("atomValue")->second;
-      theNewPhysics->addPhysicsModel(cfg);
+      theNewPhysics->cfgPhysicsModel(cfg);
       vps->bulkPhysics=theNewPhysics;
     }
 

@@ -34,7 +34,7 @@ namespace Prompt {
 
     double sampleStepLength(const Prompt::Particle &particle) const;
     void sampleFinalState(Prompt::Particle &particle, double stepLength=0., bool hitWall=false) const;
-    void addPhysicsModel(const std::string &cfg, double bias=1.0);
+    void cfgPhysicsModel(const std::string &cfg, double bias=1.0);
     bool containOrentied() const { return m_compModel->containOriented(); }
 
   private:

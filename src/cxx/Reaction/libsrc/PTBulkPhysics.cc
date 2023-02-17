@@ -28,12 +28,14 @@
 #include "PTPhysicsFactory.hh"
 #include "PTNavManager.hh"
 
-Prompt::BulkPhysics::BulkPhysics(const std::string& name)
-:m_rng(Singleton<SingletonPTRand>::getInstance()),
-m_compModel(std::make_unique<CompoundModel>(const_neutron_pgd)), //fixme:  neutron only for now, should be a dict later
-m_numdensity(0.), m_name(name) { }
+Prompt::BulkPhysics::BulkPhysics(const std::string &name)
+    : m_rng(Singleton<SingletonPTRand>::getInstance()),
+      m_compModel(std::make_unique<CompoundModel>(const_neutron_pgd)), // fixme:  neutron only for now, should be a dict later
+      m_numdensity(0.), m_name(name)
+{
+}
 
-Prompt::BulkPhysics::~BulkPhysics() { }
+Prompt::BulkPhysics::~BulkPhysics() {}
 
 double Prompt::BulkPhysics::macroCrossSection(const Prompt::Particle &particle) const
 {
@@ -50,45 +52,45 @@ double Prompt::BulkPhysics::macroCrossSection(const Prompt::Particle &particle) 
 
   double ekin = particle.hasEffEnergy() ? particle.getEffEKin() : particle.getEKin();
   const auto &dir = particle.hasEffEnergy() ? particle.getEffDirection() : particle.getDirection();
-  return m_numdensity*m_compModel->totalCrossSection(ekin, dir);
+  return m_numdensity * m_compModel->totalCrossSection(ekin, dir);
 }
 
 void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
 {
-  if(m_compModel->getSupportedGPD()!=particle.getPGD())
+  if (m_compModel->getSupportedGPD() != particle.getPGD())
     PROMPT_THROW2(CalcError, "BulkPhysics " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
 
-  if(!particle.isAlive())
+  if (!particle.isAlive())
     PROMPT_THROW(CalcError, "Particle is not alive");
 
-  //if particle is escaped to the the next volume
-  if(hitWall)
+  // if particle is escaped to the the next volume
+  if (hitWall)
   {
-    if(stepLength)
+    if (stepLength)
     {
-      particle.scaleWeight(m_compModel->calculateWeight(stepLength*m_numdensity, true));
+      particle.scaleWeight(m_compModel->calculateWeight(stepLength * m_numdensity, true));
     }
     return;
   }
 
-  //else
+  // else
   double lab_ekin(0), comove_ekin(0);
   Vector lab_dir;
 
-  if(particle.hasEffEnergy())
+  if (particle.hasEffEnergy())
   {
-    double ekineff =  particle.getEffEKin();
+    double ekineff = particle.getEffEKin();
     const auto &direff = particle.getEffDirection();
 
     Vector comove_dir;
 
     // sample in the comoving frame
     m_compModel->generate(ekineff, direff, comove_ekin, comove_dir);
-    if(comove_ekin!=-1) //non-capture fixme: this should not be called when EXITing
+    if (comove_ekin != -1) // non-capture fixme: this should not be called when EXITing
     {
-      Vector v_comoving = comove_dir*std::sqrt(2*comove_ekin/particle.getMass());
+      Vector v_comoving = comove_dir * std::sqrt(2 * comove_ekin / particle.getMass());
       // the rotatioal velocity
-      auto v_rot = particle.getDirection()*particle.calcSpeed()-particle.getEffDirection()*particle.calcEffSpeed();
+      auto v_rot = particle.getDirection() * particle.calcSpeed() - particle.getEffDirection() * particle.calcEffSpeed();
 
       particle.setEffEKin(comove_ekin);
       particle.setEffDirection(comove_dir);
@@ -100,7 +102,7 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
       double speed(0);
       v_lab.magdir(speed, lab_dir);
       // lab_ekin = particle.getEKin();
-      lab_ekin = 0.5*particle.getMass()*speed*speed;
+      lab_ekin = 0.5 * particle.getMass() * speed * speed;
     }
   }
   else
@@ -115,7 +117,7 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
 
   // if it is an absorption reaction, the state of the particle is set,
   // but the energy and direction are kept for the subsequent capture scorers.
-  if(lab_ekin==-1. || comove_ekin==-1.)
+  if (lab_ekin == -1. || comove_ekin == -1.)
   {
     particle.kill(Particle::KillType::ABSORB);
   }
@@ -124,20 +126,18 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
     particle.setEKin(lab_ekin);
     particle.setDirection(lab_dir);
   }
-  particle.scaleWeight(m_compModel->calculateWeight(stepLength*m_numdensity, false));
-  
+  particle.scaleWeight(m_compModel->calculateWeight(stepLength * m_numdensity, false));
 }
-
 
 double Prompt::BulkPhysics::sampleStepLength(const Prompt::Particle &particle) const
 {
-  if(m_compModel->getSupportedGPD()!=particle.getPGD())
+  if (m_compModel->getSupportedGPD() != particle.getPGD())
     PROMPT_THROW2(CalcError, "BulkPhysics " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
 
   double mxs = macroCrossSection(particle);
-  if(mxs)
+  if (mxs)
   {
-    return -log(m_rng.generate())/mxs;
+    return -log(m_rng.generate()) / mxs;
   }
   else
   {
@@ -145,42 +145,31 @@ double Prompt::BulkPhysics::sampleStepLength(const Prompt::Particle &particle) c
   }
 }
 
-
-
-void Prompt::BulkPhysics::addPhysicsModel(const std::string &cfgstr, double bias)
+void Prompt::BulkPhysics::cfgPhysicsModel(const std::string &cfgstr, double bias)
 {
-  std::cout << "****" << cfgstr << std::endl;
+  std::cout << "Configuring physics model: " << cfgstr << std::endl;
   assert(!m_numdensity);
-  // auto &pfact = Singleton<PhysicsFactory>::getInstance();
-  // m_compModel =  pfact.createBulkPhysics(cfgstr);
-  // m_numdensity = pfact.nccalNumDensity(cfgstr);
-
   auto &pfact = Singleton<PhysicsFactory>::getInstance();
   PhysicsFactory::PhysicsType type = pfact.checkPhysicsType(cfgstr);
 
-
-  //     // NC_SCATTER,
-  //     // NC_RAW,
-  //     // NC_IDEALSCAT,
-
-  if(type==PhysicsFactory::PhysicsType::NC_SCATTER)
+  if (type == PhysicsFactory::PhysicsType::NC_SCATTER)
   {
-     std::cout << "**** type==PhysicsFactory::PhysicsType::NC_SCATTER" << std::endl;
-     m_compModel =  pfact.createBulkPhysics(cfgstr);
-     m_numdensity = pfact.nccalNumDensity(cfgstr);
+    std::cout << "PhysicsType type NC_SCATTER" << std::endl;
+    m_compModel = pfact.createBulkPhysics(cfgstr);
+    m_numdensity = pfact.nccalNumDensity(cfgstr);
   }
-  else if(type==PhysicsFactory::PhysicsType::NC_RAW)
+  else if (type == PhysicsFactory::PhysicsType::NC_RAW)
   {
-     std::cout << "**** type==PhysicsFactory::PhysicsType::NC_RAW" << std::endl;
-     m_compModel->addNCScaAbsModels(cfgstr, 1.0);
-     m_numdensity = pfact.nccalNumDensity(cfgstr);
+    std::cout << "PhysicsType type NC_RAW" << std::endl;
+    m_compModel->addNCScaAbsModels(cfgstr, 1.0);
+    m_numdensity = pfact.nccalNumDensity(cfgstr);
   }
-  else if(type==PhysicsFactory::PhysicsType::NC_IDEALSCAT)
+  else if (type == PhysicsFactory::PhysicsType::NC_IDEALSCAT)
   {
-     std::cout << "**** type==PhysicsFactory::PhysicsType::NC_IDEALSCAT" << std::endl;
-     m_compModel =  pfact.createBulkPhysics(cfgstr);
-     pt_assert(m_compModel->getModels().size==1);
-     auto & aa = *reinterpret_cast<IdealElaScat*>(m_compModel->getModels()[0].get());
-     m_numdensity = aa.getNumberDensity();
+    std::cout << "PhysicsType type NC_IDEALSCAT" << std::endl;
+    m_compModel = pfact.createBulkPhysics(cfgstr);
+    pt_assert(m_compModel->getModels().size == 1);
+    auto &aa = *reinterpret_cast<IdealElaScat *>(m_compModel->getModels()[0].get());
+    m_numdensity = aa.getNumberDensity();
   }
 }
