@@ -24,12 +24,9 @@ Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &name, const Vector &
       double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool qtrue, int scatnum, bool linear)
 :Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>("ScorerNeutronSq_" + name, qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir), 
 m_sourceSampleDist(sourceSampleDist), m_qtrue(qtrue), m_scatnum(scatnum)
-{
-}
+{}
 
-Prompt::ScorerNeutronSq::~ScorerNeutronSq()
-{
-}
+Prompt::ScorerNeutronSq::~ScorerNeutronSq(){}
 
 void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
 {
