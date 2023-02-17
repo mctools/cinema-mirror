@@ -32,7 +32,7 @@ Prompt::CompoundModel::CompoundModel(int gpd)
 Prompt::CompoundModel::~CompoundModel() {}
 
 // to be remove, or move to the physics factory
-void Prompt::CompoundModel::addPhysicsModel(const std::string &cfg, double bias)
+void Prompt::CompoundModel::addNCScaAbsModels(const std::string &cfg, double bias)
 {
   if(bias!=1.)
     std::cout << "material " << cfg << " has a nonunity bias of " << bias << std::endl;

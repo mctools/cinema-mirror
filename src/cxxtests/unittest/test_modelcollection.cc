@@ -26,7 +26,7 @@ TEST_CASE("CompoundModel")
 {
 
   auto collection = Prompt::CompoundModel(2112) ;
-  collection.addPhysicsModel("Al_sg225.ncmat;dcutoff=0.5;temp=25C");
+  collection.addNCScaAbsModels("Al_sg225.ncmat;dcutoff=0.5;temp=25C");
 
   double xs(0.);
   xs = collection.totalCrossSection(1., {0,0,0} );

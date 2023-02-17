@@ -172,7 +172,7 @@ void Prompt::BulkPhysics::addPhysicsModel(const std::string &cfgstr, double bias
   else if(type==PhysicsFactory::PhysicsType::NC_RAW)
   {
      std::cout << "**** type==PhysicsFactory::PhysicsType::NC_RAW" << std::endl;
-     m_compModel->addPhysicsModel(cfgstr, 1.0);
+     m_compModel->addNCScaAbsModels(cfgstr, 1.0);
      m_numdensity = pfact.nccalNumDensity(cfgstr);
   }
   else if(type==PhysicsFactory::PhysicsType::NC_IDEALSCAT)
