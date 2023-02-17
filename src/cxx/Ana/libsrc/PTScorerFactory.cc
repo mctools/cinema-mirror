@@ -126,8 +126,24 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         {
           ptstate = Scorer::ScorerType::ABSORB;
         }
+        else if(ptstateInStr=="SURFACE")
+        {
+          ptstate = Scorer::ScorerType::SURFACE;
+        }
+        else if(ptstateInStr=="PROPAGATE")
+        {
+          ptstate = Scorer::ScorerType::PROPAGATE;
+        }
+        else if(ptstateInStr=="EXIT")
+        {
+          ptstate = Scorer::ScorerType::EXIT;
+        }
+        else if(ptstateInStr=="ENTRY2EXIT")
+        {
+          ptstate = Scorer::ScorerType::ENTRY2EXIT;
+        }
         else {
-          PROMPT_THROW(BadInput, "ptstate can only be ENTRY or ABSORB" );
+          PROMPT_THROW2(BadInput, "ptstate does not support" << " " << ptstateInStr);
         }
       }
 

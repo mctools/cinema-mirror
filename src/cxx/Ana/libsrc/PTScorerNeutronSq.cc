@@ -24,18 +24,9 @@ Prompt::ScorerNeutronSq::ScorerNeutronSq(const std::string &name, const Vector &
       double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool qtrue, int scatnum, bool linear)
 :Scorer1D("ScorerNeutronSq_" + name, stype, std::make_unique<Hist1D>("ScorerNeutronSq_" + name, qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir), 
 m_sourceSampleDist(sourceSampleDist), m_qtrue(qtrue), m_scatnum(scatnum)
-{
-  if(stype==Scorer::ScorerType::ENTRY)
-    m_kill=true;
-  else if (stype==Scorer::ScorerType::ABSORB)
-    m_kill=false;
-  else
-    PROMPT_THROW(BadInput, "ScorerNeutronSq can only be Scorer::ScorerType::ENTRY or Scorer::ScorerType::ABSORB");
-}
+{}
 
-Prompt::ScorerNeutronSq::~ScorerNeutronSq()
-{
-}
+Prompt::ScorerNeutronSq::~ScorerNeutronSq(){}
 
 void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
 {
@@ -46,7 +37,7 @@ void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
   {
     double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
     if(m_qtrue)
-      m_hist->fill(neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin()), 1./sqrt(1-angle_cos*angle_cos)*particle.getWeight()); 
+      m_hist->fill(neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin()), particle.getWeight()); 
     else //static approximation
     {
       double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();
@@ -56,7 +47,4 @@ void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
       m_hist->fill(q, particle.getWeight());
     }
   }
-  
-  if(m_kill)
-    particle.kill(Particle::KillType::SCORE);
 }
