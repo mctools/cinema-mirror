@@ -35,12 +35,13 @@ namespace Prompt {
       NC_SCATTER,
       NC_ABSORB,
       NC_SCATTER_ABSORB,
-      NC_IDEAL,
+      NC_RAW,
+      NC_IDEALSCAT,
       ENDF_SCATTER,
       ENDF_ABSORB
     };
   public:
-    bool pureNCrystalCfg(const std::string &cfgstr);
+    bool rawNCrystalCfg(const std::string &cfgstr);
     double nccalNumDensity(const std::string &nccfgstr); // ncrystal cfg string
     void showNCComposition(const std::string &nccfgstr);
 

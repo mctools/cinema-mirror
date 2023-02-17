@@ -25,11 +25,13 @@
 #include "PTRandCanonical.hh"
 
 
-Prompt::IdealElaScat::IdealElaScat(double xs, double bias)
+Prompt::IdealElaScat::IdealElaScat(double xs_barn, double density_per_aa3, double bias)
 :Prompt::DiscreteModel("IdealElaScat", const_neutron_pgd,
                       std::numeric_limits<double>::min(), std::numeric_limits<double>::max(), bias),
-m_xs(xs*Unit::barn*m_bias)
+m_xs(xs_barn*Unit::barn*m_bias), m_density(density_per_aa3/Unit::Aa3)
 {
+    std::cout<<"Created IdealElaScat physics. xs :" << xs_barn << ", bias: " 
+             << bias << ", density_per_aa3 " << density_per_aa3 <<std::endl;
 
 }
 

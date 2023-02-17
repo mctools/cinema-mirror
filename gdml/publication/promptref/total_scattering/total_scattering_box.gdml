@@ -25,6 +25,11 @@
         <material name="He3_20bar">
           <atom value="freegas::He/2.691217kgm3/He_is_He3"/>
         </material>
+
+        <material name="idealScat">
+          <atom value="physics=idealElaScat;xs_barn=1.0;density_per_aa3=0.01;scatter_bias=1"/>
+        </material>
+
     </materials>
 
     <solids>
@@ -37,7 +42,7 @@
     <structure>
         <!-- Sample HeavyWater -->
         <volume name="Sample">
-          <materialref ref="HeavyWater"/>
+          <materialref ref="idealScat"/>
           <solidref ref="SampleSolid"/>
           <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat;name=HW;Numbermin=1;Numbermax=8;ptstate=PROPAGATE;linear=yes"/>
         </volume>

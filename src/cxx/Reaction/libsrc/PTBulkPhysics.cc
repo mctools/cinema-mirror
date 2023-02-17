@@ -24,7 +24,7 @@
 #include <cmath>
 #include <limits>
 #include "NCrystal/NCrystal.hh"
-
+#include "PTIdealElaScat.hh"
 #include "PTPhysicsFactory.hh"
 #include "PTNavManager.hh"
 
@@ -149,12 +149,38 @@ double Prompt::BulkPhysics::sampleStepLength(const Prompt::Particle &particle) c
 
 void Prompt::BulkPhysics::addPhysicsModel(const std::string &cfgstr, double bias)
 {
+  std::cout << "****" << cfgstr << std::endl;
   assert(!m_numdensity);
-  auto &pfact = Singleton<PhysicsFactory>::getInstance();
-  if(pfact.pureNCrystalCfg(cfgstr))
-    m_compModel->addPhysicsModel(cfgstr, bias);
-  else
-    m_compModel =  pfact.createBulkPhysics(cfgstr);
+  // auto &pfact = Singleton<PhysicsFactory>::getInstance();
+  // m_compModel =  pfact.createBulkPhysics(cfgstr);
+  // m_numdensity = pfact.nccalNumDensity(cfgstr);
 
-  m_numdensity = pfact.nccalNumDensity(cfgstr);
+  auto &pfact = Singleton<PhysicsFactory>::getInstance();
+  PhysicsFactory::PhysicsType type = pfact.checkPhysicsType(cfgstr);
+
+
+  //     // NC_SCATTER,
+  //     // NC_RAW,
+  //     // NC_IDEALSCAT,
+
+  if(type==PhysicsFactory::PhysicsType::NC_SCATTER)
+  {
+     std::cout << "**** type==PhysicsFactory::PhysicsType::NC_SCATTER" << std::endl;
+     m_compModel =  pfact.createBulkPhysics(cfgstr);
+     m_numdensity = pfact.nccalNumDensity(cfgstr);
+  }
+  else if(type==PhysicsFactory::PhysicsType::NC_RAW)
+  {
+     std::cout << "**** type==PhysicsFactory::PhysicsType::NC_RAW" << std::endl;
+     m_compModel->addPhysicsModel(cfgstr, 1.0);
+     m_numdensity = pfact.nccalNumDensity(cfgstr);
+  }
+  else if(type==PhysicsFactory::PhysicsType::NC_IDEALSCAT)
+  {
+     std::cout << "**** type==PhysicsFactory::PhysicsType::NC_IDEALSCAT" << std::endl;
+     m_compModel =  pfact.createBulkPhysics(cfgstr);
+     pt_assert(m_compModel->getModels().size==1);
+     auto & aa = *reinterpret_cast<IdealElaScat*>(m_compModel->getModels()[0].get());
+     m_numdensity = aa.getNumberDensity();
+  }
 }

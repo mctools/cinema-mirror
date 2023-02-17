@@ -33,15 +33,16 @@ namespace Prompt {
 
   class IdealElaScat  : public DiscreteModel {
   public:
-    IdealElaScat(double xs=1.0, double bias=1.0);
+    IdealElaScat(double xs_barn, double density_per_aa3, double bias);
     virtual ~IdealElaScat();
 
     virtual double getCrossSection(double ekin) const override;
     virtual double getCrossSection(double ekin, const Vector &dir) const override;
     virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
-    
+    double getNumberDensity() const { return m_density; }
   private:
     double m_xs;
+    double m_density;
 
   };
 

@@ -27,7 +27,7 @@
 #include "PTNCrystalAbs.hh"
 #include "PTIdealElaScat.hh"
 
-bool Prompt::PhysicsFactory::pureNCrystalCfg(const std::string &cfgstr)
+bool Prompt::PhysicsFactory::rawNCrystalCfg(const std::string &cfgstr)
 {
   try
   {
@@ -42,10 +42,13 @@ bool Prompt::PhysicsFactory::pureNCrystalCfg(const std::string &cfgstr)
 
 }
 
+
+
+
 double Prompt::PhysicsFactory::nccalNumDensity(const std::string &cfgstr)
 {
   std::string nccfgstr = cfgstr;
-  if(!pureNCrystalCfg(cfgstr))
+  if(!rawNCrystalCfg(cfgstr))
   {
     CfgParser::ScorerCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
     if(!cfg.getStringIfExist("nccfg", nccfgstr))
@@ -140,8 +143,7 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics
 
     else if(physDef == "idealElaScat")
     {
-      int parCount = 3; 
-      std::string nccfg = cfg.find("nccfg", true);
+      int parCount = 4; 
 
       double scatter_bias = 1.;
       if(!cfg.getDoubleIfExist("scatter_bias", scatter_bias))
@@ -154,16 +156,29 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics
       }
 
       double xs = 1.;
-      if(!cfg.getDoubleIfExist("xs", xs))
+      if(!cfg.getDoubleIfExist("xs_barn", xs))
         parCount--;
-
       if(!xs)  
       {
-        PROMPT_THROW2(BadInput, "\"xs\" should be non-zero" );
+        PROMPT_THROW2(BadInput, "\"xs_barn\" should be non-zero" );
+      }
+
+      double density_per_aa3 = 0.05;
+      if(!cfg.getDoubleIfExist("density_per_aa3", density_per_aa3))
+        parCount--;
+      if(!density_per_aa3)  
+      {
+        PROMPT_THROW2(BadInput, "\"density_per_aa3\" should be non-zero" );
+      }
+
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Physics type \"idealElaScat\" is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
       compmod = std::make_unique<CompoundModel> (2112);
-      compmod->addPhysicsModel(std::make_shared<IdealElaScat>(xs, scatter_bias));
+      compmod->addPhysicsModel(std::make_shared<IdealElaScat>(xs, density_per_aa3, scatter_bias));
       return compmod;   
     }
     
@@ -233,3 +248,33 @@ std::shared_ptr<Prompt::BoundaryPhysics> Prompt::PhysicsFactory::createBoundaryP
   }
 
 }
+
+
+Prompt::PhysicsFactory::PhysicsType Prompt::PhysicsFactory::checkPhysicsType(const std::string &cfgstr) const
+{
+  CfgParser::ScorerCfg cfg;
+  try
+  {
+    auto &ps = Singleton<CfgParser>::getInstance();
+    cfg = ps.parse(cfgstr);
+  }
+  catch (Prompt::Error::BadInput& e)
+  {
+    return PhysicsType::NC_RAW;
+  }
+  
+  std::string physName;
+  if( ! cfg.getStringIfExist("physics", physName))
+      PROMPT_THROW(BadInput, "\"physics\" keyword is not defined. ")
+
+  if(physName=="ncrystal")
+    return PhysicsType::NC_SCATTER;
+  else if(physName=="idealElaScat")
+    return PhysicsType::NC_IDEALSCAT;
+
+  PROMPT_THROW2(BadInput, "unknown physics "<< physName);
+
+
+}
+
+
