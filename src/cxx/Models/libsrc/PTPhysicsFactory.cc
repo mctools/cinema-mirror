@@ -106,11 +106,11 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics
       int parCount = 4; 
       std::string nccfg = cfg.find("nccfg", true);
 
-      double scatter_bias = 0.;
+      double scatter_bias = 1.;
       if(!cfg.getDoubleIfExist("scatter_bias", scatter_bias))
         parCount--;
 
-      double abs_bias = 0.;
+      double abs_bias = 1.;
       if(!cfg.getDoubleIfExist("abs_bias", abs_bias))
         parCount--;
 
