@@ -245,7 +245,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
         bias = ptstod(itbias->second);
       }
       const std::string &cfg = mat.attributes.find("atomValue")->second;
-      theNewPhysics->setComposition(cfg, bias);
+      theNewPhysics->addPhysicsModel(cfg, bias);
       vps->bulkPhysics=theNewPhysics;
     }
 

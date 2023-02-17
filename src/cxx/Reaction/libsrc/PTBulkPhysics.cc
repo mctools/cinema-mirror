@@ -147,7 +147,7 @@ double Prompt::BulkPhysics::sampleStepLength(const Prompt::Particle &particle) c
 
 
 
-void Prompt::BulkPhysics::setComposition(const std::string &cfgstr, double bias)
+void Prompt::BulkPhysics::addPhysicsModel(const std::string &cfgstr, double bias)
 {
   assert(!m_numdensity);
   auto &pfact = Singleton<PhysicsFactory>::getInstance();
