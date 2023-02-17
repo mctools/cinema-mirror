@@ -156,5 +156,5 @@ void Prompt::BulkPhysics::addPhysicsModel(const std::string &cfgstr, double bias
   else
     m_compModel =  pfact.createBulkPhysics(cfgstr);
 
-  m_numdensity = pfact.calNumDensity(cfgstr);
+  m_numdensity = pfact.nccalNumDensity(cfgstr);
 }

@@ -35,13 +35,14 @@ namespace Prompt {
       NC_SCATTER,
       NC_ABSORB,
       NC_SCATTER_ABSORB,
+      NC_IDEAL,
       ENDF_SCATTER,
       ENDF_ABSORB
     };
   public:
     bool pureNCrystalCfg(const std::string &cfgstr);
-    double calNumDensity(const std::string &nccfgstr); // ncrystal cfg string
-    void showComposition(const std::string &nccfgstr);
+    double nccalNumDensity(const std::string &nccfgstr); // ncrystal cfg string
+    void showNCComposition(const std::string &nccfgstr);
 
     std::shared_ptr<BoundaryPhysics> createBoundaryPhysics(const std::string &cfgstr);
     std::unique_ptr<CompoundModel> createBulkPhysics(const std::string &cfgstr);

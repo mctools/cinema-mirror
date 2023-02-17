@@ -25,7 +25,7 @@
 #include "NCrystal/NCrystal.hh"
 #include "PTNCrystalScat.hh"
 #include "PTNCrystalAbs.hh"
-
+#include "PTIdealElaScat.hh"
 
 bool Prompt::PhysicsFactory::pureNCrystalCfg(const std::string &cfgstr)
 {
@@ -42,7 +42,7 @@ bool Prompt::PhysicsFactory::pureNCrystalCfg(const std::string &cfgstr)
 
 }
 
-double Prompt::PhysicsFactory::calNumDensity(const std::string &cfgstr)
+double Prompt::PhysicsFactory::nccalNumDensity(const std::string &cfgstr)
 {
   std::string nccfgstr = cfgstr;
   if(!pureNCrystalCfg(cfgstr))
@@ -54,7 +54,7 @@ double Prompt::PhysicsFactory::calNumDensity(const std::string &cfgstr)
 
   // fixme: encounter what():  Assertion failure: isSingleIsotope() from NCrystal::AtomData::A when 
   // the material is LiquidHeavyWaterD2O_T293.6K.ncmat
-  // showComposition(nccfgstr); 
+  // showNCComposition(nccfgstr); 
 
   NCrystal::MatCfg matcfg(nccfgstr);
   auto info = NCrystal::createInfo(matcfg);
@@ -67,7 +67,7 @@ double Prompt::PhysicsFactory::calNumDensity(const std::string &cfgstr)
   }
 }
 
-void Prompt::PhysicsFactory::showComposition(const std::string &nccfgstr)
+void Prompt::PhysicsFactory::showNCComposition(const std::string &nccfgstr)
 {
   NCrystal::MatCfg matcfg(nccfgstr);
   auto info = NCrystal::createInfo(matcfg);
@@ -124,16 +124,54 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics
       {
         compmod->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias));
       }
+
       if(abs_bias)
       {
         compmod->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias));
       }
 
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Physics type \"ncrystal\" is missing or with extra config parameters" << cfg.size() << " " << parCount );
+      }
+
       return compmod;   
     }
+
+    else if(physDef == "idealElaScat")
+    {
+      int parCount = 3; 
+      std::string nccfg = cfg.find("nccfg", true);
+
+      double scatter_bias = 1.;
+      if(!cfg.getDoubleIfExist("scatter_bias", scatter_bias))
+        parCount--;
+
+
+      if(!scatter_bias)  
+      {
+        PROMPT_THROW2(BadInput, "\"scatter_bias\" should be non-zero" );
+      }
+
+      double xs = 1.;
+      if(!cfg.getDoubleIfExist("xs", xs))
+        parCount--;
+
+      if(!xs)  
+      {
+        PROMPT_THROW2(BadInput, "\"xs\" should be non-zero" );
+      }
+
+      compmod = std::make_unique<CompoundModel> (2112);
+      compmod->addPhysicsModel(std::make_shared<IdealElaScat>(xs, scatter_bias));
+      return compmod;   
+    }
+    
+  
+    PROMPT_THROW2(LogicError, "The physics type is unknown" << physDef );
   }
  
-  PROMPT_THROW(LogicError, "The code shouldn't reach here" );
+  PROMPT_THROW2(LogicError, "The physics type is unknown"  );
   return compmod;   
 
 }
