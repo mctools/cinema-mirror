@@ -40,7 +40,7 @@ namespace Prompt {
     bool proprogateInAVolume(Particle &particle);
     void locateLogicalVolume(const Vector &p);
     bool exitWorld();
-    void setupVolumePhysics();
+    void setupVolPhysAndGeoTrans();
     size_t getVolumeID();
     std::string getVolumeName();
     const vecgeom::VPlacedVolume *getVolume();
@@ -56,9 +56,10 @@ namespace Prompt {
     bool hasBoundaryPhyiscs();
     bool surfaceReaction(Particle &particle);
 
-    //geotranslator
-    const GeoTranslator& getTranslator();
+    //geotranslator and normal
+    const GeoTranslator& getTranslator() const;
     void make_translator();
+    void getNormal(const Vector& pos, Vector &normal) const;
 
   private:
     friend class Singleton<NavManager>;

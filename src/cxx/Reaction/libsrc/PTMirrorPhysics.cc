@@ -20,6 +20,7 @@
 
 #include "PTMirrorPhysics.hh"
 #include "PTUtils.hh"
+#include "PTNavManager.hh"
 
 Prompt::MirrorPhyiscs::MirrorPhyiscs(double mvalue, double weightCut)
 :Prompt::BoundaryPhysics(Prompt::BoundaryPhysics::PhysicsType::Mirror), m_wcut(weightCut), m_wAtQ(0.)
@@ -36,6 +37,9 @@ Prompt::MirrorPhyiscs::MirrorPhyiscs(double mvalue, double weightCut)
 
 void Prompt::MirrorPhyiscs::sampleFinalState(Prompt::Particle &particle) const
 {
+  auto &navMan = Singleton<NavManager>::getInstance();
+  navMan.getNormal(particle.getPosition(), m_refNorm);
+
   double ekin = particle.getEKin();
   const auto &nDirInLab = particle.getDirection();
 

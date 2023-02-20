@@ -54,7 +54,7 @@ bool Prompt::NavManager::exitWorld()
   return m_currState->IsOutside();
 }
 
-void Prompt::NavManager::setupVolumePhysics()
+void Prompt::NavManager::setupVolPhysAndGeoTrans()
 {
   // Find next step
   // m_currState->Top() gets the placed volume
@@ -69,15 +69,6 @@ bool Prompt::NavManager::surfaceReaction(Particle &particle)
 {
   if(hasBoundaryPhyiscs())
   {
-    auto ptype = m_matphysscor->boundaryPhysics->getType();
-    if(ptype==BoundaryPhysics::PhysicsType::Mirror)
-    {
-      Vector pos(particle.getPosition());
-      vecgeom::cxx::Vector3D<double> norm;
-      m_currPV->Normal({pos.x(), pos.y(), pos.z()}, norm);
-      auto mphys = dynamic_cast<MirrorPhyiscs*>(m_matphysscor->boundaryPhysics.get());
-      mphys->setReflectionNormal(*reinterpret_cast<Vector*>(&norm));
-    }
     m_matphysscor->boundaryPhysics->sampleFinalState(particle);
     return true;
   }
@@ -85,7 +76,15 @@ bool Prompt::NavManager::surfaceReaction(Particle &particle)
     return false;
 }
 
-const Prompt::GeoTranslator& Prompt::NavManager::getTranslator()
+void Prompt::NavManager::getNormal(const Vector& pos, Vector &normal) const
+{
+  const auto &vegpos = *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&pos);
+  auto &vegnormal = *reinterpret_cast<vecgeom::Vector3D<vecgeom::Precision>*>(&normal);
+  m_currPV->Normal(vegpos, vegnormal);
+}
+
+
+const Prompt::GeoTranslator& Prompt::NavManager::getTranslator() const
 {
   return m_translator;
 }

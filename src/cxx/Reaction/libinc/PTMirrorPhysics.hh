@@ -34,13 +34,12 @@ namespace Prompt {
       virtual ~MirrorPhyiscs() = default;
       virtual void sampleFinalState(Prompt::Particle &particle) const override;
       double getEventWeight() const {return m_wAtQ;}
-      void setReflectionNormal(const Vector &nor) {m_refNorm=nor;}
 
     private:
       double m_m, m_R0, m_Qc, m_alpha, m_W, m_i_W;
       const double m_wcut;
       mutable double m_wAtQ;
-      Vector m_refNorm;
+      mutable Vector m_refNorm;
 
   };
 

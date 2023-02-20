@@ -122,7 +122,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
 
         //! first step of a particle in a volume
         // std::cout << navman.getVolumeName() << " " << particle.getPosition() << std::endl;
-        navman.setupVolumePhysics();
+        navman.setupVolPhysAndGeoTrans();
         navman.scoreSurface(particle);
 
         //if reflected or absorbed
