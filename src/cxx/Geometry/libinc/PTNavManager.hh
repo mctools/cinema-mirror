@@ -38,12 +38,12 @@ namespace Prompt {
   public:
     //return false if the track is terminated, i.e. exist world
     bool proprogateInAVolume(Particle &particle);
-    void locateLogicalVolume(const Vector &p);
-    bool exitWorld();
+    void locateLogicalVolume(const Vector &p) const;
+    bool exitWorld() const;
     void setupVolPhysAndGeoTrans();
-    size_t getVolumeID();
-    std::string getVolumeName();
-    const vecgeom::VPlacedVolume *getVolume();
+    size_t getVolumeID() const;
+    std::string getVolumeName() const;
+    const vecgeom::VPlacedVolume *getVolume() const;
 
     void scoreEntry(Particle &particle);
     void scorePropagate(Particle &particle);
@@ -53,8 +53,8 @@ namespace Prompt {
 
     bool hasPropagateScorer() {return m_matphysscor->propagate_scorers.size(); };
 
-    bool hasBoundaryPhyiscs();
-    bool surfaceReaction(Particle &particle);
+    bool hasBoundaryPhyiscs() const;
+    bool surfaceReaction(Particle &particle) const;
 
     //geotranslator and normal
     const GeoTranslator& getTranslator() const;
