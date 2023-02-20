@@ -21,7 +21,7 @@
 #include "PTLauncher.hh"
 
 #include "PTGeoManager.hh"
-#include "PTNavManager.hh"
+#include "PTActiveVolume.hh"
 #include "PTStackManager.hh"
 #include "PTMath.hh"
 #include "PTParticle.hh"
@@ -82,7 +82,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
   auto &rng = Singleton<SingletonPTRand>::getInstance();
 
   //create navigation manager
-  auto &navman = Singleton<NavManager>::getInstance();
+  auto &activeVolume = Singleton<ActiveVolume>::getInstance();
 
   auto &stackManager = Singleton<StackManager>::getInstance();
 
@@ -112,8 +112,8 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       }
 
       //! allocate the point in a volume
-      navman.locateLogicalVolume(particle.getPosition());
-      while(!navman.exitWorld() && particle.isAlive())
+      activeVolume.locateLogicalVolume(particle.getPosition());
+      while(!activeVolume.exitWorld() && particle.isAlive())
       {
         if(recordTrj)
         {
@@ -121,36 +121,36 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
         }
 
         //! first step of a particle in a volume
-        // std::cout << navman.getVolumeName() << " " << particle.getPosition() << std::endl;
-        navman.setupVolPhysAndGeoTrans();
-        navman.scoreSurface(particle);
+        // std::cout << activeVolume.getVolumeName() << " " << particle.getPosition() << std::endl;
+        activeVolume.setupVolPhysAndGeoTrans();
+        activeVolume.scoreSurface(particle);
 
         //if reflected or absorbed
-        if(navman.surfaceReaction(particle))
+        if(activeVolume.surfaceReaction(particle))
         {
           // std::cout << "reflection weight " << particle.getWeight() << "\n";
         }
-        navman.scoreEntry(particle);
+        activeVolume.scoreEntry(particle);
 
         //! within the next while loop, particle should move in the same volume
-        while(navman.proprogateInAVolume(particle) )
+        while(activeVolume.proprogateInAVolume(particle) )
         {
           // score if any scorer is available
-          if(navman.hasPropagateScorer())
+          if(activeVolume.hasPropagateScorer())
           {
-            navman.scorePropagate(particle);
+            activeVolume.scorePropagate(particle);
           }
           if(recordTrj)
             m_trajectory.push_back(particle.getPosition());
         }
-        navman.scoreExit(particle);
+        activeVolume.scoreExit(particle);
       }
 
       if(!particle.isAlive())
       {
         if(particle.getKillType()==Particle::KillType::ABSORB)
         {
-          navman.scoreAbsorb(particle);
+          activeVolume.scoreAbsorb(particle);
         }
       }
 

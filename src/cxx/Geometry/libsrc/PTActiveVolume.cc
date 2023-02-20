@@ -18,22 +18,22 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTNavManager.hh"
+#include "PTActiveVolume.hh"
 #include <VecGeom/navigation/BVHNavigator.h>
 #include <VecGeom/navigation/NewSimpleNavigator.h>
 #include "PTMirrorPhysics.hh"
 
-Prompt::NavManager::NavManager()
+Prompt::ActiveVolume::ActiveVolume()
 :m_geo(vecgeom::GeoManager::Instance()), m_currPV(nullptr),
 m_currState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth())),
 m_nextState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth()))
 {}
 
-Prompt::NavManager::~NavManager()
+Prompt::ActiveVolume::~ActiveVolume()
 {
   delete m_currState;
   delete m_nextState;
-  std::cout << "Destructed NavManager" << std::endl;
+  std::cout << "Destructed ActiveVolume" << std::endl;
 }
 
 Prompt::VolumePhysicsScorer *getLogicalVolumePhysicsScorer(const vecgeom::LogicalVolume &lv)
@@ -41,7 +41,7 @@ Prompt::VolumePhysicsScorer *getLogicalVolumePhysicsScorer(const vecgeom::Logica
   return (Prompt::VolumePhysicsScorer *)lv.GetUserExtensionPtr();
 }
 
-void Prompt::NavManager::locateLogicalVolume(const Vector &p) const
+void Prompt::ActiveVolume::locateLogicalVolume(const Vector &p) const
 {
   m_currState->Clear();
   auto pv = vecgeom::GlobalLocator::LocateGlobalPoint(m_geo.GetWorld(),
@@ -49,12 +49,12 @@ void Prompt::NavManager::locateLogicalVolume(const Vector &p) const
   assert(pv == m_currState->Top());
 }
 
-bool Prompt::NavManager::exitWorld() const
+bool Prompt::ActiveVolume::exitWorld() const
 {
   return m_currState->IsOutside();
 }
 
-void Prompt::NavManager::setupVolPhysAndGeoTrans()
+void Prompt::ActiveVolume::setupVolPhysAndGeoTrans()
 {
   // Find next step
   // m_currState->Top() gets the placed volume
@@ -62,10 +62,10 @@ void Prompt::NavManager::setupVolPhysAndGeoTrans()
   auto &geo = Singleton<GeoManager>::getInstance();
   m_matphysscor = geo.getVolumePhysicsScorer(getVolumeID())->second;
 
-  make_translator(); //set up the global to local translator for this volume
+  makeGeoTranslator(); //set up the global to local translator for this volume
 }
 
-bool Prompt::NavManager::surfaceReaction(Particle &particle) const
+bool Prompt::ActiveVolume::surfaceReaction(Particle &particle) const
 {
   if(hasBoundaryPhyiscs())
   {
@@ -76,7 +76,7 @@ bool Prompt::NavManager::surfaceReaction(Particle &particle) const
     return false;
 }
 
-void Prompt::NavManager::getNormal(const Vector& pos, Vector &normal) const
+void Prompt::ActiveVolume::getNormal(const Vector& pos, Vector &normal) const
 {
   const auto &vegpos = *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&pos);
   auto &vegnormal = *reinterpret_cast<vecgeom::Vector3D<vecgeom::Precision>*>(&normal);
@@ -84,35 +84,41 @@ void Prompt::NavManager::getNormal(const Vector& pos, Vector &normal) const
 }
 
 
-const Prompt::GeoTranslator& Prompt::NavManager::getTranslator() const
+const Prompt::GeoTranslator& Prompt::ActiveVolume::getGeoTranslator() const
 {
   return m_translator;
 }
 
-size_t Prompt::NavManager::getVolumeID() const
+size_t Prompt::ActiveVolume::getVolumeID() const
 {
   return m_currPV->GetLogicalVolume()->id();
 }
 
-std::string Prompt::NavManager::getVolumeName() const
+size_t Prompt::ActiveVolume::numSubVolume() const
+{
+  return m_currPV->GetLogicalVolume()->GetNTotal();
+}
+
+
+std::string Prompt::ActiveVolume::getVolumeName() const
 {
   return m_currPV->GetLogicalVolume()->GetName();
 }
 
-const vecgeom::VPlacedVolume *Prompt::NavManager::getVolume() const
+const vecgeom::VPlacedVolume *Prompt::ActiveVolume::getVolume() const
 {
   return m_currPV;
 }
 
 
-void Prompt::NavManager::make_translator()
+void Prompt::ActiveVolume::makeGeoTranslator()
 {
   auto& trans = m_translator.getTransformMatrix();
   m_currState->DeltaTransformation(1, trans); //this is the difference between the volume and the world
 }
 
 
-void Prompt::NavManager::scoreEntry(Prompt::Particle &particle)
+void Prompt::ActiveVolume::scoreEntry(Prompt::Particle &particle)
 {
   if(m_matphysscor->entry_scorers.size())
   {
@@ -123,7 +129,7 @@ void Prompt::NavManager::scoreEntry(Prompt::Particle &particle)
   }
 }
 
-void Prompt::NavManager::scoreSurface(Prompt::Particle &particle)
+void Prompt::ActiveVolume::scoreSurface(Prompt::Particle &particle)
 {
   auto localposition = particle.getPosition();
   if(m_matphysscor->surface_scorers.size())
@@ -135,7 +141,7 @@ void Prompt::NavManager::scoreSurface(Prompt::Particle &particle)
   }
 }
 
-void Prompt::NavManager::scoreAbsorb(Prompt::Particle &particle)
+void Prompt::ActiveVolume::scoreAbsorb(Prompt::Particle &particle)
 {
   if(m_matphysscor->absorb_scorers.size())
   {
@@ -146,7 +152,7 @@ void Prompt::NavManager::scoreAbsorb(Prompt::Particle &particle)
   }
 }
 
-void Prompt::NavManager::scorePropagate(Prompt::Particle &particle)
+void Prompt::ActiveVolume::scorePropagate(Prompt::Particle &particle)
 {
   if(m_matphysscor->propagate_scorers.size())
   {
@@ -157,7 +163,7 @@ void Prompt::NavManager::scorePropagate(Prompt::Particle &particle)
   }
 }
 
-void Prompt::NavManager::scoreExit(Prompt::Particle &particle)
+void Prompt::ActiveVolume::scoreExit(Prompt::Particle &particle)
 {
   if(m_matphysscor->exit_scorers.size())
   {
@@ -173,12 +179,12 @@ void Prompt::NavManager::scoreExit(Prompt::Particle &particle)
   }
 }
 
-bool Prompt::NavManager::hasBoundaryPhyiscs() const
+bool Prompt::ActiveVolume::hasBoundaryPhyiscs() const
 {
   return m_matphysscor->boundaryPhysics.use_count();
 }
 
-bool Prompt::NavManager::proprogateInAVolume(Particle &particle)
+bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
 {
   if(!particle.isAlive())
     return false;

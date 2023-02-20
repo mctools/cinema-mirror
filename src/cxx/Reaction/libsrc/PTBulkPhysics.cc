@@ -26,7 +26,7 @@
 #include "NCrystal/NCrystal.hh"
 #include "PTIdealElaScat.hh"
 #include "PTPhysicsFactory.hh"
-#include "PTNavManager.hh"
+#include "PTActiveVolume.hh"
 
 Prompt::BulkPhysics::BulkPhysics(const std::string &name)
     : m_rng(Singleton<SingletonPTRand>::getInstance()),
@@ -41,13 +41,13 @@ double Prompt::BulkPhysics::macroCrossSection(const Prompt::Particle &particle) 
 {
   // if(m_compModel->containOriented())
   // {
-  //   auto &navMan = Singleton<NavManager>::getInstance();
+  //   auto &activeVolume = Singleton<ActiveVolume>::getInstance();
   //
   //   std::cout << "global dir " << particle.getDirection() << ", pos " << particle.getPosition() << std::endl;
-  //   std::cout << "local dir " << navMan.getTranslator().global2Local_direction(particle.getDirection())
-  //             << ", pos " << navMan.getTranslator().global2Local(particle.getPosition()) << std::endl;
-  //   std::cout << "local dir back " << navMan.getTranslator().local2Global_direction(particle.getDirection())
-  //         << ", pos " << navMan.getTranslator().local2Global(particle.getPosition()) << std::endl;
+  //   std::cout << "local dir " << activeVolume.getTranslator().global2Local_direction(particle.getDirection())
+  //             << ", pos " << activeVolume.getTranslator().global2Local(particle.getPosition()) << std::endl;
+  //   std::cout << "local dir back " << activeVolume.getTranslator().local2Global_direction(particle.getDirection())
+  //         << ", pos " << activeVolume.getTranslator().local2Global(particle.getPosition()) << std::endl;
   // }
 
   double ekin = particle.hasEffEnergy() ? particle.getEffEKin() : particle.getEKin();

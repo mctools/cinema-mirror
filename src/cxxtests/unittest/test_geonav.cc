@@ -23,7 +23,7 @@
 #include <iostream>
 #include <memory>
 #include "PTGeoManager.hh"
-#include "PTNavManager.hh"
+#include "PTActiveVolume.hh"
 #include "PTMath.hh"
 #include "PTNeutron.hh"
 #include "PTProgressMonitor.hh"
@@ -41,7 +41,7 @@ TEST_CASE("GeoManager")
   geoman.loadFile(path +"/gdml/first_geo.gdml");
 
   //create navigation manager
-  auto &navman = pt::Singleton<pt::NavManager>::getInstance();
+  auto &activeVolume = pt::Singleton<pt::ActiveVolume>::getInstance();
 
 
   size_t numBeam = 10;
@@ -54,15 +54,15 @@ TEST_CASE("GeoManager")
     pt::Neutron neutron(0.05 , {0.,0.,1.}, {0,0,-12000.*pt::Unit::mm});
 
     //! allocate the point in a volume
-    navman.locateLogicalVolume(neutron.getPosition());
-    while(!navman.exitWorld() && neutron.isAlive())
+    activeVolume.locateLogicalVolume(neutron.getPosition());
+    while(!activeVolume.exitWorld() && neutron.isAlive())
     {
       //! first step of a particle in a volume
-      // std::cout << navman.getVolumeName() << " " << neutron.getPosition() << std::endl;
-      navman.setupVolumePhysics();
+      // std::cout << activeVolume.getVolumeName() << " " << neutron.getPosition() << std::endl;
+      activeVolume.setupVolPhysAndGeoTrans();
 
       //! the next while loop, particle should move in the same volume
-      while(navman.proprogateInAVolume(neutron))
+      while(activeVolume.proprogateInAVolume(neutron))
       {
         if(neutron.isAlive())
           continue;

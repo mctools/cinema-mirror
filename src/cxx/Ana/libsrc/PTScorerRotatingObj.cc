@@ -56,7 +56,7 @@ Prompt::Vector Prompt::ScorerRotatingObj::getLinearVelocity(const Vector &pos)
 
 void Prompt::ScorerRotatingObj::score(Prompt::Particle &particle)
 {
-  // when exiting Prompt::NavManager::scoreExit sets the effdirection to null vector
+  // when exiting Prompt::ActiveVolume::scoreExit sets the effdirection to null vector
   Vector vrot = getLinearVelocity(particle.getPosition());
   Vector labVel = particle.getDirection()* particle.calcSpeed();
   Vector comovingVel = labVel-vrot;

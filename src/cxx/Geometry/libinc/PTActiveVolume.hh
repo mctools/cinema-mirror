@@ -1,5 +1,5 @@
-#ifndef Prompt_NavManager_hh
-#define Prompt_NavManager_hh
+#ifndef Prompt_ActiveVolume_hh
+#define Prompt_ActiveVolume_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -34,7 +34,7 @@
 
 namespace Prompt {
 
-  class NavManager  {
+  class ActiveVolume  {
   public:
     //return false if the track is terminated, i.e. exist world
     bool proprogateInAVolume(Particle &particle);
@@ -57,14 +57,19 @@ namespace Prompt {
     bool surfaceReaction(Particle &particle) const;
 
     //geotranslator and normal
-    const GeoTranslator& getTranslator() const;
-    void make_translator();
+    const GeoTranslator& getGeoTranslator() const;
+    void makeGeoTranslator();
+
+    // calculate the normal on the surface of the current volume
     void getNormal(const Vector& pos, Vector &normal) const;
 
+    // return the number of subvolumes in the current physical volume
+    size_t numSubVolume() const;
+
   private:
-    friend class Singleton<NavManager>;
-    NavManager();
-    ~NavManager();
+    friend class Singleton<ActiveVolume>;
+    ActiveVolume();
+    ~ActiveVolume();
 
     vecgeom::GeoManager &m_geo;
     const vecgeom::VPlacedVolume *m_currPV;

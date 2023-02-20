@@ -19,7 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTScorerPSD.hh"
-#include "PTNavManager.hh"
+#include "PTActiveVolume.hh"
 
 Prompt::ScorerPSD::ScorerPSD(const std::string &name, double xmin, double xmax,
    unsigned nxbins, double ymin, double ymax, unsigned nybins, ScorerType stype, PSDType type)
@@ -32,8 +32,8 @@ Prompt::ScorerPSD::~ScorerPSD() {}
 
 void Prompt::ScorerPSD::score(Prompt::Particle &particle)
 {
-  auto &navMan = Singleton<NavManager>::getInstance();
-  Vector vec = navMan.getTranslator().global2Local(particle.getPosition());
+  auto &activeVolume = Singleton<ActiveVolume>::getInstance();
+  Vector vec = activeVolume.getGeoTranslator().global2Local(particle.getPosition());
 
   if (m_type==PSDType::XY)
     m_hist->fill(vec.x(), vec.y(), particle.getWeight() );

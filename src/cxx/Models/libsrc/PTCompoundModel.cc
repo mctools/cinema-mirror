@@ -22,7 +22,7 @@
 #include "PTNCrystalScat.hh"
 #include "PTNCrystalAbs.hh"
 #include "PTPhysicsModel.hh"
-#include "PTNavManager.hh"
+#include "PTActiveVolume.hh"
 
 Prompt::CompoundModel::CompoundModel(int gpd)
 :m_cache({}), m_containsOriented(false), m_rng( Singleton<SingletonPTRand>::getInstance() ),
@@ -89,8 +89,8 @@ double Prompt::CompoundModel::totalCrossSection(double ekin, const Vector &dir) 
       double channelxs(0);
       if(m_models[i]->isOriented())
       {
-        auto &navMan = Singleton<NavManager>::getInstance();
-        m_localdir =  navMan.getTranslator().global2Local_direction(dir);
+        auto &activeVolume = Singleton<ActiveVolume>::getInstance();
+        m_localdir =  activeVolume.getGeoTranslator().global2Local_direction(dir);
         channelxs = m_models[i]->getCrossSection(ekin, m_localdir) ;
       }
       else  {
@@ -138,9 +138,9 @@ void Prompt::CompoundModel::generate(double ekin, const Vector &dir, double &fin
 
   if(m_models[i]->isOriented())
   {
-    auto &navMan = Singleton<NavManager>::getInstance();
+    auto &activeVolume = Singleton<ActiveVolume>::getInstance();
     m_models[i]->generate(ekin, m_localdir, final_ekin, final_dir);
-    final_dir =  navMan.getTranslator().local2Global_direction(final_dir);
+    final_dir =  activeVolume.getGeoTranslator().local2Global_direction(final_dir);
   }
   else
     m_models[i]->generate(ekin, dir, final_ekin, final_dir);
