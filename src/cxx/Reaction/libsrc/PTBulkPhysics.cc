@@ -156,7 +156,8 @@ void Prompt::BulkPhysics::cfgPhysicsModel(const std::string &cfgstr, double bias
   {
     std::cout << "PhysicsType type NC_SCATTER" << std::endl;
     m_compModel = pfact.createBulkPhysics(cfgstr);
-    m_numdensity = pfact.nccalNumDensity(cfgstr);
+    pt_assert(m_compModel->getModels().size() == 1);
+    m_numdensity = pfact.nccalNumDensity(cfgstr);asdf adf 
   }
   else if (type == PhysicsFactory::PhysicsType::NC_RAW)
   {
@@ -168,7 +169,7 @@ void Prompt::BulkPhysics::cfgPhysicsModel(const std::string &cfgstr, double bias
   {
     std::cout << "PhysicsType type NC_IDEALSCAT" << std::endl;
     m_compModel = pfact.createBulkPhysics(cfgstr);
-    pt_assert(m_compModel->getModels().size == 1);
+    pt_assert(m_compModel->getModels().size() == 1);
     auto &aa = *reinterpret_cast<IdealElaScat *>(m_compModel->getModels()[0].get());
     m_numdensity = aa.getNumberDensity();
   }
