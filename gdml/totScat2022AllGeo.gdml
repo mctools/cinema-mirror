@@ -119,7 +119,7 @@
         <volume name="LV_Tube300_He">
             <solidref ref="Tube300_He" />
             <materialref ref="G4_He" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_300;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=30000;type=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_300;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=30000;ptstate=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
         </volume>
 
         <volume name="LV_Tube300_Wall">
@@ -140,7 +140,7 @@
 
         <volume name="LV_Tube500_He">
             <solidref ref="Tube500_He" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_500;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=30000;type=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_500;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=30000;ptstate=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
             <materialref ref="G4_He" />
         </volume>
 

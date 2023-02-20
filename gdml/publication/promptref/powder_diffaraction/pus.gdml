@@ -242,7 +242,7 @@
             <solidref ref="Sphere_Detector"/>
             <materialref ref="G4_He3"/>
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronStheta;name=ST_template;sample_position=0,-1750,0;beam_direction=0,-1,0;src_sample_dist=3650.;Qmin=10.0;Qmax=160;numbin=6000;type=ENTRY"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronStheta;name=ST_template;sample_position=0,-1750,0;beam_direction=0,-1,0;src_sample_dist=3650.;Qmin=10.0;Qmax=160;numbin=6000;ptstate=ENTRY"/>
         </volume>
 
         <volume name="worldVOL">
