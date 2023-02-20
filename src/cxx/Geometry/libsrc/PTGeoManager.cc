@@ -202,11 +202,11 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
             }
             std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
           }
-          else if(info.GetType() == "BoundaryPhysics")
+          else if(info.GetType() == "SurfaceProcess")
           {
-            std::cout << "BoundaryPhysics: vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
-            vps->boundaryPhysics = Singleton<PhysicsFactory>::getInstance().createBoundaryPhysics(info.GetValue());
-            std::cout << "Added BoundaryPhysics " <<  info.GetValue() << std::endl;
+            std::cout << "SurfaceProcess: vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
+            vps->surfaceProcess = Singleton<PhysicsFactory>::getInstance().createSurfaceProcess(info.GetValue());
+            std::cout << "Added SurfaceProcess " <<  info.GetValue() << std::endl;
           }
         }
       }

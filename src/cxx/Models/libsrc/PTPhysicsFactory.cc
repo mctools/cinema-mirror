@@ -194,7 +194,7 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics
 }
 
 
-std::shared_ptr<Prompt::BoundaryPhysics> Prompt::PhysicsFactory::createBoundaryPhysics(const std::string &cfgstr)
+std::shared_ptr<Prompt::SurfaceProcess> Prompt::PhysicsFactory::createSurfaceProcess(const std::string &cfgstr)
 {
   std::cout << "Parsing config string for a physics model: \n";
 
@@ -211,7 +211,7 @@ std::shared_ptr<Prompt::BoundaryPhysics> Prompt::PhysicsFactory::createBoundaryP
   }
   else
   {
-    std::shared_ptr<BoundaryPhysics> phy;
+    std::shared_ptr<SurfaceProcess> phy;
 
     if(physDef == "MirrorPhyiscs")
     {

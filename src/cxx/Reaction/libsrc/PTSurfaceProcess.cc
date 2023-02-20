@@ -18,7 +18,7 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTBulkPhysics.hh"
+#include "PTSurfaceProcess.hh"
 #include "PTUnitSystem.hh" //const_neutron_pgd
 
 #include <cmath>

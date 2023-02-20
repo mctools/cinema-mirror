@@ -23,7 +23,7 @@
 
 #include "PromptCore.hh"
 #include "PTSingleton.hh"
-#include "PTBoundaryPhysics.hh"
+#include "PTSurfaceProcess.hh"
 #include "PTCompoundModel.hh"
 
 namespace Prompt {
@@ -45,7 +45,7 @@ namespace Prompt {
     double nccalNumDensity(const std::string &nccfgstr); // ncrystal cfg string
     void showNCComposition(const std::string &nccfgstr);
 
-    std::shared_ptr<BoundaryPhysics> createBoundaryPhysics(const std::string &cfgstr);
+    std::shared_ptr<SurfaceProcess> createSurfaceProcess(const std::string &cfgstr);
     std::unique_ptr<CompoundModel> createBulkPhysics(const std::string &cfgstr);
     PhysicsType checkPhysicsType(const std::string &cfgstr) const;
 

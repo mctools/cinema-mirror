@@ -24,11 +24,11 @@
 #include <string>
 
 #include "PromptCore.hh"
-#include "PTBoundaryPhysics.hh"
+#include "PTSurfaceProcess.hh"
 
 namespace Prompt {
 
-  class MirrorPhyiscs  : public BoundaryPhysics {
+  class MirrorPhyiscs  : public SurfaceProcess {
     public:
       MirrorPhyiscs(double mvalue, double weightCut = 1e-3);
       virtual ~MirrorPhyiscs() = default;

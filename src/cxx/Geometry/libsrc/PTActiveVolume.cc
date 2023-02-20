@@ -69,7 +69,7 @@ bool Prompt::ActiveVolume::surfaceReaction(Particle &particle) const
 {
   if(hasBoundaryPhyiscs())
   {
-    m_matphysscor->boundaryPhysics->sampleFinalState(particle);
+    m_matphysscor->surfaceProcess->sampleFinalState(particle);
     return true;
   }
   else
@@ -187,7 +187,7 @@ void Prompt::ActiveVolume::scoreExit(Prompt::Particle &particle)
 
 bool Prompt::ActiveVolume::hasBoundaryPhyiscs() const
 {
-  return m_matphysscor->boundaryPhysics.use_count();
+  return m_matphysscor->surfaceProcess.use_count();
 }
 
 bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)

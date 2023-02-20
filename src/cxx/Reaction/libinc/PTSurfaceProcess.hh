@@ -1,5 +1,5 @@
-#ifndef Prompt_BoundaryPhysics_hh
-#define Prompt_BoundaryPhysics_hh
+#ifndef Prompt_SurfaceProcess_hh
+#define Prompt_SurfaceProcess_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -28,12 +28,12 @@
 #include "PTPhysicsModel.hh"
 
 namespace Prompt {
-  class BoundaryPhysics : public PhysicsBase  {
+  class SurfaceProcess : public PhysicsBase  {
   public:
     // by default the physics is applicable for neutron (2112)
-    BoundaryPhysics(const std::string& name, unsigned pgd=2112, double en_lowerlimt=0, double en_upperlim=std::numeric_limits<double>::max())
+    SurfaceProcess(const std::string& name, unsigned pgd=2112, double en_lowerlimt=0, double en_upperlim=std::numeric_limits<double>::max())
       : PhysicsBase(name, pgd, en_lowerlimt, en_upperlim)  {};
-    virtual ~BoundaryPhysics() = default;
+    virtual ~SurfaceProcess() = default;
     virtual void sampleFinalState(Particle &particle) const = 0;
   };
 

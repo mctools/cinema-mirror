@@ -24,14 +24,14 @@
 #include <string>
 
 #include "PromptCore.hh"
-#include "PTBoundaryPhysics.hh"
+#include "PTSurfaceProcess.hh"
 #include "PTActiveVolume.hh"
 
 namespace Prompt {
 
-  class RayTracingProcess  : public BoundaryPhysics {
+  class RayTracingProcess  : public SurfaceProcess {
     public:
-      RayTracingProcess() :Prompt::BoundaryPhysics("RayTracing") 
+      RayTracingProcess() :Prompt::SurfaceProcess("RayTracing") 
           , m_activeVol(Singleton<ActiveVolume>::getInstance()) { };
       virtual ~RayTracingProcess() = default;
 

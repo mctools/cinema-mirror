@@ -54,7 +54,7 @@ TEST_CASE("GeoManager")
     pt::Neutron neutron(0.05 , {0.,0.,1.}, {0,0,-12000.*pt::Unit::mm});
 
     //! allocate the point in a volume
-    activeVolume.locateLogicalVolume(neutron.getPosition());
+    activeVolume.locateActiveVolume(neutron.getPosition());
     while(!activeVolume.exitWorld() && neutron.isAlive())
     {
       //! first step of a particle in a volume

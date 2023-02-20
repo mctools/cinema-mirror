@@ -29,13 +29,13 @@
 #include "PTSingleton.hh"
 #include "PTScorer.hh"
 #include "PTPrimaryGun.hh"
-#include "PTBoundaryPhysics.hh"
+#include "PTSurfaceProcess.hh"
 
 namespace Prompt {
 
   struct VolumePhysicsScorer { // to attach to a volume
     std::shared_ptr<BulkPhysics> bulkPhysics; //bulk physics
-    std::shared_ptr<BoundaryPhysics> boundaryPhysics; //boundary physics
+    std::shared_ptr<SurfaceProcess> surfaceProcess; //boundary physics
     std::vector< std::shared_ptr<Scorer> >  scorers; /*scorer name, scorer*/
 
     std::vector< std::shared_ptr<Scorer> >  surface_scorers;
