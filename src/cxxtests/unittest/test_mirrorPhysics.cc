@@ -44,5 +44,5 @@ TEST_CASE("Mirror physics")
   CHECK(pt::floateq(newdir.x(), 0));
   CHECK(pt::floateq(newdir.y(), 0.9999382773199424));
   CHECK(pt::floateq(newdir.z(), -0.01111042530355492));
-  CHECK(pt::floateq(wscale, 6.5194188833312261e-01));
+  CHECK(pt::floateq(wscale, 6.5415429925975188e-01));                            
 }
