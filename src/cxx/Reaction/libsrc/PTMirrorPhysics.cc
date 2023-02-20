@@ -23,7 +23,7 @@
 #include "PTActiveVolume.hh"
 
 Prompt::MirrorPhyiscs::MirrorPhyiscs(double mvalue, double weightCut)
-:Prompt::BoundaryPhysics(Prompt::BoundaryPhysics::PhysicsType::Mirror), m_wcut(weightCut), m_wAtQ(0.)
+:Prompt::BoundaryPhysics("MirrorPhysics"), m_wcut(weightCut), m_wAtQ(0.)
 {
   std::cout << "constructor mirror physics " << std::endl;
   //parameters sync with mcastas 2.7 guide component default value

@@ -45,8 +45,8 @@ void Prompt::ActiveVolume::locateLogicalVolume(const Vector &p) const
 {
   m_currState->Clear();
   auto pv = vecgeom::GlobalLocator::LocateGlobalPoint(m_geo.GetWorld(),
-                          {p.x(), p.y(), p.z()}, *m_currState, true);
-  assert(pv == m_currState->Top());
+                          *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&p), *m_currState, true);
+  pt_assert_always(pv == m_currState->Top());
 }
 
 bool Prompt::ActiveVolume::exitWorld() const

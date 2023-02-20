@@ -1,5 +1,5 @@
-#ifndef Prompt_BoundaryPhysics_hh
-#define Prompt_BoundaryPhysics_hh
+#ifndef Prompt_RayTracingProcess_hh
+#define Prompt_RayTracingProcess_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -22,19 +22,21 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <string>
+
 #include "PromptCore.hh"
-#include "PTParticle.hh"
-#include "PTRandCanonical.hh"
-#include "PTPhysicsModel.hh"
+#include "PTBoundaryPhysics.hh"
+#include "PTActiveVolume.hh"
 
 namespace Prompt {
-  class BoundaryPhysics : public PhysicsBase  {
-  public:
-    // by default the physics is applicable for neutron (2112)
-    BoundaryPhysics(const std::string& name, unsigned pgd=2112, double en_lowerlimt=0, double en_upperlim=std::numeric_limits<double>::max())
-      : PhysicsBase(name, pgd, en_lowerlimt, en_upperlim)  {};
-    virtual ~BoundaryPhysics() = default;
-    virtual void sampleFinalState(Particle &particle) const = 0;
+
+  class RayTracingProcess  : public BoundaryPhysics {
+    public:
+      RayTracingProcess() :Prompt::BoundaryPhysics("RayTracing") 
+          , m_activeVol(Singleton<ActiveVolume>::getInstance()){};
+      virtual ~RayTracingProcess() = default;
+
+    protected:
+      ActiveVolume &m_activeVol;
   };
 
 }

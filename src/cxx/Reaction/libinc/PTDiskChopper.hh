@@ -24,23 +24,23 @@
 #include <string>
 
 #include "PromptCore.hh"
-#include "PTBoundaryPhysics.hh"
+#include "PTRayTracingProcess.hh"
 
 namespace Prompt {
 
-  class DiskChopper  : public BoundaryPhysics
+  class DiskChopper  : public RayTracingProcess
   {
     public:
       enum class ActiveFace {XY, XZ, YZ};
 
     public:
-      DiskChopper(const Vector &centre, double radius, double theta0, double h, double phase, double freq);
+      DiskChopper(const Vector &centre_mm, double radius_mm, double theta0_deg, double h_mm, double phase_deg, double rotFreq_Hz);
       virtual ~DiskChopper() = default;
       virtual void sampleFinalState(Particle &particle) const override;
 
     private:
       Vector m_centre;
-      double m_theta0, m_h, m_phase, m_freq;
+      double m_theta0, m_h, m_phase, m_rotFreq;
   };
 
 }

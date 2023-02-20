@@ -21,8 +21,8 @@
 #include "PTDiskChopper.hh"
 #include "PTUtils.hh"
 
-Prompt::DiskChopper::DiskChopper(const Vector &centre, double radius, double theta0, double h, double phase, double freq)
-:Prompt::BoundaryPhysics(Prompt::BoundaryPhysics::PhysicsType::DiskChopper)
+Prompt::DiskChopper::DiskChopper(const Vector &centre_mm, double radius_mm, double theta0_deg, double h_mm, double phase_deg, double rotFreq_Hz)
+:Prompt::RayTracingProcess()
 {
 }
 

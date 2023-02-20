@@ -34,7 +34,7 @@ namespace Prompt {
     friend class PrimaryGun;
 
   public:
-    enum class KillType {ABSORB, BIAS, SCORE };
+    enum class KillType {ABSORB, BIAS, SCORE, RT_ABSORB };
   public:
     Particle();
     Particle(double ekin, const Vector& dir, const Vector& pos);
