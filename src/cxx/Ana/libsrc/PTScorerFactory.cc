@@ -59,9 +59,9 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // example cfg
       // ""Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=-100;
-      // type=ENTRY; linear=yes; Qmin=0.5; Qmax = 50; numbin=1000""
+      // ptstate=ENTRY; linear=yes; Qmin=0.5; Qmax = 50; numbin=1000""
 
-      // where type can be ENTRY(default) or ABSORB, the default value for linear is yes
+      // where ptstate can be ENTRY(default) or ABSORB, the default value for linear is yes
 
 
       int parCount = 12;
