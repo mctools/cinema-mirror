@@ -197,18 +197,16 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
               scor = scorerFactory.createScorer(info.GetValue(), volume.GetUnplacedVolume()->Capacity() );
               m_globelScorers[info.GetValue()]=scor;
               vps->scorers.push_back(scor);
-              std::cout << "vol name " << volume.GetName() <<" capacity "<<  volume.GetUnplacedVolume()->Capacity()  << std::endl;
+              std::cout << "Scorer for vol name " << volume.GetName() <<" capacity "<<  volume.GetUnplacedVolume()->Capacity()  << std::endl;
 
             }
             std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
           }
           else if(info.GetType() == "BoundaryPhysics")
           {
-            std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
-            std::cout << "info is " << info.GetValue() << std::endl;
-
+            std::cout << "BoundaryPhysics: vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
             vps->boundaryPhysics = Singleton<PhysicsFactory>::getInstance().createBoundaryPhysics(info.GetValue());
-            std::cout << "added mirror physics " << std::endl;
+            std::cout << "Added BoundaryPhysics " <<  info.GetValue() << std::endl;
           }
         }
       }

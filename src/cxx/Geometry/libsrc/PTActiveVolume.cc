@@ -41,7 +41,7 @@ Prompt::VolumePhysicsScorer *getLogicalVolumePhysicsScorer(const vecgeom::Logica
   return (Prompt::VolumePhysicsScorer *)lv.GetUserExtensionPtr();
 }
 
-void Prompt::ActiveVolume::locateLogicalVolume(const Vector &p) const
+void Prompt::ActiveVolume::locateActiveVolume(const Vector &p) const
 {
   m_currState->Clear();
   auto pv = vecgeom::GlobalLocator::LocateGlobalPoint(m_geo.GetWorld(),
@@ -97,6 +97,12 @@ size_t Prompt::ActiveVolume::getVolumeID() const
 size_t Prompt::ActiveVolume::numSubVolume() const
 {
   return m_currPV->GetLogicalVolume()->GetNTotal();
+}
+
+double Prompt::ActiveVolume::distanceToOut(const Vector& pos, const Vector &dir) const
+{
+  return m_currPV->DistanceToOut(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&pos),
+                                 *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&dir));
 }
 
 

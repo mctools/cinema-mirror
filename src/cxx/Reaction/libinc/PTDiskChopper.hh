@@ -28,19 +28,24 @@
 
 namespace Prompt {
 
+  // The class DiskChopper is a ray-tracing model for a finite thickness 
+  // neutron black disk with n symmetrical openings. The disk is parallel
+  // with the X-Y plane. The beginning of the opening
+  // is aligned with the T0. The difference can be specified as the phase
+  // The centre is defined using the reference frame of the volume.
+  // The positive rotation direction is right handed in given rotation axis
   class DiskChopper  : public RayTracingProcess
   {
     public:
-      enum class ActiveFace {XY, XZ, YZ};
-
-    public:
-      DiskChopper(const Vector &centre_mm, double radius_mm, double theta0_deg, double h_mm, double phase_deg, double rotFreq_Hz);
+      DiskChopper(double centre_x_mm, double centre_y_mm,  
+                  double theta0_deg, double r_mm, double phase_deg, double rotFreq_Hz, unsigned n);
       virtual ~DiskChopper() = default;
       virtual void sampleFinalState(Particle &particle) const override;
 
+
     private:
-      Vector m_centre;
-      double m_theta0, m_h, m_phase, m_rotFreq;
+      double m_centre_x, m_centre_y;
+      double m_theta0, m_r, m_phase, m_angularSpeed, m_angularPeriod;
   };
 
 }

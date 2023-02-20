@@ -38,7 +38,9 @@ namespace Prompt {
   public:
     //return false if the track is terminated, i.e. exist world
     bool proprogateInAVolume(Particle &particle);
-    void locateLogicalVolume(const Vector &p) const;
+
+    //locate the active volume
+    void locateActiveVolume(const Vector &p) const;
     bool exitWorld() const;
     void setupVolPhysAndGeoTrans();
     size_t getVolumeID() const;
@@ -65,6 +67,9 @@ namespace Prompt {
 
     // return the number of subvolumes in the current physical volume
     size_t numSubVolume() const;
+
+    // return the the safety 
+    double distanceToOut(const Vector& pos, const Vector &dir) const;
 
   private:
     friend class Singleton<ActiveVolume>;

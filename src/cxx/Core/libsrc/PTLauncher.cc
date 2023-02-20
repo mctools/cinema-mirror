@@ -112,7 +112,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       }
 
       //! allocate the point in a volume
-      activeVolume.locateLogicalVolume(particle.getPosition());
+      activeVolume.locateActiveVolume(particle.getPosition());
       while(!activeVolume.exitWorld() && particle.isAlive())
       {
         if(recordTrj)
@@ -125,7 +125,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
         activeVolume.setupVolPhysAndGeoTrans();
         activeVolume.scoreSurface(particle);
 
-        //if reflected or absorbed
+        //if reflected, absorbed, transmitted
         if(activeVolume.surfaceReaction(particle))
         {
           // std::cout << "reflection weight " << particle.getWeight() << "\n";

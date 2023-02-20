@@ -22,6 +22,8 @@
 #include "PTUtils.hh"
 #include "PTCfgParser.hh"
 #include "PTMirrorPhysics.hh"
+#include "PTDiskChopper.hh"
+
 #include "NCrystal/NCrystal.hh"
 #include "PTNCrystalScat.hh"
 #include "PTNCrystalAbs.hh"
@@ -237,6 +239,19 @@ std::shared_ptr<Prompt::BoundaryPhysics> Prompt::PhysicsFactory::createBoundaryP
       }
 
       phy = std::make_shared<MirrorPhyiscs>(m, threshold);
+    }
+    else if(physDef=="DiskChopper")
+    {
+      // DiskChopper(double centre_x_mm, double centre_y_mm,  
+      //       double theta0_deg, double r_mm, double phase_deg, double rotFreq_Hz, unsigned n);
+
+      double theta0_deg = 5;
+      double r_mm = 20;
+      double phase_deg = 0;
+      double rotFreq_Hz=100;
+      unsigned n = 10;
+
+      phy = std::make_shared<DiskChopper>(0,0, theta0_deg, r_mm, phase_deg, rotFreq_Hz, n);
     }
 
     if(phy)

@@ -32,7 +32,7 @@ namespace Prompt {
   class RayTracingProcess  : public BoundaryPhysics {
     public:
       RayTracingProcess() :Prompt::BoundaryPhysics("RayTracing") 
-          , m_activeVol(Singleton<ActiveVolume>::getInstance()){};
+          , m_activeVol(Singleton<ActiveVolume>::getInstance()) { };
       virtual ~RayTracingProcess() = default;
 
     protected:
