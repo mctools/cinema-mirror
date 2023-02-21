@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<gdml>
+
+    <userinfo>
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=1;moderator_height_y=1;moderator_positon_z=-9999;
+                                    slit_width_x=1;slit_height_y=1;slit_position_z=1e10;temperature=293.15;" />
+    </userinfo>
+
+    <materials>
+        <material name="Vacuum">
+          <atom value="vacuum.ncmat"/>
+        </material>
+    </materials>
+
+    <material name="Cd">
+        <atom value="Cd.ncmat"/>
+    </material>
+
+    <solids>
+        <box lunit="mm" name="WorldBox" x="200.0" y="200.0" z="20000.0" />
+        <box lunit="mm" name="Chopper1" x="100.0" y="100.0" z="4.0" />
+        <box name="DetectorSolid" x="100" y="100" z="0.00001" />
+    </solids>
+
+    <structure>
+        <volume name="LV_Chopper1">
+            <solidref ref="Chopper1" />
+            <materialref ref="Vacuum" />
+            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=DiskChopper;rotFreq_Hz=100;r_mm=20;theta0_deg=10;n=10"/>
+        </volume>
+
+        <volume name="Detector">
+            <materialref ref="Vacuum"/>
+            <solidref ref="DetectorSolid"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap;xmin=-50;xmax=50;numBins_x=100;ymin=-50;ymax=50;numBins_y=100;ptstate=SURFACE;type=XY"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=detector; Tmin=0.0; Tmax=0.05; numbin=1000"/>
+        </volume>
+
+
+        <volume name="worldVOL">
+            <solidref ref="WorldBox" />
+            <materialref ref="Vacuum" />
+
+            <physvol>
+                <volumeref ref="LV_Chopper1" />
+                <position name="P_PhyVol1" unit="mm" x="25.0" y="0.0" z="0.0" />
+                <rotation name="R_PhyVol1" unit="deg" x="0.0" y="0.0" z="0.0" />
+            </physvol>
+
+            <physvol>
+                <volumeref ref="Detector"/>
+                <position name="DetPost" x="25.0" y="0.0" z="70.0" />
+            </physvol>
+
+
+        </volume>
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="worldVOL" />
+    </setup>
+</gdml>

@@ -68,6 +68,18 @@ namespace Prompt {
         }
       }
 
+      bool getUnsignedIfExist(const std::string &key, unsigned &vale)
+      {
+        std::string valueAsStr = find(key);
+        if(!getStringIfExist(key, valueAsStr))
+          return false;
+        else
+        {
+          vale = ptstou(valueAsStr);
+          return true;
+        }
+      }
+
       bool getIntIfExist(const std::string &key, int &vale)
       {
         std::string valueAsStr = find(key);

@@ -63,6 +63,20 @@ int Prompt::ptstoi(const std::string& text)
   }
 }
 
+int Prompt::ptstou(const std::string& text)
+{
+  try
+  {
+    return std::stol(text);
+  }
+  catch(...)
+  {
+    // std::invalid_argument, std::out_of_range
+    PROMPT_THROW2(BadInput, "ptstou failed to convert an unsigned from the input string " << text);
+  }
+}
+
+
 
 double Prompt::ptstod(const std::string& text)
 {

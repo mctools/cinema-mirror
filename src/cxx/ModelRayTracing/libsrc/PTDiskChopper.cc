@@ -56,7 +56,7 @@ void Prompt::DiskChopper::sampleFinalState(Particle &particle) const
 
     double hitAngle = atan2(x, y);  
     if(hitAngle < 0) // so the range are between (0, 2pi)
-        hitAngle += M_PI;
+        hitAngle += 2*M_PI;
     hitAngle = fmod(hitAngle, m_angularPeriod);
 
     // test intersection with the opening

@@ -29,6 +29,7 @@ namespace Prompt {
   Vector string2vec(const std::string& text, char delimiter=',');
   double ptstod(const std::string& text);
   int ptstoi(const std::string& text);
+  int ptstou(const std::string& text);
   unsigned crc32(const char * buffer , int length);
   unsigned crc32(const std::string& str);
   std::string getTypeName(const std::type_info& ti);

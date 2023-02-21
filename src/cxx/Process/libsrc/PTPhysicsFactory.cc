@@ -235,7 +235,7 @@ std::shared_ptr<Prompt::SurfaceProcess> Prompt::PhysicsFactory::createSurfacePro
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Cfgstr for a mirror physics is missing or with extra config parameters" << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Cfgstr for a mirror physics is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
       phy = std::make_shared<Mirror>(m, threshold);
@@ -244,14 +244,43 @@ std::shared_ptr<Prompt::SurfaceProcess> Prompt::PhysicsFactory::createSurfacePro
     {
       // DiskChopper(double centre_x_mm, double centre_y_mm,  
       //       double theta0_deg, double r_mm, double phase_deg, double rotFreq_Hz, unsigned n);
+      int parCount = 8;
 
-      double theta0_deg = 5;
-      double r_mm = 20;
+      // optional parameters
+      double centre_x_mm = 0;
+      if(!cfg.getDoubleIfExist("centre_x_mm", centre_x_mm))
+        parCount--;
+
+      double centre_y_mm = 0;
+      if(!cfg.getDoubleIfExist("centre_y_mm", centre_y_mm))
+        parCount--;
+
+      double theta0_deg = 0;
+      if(!cfg.getDoubleIfExist("theta0_deg", theta0_deg))
+        parCount--;
+
+      double r_mm = 0;
+      if(!cfg.getDoubleIfExist("r_mm", r_mm))
+        parCount--;
+
       double phase_deg = 0;
-      double rotFreq_Hz=100;
-      unsigned n = 10;
+      if(!cfg.getDoubleIfExist("phase_deg", phase_deg))
+        parCount--;
 
-      phy = std::make_shared<DiskChopper>(0,0, theta0_deg, r_mm, phase_deg, rotFreq_Hz, n);
+      double rotFreq_Hz = 0;
+      if(!cfg.getDoubleIfExist("rotFreq_Hz", rotFreq_Hz))
+        parCount--;
+
+      unsigned n = 0;
+      if(!cfg.getUnsignedIfExist("n", n))
+        parCount--;
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Cfgstr for a DiskChopper physics is missing or with extra config parameters " << cfg.size() << " " << parCount );
+      }
+
+      phy = std::make_shared<DiskChopper>(centre_x_mm, centre_y_mm, theta0_deg, r_mm, phase_deg, rotFreq_Hz, n);
     }
 
     if(phy)
