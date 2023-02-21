@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <gdml>
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wavelength=0.7;range_wavelength=0.01;moderator_width_x=6;moderator_height_y=6;moderator_positon_z=-10000;slit_width_x=6;slit_height_y=6;slit_position_z=-1000" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wavelength=3;range_wavelength=0.01;moderator_width_x=6;moderator_height_y=6;moderator_positon_z=-10000;slit_width_x=6;slit_height_y=6;slit_position_z=-1000" />
     </userinfo>
 
     <define>
@@ -27,8 +27,13 @@
         </material>
 
         <material name="idealScat">
-          <atom value="physics=idealElaScat;xs_barn=1.0;density_per_aa3=0.01;scatter_bias=1"/>
+          <atom value="physics=idealElaScat;xs_barn=5.0;density_per_aa3=0.0723244;scatter_bias=1"/>
         </material>
+
+        <material name="V">
+          <atom value="physics=ncrystal;nccfg='V_sg229.ncmat';scatter_bias=1;abs_bias=0"/>
+        </material>
+
 
     </materials>
 

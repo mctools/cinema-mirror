@@ -47,11 +47,11 @@ Prompt::GeoManager::GeoManager()
 Prompt::GeoManager::~GeoManager()
 {
   std::cout << "Simulation completed!\n";
-  std::cout << "Simulation created " << numBulkPhysics() << " material physics\n";
+  std::cout << "Simulation created " << numBulkMaterialProcess() << " material physics\n";
   std::cout << "There are " << numScorer() << " scorers in total\n";
 }
 
-std::shared_ptr<Prompt::BulkPhysics> Prompt::GeoManager::getBulkPhysics(const std::string &name)
+std::shared_ptr<Prompt::BulkMaterialProcess> Prompt::GeoManager::getBulkMaterialProcess(const std::string &name)
 {
   auto it = m_globelPhysics.find(name);
   if(it!=m_globelPhysics.end())
@@ -214,7 +214,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
     // 3. setup physics model, if it is not yet set
     const vgdml::Material& mat = mat_iter->second;
-    auto matphys = getBulkPhysics(mat.name);
+    auto matphys = getBulkMaterialProcess(mat.name);
 
     if(m_logVolID2Mateiral.find(volID)==m_logVolID2Mateiral.end())
     {
@@ -223,7 +223,7 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 
     if(matphys) //m_logVolID2physcorer not exist
     {
-      vps->bulkPhysics=matphys;
+      vps->bulkMaterialProcess=matphys;
       std::cout << "Set model " << mat.name
                 << " for volume " << volume.GetName() << std::endl;
     }
@@ -231,13 +231,13 @@ void Prompt::GeoManager::loadFile(const std::string &gdml_file)
     {
       std::cout << "Creating model " << mat.name << ", "
                 << mat.attributes.find("atomValue")->second << volume.GetName() << std::endl;
-      std::shared_ptr<BulkPhysics> model = std::make_shared<BulkPhysics>("neutron bulk physics"); //it should be a dict later
-      m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<BulkPhysics>>(std::string(mat.name) , std::move(model) ) );
+      std::shared_ptr<BulkMaterialProcess> model = std::make_shared<BulkMaterialProcess>("neutron bulk physics"); //it should be a dict later
+      m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<BulkMaterialProcess>>(std::string(mat.name) , std::move(model) ) );
 
-      auto theNewPhysics = getBulkPhysics(mat.name);
+      auto theNewPhysics = getBulkMaterialProcess(mat.name);
       const std::string &cfg = mat.attributes.find("atomValue")->second;
       theNewPhysics->cfgPhysicsModel(cfg);
-      vps->bulkPhysics=theNewPhysics;
+      vps->bulkMaterialProcess=theNewPhysics;
     }
 
     vps->sortScorers();

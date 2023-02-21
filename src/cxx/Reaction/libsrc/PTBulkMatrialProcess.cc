@@ -28,16 +28,16 @@
 #include "PTPhysicsFactory.hh"
 #include "PTActiveVolume.hh"
 
-Prompt::BulkPhysics::BulkPhysics(const std::string &name)
+Prompt::BulkMaterialProcess::BulkMaterialProcess(const std::string &name)
     : m_rng(Singleton<SingletonPTRand>::getInstance()),
       m_compModel(std::make_unique<CompoundModel>(const_neutron_pgd)), // fixme:  neutron only for now, should be a dict later
       m_numdensity(0.), m_name(name)
 {
 }
 
-Prompt::BulkPhysics::~BulkPhysics() {}
+Prompt::BulkMaterialProcess::~BulkMaterialProcess() {}
 
-double Prompt::BulkPhysics::macroCrossSection(const Prompt::Particle &particle) const
+double Prompt::BulkMaterialProcess::macroCrossSection(const Prompt::Particle &particle) const
 {
   // if(m_compModel->containOriented())
   // {
@@ -55,10 +55,10 @@ double Prompt::BulkPhysics::macroCrossSection(const Prompt::Particle &particle) 
   return m_numdensity * m_compModel->totalCrossSection(ekin, dir);
 }
 
-void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
+void Prompt::BulkMaterialProcess::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
 {
   if (m_compModel->getSupportedGPD() != particle.getPGD())
-    PROMPT_THROW2(CalcError, "BulkPhysics " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
+    PROMPT_THROW2(CalcError, "BulkMaterialProcess " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
 
   if (!particle.isAlive())
     PROMPT_THROW(CalcError, "Particle is not alive");
@@ -129,10 +129,10 @@ void Prompt::BulkPhysics::sampleFinalState(Prompt::Particle &particle, double st
   particle.scaleWeight(m_compModel->calculateWeight(stepLength * m_numdensity, false));
 }
 
-double Prompt::BulkPhysics::sampleStepLength(const Prompt::Particle &particle) const
+double Prompt::BulkMaterialProcess::sampleStepLength(const Prompt::Particle &particle) const
 {
   if (m_compModel->getSupportedGPD() != particle.getPGD())
-    PROMPT_THROW2(CalcError, "BulkPhysics " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
+    PROMPT_THROW2(CalcError, "BulkMaterialProcess " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
 
   double mxs = macroCrossSection(particle);
   if (mxs)
@@ -145,7 +145,7 @@ double Prompt::BulkPhysics::sampleStepLength(const Prompt::Particle &particle) c
   }
 }
 
-void Prompt::BulkPhysics::cfgPhysicsModel(const std::string &cfgstr, double bias)
+void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr, double bias)
 {
   std::cout << "Configuring physics model: " << cfgstr << std::endl;
   assert(!m_numdensity);
@@ -155,7 +155,7 @@ void Prompt::BulkPhysics::cfgPhysicsModel(const std::string &cfgstr, double bias
   if (type == PhysicsFactory::PhysicsType::NC_SCATTER)
   {
     std::cout << "PhysicsType type NC_SCATTER" << std::endl;
-    m_compModel = pfact.createBulkPhysics(cfgstr);
+    m_compModel = pfact.createBulkMaterialProcess(cfgstr);
     pt_assert(m_compModel->getModels().size() == 1);
     m_numdensity = pfact.nccalNumDensity(cfgstr); 
   }
@@ -168,7 +168,7 @@ void Prompt::BulkPhysics::cfgPhysicsModel(const std::string &cfgstr, double bias
   else if (type == PhysicsFactory::PhysicsType::NC_IDEALSCAT)
   {
     std::cout << "PhysicsType type NC_IDEALSCAT" << std::endl;
-    m_compModel = pfact.createBulkPhysics(cfgstr);
+    m_compModel = pfact.createBulkMaterialProcess(cfgstr);
     pt_assert(m_compModel->getModels().size() == 1);
     auto &aa = *reinterpret_cast<IdealElaScat *>(m_compModel->getModels()[0].get());
     m_numdensity = aa.getNumberDensity();

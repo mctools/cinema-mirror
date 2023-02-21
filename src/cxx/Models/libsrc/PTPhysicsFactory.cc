@@ -21,7 +21,7 @@
 #include "PTPhysicsFactory.hh"
 #include "PTUtils.hh"
 #include "PTCfgParser.hh"
-#include "PTMirrorPhysics.hh"
+#include "PTMirror.hh"
 #include "PTDiskChopper.hh"
 
 #include "NCrystal/NCrystal.hh"
@@ -89,7 +89,7 @@ void Prompt::PhysicsFactory::showNCComposition(const std::string &nccfgstr)
 }
 
 
-std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkPhysics(const std::string &cfgstr)
+std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkMaterialProcess(const std::string &cfgstr)
 {
   std::cout << "Parsing config string for a CompoundModel: \n";
   CfgParser::ScorerCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
@@ -213,11 +213,11 @@ std::shared_ptr<Prompt::SurfaceProcess> Prompt::PhysicsFactory::createSurfacePro
   {
     std::shared_ptr<SurfaceProcess> phy;
 
-    if(physDef == "MirrorPhyiscs")
+    if(physDef == "Mirror")
     {
 
       // example cfg
-      // ""physics=MirrorPhyiscs; m=1.0; threshold=1e-5""
+      // ""physics=Mirror; m=1.0; threshold=1e-5""
 
       // where the m value is 1 by default//
       // the default threshold for the Russian roulette biasing method to be activated
@@ -238,7 +238,7 @@ std::shared_ptr<Prompt::SurfaceProcess> Prompt::PhysicsFactory::createSurfacePro
         PROMPT_THROW2(BadInput, "Cfgstr for a mirror physics is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      phy = std::make_shared<MirrorPhyiscs>(m, threshold);
+      phy = std::make_shared<Mirror>(m, threshold);
     }
     else if(physDef=="DiskChopper")
     {

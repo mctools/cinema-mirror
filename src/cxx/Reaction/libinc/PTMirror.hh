@@ -1,3 +1,6 @@
+#ifndef Prompt_MirrorPhyiscs_hh
+#define Prompt_MirrorPhyiscs_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,48 +21,28 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTMirrorPhysics.hh"
-#include "PTUtils.hh"
-#include "PTActiveVolume.hh"
+#include <string>
 
-Prompt::MirrorPhyiscs::MirrorPhyiscs(double mvalue, double weightCut)
-:Prompt::SurfaceProcess("MirrorPhysics"), m_wcut(weightCut), m_wAtQ(0.)
-{
-  std::cout << "constructor mirror physics " << std::endl;
-  //parameters sync with mcastas 2.7 guide component default value
-  m_m=mvalue;
-  m_R0=0.99;
-  m_Qc=0.0219;
-  m_alpha=6.07;
-  m_W=0.003;
-  m_i_W=1/0.003;
-}
+#include "PromptCore.hh"
+#include "PTSurfaceProcess.hh"
 
-void Prompt::MirrorPhyiscs::sampleFinalState(Prompt::Particle &particle) const
-{
-  auto &activeVolume = Singleton<ActiveVolume>::getInstance();
-  activeVolume.getNormal(particle.getPosition(), m_refNorm);
+namespace Prompt {
 
-  double ekin = particle.getEKin();
-  const auto &nDirInLab = particle.getDirection();
+  class Mirror  : public SurfaceProcess {
+    public:
+      Mirror(double mvalue, double weightCut = 1e-3);
+      virtual ~Mirror() = default;
+      virtual void sampleFinalState(Prompt::Particle &particle) const override;
+      double getEventWeight() const {return m_wAtQ;}
 
-  Vector newDir = nDirInLab - m_refNorm*(2*(nDirInLab.dot(m_refNorm)));
-  double angleCos = newDir.angleCos(nDirInLab);
-  particle.setDirection(newDir);
+    private:
+      double m_m, m_R0, m_Qc, m_alpha, m_W, m_i_W;
+      const double m_wcut;
+      mutable double m_wAtQ;
+      mutable Vector m_refNorm;
 
-  double Q = neutronAngleCosine2Q(angleCos, ekin, ekin); // elastic reflection
-  m_wAtQ = Q<m_Qc ? m_R0 : 0.5*m_R0*(1-tanh(( Q-m_m*m_Qc)*m_i_W))*(1-m_alpha*( Q-m_Qc));
-
-  // std::cout << "Q " << Q << " scale " << scaleWeight << std::endl;
-  if(m_wcut > m_wAtQ)
-  {
-    if(m_wcut*m_rng.generate() < m_wAtQ )
-    {
-      m_wAtQ = m_wcut;
-    }
-    else
-      particle.kill(Particle::KillType::BIAS);
-  }
-  particle.scaleWeight(m_wAtQ);
+  };
 
 }
+
+#endif

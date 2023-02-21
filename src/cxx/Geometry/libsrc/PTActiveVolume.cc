@@ -21,7 +21,7 @@
 #include "PTActiveVolume.hh"
 #include <VecGeom/navigation/BVHNavigator.h>
 #include <VecGeom/navigation/NewSimpleNavigator.h>
-#include "PTMirrorPhysics.hh"
+#include "PTMirror.hh"
 
 Prompt::ActiveVolume::ActiveVolume()
 :m_geo(vecgeom::GeoManager::Instance()), m_currPV(nullptr),
@@ -197,7 +197,7 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
 
   const auto *p = reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&particle.getPosition());
   const auto *dir = reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&particle.getDirection());
-  double stepLength = m_matphysscor->bulkPhysics->sampleStepLength(particle);
+  double stepLength = m_matphysscor->bulkMaterialProcess->sampleStepLength(particle);
 
   //! updates m_nextState to contain information about the next hitting boundary:
   //!   - if a daugher is hit: m_nextState.Top() will be daughter
@@ -219,12 +219,12 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   if(sameVolume)
   {
     //sample the interaction at the location
-    m_matphysscor->bulkPhysics->sampleFinalState(particle, step, false);
+    m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, false);
     return true;
   }
   else
   {
-    m_matphysscor->bulkPhysics->sampleFinalState(particle, step, true);
+    m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, true);
     return false;
   }
 }

@@ -1,5 +1,5 @@
-#ifndef Prompt_BulkPhysics_hh
-#define Prompt_BulkPhysics_hh
+#ifndef Prompt_BulkMaterialProcess_hh
+#define Prompt_BulkMaterialProcess_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -27,10 +27,10 @@
 #include "PTParticle.hh"
 
 namespace Prompt {
-  class BulkPhysics  {
+  class BulkMaterialProcess  {
   public:
-    BulkPhysics(const std::string& name);
-    virtual ~BulkPhysics();
+    BulkMaterialProcess(const std::string& name);
+    virtual ~BulkMaterialProcess();
 
     double sampleStepLength(const Prompt::Particle &particle) const;
     void sampleFinalState(Prompt::Particle &particle, double stepLength=0., bool hitWall=false) const;

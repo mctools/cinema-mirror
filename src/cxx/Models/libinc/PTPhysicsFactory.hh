@@ -46,7 +46,7 @@ namespace Prompt {
     void showNCComposition(const std::string &nccfgstr);
 
     std::shared_ptr<SurfaceProcess> createSurfaceProcess(const std::string &cfgstr);
-    std::unique_ptr<CompoundModel> createBulkPhysics(const std::string &cfgstr);
+    std::unique_ptr<CompoundModel> createBulkMaterialProcess(const std::string &cfgstr);
     PhysicsType checkPhysicsType(const std::string &cfgstr) const;
 
   private:

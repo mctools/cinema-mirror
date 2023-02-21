@@ -42,13 +42,13 @@
         <volume name="LV_Guider1">
             <solidref ref="Guider_piece1"/>
             <materialref ref="Cd"/>
-            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=MirrorPhyiscs;m=1.0"/>
+            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=Mirror;m=1.0"/>
         </volume>
 
         <volume name="LV_Guider2">
             <solidref ref="Guider_piece2"/>
             <materialref ref="Cd"/>
-            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=MirrorPhyiscs;m=1.0"/>
+            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=Mirror;m=1.0"/>
         </volume>
 
 

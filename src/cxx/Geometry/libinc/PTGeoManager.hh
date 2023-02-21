@@ -25,7 +25,7 @@
 #include <map>
 #include <unordered_map>
 #include "PromptCore.hh"
-#include "PTBulkPhysics.hh"
+#include "PTBulkMaterialProcess.hh"
 #include "PTSingleton.hh"
 #include "PTScorer.hh"
 #include "PTPrimaryGun.hh"
@@ -34,7 +34,7 @@
 namespace Prompt {
 
   struct VolumePhysicsScorer { // to attach to a volume
-    std::shared_ptr<BulkPhysics> bulkPhysics; //bulk physics
+    std::shared_ptr<BulkMaterialProcess> bulkMaterialProcess; //bulk physics
     std::shared_ptr<SurfaceProcess> surfaceProcess; //boundary physics
     std::vector< std::shared_ptr<Scorer> >  scorers; /*scorer name, scorer*/
 
@@ -52,9 +52,9 @@ namespace Prompt {
   class GeoManager  {
   public:
     void loadFile(const std::string &loadFile);
-    std::shared_ptr<BulkPhysics> getBulkPhysics(const std::string &name);
+    std::shared_ptr<BulkMaterialProcess> getBulkMaterialProcess(const std::string &name);
     std::shared_ptr<Scorer> getScorer(const std::string &name);
-    size_t numBulkPhysics() {return m_globelPhysics.size();}
+    size_t numBulkMaterialProcess() {return m_globelPhysics.size();}
     size_t numScorer() {return m_globelScorers.size();}
     std::string getLogicalVolumeScorerName(unsigned logid);
     const std::string &getLogicalVolumeMaterialName(unsigned logid);
@@ -77,10 +77,10 @@ namespace Prompt {
     ~GeoManager();
 
     // the name is unique
-    std::map<std::string /*material name*/, std::shared_ptr<BulkPhysics> > m_globelPhysics;
+    std::map<std::string /*material name*/, std::shared_ptr<BulkMaterialProcess> > m_globelPhysics;
     std::map<std::string /*scorer name*/, std::shared_ptr<Scorer> >  m_globelScorers;
 
-    //the place to manage the life time of BulkPhysics scorers
+    //the place to manage the life time of BulkMaterialProcess scorers
     std::unordered_map<size_t, std::shared_ptr<VolumePhysicsScorer>> m_logVolID2physcorer;
     std::unordered_map<size_t, std::string> m_logVolID2Mateiral;
   };
