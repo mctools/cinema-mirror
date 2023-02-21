@@ -31,16 +31,18 @@ file(GLOB RND_SRC "${PROJECT_SOURCE_DIR}/Rand/libsrc/*.cc")
 file(GLOB UTL_SRC "${PROJECT_SOURCE_DIR}/Utils/libsrc/*.cc")
 file(GLOB ANA_SRC "${PROJECT_SOURCE_DIR}/Ana/libsrc/*.cc")
 file(GLOB PAR_SRC "${PROJECT_SOURCE_DIR}/Particles/libsrc/*.cc")
-file(GLOB MOD_SRC "${PROJECT_SOURCE_DIR}/Models/libsrc/*.cc")
+file(GLOB BUK_SRC "${PROJECT_SOURCE_DIR}/ModelBulk/libsrc/*.cc")
+file(GLOB RTR_SRC "${PROJECT_SOURCE_DIR}/ModelRayTracing/libsrc/*.cc")
+file(GLOB SUR_SRC "${PROJECT_SOURCE_DIR}/ModelSurface/libsrc/*.cc")
 file(GLOB GEO_SRC "${PROJECT_SOURCE_DIR}/Geometry/libsrc/*.cc")
 file(GLOB GUN_SRC "${PROJECT_SOURCE_DIR}/Gun/libsrc/*.cc")
 file(GLOB MAT_SRC "${PROJECT_SOURCE_DIR}/Material/libsrc/*.cc")
 file(GLOB PYN_SRC "${PROJECT_SOURCE_DIR}/Python/libsrc/*.cc")
-file(GLOB RAC_SRC "${PROJECT_SOURCE_DIR}/Reaction/libsrc/*.cc")
+file(GLOB RAC_SRC "${PROJECT_SOURCE_DIR}/Process/libsrc/*.cc")
 file(GLOB TRJ_SRC "${PROJECT_SOURCE_DIR}/Trj/libsrc/*.cc")
 file(GLOB MCPL_SRC "${PROJECT_SOURCE_DIR}/MCPL/libsrc/*.cc" "${PROJECT_SOURCE_DIR}/MCPL/libsrc/*.c")
 
-ADD_LIBRARY(${PROJECT_NAME} SHARED ${MCPL_SRC} ${COR_SRC} ${RAC_SRC} ${RND_SRC} ${UTL_SRC} ${ANA_SRC} ${PAR_SRC} ${MOD_SRC} ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC})
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${MCPL_SRC} ${COR_SRC} ${RAC_SRC} ${SUR_SRC} ${RND_SRC} ${UTL_SRC} ${RTR_SRC} ${ANA_SRC} ${PAR_SRC} ${BUK_SRC} ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC})
 
 
 target_link_libraries(${PROJECT_NAME} PUBLIC NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml fftw3 ${HDF5_LIBRARIES} MCPL::mcpl OpenMP::OpenMP_CXX)
@@ -53,11 +55,13 @@ target_include_directories( ${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/Utils/libinc
     ${PROJECT_SOURCE_DIR}/Ana/libinc
     ${PROJECT_SOURCE_DIR}/Particles/libinc
-    ${PROJECT_SOURCE_DIR}/Models/libinc
+    ${PROJECT_SOURCE_DIR}/ModelBulk/libinc
+    ${PROJECT_SOURCE_DIR}/ModelRayTracing/libinc
+    ${PROJECT_SOURCE_DIR}/ModelSurface/libinc
     ${PROJECT_SOURCE_DIR}/Geometry/libinc
     ${PROJECT_SOURCE_DIR}/Material/libinc
     ${PROJECT_SOURCE_DIR}/Gun/libinc
-    ${PROJECT_SOURCE_DIR}/Reaction/libinc
+    ${PROJECT_SOURCE_DIR}/Process/libinc
     ${PROJECT_SOURCE_DIR}/Python/libinc
     ${PROJECT_SOURCE_DIR}/Trj/libinc
     ${PROJECT_SOURCE_DIR}/MCPL/libinc
