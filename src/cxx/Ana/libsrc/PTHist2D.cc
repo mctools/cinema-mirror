@@ -20,10 +20,10 @@
 
 #include "PTHist2D.hh"
 #include "PTMath.hh"
-#include "PTBinaryWR.hh"
+#include "PTMCPLBinaryWrite.hh"
 #include <typeinfo>
 #include "PTUtils.hh"
-#include "PTBinaryWR.hh"
+#include "PTMCPLBinaryWrite.hh"
 
 Prompt::Hist2D::Hist2D(const std::string &name, double xmin, double xmax, unsigned xnbins,
                        double ymin, double ymax, unsigned ynbins)
@@ -71,7 +71,7 @@ void Prompt::Hist2D::save(const std::string &filename) const
 {
   //fixme: filename should be removed
   std::cout << "saving 2d\n";
-  auto bwr = new BinaryWrite(m_mcpl_file_name);
+  auto bwr = new MCPLBinaryWrite(m_mcpl_file_name);
   double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
   bwr->addHeaderComment(m_name);
   bwr->addHeaderComment(getTypeName(typeid(this)).c_str());

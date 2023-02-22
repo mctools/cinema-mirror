@@ -1,5 +1,5 @@
-#ifndef Prompt_BinaryWR_hh
-#define Prompt_BinaryWR_hh
+#ifndef Prompt_MCPLBinaryWrite_hh
+#define Prompt_MCPLBinaryWrite_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -25,6 +25,7 @@
 
 #include "PromptCore.hh"
 #include "PTParticle.hh"
+#include "PTMCPLBinary.hh"
 #include "mcpl.h"
 #include "NumpyWriter.hh"
 
@@ -73,31 +74,26 @@ namespace Prompt {
     };
   };
 
-
-  class BinaryWrite {
+  class MCPLBinaryWrite : public MCPLBinary {
   public:
-    BinaryWrite(const std::string &fn, bool enable_double=false, bool enable_extra3double=false, bool enable_extraUnsigned=false);
-    virtual ~BinaryWrite();
+    MCPLBinaryWrite(const std::string &fn, bool enable_double=false, bool enable_extra3double=false, 
+                bool enable_extraUnsigned=false);
+    virtual ~MCPLBinaryWrite();
 
     // Header
     void addHeaderComment(const std::string &comment);
+    
     template <typename T>
     void addHeaderData(const std::string &dataname, const T *data,
                       const std::vector<uint64_t> &shape, NumpyWriter::NPDataType type);
     constexpr void closeHeader() { m_headerClosed=true; }
-    const std::string& getFileName() { return m_filename; }
 
-    // Particle list
-    void record(const Particle &p);
-    void record(const PromptRecord &p);
+    // Write to particle list
+    void write(const Particle &p);
+    void write(const PromptRecord &p);
 
-    // const std::string& getFileName() { return m_filename; }
 
   protected:
-    std::string m_filename;
-    mcpl_outfile_t m_file;
-    mcpl_particle_t *m_particleInFile;
-    bool m_enable_double, m_enable_extra3double, m_enable_extraUnsigned;
     bool m_fileNotCreated, m_headerClosed;
 
   private:
@@ -106,7 +102,7 @@ namespace Prompt {
 }
 
 template <typename T>
-void Prompt::BinaryWrite::addHeaderData(const std::string &dataname, const T *data,
+void Prompt::MCPLBinaryWrite::addHeaderData(const std::string &dataname, const T *data,
                   const std::vector<uint64_t> &shape, NumpyWriter::NPDataType type)
 {
 

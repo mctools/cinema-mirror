@@ -22,34 +22,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
-#include "PTBinaryWR.hh"
+#include "PTMCPLBinaryWrite.hh"
 
 
-Prompt::BinaryWrite::BinaryWrite(const std::string &fn, bool enable_double, bool enable_extra3double, bool enable_extraUnsigned)
-:m_filename(fn), m_file(mcpl_create_outfile(fn.c_str())), m_particleInFile(nullptr), m_enable_double(enable_double),
- m_enable_extra3double(enable_extra3double), m_enable_extraUnsigned(enable_extraUnsigned),
-m_fileNotCreated(true), m_headerClosed(false) { }
+Prompt::MCPLBinaryWrite::MCPLBinaryWrite(const std::string &fn, bool enable_double,  bool enable_extra3double, bool enable_extraUnsigned)
+:MCPLBinary(fn), m_fileNotCreated(true), m_headerClosed(false) 
+{ 
+   m_using_double = enable_double;
+   m_with_extra3double = enable_extra3double;
+   m_with_extraUserUnsigned = enable_extraUnsigned; 
+   m_file = mcpl_create_outfile(fn.c_str());
+}
 
-void Prompt::BinaryWrite::init()
+void Prompt::MCPLBinaryWrite::init()
 {
   m_fileNotCreated = false;
   mcpl_hdr_set_srcname(m_file,"Prompt");
-  if(m_enable_double) mcpl_enable_doubleprec(m_file);
-  if(m_enable_extra3double)   mcpl_enable_polarisation(m_file);  // double[3]
-  if(m_enable_extraUnsigned)  mcpl_enable_userflags(m_file);    // uint32_t
+  if(m_using_double) mcpl_enable_doubleprec(m_file);
+  if(m_with_extra3double)   mcpl_enable_polarisation(m_file);  // double[3]
+  if(m_with_extraUserUnsigned)  mcpl_enable_userflags(m_file);    // uint32_t
 
-  mcpl_hdr_set_srcname(m_file, ("Prompt " + PTVersion).c_str());
+  mcpl_hdr_set_srcname(m_file, ("Prompt " + PTVersion).c_str());  //set data source name
   m_particleInFile = mcpl_get_empty_particle(m_file);
 }
 
-
-Prompt::BinaryWrite::~BinaryWrite()
+Prompt::MCPLBinaryWrite::~MCPLBinaryWrite()
 {
-  if(!m_fileNotCreated)
+    if(!m_fileNotCreated)
     mcpl_closeandgzip_outfile(m_file);
 }
 
-void Prompt::BinaryWrite::addHeaderComment(const std::string &comment)
+void Prompt::MCPLBinaryWrite::addHeaderComment(const std::string &comment)
 {
   if(m_fileNotCreated) init();
   if(m_headerClosed)
@@ -58,7 +61,7 @@ void Prompt::BinaryWrite::addHeaderComment(const std::string &comment)
   mcpl_hdr_add_comment(m_file, comment.c_str());
 }
 
-void Prompt::BinaryWrite::record(const PromptRecord &p)
+void Prompt::MCPLBinaryWrite::write(const PromptRecord &p)
 {
   if(m_fileNotCreated) init();
   m_headerClosed=true;
@@ -69,7 +72,7 @@ void Prompt::BinaryWrite::record(const PromptRecord &p)
   mcpl_add_particle(m_file, m_particleInFile);
 }
 
-void Prompt::BinaryWrite::record(const Particle &p)
+void Prompt::MCPLBinaryWrite::write(const Particle &p)
 {
   if(m_fileNotCreated) init();
 
@@ -98,7 +101,7 @@ void Prompt::BinaryWrite::record(const Particle &p)
   m_particleInFile->weight = p.getWeight();
 
   //modify userflags (unsigned_32) and polarisation (double[3]) as well, if enabled.
-  if(m_enable_extraUnsigned)
+  if(m_with_extraUserUnsigned)
     m_particleInFile->userflags = p.getEventID();
 
   mcpl_add_particle(m_file, m_particleInFile);

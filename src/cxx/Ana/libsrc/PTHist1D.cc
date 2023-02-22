@@ -20,10 +20,10 @@
 
 #include "PTHist1D.hh"
 #include "PTMath.hh"
-#include "PTBinaryWR.hh"
+#include "PTMCPLBinaryWrite.hh"
 #include <typeinfo>
 #include "PTUtils.hh"
-#include "PTBinaryWR.hh"
+#include "PTMCPLBinaryWrite.hh"
 
 Prompt::Hist1D::Hist1D(const std::string &name, double xmin, double xmax, unsigned nbins, bool linear)
 :HistBase(name, nbins), m_binfactor(0), m_linear(linear), m_logxmin(0)
@@ -57,7 +57,7 @@ std::vector<double> Prompt::Hist1D::getEdge() const
 void Prompt::Hist1D::save(const std::string &filename) const
 {
   //fixme: filename should be removed
-  auto bwr = new BinaryWrite(m_mcpl_file_name);
+  auto bwr = new MCPLBinaryWrite(m_mcpl_file_name);
 
   double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
   bwr->addHeaderComment(m_name);

@@ -21,7 +21,7 @@
 #include "../doctest.h"
 
 #include "PTGeoTree.hh"
-#include "PTBinaryWR.hh"
+#include "PTMCPLBinaryWrite.hh"
 #include "PTNeutron.hh"
 #include "PTUtils.hh"
 
@@ -31,7 +31,7 @@ using namespace std;
 TEST_CASE("test_mcpl")
 {
 
-  auto bwr = Prompt::BinaryWrite("test_mcpl");
+  auto bwr = Prompt::MCPLBinaryWrite("test_mcpl");
 
   std::vector<double> dvec {1,2,3,4,5,6,7,8,9.};
   std::vector<float> fvec {1,2,3,4,5,6,7,8,9.};
@@ -42,6 +42,6 @@ TEST_CASE("test_mcpl")
   bwr.addHeaderData("npunsigned", uvec.data(), {3,3}, Prompt::NumpyWriter::NPDataType::i4);
 
   bwr.closeHeader();
-  bwr.record(Prompt::Neutron(0.0253, {0,0,1}, {0,0,0.}));
+  bwr.write(Prompt::Neutron(0.0253, {0,0,1}, {0,0,0.}));
 
 }

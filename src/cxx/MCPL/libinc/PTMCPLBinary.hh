@@ -1,5 +1,5 @@
-#ifndef Prompt_PrimaryGun_hh
-#define Prompt_PrimaryGun_hh
+#ifndef Prompt_MCPLBinary_hh
+#define Prompt_MCPLBinary_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,27 +21,35 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <string>
+
 #include "PromptCore.hh"
-#include "PTParticle.hh"
-#include "PTVector.hh"
-#include "PTRandCanonical.hh"
+#include "mcpl.h"
 
 namespace Prompt {
-  class PrimaryGun : public Particle {
-  public:
-    PrimaryGun(const Particle &aParticle)
-    : Particle(aParticle), m_rng(Singleton<SingletonPTRand>::getInstance()) {  };
-    virtual ~PrimaryGun() = default;
-    virtual std::unique_ptr<Particle> generate();
-    virtual void sampleEnergy(double &ekin) = 0;
-    virtual void samplePosDir(Vector &pos, Vector &dir) = 0;
-    virtual double getParticleWeight() { return 1.;}
 
-  protected:
-    SingletonPTRand &m_rng;
+  class MCPLBinary {
+    public:
+      MCPLBinary(const std::string &fn) 
+          : m_filename(fn), m_file()
+          {
+            m_file.internal = 0;
+            m_file_r.internal = 0;
+          };
+
+      virtual ~MCPLBinary() = default; 
+      const std::string& getFileName() { return m_filename; }
+
+
+    protected:
+      std::string m_filename;
+      mcpl_outfile_t m_file;
+      mutable mcpl_particle_t *m_particleInFile;
+
+      mcpl_file_t m_file_r;
+
+      bool m_using_double, m_with_extra3double, m_with_extraUserUnsigned;
 
   };
 }
-
-
 #endif

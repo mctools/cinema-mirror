@@ -1,5 +1,5 @@
-#ifndef Prompt_PrimaryGun_hh
-#define Prompt_PrimaryGun_hh
+#ifndef Prompt_MCPLParticleReader_hh
+#define Prompt_MCPLParticleReader_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,27 +21,35 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTParticle.hh"
-#include "PTVector.hh"
-#include "PTRandCanonical.hh"
+#include <string>
+
+#include "PTMCPLBinary.hh"
 
 namespace Prompt {
-  class PrimaryGun : public Particle {
-  public:
-    PrimaryGun(const Particle &aParticle)
-    : Particle(aParticle), m_rng(Singleton<SingletonPTRand>::getInstance()) {  };
-    virtual ~PrimaryGun() = default;
-    virtual std::unique_ptr<Particle> generate();
-    virtual void sampleEnergy(double &ekin) = 0;
-    virtual void samplePosDir(Vector &pos, Vector &dir) = 0;
-    virtual double getParticleWeight() { return 1.;}
 
-  protected:
-    SingletonPTRand &m_rng;
+  class MCPLParticleReader : public MCPLBinary {
+    public:
+      MCPLParticleReader(const std::string &fn, bool repeat = true) ;
+      virtual ~MCPLParticleReader() = default; 
+
+      uint64_t particleCount() const;
+      bool readOneParticle() const;
+
+      double getEnergy() const;
+      double getWeight() const;
+      double getTime() const;
+      void getDirection( Vector& dir) const;
+      void getPosition( Vector& pos) const;
+      int32_t getPDG() const;
+
+      // void getPolorisation( Vector& dir) const; // not yet be used 
+    
+    private:
+      uint64_t m_parNum;
+      bool m_repeat;
+
+
 
   };
 }
-
-
 #endif

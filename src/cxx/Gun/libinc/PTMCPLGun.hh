@@ -1,5 +1,5 @@
-#ifndef Prompt_PrimaryGun_hh
-#define Prompt_PrimaryGun_hh
+#ifndef Prompt_MCPLGun_hh
+#define Prompt_MCPLGun_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,25 +21,40 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTParticle.hh"
-#include "PTVector.hh"
-#include "PTRandCanonical.hh"
+#include "PTPrimaryGun.hh"
+#include "PTMCPLParticleReader.hh"
 
 namespace Prompt {
-  class PrimaryGun : public Particle {
+  class MCPLGun : public PrimaryGun {
   public:
-    PrimaryGun(const Particle &aParticle)
-    : Particle(aParticle), m_rng(Singleton<SingletonPTRand>::getInstance()) {  };
-    virtual ~PrimaryGun() = default;
-    virtual std::unique_ptr<Particle> generate();
-    virtual void sampleEnergy(double &ekin) = 0;
-    virtual void samplePosDir(Vector &pos, Vector &dir) = 0;
-    virtual double getParticleWeight() { return 1.;}
+    MCPLGun(const Particle &aParticle, const std::string &fn)
+    : PrimaryGun(aParticle), m_mcplread(std::make_unique<MCPLParticleReader>(fn)) {};
+    virtual ~MCPLGun() {}; 
 
-  protected:
-    SingletonPTRand &m_rng;
+    virtual std::unique_ptr<Particle> generate() override
+    {
+      m_mcplread->readOneParticle();
+      return PrimaryGun::generate();
+    }
 
+    virtual void sampleEnergy(double &ekin) override
+    {
+      ekin=m_mcplread->getEnergy();
+    }
+
+    virtual void samplePosDir(Vector &pos, Vector &dir) override
+    {
+      m_mcplread->getPosition(pos);
+      m_mcplread->getDirection(dir);
+    }
+
+    virtual double getParticleWeight() override
+    { 
+      return m_mcplread->getWeight();
+    }
+
+    private:
+      std::unique_ptr <MCPLParticleReader>  m_mcplread;
   };
 }
 

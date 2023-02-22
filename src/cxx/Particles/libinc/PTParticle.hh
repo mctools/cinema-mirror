@@ -81,8 +81,8 @@ namespace Prompt {
 
   protected:
     friend class DeltaParticle;
-    Vector m_dir, m_effdir, m_pos;
-    double m_ekin0, m_ekin, m_effekin, m_time;
+    Vector m_dir, m_pos;
+    double m_ekin0, m_ekin, m_time;
     double m_step, m_deltaEn;
     double m_weight;
     double m_rest_mass;
@@ -91,6 +91,10 @@ namespace Prompt {
     int m_counter;
     KillType m_killtype;
     bool m_alive;
+
+    // for Doppler models
+    Vector m_effdir; 
+    double m_effekin;
   };
 
   std::ostream& operator << (std::ostream &, const Particle&);

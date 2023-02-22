@@ -29,6 +29,7 @@
 #include "PTIsotropicGun.hh"
 #include "PTUniModeratorGun.hh"
 #include "PTMPIGun.hh"
+#include "PTMCPLGun.hh"
 Prompt::GunFactory::GunFactory()
 {}
 
@@ -206,6 +207,11 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       return std::make_shared<MPIGun>(Neutron(),
             std::array<double, 6> {moderator_width_x, moderator_height_y, moderator_positon_z,
                                  slit_width_x, slit_height_y, slit_position_z});
+    }
+    else if(gunDef == "MCPLGun")
+    {
+      std::string fn = cfg.find("mcplfile", true);
+      return std::make_shared<MCPLGun>(Neutron(), fn);
     }
     else
       PROMPT_THROW2(BadInput, "Gun " << gunDef << " is not supported. ")
