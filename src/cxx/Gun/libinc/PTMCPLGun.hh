@@ -28,8 +28,8 @@ namespace Prompt {
   class MCPLGun : public PrimaryGun {
   public:
     MCPLGun(const Particle &aParticle, const std::string &fn)
-    : PrimaryGun(aParticle), m_mcplread(std::make_unique<MCPLParticleReader>(fn)) {};
-    virtual ~MCPLGun() {}; 
+    : PrimaryGun(aParticle), m_mcplread(std::make_unique<MCPLParticleReader>(fn)) {  };
+    virtual ~MCPLGun() { }; 
 
     virtual std::unique_ptr<Particle> generate() override
     {
@@ -51,6 +51,11 @@ namespace Prompt {
     virtual double getParticleWeight() override
     { 
       return m_mcplread->getWeight();
+    }
+
+    virtual double getTime() override
+    { 
+      return m_mcplread->getTime();
     }
 
     private:

@@ -9,6 +9,8 @@ Prompt::MCPLParticleReader::MCPLParticleReader(const std::string &fn, bool repea
     m_with_extra3double = mcpl_hdr_has_polarisation(m_file_r);
     m_using_double = mcpl_hdr_has_doubleprec(m_file_r);
     //  const mcpl_particle_t* mcpl_read(mcpl_file_t);
+
+    std::cout << " MCPLGun finds " << m_parNum << " particles in the file " << fn << std::endl;
 }
 
 
@@ -26,7 +28,7 @@ double Prompt::MCPLParticleReader::getEnergy() const
 // MCPL unit system: time in milliseconds:
 double Prompt::MCPLParticleReader::getTime() const
 {
-    return m_particleInFile->time*Unit::s;
+    return m_particleInFile->time*Unit::ms;
 }
 
 // MCPL unit system: position in centimeters
@@ -58,12 +60,14 @@ bool Prompt::MCPLParticleReader::readOneParticle() const
 {
     pt_assert_always(m_parNum);
     m_particleInFile = const_cast< mcpl_particle_t *> (mcpl_read(m_file_r));
-    bool eof = m_particleInFile ? true : false;
-    if(m_repeat)
+    bool not_eof = m_particleInFile ? true : false;
+    
+    if(m_repeat && !not_eof)
     {
         mcpl_rewind(m_file_r);
-        return readOneParticle();
+        m_particleInFile = const_cast< mcpl_particle_t *> (mcpl_read(m_file_r));
+        return true;
     }
     else
-        return eof;
+        return not_eof;
 }
