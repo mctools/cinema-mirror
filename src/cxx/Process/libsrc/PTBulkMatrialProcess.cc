@@ -148,7 +148,7 @@ double Prompt::BulkMaterialProcess::sampleStepLength(const Prompt::Particle &par
 void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr, double bias)
 {
   std::cout << "Configuring physics model: " << cfgstr << std::endl;
-  assert(!m_numdensity);
+  pt_assert_always(!m_numdensity); //multiple configuration
   auto &pfact = Singleton<PhysicsFactory>::getInstance();
   PhysicsFactory::PhysicsType type = pfact.checkPhysicsType(cfgstr);
 
