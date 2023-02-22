@@ -69,6 +69,8 @@ namespace Prompt {
 
     std::shared_ptr<PrimaryGun> m_gun;
 
+    void steupFakePhyisc(); //for c++ debug
+
 
   private:
     friend class Singleton<GeoManager>;

@@ -94,6 +94,65 @@ std::shared_ptr<Prompt::Scorer> Prompt::GeoManager::getScorer(const std::string 
     return nullptr;
 }
 
+void Prompt::GeoManager::steupFakePhyisc() //for c++ debug
+{
+  auto &geoManager = vecgeom::GeoManager::Instance();
+  //geoManager.GetLogicalVolumesMap() returens std::map<unsigned int, LogicalVolume *>
+  for (const auto &item : geoManager.GetLogicalVolumesMap())
+  {
+    auto &volume   = *item.second;
+    const size_t volID = volume.id();
+
+    std::shared_ptr<VolumePhysicsScorer> vps(nullptr);
+    if(m_logVolID2physcorer.find(volID)==m_logVolID2physcorer.end())
+    {
+      m_logVolID2physcorer.insert(std::make_pair(volID,  std::make_shared<VolumePhysicsScorer>()));
+      vps = m_logVolID2physcorer[volID];
+    }
+    else
+    {
+      PROMPT_THROW2(CalcError, "volume ID " << volID << " appear more than once")
+    }
+
+    
+    // 3. setup physics model, if it is not yet set
+
+    std::string mat_name = "freegas::N78O22/1.225kgm3";
+
+    if(m_logVolID2Mateiral.find(volID)==m_logVolID2Mateiral.end())
+    {
+      m_logVolID2Mateiral.insert( std::make_pair<int, std::string>(volID , std::string(mat_name) ) );
+    }
+
+    auto matphys = getBulkMaterialProcess(mat_name);
+    if(matphys) //m_logVolID2physcorer not exist
+    {
+      vps->bulkMaterialProcess=matphys;
+      std::cout << "Set model " << mat_name
+                << " for volume " << volume.GetName() << std::endl;
+    }
+    else
+    {
+      std::cout << "Creating model " << mat_name << ", for volume " << volume.GetName() << std::endl;
+
+      std::shared_ptr<BulkMaterialProcess> model = std::make_shared<BulkMaterialProcess>("neutron bulk physics"); //it should be a dict later
+      m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<BulkMaterialProcess>>(std::string(mat_name) , std::move(model) ) );
+
+      auto theNewPhysics = getBulkMaterialProcess(mat_name);
+      const std::string &cfg = mat_name;
+      theNewPhysics->cfgPhysicsModel(cfg);
+      vps->bulkMaterialProcess=theNewPhysics;
+    }
+
+
+    // auto theNewPhysics = getBulkMaterialProcess("aa");
+    // if(!theNewPhysics)
+    // {
+    //   theNewPhysics->cfgPhysicsModel("freegas::N78O22/1.225kgm3");
+    //   vps->bulkMaterialProcess=theNewPhysics;
+    // }
+  }
+}
 
 void Prompt::GeoManager::loadFile(const std::string &gdml_file)
 {

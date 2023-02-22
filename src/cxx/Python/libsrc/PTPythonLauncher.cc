@@ -49,6 +49,11 @@ void pt_Launcher_loadGeometry(void* obj, const char* fileName)
   static_cast<pt::Launcher *>(obj)->loadGeometry(std::string(fileName));
 }
 
+void pt_Launcher_steupFakeGeoPhyisc(void* obj)
+{
+  static_cast<pt::Launcher *>(obj)->steupFakeGeoPhyisc();
+}
+
 size_t pt_Launcher_getTrajSize(void* obj)
 {
   return static_cast<pt::Launcher *>(obj)->getTrajSize();

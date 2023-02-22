@@ -25,6 +25,7 @@ from ..Interface import *
 _pt_Launcher_getInstance = importFunc('pt_Launcher_getInstance', type_voidp, [] )
 _pt_Launcher_setSeed = importFunc('pt_Launcher_setSeed', None, [type_voidp, type_sizet] )
 _pt_Launcher_loadGeometry = importFunc('pt_Launcher_loadGeometry', None, [type_voidp, type_cstr] )
+_pt_Launcher_steupFakeGeoPhyisc = importFunc('pt_Launcher_steupFakeGeoPhyisc', None, [type_voidp] )
 _pt_Launcher_getTrajSize = importFunc('pt_Launcher_getTrajSize', type_sizet, [type_voidp])
 _pt_Launcher_getTrajectory = importFunc('pt_Launcher_getTrajectory', None, [type_voidp, type_npdbl2d])
 _pt_Launcher_go = importFunc('pt_Launcher_go', None, [type_voidp, type_sizet, type_dbl, type_bool, type_bool])
@@ -38,6 +39,9 @@ class Launcher():
 
     def loadGeometry(self, fileName):
         _pt_Launcher_loadGeometry(self.cobj, fileName.encode('utf-8'));
+
+    def loadFakeGeoPhysics(self):
+        _pt_Launcher_steupFakeGeoPhyisc(self.cobj)
 
     def getTrajSize(self):
         return _pt_Launcher_getTrajSize(self.cobj)

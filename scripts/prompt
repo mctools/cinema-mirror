@@ -39,17 +39,19 @@ parser.add_argument('-m', '--nSegments', action='store', type=int, default=30,
 args=parser.parse_args()
 inputfile=args.gdml
 printTraj=False
-
-if not os.path.isfile(inputfile):
-    inputfile=findData(f'gdml/{inputfile}', '.')
-    if not os.path.isfile(inputfile):
-        raise IOError(f'The input GDML file {args.gdml} is not found.')
-
 rdseed=args.seed
 
 myLcher=Launcher()
 myLcher.setSeed(rdseed)
-myLcher.loadGeometry(inputfile)
+
+if inputfile=='':
+    myLcher.loadFakeGeoPhysics()
+else:
+    if not os.path.isfile(inputfile):
+        inputfile=findData(f'gdml/{inputfile}', '.')
+        if not os.path.isfile(inputfile):
+            raise IOError(f'The input GDML file {args.gdml} is not found.')
+    myLcher.loadGeometry(inputfile)
 
 if args.visualize is True:
     v = Visualiser(args.blacklist, printWorld=False, nSegments=args.nSegments, dumpMesh=args.dumpmesh)

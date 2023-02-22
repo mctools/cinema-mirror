@@ -30,6 +30,8 @@ namespace Prompt {
   public:
     void go(uint64_t numParticle, double printPrecent, bool recordTrj=false, bool timer=true);
     void loadGeometry(const std::string &geofile);
+    void steupFakeGeoPhyisc(); //for c++ debug
+
     void setSeed(uint64_t seed) { Singleton<SingletonPTRand>::getInstance().setSeed(seed); }
     uint64_t getSeed() { return Singleton<SingletonPTRand>::getInstance().getSeed(); }
     void setGun(std::shared_ptr<PrimaryGun> gun) { m_gun=gun; }

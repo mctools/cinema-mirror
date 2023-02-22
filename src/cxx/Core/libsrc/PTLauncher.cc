@@ -76,6 +76,90 @@ void Prompt::Launcher::loadGeometry(const std::string &geofile)
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "VecGeom/base/Config.h"
+#include "VecGeom/benchmarking/NavigationBenchmarker.h"
+#include "VecGeom/volumes/utilities/VolumeUtilities.h"
+
+#include "VecGeom/management/GeoManager.h"
+#include "VecGeom/volumes/Box.h"
+#include "VecGeom/volumes/Orb.h"
+#include "VecGeom/volumes/Trapezoid.h"
+
+using namespace VECGEOM_NAMESPACE;
+
+VPlacedVolume *fakeGeometry()
+{
+
+  UnplacedBox *worldUnplaced      = new UnplacedBox(10, 10, 10);
+  UnplacedTrapezoid *trapUnplaced = new UnplacedTrapezoid(4, 0, 0, 4, 4, 4, 0, 4, 4, 4, 0);
+  UnplacedBox *boxUnplaced        = new UnplacedBox(2, 2, 2);
+  UnplacedOrb *orbUnplaced        = new UnplacedOrb(2.8);
+
+  LogicalVolume *world = new LogicalVolume("world", worldUnplaced);
+  LogicalVolume *trap  = new LogicalVolume("trap", trapUnplaced);
+  LogicalVolume *box   = new LogicalVolume("box", boxUnplaced);
+  LogicalVolume *orb   = new LogicalVolume("orb", orbUnplaced);
+
+  Transformation3D *ident = new Transformation3D(0, 0, 0, 0, 0, 0);
+  orb->PlaceDaughter("orb1", box, ident);
+  trap->PlaceDaughter("box1", orb, ident);
+
+  Transformation3D *placement1 = new Transformation3D(5, 5, 5, 0, 0, 0);
+  Transformation3D *placement2 = new Transformation3D(-5, 5, 5, 0, 0, 0);   // 45,  0,  0);
+  Transformation3D *placement3 = new Transformation3D(5, -5, 5, 0, 0, 0);   // 0, 45,  0);
+  Transformation3D *placement4 = new Transformation3D(5, 5, -5, 0, 0, 0);   // 0,  0, 45);
+  Transformation3D *placement5 = new Transformation3D(-5, -5, 5, 0, 0, 0);  // 45, 45,  0);
+  Transformation3D *placement6 = new Transformation3D(-5, 5, -5, 0, 0, 0);  // 45,  0, 45);
+  Transformation3D *placement7 = new Transformation3D(5, -5, -5, 0, 0, 0);  // 0, 45, 45);
+  Transformation3D *placement8 = new Transformation3D(-5, -5, -5, 0, 0, 0); // 45, 45, 45);
+
+  world->PlaceDaughter("trap1", trap, placement1);
+  world->PlaceDaughter("trap2", trap, placement2);
+  world->PlaceDaughter("trap3", trap, placement3);
+  world->PlaceDaughter("trap4", trap, placement4);
+  world->PlaceDaughter("trap5", trap, placement5);
+  world->PlaceDaughter("trap6", trap, placement6);
+  world->PlaceDaughter("trap7", trap, placement7);
+  world->PlaceDaughter("trap8", trap, placement8);
+
+  VPlacedVolume *w = world->Place();
+  GeoManager::Instance().SetWorld(w);
+  GeoManager::Instance().CloseGeometry();
+
+  // cleanup
+  delete ident;
+  delete placement1;
+  delete placement2;
+  delete placement3;
+  delete placement4;
+  delete placement5;
+  delete placement6;
+  delete placement7;
+  delete placement8;
+  return w;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void Prompt::Launcher::steupFakeGeoPhyisc() //for c++ debug
+{
+  fakeGeometry();
+  //This checks that the included NCrystal headers and the linked NCrystal
+  //library are from the same release of NCrystal:
+  NCrystal::libClashDetect();
+
+  //set the generator for ncrystal
+  NCrystal::setDefaultRNG(NCrystal::makeSO<SingletonPTRandWrapper>());
+
+  //load geometry
+  auto &geoman = Singleton<GeoManager>::getInstance();
+  geoman.steupFakePhyisc();
+}
+
+
 void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj, bool timer)
 {
   //set the seed for the random generator
