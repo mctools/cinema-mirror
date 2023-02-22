@@ -216,7 +216,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
     else
       PROMPT_THROW2(BadInput, "Gun " << gunDef << " is not supported. ")
   }
-  assert(false);
+  pt_assert_always(false);
   //a return statement here to stop compiler warning, it should never reach here
   return std::make_shared<IsotropicGun>(Neutron(), 1, Vector{0,0,0}, Vector{1,0,0});
 
