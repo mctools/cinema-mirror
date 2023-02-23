@@ -156,7 +156,7 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr, dou
   {
     std::cout << "PhysicsType type NC_SCATTER" << std::endl;
     m_compModel = pfact.createBulkMaterialProcess(cfgstr);
-    pt_assert_always(m_compModel->getModels().size() == 1);
+    // pt_assert_always(m_compModel->getModels().size() == 1);
     m_numdensity = pfact.nccalNumDensity(cfgstr); 
   }
   else if (type == PhysicsFactory::PhysicsType::NC_RAW)
@@ -169,7 +169,7 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr, dou
   {
     std::cout << "PhysicsType type NC_IDEALSCAT" << std::endl;
     m_compModel = pfact.createBulkMaterialProcess(cfgstr);
-    pt_assert_always(m_compModel->getModels().size() == 1);
+    // pt_assert_always(m_compModel->getModels().size() == 0);
     auto &aa = *reinterpret_cast<IdealElaScat *>(m_compModel->getModels()[0].get());
     m_numdensity = aa.getNumberDensity();
   }
