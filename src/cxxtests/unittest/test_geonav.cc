@@ -38,7 +38,7 @@ TEST_CASE("GeoManager")
   //load geometry
   auto &geoman = pt::Singleton<pt::GeoManager>::getInstance();
   auto path = std::string(getenv("CINEMAPATH"));
-  geoman.loadFile(path +"/gdml/first_geo.gdml");
+  geoman.initFromGDML(path +"/gdml/first_geo.gdml");
 
   //create navigation manager
   auto &activeVolume = pt::Singleton<pt::ActiveVolume>::getInstance();

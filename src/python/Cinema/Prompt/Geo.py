@@ -41,18 +41,26 @@ class UnplacedBox:
     def __init__(self, hx, hy, hz):
         self.cobj = _pt_UnplacedBox_new(hx, hy, hz)
 
+    # the memory should be managed by vecgeom. 
+    # fixme: double check if it is release at the very end
     def __del__(self):
-        _pt_UnplacedBox_delete(self.cobj)
-
+        # _pt_UnplacedBox_delete(self.cobj)
+        pass
 
 class LogicalVolume:
     def __init__(self, volname, unplacedvolume):
+        self.reflist = []
+        self.reflist.append(unplacedvolume)
         self.cobj = _pt_LogicalVolume_new(volname.encode('utf-8'), unplacedvolume.cobj)
 
     def __del__(self):
-        _pt_LogicalVolume_delete(self.cobj)
+        # the memory should be managed by vecgeom. 
+        # fixme: double check if it is release at the very end
+        # _pt_LogicalVolume_delete(self.cobj)
+        pass
 
     def placeDaughter(self, name, unplacedVolume, transf):
+        self.reflist.append(unplacedVolume)
         _pt_LogicalVolume_placeDaughter(self.cobj, name.encode('utf-8'), unplacedVolume.cobj, transf.cobj)
 
 

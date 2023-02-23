@@ -70,7 +70,7 @@ void Prompt::Launcher::loadGeometry(const std::string &geofile)
 
   //load geometry
   auto &geoman = Singleton<GeoManager>::getInstance();
-  geoman.loadFile(geofile.c_str());
+  geoman.initFromGDML(geofile.c_str());
   if(geoman.m_gun.use_count())
     m_gun = geoman.m_gun;
 }

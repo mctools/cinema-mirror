@@ -37,7 +37,7 @@ namespace Prompt {
 
   class ScorerFactory  {
   public:
-    //used in GeoManager::loadFile
+    //used in GeoManager::initFromGDML
     std::shared_ptr<Scorer> createScorer(const std::string &cfg, double v);
 
   private:

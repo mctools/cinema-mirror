@@ -62,7 +62,7 @@ namespace Prompt {
     const GeoTranslator& getGeoTranslator() const;
     void makeGeoTranslator();
 
-    // calculate the normal on the surface of the current volume
+    // calculate the normal on the surface of the current vol;ume
     void getNormal(const Vector& pos, Vector &normal) const;
 
     // return the number of subvolumes in the current physical volume

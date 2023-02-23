@@ -1,5 +1,5 @@
-#ifndef Prompt_GeoManager_hh
-#define Prompt_GeoManager_hh
+#ifndef Prompt_VolumePhysicsScorer_hh
+#define Prompt_VolumePhysicsScorer_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -26,56 +26,47 @@
 #include <unordered_map>
 #include "PromptCore.hh"
 #include "PTBulkMaterialProcess.hh"
-#include "PTSingleton.hh"
-#include "PTScorer.hh"
-#include "PTPrimaryGun.hh"
 #include "PTSurfaceProcess.hh"
-#include "PTVolumePhysicsScorer.hh"
+#include "PTScorer.hh"
 
 namespace Prompt {
+    // A VolumePhysicsScorer should attach to a unique volume by volume idx
+    // So VolMap is a map for all the volumes and its VolumePhysicsScorer 
+    struct VolumePhysicsScorer { 
+        //bulk physics
+        std::shared_ptr<BulkMaterialProcess> bulkMaterialProcess; 
+        std::shared_ptr<SurfaceProcess> surfaceProcess; //surface physics
+        std::vector< std::shared_ptr<Scorer> >  scorers; /*Scorer*/
 
-  class GeoManager  {
-  public:
-    void initFromGDML(const std::string &loadFile);
-    void steupFakePhyisc(); //for c++ debug
+        std::vector< std::shared_ptr<Scorer> >  surface_scorers;
+        std::vector< std::shared_ptr<Scorer> >  entry_scorers;
+        std::vector< std::shared_ptr<Scorer> >  propagate_scorers;
+        std::vector< std::shared_ptr<Scorer> >  exit_scorers;
+        std::vector< std::shared_ptr<Scorer> >  absorb_scorers;
+        
+        // sort scorers into the five types of scorer vectors
+        void sortScorers();
+    };
+    
 
-    std::shared_ptr<BulkMaterialProcess> getBulkMaterialProcess(const std::string &name);
-    std::shared_ptr<Scorer> getScorer(const std::string &name);
+    using VolMap = std::unordered_map<size_t, std::shared_ptr<VolumePhysicsScorer>>;
+    using CfgPhysMap = std::unordered_map<std::string /*material name*/, std::shared_ptr<BulkMaterialProcess> > ;
+    using CfgScorerMap = std::unordered_map<std::string /*scorer name*/, std::shared_ptr<Scorer> > ;
 
-    size_t numBulkMaterialProcess() {return m_globelPhysics.size();}
-    size_t numScorer() {return m_globelScorers.size();}
+    class ResourceManager {
+        public:
+            ResourceManager() {};
+            ~ResourceManager() = default;
 
-    std::string getLogicalVolumeScorerName(unsigned logid);
-    // const std::string &getLogicalVolumeMaterialName(unsigned logid);
-    void writeScorer2Disk();
+            std::shared_ptr<VolumePhysicsScorer> addNewVolume(size_t id);
+            std::shared_ptr<VolumePhysicsScorer> getVolume(size_t id);
+        
+        
+        private:
+            VolMap m_volumes;
+            CfgPhysMap m_globelPhysics;
+            CfgScorerMap m_globelScorers;
+    };
 
-    VolMap::const_iterator getVolumePhysicsScorer(size_t logid)
-    {
-      auto it = m_logVolID2physcorer.find(logid);
-      if(it==m_logVolID2physcorer.end())
-        PROMPT_THROW2(CalcError, "The physics and scorer for volme " << logid
-         << " is not set");
-      return it;
-    }
-
-    std::shared_ptr<PrimaryGun> m_gun;
-
-
-  private:
-    friend class Singleton<GeoManager>;
-
-    GeoManager();
-    ~GeoManager();
-
-    void setupNavigator();
-
-    // the name is unique
-    std::map<std::string /*material name*/, std::shared_ptr<BulkMaterialProcess> > m_globelPhysics;
-    std::map<std::string /*scorer name*/, std::shared_ptr<Scorer> >  m_globelScorers;
-
-    //the place to manage the life time of BulkMaterialProcess scorers
-    VolMap m_logVolID2physcorer;
-  };
 }
-
 #endif

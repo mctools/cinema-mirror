@@ -53,7 +53,7 @@ void* pt_Transformation3D_newfromID(int id)
 void* pt_Transformation3D_newfromdata(double x, double y, double z,
                               double phi, double theta, double psi)
 {
-    return static_cast<void *>(new vg::Transformation3D(x, y, z, phi, theta, psi));
+    return static_cast<void *>(new vecgeom::Transformation3D(x, y, z, phi, theta, psi));
 }   
 
 
@@ -143,8 +143,7 @@ void pt_getLogVolumeInfo(size_t pvolID, char* cp)
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
   const auto node = tree.m_fullTreeNode[pvolID];
   auto &geoManager = Prompt::Singleton<Prompt::GeoManager>::getInstance();
-  std::string info = "Material cfgstr: ";
-  info += geoManager.getLogicalVolumeMaterialName(node->logical) + ".";
+  std::string info = "Material : ";
 
   auto scorinfo = geoManager.getLogicalVolumeScorerName(node->logical);
   if(!scorinfo.empty())
