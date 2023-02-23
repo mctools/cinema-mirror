@@ -217,7 +217,7 @@ VPlacedVolume *fakeGeometry()
 
 void Prompt::Launcher::steupFakeGeoPhyisc() //for c++ debug
 {
-  tessellated();
+  // fakeGeometry();
   //This checks that the included NCrystal headers and the linked NCrystal
   //library are from the same release of NCrystal:
   NCrystal::libClashDetect();

@@ -28,7 +28,7 @@ import matplotlib.colors as mcolors
 from .Mesh import Mesh
 
 class Visualiser():
-    def __init__(self, blacklist, printWorld=False, nSegments=30, dumpMesh=False):
+    def __init__(self, blacklist='', printWorld=False, nSegments=30, dumpMesh=False):
         self.color =  list(mcolors.CSS4_COLORS.keys())
         self.worldMesh = Mesh()
         self.blacklist = blacklist

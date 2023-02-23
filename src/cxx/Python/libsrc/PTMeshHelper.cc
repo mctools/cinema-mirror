@@ -50,6 +50,13 @@ void* pt_Transformation3D_newfromID(int id)
   return static_cast<void *>(p);
 }
 
+void* pt_Transformation3D_newfromdata(double x, double y, double z,
+                              double phi, double theta, double psi)
+{
+    return static_cast<void *>(new vg::Transformation3D(x, y, z, phi, theta, psi));
+}   
+
+
 void pt_Transformation3D_delete(void *trfm3Dobj)
 {
   delete static_cast<vecgeom::Transformation3D *>(trfm3Dobj);

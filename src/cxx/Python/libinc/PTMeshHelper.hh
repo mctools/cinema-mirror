@@ -27,8 +27,11 @@
 extern "C" {
 #endif
 
+//  Transformation3D 
 void* pt_Transformation3D_new(void *consttrfm3Dobj);
-void* pt_Transformation3D_newfromID(int id);
+void* pt_Transformation3D_newfromID(int volid);
+void* pt_Transformation3D_newfromdata(double x, double y, double z,
+                              double phi, double theta, double psi);
 void pt_Transformation3D_delete(void *trfm3Dobj);
 void pt_Transformation3D_multiple(void *trfm3Dobj1, void *trfm3Dobj2);
 void pt_Transformation3D_transform(void *trfm3Dobj1, size_t numPt, double *in, double *out);

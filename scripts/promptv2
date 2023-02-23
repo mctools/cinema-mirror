@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+from Cinema.Prompt import Launcher, Visualiser
+from Cinema.Prompt.Geo import setWorld, UnplacedBox, LogicalVolume, Transformation3D
+
+box = UnplacedBox(10, 10, 10)
+world = LogicalVolume("world", box)
+
+smallbox = UnplacedBox(1, 1, 1)
+logicbox = LogicalVolume("box", smallbox)
+transf = Transformation3D(5 , 5, 5, 0,0,0)
+world.placeDaughter("physicalbox", logicbox, transf)
+
+setWorld(world)
+
+myLcher=Launcher()
+myLcher.loadFakeGeoPhysics()
+
+v = Visualiser()
+v.show()
+
