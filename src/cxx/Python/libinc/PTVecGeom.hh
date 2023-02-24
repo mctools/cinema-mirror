@@ -17,8 +17,7 @@ void pt_UnplacedBox_delete(void* obj);
 void* pt_LogicalVolume_new(const char* name, void *unplacedVolume);
 void pt_LogicalVolume_delete(void* obj);
 void pt_LogicalVolume_placeDaughter(void* obj, const char* name, void *logicalVolume, void *transformation);
-
-
+unsigned pt_LogicalVolume_id(void* obj);
 
 #ifdef __cplusplus
 }

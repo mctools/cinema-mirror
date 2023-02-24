@@ -35,6 +35,9 @@ double pt_ekin2wl( double ekin) ;
 double pt_ekin2speed( double ekin);
 double pt_speed2ekin( double v);
 
+// global function 
+void pt_enable_prompt();
+
 // random
 double pt_rand_generate();
 

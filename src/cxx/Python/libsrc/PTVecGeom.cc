@@ -29,7 +29,14 @@ void pt_UnplacedBox_delete(void* obj)
 // LogicalVolume 
 void* pt_LogicalVolume_new(const char* name, void *unplacedVolume)
 {
-    return static_cast<void *>(new vg::LogicalVolume(name, static_cast<vg::VUnplacedVolume *>(unplacedVolume)));
+    auto p = static_cast<void *>(new vg::LogicalVolume(name, static_cast<vg::VUnplacedVolume *>(unplacedVolume)));
+    const std::map<unsigned int, vecgeom::LogicalVolume *> & vmap  = vecgeom::GeoManager::Instance().GetLogicalVolumesMap();
+    for(auto it=vmap.begin(); it!=vmap.end(); ++it)
+    {
+        std::cout << "pt_LogicalVolume_new " << it->second->GetName() << ", vol id " << it->first << std::endl; 
+    }
+    std::cout << "\n";
+    return p;
 }
 
 void pt_LogicalVolume_delete(void* obj)
@@ -42,5 +49,10 @@ void pt_LogicalVolume_placeDaughter(void* obj, const char* name, void *logicalVo
     auto vol = static_cast<vg::LogicalVolume *>(logicalVolume);
     auto transf = static_cast<const vg::Transformation3D *>(transformation);
     static_cast<vg::LogicalVolume *>(obj)->PlaceDaughter(name, vol, transf);
+}
+
+unsigned pt_LogicalVolume_id(void* obj)
+{
+    return static_cast<vg::LogicalVolume *>(obj)->id();
 }
 

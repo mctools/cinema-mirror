@@ -30,6 +30,8 @@ _pt_Launcher_getTrajSize = importFunc('pt_Launcher_getTrajSize', type_sizet, [ty
 _pt_Launcher_getTrajectory = importFunc('pt_Launcher_getTrajectory', None, [type_voidp, type_npdbl2d])
 _pt_Launcher_go = importFunc('pt_Launcher_go', None, [type_voidp, type_sizet, type_dbl, type_bool, type_bool])
 
+_pt_setWorld = importFunc('pt_setWorld', None, [type_voidp])
+
 class Launcher():
     def __init__(self):
         self.cobj = _pt_Launcher_getInstance()
@@ -39,6 +41,11 @@ class Launcher():
 
     def loadGeometry(self, fileName):
         _pt_Launcher_loadGeometry(self.cobj, fileName.encode('utf-8'));
+
+    def setWorld(self, logicalvol):
+        # setup the vecgeom world
+        _pt_setWorld(logicalvol.cobj)
+        
 
     def loadFakeGeoPhysics(self):
         _pt_Launcher_steupFakeGeoPhyisc(self.cobj)

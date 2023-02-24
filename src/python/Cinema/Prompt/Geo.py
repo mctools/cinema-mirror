@@ -20,7 +20,6 @@
 
 from ..Interface import *
 
-_pt_setWorld = importFunc('pt_setWorld', None, [type_voidp])
 
 _pt_UnplacedBox_new = importFunc('pt_UnplacedBox_new', type_voidp, [type_dbl, type_dbl, type_dbl])
 _pt_UnplacedBox_delete = importFunc('pt_UnplacedBox_delete', None, [type_voidp] )
@@ -29,13 +28,17 @@ _pt_LogicalVolume_new = importFunc('pt_LogicalVolume_new', type_voidp, [type_cst
 _pt_LogicalVolume_delete = importFunc('pt_LogicalVolume_delete', None, [type_voidp] )
 _pt_LogicalVolume_placeDaughter = importFunc('pt_LogicalVolume_placeDaughter', None, [type_voidp, type_cstr, type_voidp, type_voidp])
 
+_pt_LogicalVolume_id = importFunc('pt_LogicalVolume_id', type_uint, [type_voidp])
+
 _pt_Transformation3D_newfromdata = importFunc('pt_Transformation3D_newfromdata', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 _pt_Transformation3D_delete = importFunc('pt_Transformation3D_delete', None, [type_voidp] )
 
 
-def setWorld(logicalvol):
-    _pt_setWorld(logicalvol.cobj)
-
+#resource manager 
+_pt_ResourceManager_addNewVolume = importFunc('pt_ResourceManager_addNewVolume', None, [type_uint])
+_pt_ResourceManager_addScorer = importFunc('pt_ResourceManager_addScorer', None, [type_uint, type_cstr])
+_pt_ResourceManager_addSurface = importFunc('pt_ResourceManager_addSurface', None, [type_uint, type_cstr])
+_pt_ResourceManager_addPhysics = importFunc('pt_ResourceManager_addPhysics', None, [type_uint, type_cstr])
 
 class UnplacedBox:
     def __init__(self, hx, hy, hz):
@@ -48,10 +51,24 @@ class UnplacedBox:
         pass
 
 class LogicalVolume:
-    def __init__(self, volname, unplacedvolume):
-        self.reflist = []
-        self.reflist.append(unplacedvolume)
+    def __init__(self, volname, unplacedvolume, matCfg=None, scorerCfg=None, surfaceCfg=None):
+        self.child = []
         self.cobj = _pt_LogicalVolume_new(volname.encode('utf-8'), unplacedvolume.cobj)
+
+        volid = self.getID()
+
+        _pt_ResourceManager_addNewVolume(volid)
+        
+        if matCfg is None:
+            _pt_ResourceManager_addPhysics(volid, "freegas::H1/1e-26kgm3".encode('utf-8')) # set as the universe
+        else:
+            _pt_ResourceManager_addPhysics(volid, matCfg.encode('utf-8')) 
+
+        if scorerCfg is not None:
+            _pt_ResourceManager_addScorer(volid, scorerCfg.encode('utf-8')) 
+
+        if surfaceCfg is not None:
+            _pt_ResourceManager_addSurface(volid, surfaceCfg.encode('utf-8')) 
 
     def __del__(self):
         # the memory should be managed by vecgeom. 
@@ -59,9 +76,12 @@ class LogicalVolume:
         # _pt_LogicalVolume_delete(self.cobj)
         pass
 
-    def placeDaughter(self, name, unplacedVolume, transf):
-        self.reflist.append(unplacedVolume)
+    def placeChild(self, name, unplacedVolume, transf):
+        self.child.append(unplacedVolume)
         _pt_LogicalVolume_placeDaughter(self.cobj, name.encode('utf-8'), unplacedVolume.cobj, transf.cobj)
+
+    def getID(self):
+        return _pt_LogicalVolume_id(self.cobj)
 
 
 class Transformation3D:
