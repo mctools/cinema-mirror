@@ -45,8 +45,6 @@ namespace Prompt {
         std::vector< std::shared_ptr<Scorer> >  exit_scorers;
         std::vector< std::shared_ptr<Scorer> >  absorb_scorers;
         
-        // sort scorers into the five types of scorer vectors
-        void sortScorers();
     };
     
 
@@ -64,19 +62,14 @@ namespace Prompt {
             std::shared_ptr<VolumePhysicsScorer> getVolumePhysicsScorer(size_t volID) const;
             std::string getLogicalVolumeScorerName(unsigned volID) const;
 
-
-
             bool hasScorer(const std::string& cfg) const;
             CfgScorerMap::const_iterator findGlobalScorer(const std::string& cfg) const;
             CfgScorerMap::const_iterator endScorer() const;
             void addScorer(size_t volID, const std::string& cfg);
-
             void addSurface(size_t volID, const std::string& cfg);
             void addPhysics(size_t volID, const std::string& cfg);
 
-            void sortScorers(size_t volID);
             void writeScorer2Disk();
-
             
 
         private:

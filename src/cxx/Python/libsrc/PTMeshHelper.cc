@@ -20,7 +20,7 @@
 
 #include "PTMeshHelper.hh"
 #include "PTGeoTree.hh"
-#include "PTGeoManager.hh"
+#include "PTGeoLoader.hh"
 
 #include <VecGeom/base/Config.h>
 #include <VecGeom/volumes/SolidMesh.h>

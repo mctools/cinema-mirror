@@ -20,7 +20,7 @@
 
 #include "PTLauncher.hh"
 
-#include "PTGeoManager.hh"
+#include "PTGeoLoader.hh"
 #include "PTActiveVolume.hh"
 #include "PTStackManager.hh"
 #include "PTMath.hh"
@@ -69,7 +69,7 @@ void Prompt::Launcher::loadGeometry(const std::string &geofile)
   NCrystal::setDefaultRNG(NCrystal::makeSO<SingletonPTRandWrapper>());
 
   //load geometry
-  auto &geoman = Singleton<GeoManager>::getInstance();
+  auto &geoman = Singleton<GeoLoader>::getInstance();
   geoman.initFromGDML(geofile.c_str());
   if(geoman.m_gun.use_count())
     m_gun = geoman.m_gun;
@@ -226,7 +226,7 @@ void Prompt::Launcher::steupFakeGeoPhyisc() //for c++ debug
   NCrystal::setDefaultRNG(NCrystal::makeSO<SingletonPTRandWrapper>());
 
   //load geometry
-  auto &geoman = Singleton<GeoManager>::getInstance();
+  auto &geoman = Singleton<GeoLoader>::getInstance();
   // geoman.steupFakePhyisc();
 }
 

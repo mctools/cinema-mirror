@@ -18,7 +18,7 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTGeoManager.hh"
+#include "PTGeoLoader.hh"
 
 #include <VecGeom/base/Config.h>
 #include <VecGeom/management/GeoManager.h>
@@ -39,101 +39,16 @@
 #include "PTUtils.hh"
 #include "PTNeutron.hh"
 
-Prompt::GeoManager::GeoManager()
+Prompt::GeoLoader::GeoLoader()
 :m_gun(nullptr), m_resman(Singleton<ResourceManager>::getInstance() )
 {
 }
 
-Prompt::GeoManager::~GeoManager()
+Prompt::GeoLoader::~GeoLoader()
 {
 }
 
-// std::shared_ptr<Prompt::BulkMaterialProcess> Prompt::GeoManager::getBulkMaterialProcess(const std::string &name)
-// {
-//   auto it = m_globelPhysics.find(name);
-//   if(it!=m_globelPhysics.end())
-//   {
-//     return it->second;
-//   }
-//   else
-//     return nullptr;
-// }
-
-// std::string Prompt::GeoManager::getLogicalVolumeScorerName(unsigned logid)
-// {
-//   std::string names;
-//   auto it = m_logVolID2physcorer.find(logid);
-//   if(it!=m_logVolID2physcorer.end())
-//   {
-//     for(const auto &sc : it->second->scorers)
-//     {
-//       names += sc->getName() + " ";
-//     }
-//   }
-//   return names;
-// }
-
-// std::shared_ptr<Prompt::Scorer> Prompt::GeoManager::getScorer(const std::string &name)
-// {
-//   auto it = m_globelScorers.find(name);
-//   if(it!= m_globelScorers.end())
-//   {
-//     return it->second;
-//   }
-//   else
-//     return nullptr;
-// }
-
-// void Prompt::GeoManager::steupFakePhyisc() //for c++ debug
-// {
-//   auto &geoManager = vecgeom::GeoManager::Instance();
-//   //geoManager.GetLogicalVolumesMap() returens std::map<unsigned int, LogicalVolume *>
-//   for (const auto &item : geoManager.GetLogicalVolumesMap())
-//   {
-//     auto &volume   = *item.second;
-//     const size_t volID = volume.id();
-    
-//     // fixme move it into the VolumePhysicsScorer class
-//     std::shared_ptr<VolumePhysicsScorer> vps(nullptr);
-//     if(m_logVolID2physcorer.find(volID)==m_logVolID2physcorer.end())
-//     {
-//       m_logVolID2physcorer.insert(std::make_pair(volID,  std::make_shared<VolumePhysicsScorer>()));
-//       vps = m_logVolID2physcorer[volID];
-//     }
-//     else
-//     {
-//       PROMPT_THROW2(CalcError, "volume ID " << volID << " appear more than once")
-//     }
-
-    
-//     // 3. setup physics model, if it is not yet set
-
-//     std::string mat_name = "freegas::N78O22/1.225kgm3";
-
-//     auto matphys = getBulkMaterialProcess(mat_name);
-//     if(matphys) //m_logVolID2physcorer not exist
-//     {
-//       vps->bulkMaterialProcess=matphys;
-//       std::cout << "Set model " << mat_name
-//                 << " for volume " << volume.GetName() << std::endl;
-//     }
-//     else
-//     {
-//       std::cout << "Creating model " << mat_name << ", for volume " << volume.GetName() << std::endl;
-
-//       std::shared_ptr<BulkMaterialProcess> model = std::make_shared<BulkMaterialProcess>("neutron bulk physics"); //it should be a dict later
-//       m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<BulkMaterialProcess>>(std::string(mat_name) , std::move(model) ) );
-
-//       auto theNewPhysics = getBulkMaterialProcess(mat_name);
-//       const std::string &cfg = mat_name;
-//       theNewPhysics->cfgPhysicsModel(cfg);
-//       vps->bulkMaterialProcess=theNewPhysics;
-//     }
-
-//   }
-// }
-
-void Prompt::GeoManager::setupNavigator()
+void Prompt::GeoLoader::setupNavigator()
 {
   //accelaration
   vecgeom::BVHManager::Init();
@@ -153,7 +68,7 @@ void Prompt::GeoManager::setupNavigator()
 
 }
 
-void Prompt::GeoManager::initFromGDML(const std::string &gdml_file)
+void Prompt::GeoLoader::initFromGDML(const std::string &gdml_file)
 {
   vgdml::Parser p;
   const auto loadedMiddleware = p.Load(gdml_file.c_str(), false, 1);

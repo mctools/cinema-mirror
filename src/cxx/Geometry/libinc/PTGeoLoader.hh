@@ -1,5 +1,5 @@
-#ifndef Prompt_GeoManager_hh
-#define Prompt_GeoManager_hh
+#ifndef Prompt_GeoLoader_hh
+#define Prompt_GeoLoader_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -34,16 +34,15 @@
 
 namespace Prompt {
 
-  class GeoManager  {
+  class GeoLoader  {
   public:
     void initFromGDML(const std::string &loadFile);
     std::shared_ptr<PrimaryGun> m_gun;
 
-
   private:
-    friend class Singleton<GeoManager>;
-    GeoManager();
-    ~GeoManager();
+    friend class Singleton<GeoLoader>;
+    GeoLoader();
+    ~GeoLoader();
 
     void setupNavigator();
 

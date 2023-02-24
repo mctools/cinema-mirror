@@ -4,63 +4,6 @@
 
 #include <VecGeom/management/GeoManager.h>
 
-void Prompt::VolumePhysicsScorer::sortScorers()
-{
-  entry_scorers.clear();
-  propagate_scorers.clear();
-  exit_scorers.clear();
-  surface_scorers.clear();
-  absorb_scorers.clear();
-
-  std::cout << "start sorting\n";
-  if(scorers.size())
-  {
-    std::cout << "Sorting "<< scorers.size() << " scorers \n\n";
-
-    std::cout << (scorers[0]->getName() == "aa") << std::endl;
-  }
-
-  for(const auto &v : scorers)
-  {
-    std::cout << "Scorer name " << v->getName() << ", size " << scorers.size() << std::endl;
-    auto type = v->getType();
-    if(type==Scorer::ScorerType::ENTRY)
-    {
-      entry_scorers.push_back(v);
-      std::cout << "Added ENTRY type scorer: " << v->getName() << std::endl;
-    }
-    else if(type==Scorer::ScorerType::PROPAGATE)
-    {
-      propagate_scorers.push_back(v);
-      std::cout << "Added PROPAGATE type scorer: " << v->getName() << std::endl;
-    }
-    else if(type==Scorer::ScorerType::EXIT)
-    {
-      exit_scorers.push_back(v);
-      std::cout << "Added EXIT type scorer: " << v->getName() << std::endl;
-    }
-    else if(type==Scorer::ScorerType::SURFACE)
-    {
-      surface_scorers.push_back(v);
-      std::cout << "Added SURFACE type scorer: " << v->getName() << std::endl;
-    }
-    else if(type==Scorer::ScorerType::ABSORB)
-    {
-      absorb_scorers.push_back(v);
-      std::cout << "Added ABSORB type scorer: " << v->getName() << std::endl;
-    }
-    else if(type==Scorer::ScorerType::ENTRY2EXIT)
-    {
-      entry_scorers.push_back(v);
-      propagate_scorers.push_back(v);
-      exit_scorers.push_back(v);
-      std::cout << "Added ENTRY2EXIT type scorer: " << v->getName() << std::endl;
-    }
-    else
-      PROMPT_THROW2(BadInput, "unknown scorer type " << static_cast<int>(type) );
-  }
-  std::cout << "end sorting\n";
-}
 
 Prompt::ResourceManager::ResourceManager()
 :  m_volumes(), m_globelPhysics(), m_globelScorers(), m_globelSurface()
@@ -251,16 +194,6 @@ void Prompt::ResourceManager::addPhysics(size_t volID, const std::string& cfg)
   }
 
   it_vol->second->bulkMaterialProcess = sc;
-}
-
-void Prompt::ResourceManager::sortScorers(size_t volID)
-{
-
-  auto it_vol = m_volumes.find(volID);
-  if(it_vol == m_volumes.end())
-      PROMPT_THROW2(CalcError, "sortScorers: volume ID " << volID << " is not exist");
-
-  it_vol->second->sortScorers();
 }
 
 void Prompt::ResourceManager::writeScorer2Disk()

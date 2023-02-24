@@ -29,7 +29,7 @@
 #include "PTScorer.hh"
 #include "PTHist2D.hh"
 #include <VecGeom/management/GeoManager.h>
-#include "PTGeoManager.hh"
+#include "PTGeoLoader.hh"
 #include "PTGeoTranslator.hh"
 
 namespace Prompt {

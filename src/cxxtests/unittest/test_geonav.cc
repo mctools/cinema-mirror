@@ -22,7 +22,7 @@
 
 #include <iostream>
 #include <memory>
-#include "PTGeoManager.hh"
+#include "PTGeoLoader.hh"
 #include "PTActiveVolume.hh"
 #include "PTMath.hh"
 #include "PTNeutron.hh"
@@ -30,13 +30,13 @@
 
 namespace pt = Prompt;
 
-TEST_CASE("GeoManager")
+TEST_CASE("GeoLoader")
 {
   //set the seed for the random generator
   pt::Singleton<pt::SingletonPTRand>::getInstance().setSeed(0);
 
   //load geometry
-  auto &geoman = pt::Singleton<pt::GeoManager>::getInstance();
+  auto &geoman = pt::Singleton<pt::GeoLoader>::getInstance();
   auto path = std::string(getenv("CINEMAPATH"));
   geoman.initFromGDML(path +"/gdml/first_geo.gdml");
 
