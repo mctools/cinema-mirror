@@ -59,8 +59,12 @@ void Prompt::ActiveVolume::setupVolPhysAndGeoTrans()
   // Find next step
   // m_currState->Top() gets the placed volume
   m_currPV = m_currState->Top();
-  auto &geo = Singleton<GeoManager>::getInstance();
-  m_matphysscor = geo.getVolumePhysicsScorer(getVolumeID())->second;
+  m_matphysscor = Singleton<ResourceManager>::getInstance().getVolumePhysicsScorer(getVolumeID());
+  if(!m_matphysscor)
+    PROMPT_THROW2(CalcError, "Volume with id " << getVolumeID() << " is not found in the resource manager");
+
+  // auto &geo = Singleton<GeoManager>::getInstance();
+  // m_matphysscor = geo.getVolumePhysicsScorer(getVolumeID())->second;
 
   makeGeoTranslator(); //set up the global to local translator for this volume
 }
@@ -137,7 +141,7 @@ void Prompt::ActiveVolume::scoreEntry(Prompt::Particle &particle)
 
 void Prompt::ActiveVolume::scoreSurface(Prompt::Particle &particle)
 {
-  auto localposition = particle.getPosition();
+  auto localposition = particle.getPosition();   
   if(m_matphysscor->surface_scorers.size())
   {
     for(auto &v:m_matphysscor->surface_scorers)

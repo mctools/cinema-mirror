@@ -33,6 +33,7 @@ Prompt::BulkMaterialProcess::BulkMaterialProcess(const std::string &name)
       m_compModel(std::make_unique<CompoundModel>(const_neutron_pgd)), // fixme:  neutron only for now, should be a dict later
       m_numdensity(0.), m_name(name)
 {
+  cfgPhysicsModel(name);
 }
 
 Prompt::BulkMaterialProcess::~BulkMaterialProcess() {}
@@ -145,7 +146,7 @@ double Prompt::BulkMaterialProcess::sampleStepLength(const Prompt::Particle &par
   }
 }
 
-void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr, double bias)
+void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
 {
   std::cout << "Configuring physics model: " << cfgstr << std::endl;
   pt_assert_always(!m_numdensity); //multiple configuration

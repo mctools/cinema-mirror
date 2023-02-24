@@ -227,7 +227,7 @@ void Prompt::Launcher::steupFakeGeoPhyisc() //for c++ debug
 
   //load geometry
   auto &geoman = Singleton<GeoManager>::getInstance();
-  geoman.steupFakePhyisc();
+  // geoman.steupFakePhyisc();
 }
 
 
@@ -321,7 +321,6 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
   if(timer)
   {   
     delete moni;
-    auto &geoman = Singleton<GeoManager>::getInstance();
-    geoman.writeScorer2Disk();
+    Singleton<ResourceManager>::getInstance().writeScorer2Disk();
   }
 }

@@ -30,51 +30,24 @@
 #include "PTScorer.hh"
 #include "PTPrimaryGun.hh"
 #include "PTSurfaceProcess.hh"
-#include "PTVolumePhysicsScorer.hh"
+#include "PTResourceManager.hh"
 
 namespace Prompt {
 
   class GeoManager  {
   public:
     void initFromGDML(const std::string &loadFile);
-    void steupFakePhyisc(); //for c++ debug
-
-    std::shared_ptr<BulkMaterialProcess> getBulkMaterialProcess(const std::string &name);
-    std::shared_ptr<Scorer> getScorer(const std::string &name);
-
-    size_t numBulkMaterialProcess() {return m_globelPhysics.size();}
-    size_t numScorer() {return m_globelScorers.size();}
-
-    std::string getLogicalVolumeScorerName(unsigned logid);
-    // const std::string &getLogicalVolumeMaterialName(unsigned logid);
-    void writeScorer2Disk();
-
-    VolMap::const_iterator getVolumePhysicsScorer(size_t logid)
-    {
-      auto it = m_logVolID2physcorer.find(logid);
-      if(it==m_logVolID2physcorer.end())
-        PROMPT_THROW2(CalcError, "The physics and scorer for volme " << logid
-         << " is not set");
-      return it;
-    }
-
     std::shared_ptr<PrimaryGun> m_gun;
 
 
   private:
     friend class Singleton<GeoManager>;
-
     GeoManager();
     ~GeoManager();
 
     void setupNavigator();
 
-    // the name is unique
-    std::map<std::string /*material name*/, std::shared_ptr<BulkMaterialProcess> > m_globelPhysics;
-    std::map<std::string /*scorer name*/, std::shared_ptr<Scorer> >  m_globelScorers;
-
-    //the place to manage the life time of BulkMaterialProcess scorers
-    VolMap m_logVolID2physcorer;
+    ResourceManager &m_resman;
   };
 }
 

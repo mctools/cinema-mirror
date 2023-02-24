@@ -1,5 +1,5 @@
-#ifndef Prompt_VolumePhysicsScorer_hh
-#define Prompt_VolumePhysicsScorer_hh
+#ifndef Prompt_ResourceManager_hh
+#define Prompt_ResourceManager_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -28,6 +28,7 @@
 #include "PTBulkMaterialProcess.hh"
 #include "PTSurfaceProcess.hh"
 #include "PTScorer.hh"
+#include "PTSingleton.hh"
 
 namespace Prompt {
     // A VolumePhysicsScorer should attach to a unique volume by volume idx
@@ -52,20 +53,41 @@ namespace Prompt {
     using VolMap = std::unordered_map<size_t, std::shared_ptr<VolumePhysicsScorer>>;
     using CfgPhysMap = std::unordered_map<std::string /*material name*/, std::shared_ptr<BulkMaterialProcess> > ;
     using CfgScorerMap = std::unordered_map<std::string /*scorer name*/, std::shared_ptr<Scorer> > ;
+    using CfgSurfaceMap = std::unordered_map<std::string /*surface name*/, std::shared_ptr<SurfaceProcess> > ;
 
     class ResourceManager {
         public:
-            ResourceManager() {};
-            ~ResourceManager() = default;
+            void addNewVolume(size_t volID);
+            bool hasVolume(size_t volID) const;
+            void eraseVolume(size_t volID, bool check=true);
 
-            std::shared_ptr<VolumePhysicsScorer> addNewVolume(size_t id);
-            std::shared_ptr<VolumePhysicsScorer> getVolume(size_t id);
-        
-        
+            std::shared_ptr<VolumePhysicsScorer> getVolumePhysicsScorer(size_t volID) const;
+            std::string getLogicalVolumeScorerName(unsigned volID) const;
+
+
+
+            bool hasScorer(const std::string& cfg) const;
+            CfgScorerMap::const_iterator findGlobalScorer(const std::string& cfg) const;
+            CfgScorerMap::const_iterator endScorer() const;
+            void addScorer(size_t volID, const std::string& cfg);
+
+            void addSurface(size_t volID, const std::string& cfg);
+            void addPhysics(size_t volID, const std::string& cfg);
+
+            void sortScorers(size_t volID);
+            void writeScorer2Disk();
+
+            
+
         private:
+            friend class Singleton<ResourceManager>;
+            ResourceManager();
+            ~ResourceManager();
+
             VolMap m_volumes;
             CfgPhysMap m_globelPhysics;
             CfgScorerMap m_globelScorers;
+            CfgSurfaceMap m_globelSurface;
     };
 
 }

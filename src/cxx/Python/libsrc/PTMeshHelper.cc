@@ -142,10 +142,10 @@ void pt_getLogVolumeInfo(size_t pvolID, char* cp)
 {
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
   const auto node = tree.m_fullTreeNode[pvolID];
-  auto &geoManager = Prompt::Singleton<Prompt::GeoManager>::getInstance();
+  auto &resman = Prompt::Singleton<Prompt::ResourceManager>::getInstance();
   std::string info = "Material : ";
 
-  auto scorinfo = geoManager.getLogicalVolumeScorerName(node->logical);
+  auto scorinfo = resman.getLogicalVolumeScorerName(node->logical);
   if(!scorinfo.empty())
   {
     info += " Associated scorer: ";

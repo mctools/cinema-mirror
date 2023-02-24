@@ -40,101 +40,98 @@
 #include "PTNeutron.hh"
 
 Prompt::GeoManager::GeoManager()
-:m_gun(nullptr)
+:m_gun(nullptr), m_resman(Singleton<ResourceManager>::getInstance() )
 {
 }
 
 Prompt::GeoManager::~GeoManager()
 {
-  std::cout << "Simulation completed!\n";
-  std::cout << "Simulation created " << numBulkMaterialProcess() << " material physics\n";
-  std::cout << "There are " << numScorer() << " scorers in total\n";
 }
 
-std::shared_ptr<Prompt::BulkMaterialProcess> Prompt::GeoManager::getBulkMaterialProcess(const std::string &name)
-{
-  auto it = m_globelPhysics.find(name);
-  if(it!=m_globelPhysics.end())
-  {
-    return it->second;
-  }
-  else
-    return nullptr;
-}
+// std::shared_ptr<Prompt::BulkMaterialProcess> Prompt::GeoManager::getBulkMaterialProcess(const std::string &name)
+// {
+//   auto it = m_globelPhysics.find(name);
+//   if(it!=m_globelPhysics.end())
+//   {
+//     return it->second;
+//   }
+//   else
+//     return nullptr;
+// }
 
-std::string Prompt::GeoManager::getLogicalVolumeScorerName(unsigned logid)
-{
-  std::string names;
-  auto it = m_logVolID2physcorer.find(logid);
-  if(it!=m_logVolID2physcorer.end())
-  {
-    for(const auto &sc : it->second->scorers)
-    {
-      names += sc->getName() + " ";
-    }
-  }
-  return names;
-}
+// std::string Prompt::GeoManager::getLogicalVolumeScorerName(unsigned logid)
+// {
+//   std::string names;
+//   auto it = m_logVolID2physcorer.find(logid);
+//   if(it!=m_logVolID2physcorer.end())
+//   {
+//     for(const auto &sc : it->second->scorers)
+//     {
+//       names += sc->getName() + " ";
+//     }
+//   }
+//   return names;
+// }
 
-std::shared_ptr<Prompt::Scorer> Prompt::GeoManager::getScorer(const std::string &name)
-{
-  auto it = m_globelScorers.find(name);
-  if(it!= m_globelScorers.end())
-  {
-    return it->second;
-  }
-  else
-    return nullptr;
-}
+// std::shared_ptr<Prompt::Scorer> Prompt::GeoManager::getScorer(const std::string &name)
+// {
+//   auto it = m_globelScorers.find(name);
+//   if(it!= m_globelScorers.end())
+//   {
+//     return it->second;
+//   }
+//   else
+//     return nullptr;
+// }
 
-void Prompt::GeoManager::steupFakePhyisc() //for c++ debug
-{
-  auto &geoManager = vecgeom::GeoManager::Instance();
-  //geoManager.GetLogicalVolumesMap() returens std::map<unsigned int, LogicalVolume *>
-  for (const auto &item : geoManager.GetLogicalVolumesMap())
-  {
-    auto &volume   = *item.second;
-    const size_t volID = volume.id();
+// void Prompt::GeoManager::steupFakePhyisc() //for c++ debug
+// {
+//   auto &geoManager = vecgeom::GeoManager::Instance();
+//   //geoManager.GetLogicalVolumesMap() returens std::map<unsigned int, LogicalVolume *>
+//   for (const auto &item : geoManager.GetLogicalVolumesMap())
+//   {
+//     auto &volume   = *item.second;
+//     const size_t volID = volume.id();
     
-    // fixme move it into the VolumePhysicsScorer class
-    std::shared_ptr<VolumePhysicsScorer> vps(nullptr);
-    if(m_logVolID2physcorer.find(volID)==m_logVolID2physcorer.end())
-    {
-      m_logVolID2physcorer.insert(std::make_pair(volID,  std::make_shared<VolumePhysicsScorer>()));
-      vps = m_logVolID2physcorer[volID];
-    }
-    else
-    {
-      PROMPT_THROW2(CalcError, "volume ID " << volID << " appear more than once")
-    }
+//     // fixme move it into the VolumePhysicsScorer class
+//     std::shared_ptr<VolumePhysicsScorer> vps(nullptr);
+//     if(m_logVolID2physcorer.find(volID)==m_logVolID2physcorer.end())
+//     {
+//       m_logVolID2physcorer.insert(std::make_pair(volID,  std::make_shared<VolumePhysicsScorer>()));
+//       vps = m_logVolID2physcorer[volID];
+//     }
+//     else
+//     {
+//       PROMPT_THROW2(CalcError, "volume ID " << volID << " appear more than once")
+//     }
 
     
-    // 3. setup physics model, if it is not yet set
+//     // 3. setup physics model, if it is not yet set
 
-    std::string mat_name = "freegas::N78O22/1.225kgm3";
+//     std::string mat_name = "freegas::N78O22/1.225kgm3";
 
-    auto matphys = getBulkMaterialProcess(mat_name);
-    if(matphys) //m_logVolID2physcorer not exist
-    {
-      vps->bulkMaterialProcess=matphys;
-      std::cout << "Set model " << mat_name
-                << " for volume " << volume.GetName() << std::endl;
-    }
-    else
-    {
-      std::cout << "Creating model " << mat_name << ", for volume " << volume.GetName() << std::endl;
+//     auto matphys = getBulkMaterialProcess(mat_name);
+//     if(matphys) //m_logVolID2physcorer not exist
+//     {
+//       vps->bulkMaterialProcess=matphys;
+//       std::cout << "Set model " << mat_name
+//                 << " for volume " << volume.GetName() << std::endl;
+//     }
+//     else
+//     {
+//       std::cout << "Creating model " << mat_name << ", for volume " << volume.GetName() << std::endl;
 
-      std::shared_ptr<BulkMaterialProcess> model = std::make_shared<BulkMaterialProcess>("neutron bulk physics"); //it should be a dict later
-      m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<BulkMaterialProcess>>(std::string(mat_name) , std::move(model) ) );
+//       std::shared_ptr<BulkMaterialProcess> model = std::make_shared<BulkMaterialProcess>("neutron bulk physics"); //it should be a dict later
+//       m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<BulkMaterialProcess>>(std::string(mat_name) , std::move(model) ) );
 
-      auto theNewPhysics = getBulkMaterialProcess(mat_name);
-      const std::string &cfg = mat_name;
-      theNewPhysics->cfgPhysicsModel(cfg);
-      vps->bulkMaterialProcess=theNewPhysics;
-    }
+//       auto theNewPhysics = getBulkMaterialProcess(mat_name);
+//       const std::string &cfg = mat_name;
+//       theNewPhysics->cfgPhysicsModel(cfg);
+//       vps->bulkMaterialProcess=theNewPhysics;
+//     }
 
-  }
-}
+//   }
+// }
 
 void Prompt::GeoManager::setupNavigator()
 {
@@ -188,6 +185,7 @@ void Prompt::GeoManager::initFromGDML(const std::string &gdml_file)
   const std::map<int, std::vector<vgdml::Auxiliary>>& volAuxInfo = aMiddleware.GetVolumeAuxiliaryInfo();
   std::cout << "Geometry contains "
             << volAuxInfo.size() << " entries of volum auxiliary info\n";
+  
 
   auto &scorerFactory = Singleton<ScorerFactory>::getInstance();
   auto &geoManager = vecgeom::GeoManager::Instance();
@@ -195,25 +193,30 @@ void Prompt::GeoManager::initFromGDML(const std::string &gdml_file)
   //geoManager.GetLogicalVolumesMap() returens std::map<unsigned int, LogicalVolume *>
   for (const auto &item : geoManager.GetLogicalVolumesMap())
   {
+
     auto &volume   = *item.second;
     const size_t volID = volume.id();
+    std::cout << "Processing volume " << volume.GetName() << ", logical ID " << volID << std::endl;
 
-    std::shared_ptr<VolumePhysicsScorer> vps(nullptr);
-    if(m_logVolID2physcorer.find(volID)==m_logVolID2physcorer.end())
-    {
-      m_logVolID2physcorer.insert(std::make_pair(volID,  std::make_shared<VolumePhysicsScorer>()));
-      vps = m_logVolID2physcorer[volID];
-    }
-    else
-    {
-      PROMPT_THROW2(CalcError, "volume ID " << volID << " appear more than once")
-    }
+    m_resman.addNewVolume(volID);
+
+    // std::shared_ptr<VolumePhysicsScorer> vps(nullptr);
+    // if(m_logVolID2physcorer.find(volID)==m_logVolID2physcorer.end())
+    // {
+    //   m_logVolID2physcorer.insert(std::make_pair(volID,  std::make_shared<VolumePhysicsScorer>()));
+    //   vps = m_logVolID2physcorer[volID];
+    // }
+    // else
+    // {
+    //   PROMPT_THROW2(CalcError, "volume ID " << volID << " appear more than once")
+    // }
 
     // 1. filter out material-empty volume
     auto mat_iter = volumeMatMap.find(volID);
     if(mat_iter==volumeMatMap.end()) //union creates empty virtual volume
     {
-      m_logVolID2physcorer.erase(volID);
+      // m_logVolID2physcorer.erase(volID);
+      m_resman.eraseVolume(volID);
       // PROMPT_THROW(CalcError, "empty volume ")
       continue;
     }
@@ -222,9 +225,11 @@ void Prompt::GeoManager::initFromGDML(const std::string &gdml_file)
     if(volAuxInfo.size())
     {
       auto volAuxInfo_iter = volAuxInfo.find(volID);
+
       if(volAuxInfo_iter != volAuxInfo.end()) //it volume contains an AuxInfo info
       {
-        std::cout << volume.GetName()<< ", volID " << volID << " contains volAuxInfo\n";
+
+        std::cout << volume.GetName()<< ", +++++++++++++ volID " << volID << " contains volAuxInfo\n";
         const std::vector<vgdml::Auxiliary> &volAuxInfoVec = (*volAuxInfo_iter).second;
         auto volAuxInfoSize = volAuxInfoVec.size();
         std::cout << "volAuxInfoSize " << volume.GetName()  << " "
@@ -234,26 +239,31 @@ void Prompt::GeoManager::initFromGDML(const std::string &gdml_file)
         {
           if (info.GetType() == "Scorer")
           {
-            std::shared_ptr<Prompt::Scorer> scor = getScorer(info.GetValue());
+            std::string scorercfg = info.GetValue();
+            m_resman.addScorer(volID, scorercfg);
 
-            if(scor.use_count()) //this scorer exist
-            {
-              vps->scorers.push_back(scor);
-            }
-            else
-            {
-              scor = scorerFactory.createScorer(info.GetValue(), volume.GetUnplacedVolume()->Capacity() );
-              m_globelScorers[info.GetValue()]=scor;
-              vps->scorers.push_back(scor);
+            // std::shared_ptr<Prompt::Scorer> scor = getScorer(info.GetValue());
+
+            // if(scor.use_count()) //this scorer exist
+            // {
+            //   vps->scorers.push_back(scor);
+            // }
+            // else
+            // {
+            //   scor = scorerFactory.createScorer(info.GetValue(), volume.GetUnplacedVolume()->Capacity() );
+            //   m_globelScorers[info.GetValue()]=scor;
+            //   vps->scorers.push_back(scor);
               std::cout << "Scorer for vol name " << volume.GetName() <<" capacity "<<  volume.GetUnplacedVolume()->Capacity()  << std::endl;
 
-            }
+            // }
             std::cout << "vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
           }
           else if(info.GetType() == "SurfaceProcess")
           {
             std::cout << "SurfaceProcess: vol name " << volume.GetName() <<" type "<< info.GetType() << " value " << info.GetValue() << std::endl;
-            vps->surfaceProcess = Singleton<PhysicsFactory>::getInstance().createSurfaceProcess(info.GetValue());
+            // vps->surfaceProcess = Singleton<PhysicsFactory>::getInstance().createSurfaceProcess(info.GetValue());
+            std::string surfaceCfg = info.GetValue();
+            m_resman.addSurface(volID, surfaceCfg);
             std::cout << "Added SurfaceProcess " <<  info.GetValue() << std::endl;
           }
         }
@@ -262,29 +272,34 @@ void Prompt::GeoManager::initFromGDML(const std::string &gdml_file)
 
     // 3. setup physics model, if it is not yet set
     const vgdml::Material& mat = mat_iter->second;
-    auto matphys = getBulkMaterialProcess(mat.name);
+
+    m_resman.addPhysics(volID, mat.attributes.find("atomValue")->second);
+
+    // auto matphys = getBulkMaterialProcess(mat.attributes.find("atomValue")->second);
 
 
-    if(matphys) //m_logVolID2physcorer not exist
-    {
-      vps->bulkMaterialProcess=matphys;
-      std::cout << "Set model " << mat.name
-                << " for volume " << volume.GetName() << std::endl;
-    }
-    else
-    {
-      std::cout << "Creating model " << mat.name << ", "
-                << mat.attributes.find("atomValue")->second << volume.GetName() << std::endl;
-      std::shared_ptr<BulkMaterialProcess> model = std::make_shared<BulkMaterialProcess>("neutron bulk physics"); //it should be a dict later
-      m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<BulkMaterialProcess>>(std::string(mat.name) , std::move(model) ) );
+    // if(matphys) //m_logVolID2physcorer not exist
+    // {
+    //   vps->bulkMaterialProcess=matphys;
+    //   std::cout << "Set model " << mat.name
+    //             << " for volume " << volume.GetName() << std::endl;
+    // }
+    // else
+    // {
+    //   std::cout << "Creating model " << mat.name << ", "
+    //             << mat.attributes.find("atomValue")->second << volume.GetName() << std::endl;
+    //   std::shared_ptr<BulkMaterialProcess> model = std::make_shared<BulkMaterialProcess>("neutron bulk physics"); //it should be a dict later
+    //   m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<BulkMaterialProcess>>(std::string(mat.name) , std::move(model) ) );
 
-      auto theNewPhysics = getBulkMaterialProcess(mat.name);
-      const std::string &cfg = mat.attributes.find("atomValue")->second;
-      theNewPhysics->cfgPhysicsModel(cfg);
-      vps->bulkMaterialProcess=theNewPhysics;
-    }
+    //   auto theNewPhysics = getBulkMaterialProcess(mat.name);
+    //   const std::string &cfg = mat.attributes.find("atomValue")->second;
+    //   theNewPhysics->cfgPhysicsModel(cfg);
+    //   vps->bulkMaterialProcess=theNewPhysics;
+    // }
+    std::cout << "done physics " << std::endl;
 
-    vps->sortScorers();
+    // m_resman.sortScorers(volID);
+    // std::cout << "done physics scorers" << std::endl;
 
     std::cout << "volume name " << volume.GetName() << " (id = " << volume.id() << "): material name " << mat.name << std::endl;
     if (mat.attributes.size()) std::cout << "  attributes:\n";
@@ -300,13 +315,3 @@ void Prompt::GeoManager::initFromGDML(const std::string &gdml_file)
 }
 
 
-void Prompt::GeoManager::writeScorer2Disk()
-{  
-  for(auto it=m_logVolID2physcorer.begin();it!=m_logVolID2physcorer.end();++it)
-  {
-    for(auto &v : it->second->scorers)
-    {
-      v->save_mcpl();
-    }
-  }
-}

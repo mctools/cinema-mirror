@@ -1,0 +1,276 @@
+#include "PTResourceManager.hh"
+#include "PTScorerFactory.hh"
+#include "PTPhysicsFactory.hh"
+
+#include <VecGeom/management/GeoManager.h>
+
+void Prompt::VolumePhysicsScorer::sortScorers()
+{
+  entry_scorers.clear();
+  propagate_scorers.clear();
+  exit_scorers.clear();
+  surface_scorers.clear();
+  absorb_scorers.clear();
+
+  std::cout << "start sorting\n";
+  if(scorers.size())
+  {
+    std::cout << "Sorting "<< scorers.size() << " scorers \n\n";
+
+    std::cout << (scorers[0]->getName() == "aa") << std::endl;
+  }
+
+  for(const auto &v : scorers)
+  {
+    std::cout << "Scorer name " << v->getName() << ", size " << scorers.size() << std::endl;
+    auto type = v->getType();
+    if(type==Scorer::ScorerType::ENTRY)
+    {
+      entry_scorers.push_back(v);
+      std::cout << "Added ENTRY type scorer: " << v->getName() << std::endl;
+    }
+    else if(type==Scorer::ScorerType::PROPAGATE)
+    {
+      propagate_scorers.push_back(v);
+      std::cout << "Added PROPAGATE type scorer: " << v->getName() << std::endl;
+    }
+    else if(type==Scorer::ScorerType::EXIT)
+    {
+      exit_scorers.push_back(v);
+      std::cout << "Added EXIT type scorer: " << v->getName() << std::endl;
+    }
+    else if(type==Scorer::ScorerType::SURFACE)
+    {
+      surface_scorers.push_back(v);
+      std::cout << "Added SURFACE type scorer: " << v->getName() << std::endl;
+    }
+    else if(type==Scorer::ScorerType::ABSORB)
+    {
+      absorb_scorers.push_back(v);
+      std::cout << "Added ABSORB type scorer: " << v->getName() << std::endl;
+    }
+    else if(type==Scorer::ScorerType::ENTRY2EXIT)
+    {
+      entry_scorers.push_back(v);
+      propagate_scorers.push_back(v);
+      exit_scorers.push_back(v);
+      std::cout << "Added ENTRY2EXIT type scorer: " << v->getName() << std::endl;
+    }
+    else
+      PROMPT_THROW2(BadInput, "unknown scorer type " << static_cast<int>(type) );
+  }
+  std::cout << "end sorting\n";
+}
+
+Prompt::ResourceManager::ResourceManager()
+:  m_volumes(), m_globelPhysics(), m_globelScorers(), m_globelSurface()
+{ }
+
+Prompt::ResourceManager::~ResourceManager()
+{ 
+  // std::cout << "Simulation completed!\n";
+  // std::cout << "Simulation created " << numBulkMaterialProcess() << " material physics\n";
+  // std::cout << "There are " << numScorer() << " scorers in total\n";
+}
+
+void Prompt::ResourceManager::addNewVolume(size_t volID)
+{
+  if(hasVolume(volID))
+    PROMPT_THROW2(CalcError, "volume ID " << volID << " already exist");
+
+  auto vps = std::make_shared<VolumePhysicsScorer>();
+  m_volumes.insert(std::make_pair(volID,  vps));
+}
+
+bool Prompt::ResourceManager::hasVolume(size_t volID) const
+{
+    return m_volumes.find(volID)==m_volumes.end() ? false : true;
+}
+
+std::string Prompt::ResourceManager::getLogicalVolumeScorerName(unsigned logid) const
+{
+  std::string names;
+  auto it = m_volumes.find(logid);
+  if(it!=m_volumes.end())
+  {
+    for(const auto &sc : it->second->scorers)
+    {
+      names += sc->getName() + " ";
+    }
+  }
+  return names;
+}
+
+void Prompt::ResourceManager::eraseVolume(size_t volID, bool check)
+{
+  if(check)
+  {
+    if(!hasVolume(volID))
+      PROMPT_THROW2(CalcError, "volume ID " << volID << " is not exist");
+  }
+  m_volumes.erase(volID);
+}
+
+std::shared_ptr<Prompt::VolumePhysicsScorer> Prompt::ResourceManager::getVolumePhysicsScorer(size_t volID) const
+{
+  auto it = m_volumes.find(volID);
+  if(it != m_volumes.end())
+  {
+    return it->second;
+  }
+  else
+  {
+    return nullptr;
+  }
+}
+
+bool Prompt::ResourceManager::hasScorer(const std::string& cfg) const
+{
+  return m_globelScorers.find(cfg) == m_globelScorers.end() ? false : true;
+}
+
+Prompt::CfgScorerMap::const_iterator Prompt::ResourceManager::findGlobalScorer(const std::string& cfg) const
+{
+  return m_globelScorers.find(cfg);
+}
+
+Prompt::CfgScorerMap::const_iterator Prompt::ResourceManager::endScorer() const
+{
+  return m_globelScorers.end();
+}
+
+void Prompt::ResourceManager::addScorer(size_t volID, const std::string& cfg)
+{
+  auto it_vol = m_volumes.find(volID);
+  if(it_vol == m_volumes.end())
+      PROMPT_THROW2(CalcError, "addScorer: volume ID " << volID << " is not exist");
+
+  auto it = m_globelScorers.find(cfg);
+
+  // not exist
+  std::shared_ptr<Prompt::Scorer> sc(nullptr);
+  if(it==m_globelScorers.end())
+  {
+    auto &geoManager = vecgeom::GeoManager::Instance();
+    auto volume = geoManager.FindLogicalVolume(volID);
+    double capacity = volume->GetUnplacedVolume()->Capacity();
+
+    auto &scorerFactory = Singleton<ScorerFactory>::getInstance();
+    sc = scorerFactory.createScorer(cfg, capacity );
+    m_globelScorers[cfg] = sc;
+
+  }
+  else
+  {
+    sc = it->second;
+  }
+
+  it_vol->second->scorers.push_back(sc);
+
+  auto type = sc->getType();
+  if(type==Scorer::ScorerType::ENTRY)
+  {
+    it_vol->second->entry_scorers.push_back(sc);
+    std::cout << "Added ENTRY type scorer: " << sc->getName() << std::endl;
+  }
+  else if(type==Scorer::ScorerType::PROPAGATE)
+  {
+    it_vol->second->propagate_scorers.push_back(sc);
+    std::cout << "Added PROPAGATE type scorer: " << sc->getName() << std::endl;
+  }
+  else if(type==Scorer::ScorerType::EXIT)
+  {
+    it_vol->second->exit_scorers.push_back(sc);
+    std::cout << "Added EXIT type scorer: " << sc->getName() << std::endl;
+  }
+  else if(type==Scorer::ScorerType::SURFACE)
+  {
+    it_vol->second->surface_scorers.push_back(sc);
+    std::cout << "Added SURFACE type scorer: " << sc->getName() << std::endl;
+  }
+  else if(type==Scorer::ScorerType::ABSORB)
+  {
+    it_vol->second->absorb_scorers.push_back(sc);
+    std::cout << "Added ABSORB type scorer: " << sc->getName() << std::endl;
+  }
+  else if(type==Scorer::ScorerType::ENTRY2EXIT)
+  {
+    it_vol->second->entry_scorers.push_back(sc);
+    it_vol->second->propagate_scorers.push_back(sc);
+    it_vol->second->exit_scorers.push_back(sc);
+    std::cout << "Added ENTRY2EXIT type scorer: " << sc->getName() << std::endl;
+  }
+  else
+    PROMPT_THROW2(BadInput, "unknown scorer type " << static_cast<int>(type) );
+
+  std::cout << "Done scorer " << cfg << std::endl;
+}
+
+
+void Prompt::ResourceManager::addSurface(size_t volID, const std::string& cfg)
+{
+  auto it_vol = m_volumes.find(volID);
+  if(it_vol == m_volumes.end())
+      PROMPT_THROW2(CalcError, "addScorer: volume ID " << volID << " is not exist");
+
+  auto it = m_globelSurface.find(cfg);
+
+  std::shared_ptr<SurfaceProcess> sc(nullptr);
+  // not exist
+  if(it==m_globelSurface.end())
+  {
+    sc = Singleton<PhysicsFactory>::getInstance().createSurfaceProcess(cfg);
+    m_globelSurface[cfg] = sc;
+  }
+  else
+  {
+    sc = it->second;
+  }
+
+  it_vol->second->surfaceProcess = sc;
+}
+
+void Prompt::ResourceManager::addPhysics(size_t volID, const std::string& cfg)
+{
+  auto it_vol = m_volumes.find(volID);
+  if(it_vol == m_volumes.end())
+      PROMPT_THROW2(CalcError, "addPhysics: volume ID " << volID << " is not exist");
+
+  auto it = m_globelPhysics.find(cfg);
+  std::shared_ptr<BulkMaterialProcess> sc(nullptr);
+  // not exist
+  if(it==m_globelPhysics.end())
+  {
+    sc = std::make_shared<BulkMaterialProcess>(cfg);
+    m_globelPhysics[cfg] = sc;
+
+  }
+  else
+  {
+    sc = it->second;
+  }
+
+  it_vol->second->bulkMaterialProcess = sc;
+}
+
+void Prompt::ResourceManager::sortScorers(size_t volID)
+{
+
+  auto it_vol = m_volumes.find(volID);
+  if(it_vol == m_volumes.end())
+      PROMPT_THROW2(CalcError, "sortScorers: volume ID " << volID << " is not exist");
+
+  it_vol->second->sortScorers();
+}
+
+void Prompt::ResourceManager::writeScorer2Disk()
+{  
+  for(auto it=m_volumes.begin();it!=m_volumes.end();++it)
+  {
+    for(auto &v : it->second->scorers)
+    {
+      v->save_mcpl();
+    }
+  }
+}
+
