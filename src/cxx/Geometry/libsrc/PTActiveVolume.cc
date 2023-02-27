@@ -24,7 +24,8 @@
 #include "PTMirror.hh"
 
 Prompt::ActiveVolume::ActiveVolume()
-:m_geo(vecgeom::GeoManager::Instance()), m_currPV(nullptr),
+:m_geo(vecgeom::GeoManager::Instance()), 
+m_currPV(nullptr),
 m_currState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth())),
 m_nextState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth()))
 {}
@@ -34,6 +35,18 @@ Prompt::ActiveVolume::~ActiveVolume()
   delete m_currState;
   delete m_nextState;
   std::cout << "Destructed ActiveVolume" << std::endl;
+}
+
+
+void Prompt::ActiveVolume::setup()
+{
+  if(m_currState)
+    delete m_currState;
+  if(m_nextState)
+    delete m_nextState;
+
+  m_currState = vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth());
+  m_nextState = vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth());
 }
 
 Prompt::VolumePhysicsScorer *getLogicalVolumePhysicsScorer(const vecgeom::LogicalVolume &lv)

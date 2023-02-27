@@ -36,6 +36,8 @@ namespace Prompt {
 
   class ActiveVolume  {
   public:
+    void setup();
+    
     //return false if the track is terminated, i.e. exist world
     bool proprogateInAVolume(Particle &particle);
 

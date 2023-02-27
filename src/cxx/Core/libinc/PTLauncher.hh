@@ -24,15 +24,17 @@
 #include "PromptCore.hh"
 #include "PTSingleton.hh"
 #include "PTPrimaryGun.hh"
-
+#include "PTActiveVolume.hh"
+#include "PTStackManager.hh"
 namespace Prompt {
   class Launcher {
   public:
     void go(uint64_t numParticle, double printPrecent, bool recordTrj=false, bool timer=true);
-    void loadGeometry(const std::string &geofile);
-    void steupFakeGeoPhyisc(); //for c++ debug
+    void loadGeometry(const std::string &geofile); 
 
-    void setSeed(uint64_t seed) { Singleton<SingletonPTRand>::getInstance().setSeed(seed); }
+    // void setWorld(); //for c++ debug
+
+    void setSeed(uint64_t seed);
     uint64_t getSeed() { return Singleton<SingletonPTRand>::getInstance().getSeed(); }
     void setGun(std::shared_ptr<PrimaryGun> gun) { m_gun=gun; }
     const std::vector<Vector> &getTrajectory() { return m_trajectory; }
@@ -42,8 +44,12 @@ namespace Prompt {
     friend class Singleton<Launcher>;
     Launcher();
     ~Launcher();
+    bool m_initSeed;
     std::shared_ptr<PrimaryGun> m_gun;
     std::vector<Vector> m_trajectory;
+    // ActiveVolume &m_activeVolume;
+    StackManager &m_stackManager;
+
   };
 }
 #endif

@@ -44,15 +44,26 @@ void pt_LogicalVolume_delete(void* obj)
     delete static_cast<vg::LogicalVolume *>(obj);
 }
 
-void pt_LogicalVolume_placeDaughter(void* obj, const char* name, void *logicalVolume, void *transformation)
+void pt_LogicalVolume_placeChild(void* obj, const char* name, void *logicalVolume,
+                                    void *transformation, int group)
 {
     auto vol = static_cast<vg::LogicalVolume *>(logicalVolume);
     auto transf = static_cast<const vg::Transformation3D *>(transformation);
-    static_cast<vg::LogicalVolume *>(obj)->PlaceDaughter(name, vol, transf);
+    auto constplaced = static_cast<vg::LogicalVolume *>(obj)->PlaceDaughter(name, vol, transf);
+    vg::VPlacedVolume* placed = const_cast<vg::VPlacedVolume *>(constplaced);;
+
+    if(group)
+        placed->SetCopyNo(group);
+    std::cout << "?????? placed id " << placed->GetCopyNo() << std::endl;
 }
 
 unsigned pt_LogicalVolume_id(void* obj)
 {
     return static_cast<vg::LogicalVolume *>(obj)->id();
 }
+
+// unsigned pt_LogicalVolume_copyid(void* obj)
+// {
+//     return static_cast<vg::LogicalVolume *>(obj)->GetCopyNo()();
+// }
 

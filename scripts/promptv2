@@ -8,15 +8,17 @@ box = UnplacedBox(4,4,4)
 b1 = LogicalVolume("box1", box)
 b1.matCfg = "physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=0.1;abs_bias=0.1"
 
-print(f'bi id {b1.getID()} ')
+print(f'bi id {b1.getLogicalID()} ')
 
 world = LogicalVolume("world", UnplacedBox(10, 10, 10))
-world.placeChild("physicalbox", b1, Transformation3D(5 , 5, 5, 0,0,0))
+world.placeChild("physicalbox", b1, Transformation3D(5 , 5, 5, 0,0,0), 1)
+world.placeChild("physicalbox", b1, Transformation3D(-5 , -5, -5, 0,0,0))
+
 world.placeChild("physicalbox", LogicalVolume("box2", UnplacedBox(4, 4 , 4), 
                 scorerCfg="""Scorer=PSD;name=Monitor2;xmin=-5;xmax=5;
-                          numBins_x=20;ymin=-5;ymax=5;numBins_y=20;type=XY"""), Transformation3D(-5 , -5, -5, 0,0,0))
+                          numBins_x=20;ymin=-5;ymax=5;numBins_y=20;type=XY"""), Transformation3D(-5 , 5, -5, 0,0,0),10101)
 
-print(f'bi id {b1.getID()} ')
+print(f'bi id {b1.getLogicalID()} ')
 
 l = Launcher()
 l.setWorld(world)
@@ -29,7 +31,8 @@ for i in range(100):
     try:
         v.addLine(trj)
     except ValueError:
-        print(trj)
-        print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
+        # print(trj)
+        # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
+        pass
 
 v.show()

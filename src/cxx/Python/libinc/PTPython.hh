@@ -35,19 +35,13 @@ double pt_ekin2wl( double ekin) ;
 double pt_ekin2speed( double ekin);
 double pt_speed2ekin( double v);
 
-// global function 
-void pt_enable_prompt();
-
 // random
 double pt_rand_generate();
 
 // Prompt::Launcher
 void* pt_Launcher_getInstance();
 void pt_Launcher_setSeed(void* obj, uint64_t seed);
-void pt_Launcher_setGun(void* obj, void* objgun);
 void pt_Launcher_loadGeometry(void* obj, const char* fileName);
-void pt_Launcher_steupFakeGeoPhyisc(void* obj);
-
 size_t pt_Launcher_getTrajSize(void* obj);
 void pt_Launcher_getTrajectory(void* obj, double *trj);
 void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj, bool timer);
@@ -77,6 +71,7 @@ void pt_Hist2D_getHit(void* obj, double* h);
 void pt_Hist2D_fill(void* obj, double xval, double yval, double weight);
 void pt_Hist2D_fillmany(void* obj, size_t n, double* xval, double* yval, double* weight);
 void pt_Hist2D_merge(void* obj, void* obj2);
+
 
 #ifdef __cplusplus
 }

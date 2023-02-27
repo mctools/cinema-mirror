@@ -31,9 +31,37 @@
 
 #include "PTPython.hh"
 
+#include "NCrystal/NCrystal.hh"
+
+class SingletonPTRandWrapper : public NCrystal::RNGStream{
+public:
+  SingletonPTRandWrapper()
+  :NCrystal::RNGStream(), m_ptrng(Prompt::Singleton<Prompt::SingletonPTRand>::getInstance())
+  {}
+  virtual ~SingletonPTRandWrapper() override {}
+
+  double actualGenerate() override {return m_ptrng.generate(); }
+
+  //For the sake of example, we wrongly claim that this generator is safe and
+  //sensible to use multithreaded (see NCRNG.hh for how to correctly deal with
+  //MT safety, RNG states, etc.):
+  bool useInAllThreads() const override { return true; }
+private:
+  Prompt::SingletonPTRand &m_ptrng;
+};
+
+   
 Prompt::Launcher::Launcher()
+:m_initSeed(false), 
+// m_activeVolume(Singleton<ActiveVolume>::getInstance()), 
+m_stackManager(Singleton<StackManager>::getInstance())
 {
-  pt_enable_prompt();
+  //This checks that the included NCrystal headers and the linked NCrystal
+  //library are from the same release of NCrystal:
+  NCrystal::libClashDetect();
+
+  //set the generator for ncrystal
+  NCrystal::setDefaultRNG(NCrystal::makeSO<SingletonPTRandWrapper>());
 }
 
 
@@ -41,6 +69,16 @@ Prompt::Launcher::~Launcher()
 {
   printLogo();
 }
+
+void Prompt::Launcher::setSeed(uint64_t seed) 
+{ 
+  if(m_initSeed)
+    PROMPT_THROW(CalcError, "Seed is already set");
+
+  m_initSeed = true; 
+  Singleton<SingletonPTRand>::getInstance().setSeed(seed);
+}
+
 
 void Prompt::Launcher::loadGeometry(const std::string &geofile)
 {
@@ -52,31 +90,19 @@ void Prompt::Launcher::loadGeometry(const std::string &geofile)
 }
 
 
-
-void Prompt::Launcher::steupFakeGeoPhyisc() //for c++ debug
-{
-
-  //load geometry
-  auto &geoman = Singleton<GeoLoader>::getInstance();
-  // geoman.steupFakePhyisc();
-}
-
-
 void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj, bool timer)
 {
-  //set the seed for the random generator
-  auto &rng = Singleton<SingletonPTRand>::getInstance();
+  // fixme: recordTrj should be done in the particle class with an optional switch.
+  // to save 1. particle id, event id, the volume id, the physical id
+  
+  // if(!m_gun.use_count())
+  // {
+  //   std::cout << "PrimaryGun is not set, fallback to the neutron IsotropicGun\n";
+  //   m_gun = std::make_shared<IsotropicGun>(Neutron(), 0.0253, Vector{0,0,0}, Vector{1,0,0});
+  // }
 
-  //create navigation manager
-  auto &activeVolume = Singleton<ActiveVolume>::getInstance();
-
-  auto &stackManager = Singleton<StackManager>::getInstance();
-
-  if(!m_gun.use_count())
-  {
-    std::cout << "PrimaryGun is not set, fallback to the neutron IsotropicGun\n";
-    m_gun = std::make_shared<IsotropicGun>(Neutron(), 0.0253, Vector{0,0,0}, Vector{1,0,0});
-  }
+  auto &m_activeVolume = Singleton<ActiveVolume>::getInstance();
+  // m_activeVolume.setup(); 
 
   ProgressMonitor *moni=nullptr;
   if(timer)
@@ -84,11 +110,11 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
   for(size_t i=0;i<numParticle;i++)
   {
     //add a primary particle into the stack
-    stackManager.add(m_gun->generate());
+    m_stackManager.add(m_gun->generate());
 
-    while(!stackManager.empty())
+    while(!m_stackManager.empty())
     {
-      auto particle = *(stackManager.pop()).get();
+      auto particle = *(m_stackManager.pop()).get();
 
       if(recordTrj)
       {
@@ -98,8 +124,8 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       }
 
       //! allocate the point in a volume
-      activeVolume.locateActiveVolume(particle.getPosition());
-      while(!activeVolume.exitWorld() && particle.isAlive())
+      m_activeVolume.locateActiveVolume(particle.getPosition());
+      while(!m_activeVolume.exitWorld() && particle.isAlive())
       {
         if(recordTrj)
         {
@@ -108,35 +134,35 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
 
         //! first step of a particle in a volume
         // std::cout << activeVolume.getVolumeName() << " " << particle.getPosition() << std::endl;
-        activeVolume.setupVolPhysAndGeoTrans();
-        activeVolume.scoreSurface(particle);
+        m_activeVolume.setupVolPhysAndGeoTrans();
+        m_activeVolume.scoreSurface(particle);
 
         //if reflected, absorbed, transmitted
-        if(activeVolume.surfaceReaction(particle))
+        if(m_activeVolume.surfaceReaction(particle))
         {
           // std::cout << "reflection weight " << particle.getWeight() << "\n";
         }
-        activeVolume.scoreEntry(particle);
+        m_activeVolume.scoreEntry(particle);
 
         //! within the next while loop, particle should move in the same volume
-        while(activeVolume.proprogateInAVolume(particle) )
+        while(m_activeVolume.proprogateInAVolume(particle) )
         {
           // score if any scorer is available
-          if(activeVolume.hasPropagateScorer())
+          if(m_activeVolume.hasPropagateScorer())
           {
-            activeVolume.scorePropagate(particle);
+            m_activeVolume.scorePropagate(particle);
           }
           if(recordTrj)
             m_trajectory.push_back(particle.getPosition());
         }
-        activeVolume.scoreExit(particle);
+        m_activeVolume.scoreExit(particle);
       }
 
       if(!particle.isAlive())
       {
         if(particle.getKillType()==Particle::KillType::ABSORB)
         {
-          activeVolume.scoreAbsorb(particle);
+          m_activeVolume.scoreAbsorb(particle);
         }
       }
 

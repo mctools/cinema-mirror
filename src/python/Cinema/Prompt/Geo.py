@@ -26,7 +26,7 @@ _pt_UnplacedBox_delete = importFunc('pt_UnplacedBox_delete', None, [type_voidp] 
 
 _pt_LogicalVolume_new = importFunc('pt_LogicalVolume_new', type_voidp, [type_cstr, type_voidp])
 _pt_LogicalVolume_delete = importFunc('pt_LogicalVolume_delete', None, [type_voidp] )
-_pt_LogicalVolume_placeDaughter = importFunc('pt_LogicalVolume_placeDaughter', None, [type_voidp, type_cstr, type_voidp, type_voidp])
+_pt_LogicalVolume_placeChild = importFunc('pt_LogicalVolume_placeChild', None, [type_voidp, type_cstr, type_voidp, type_voidp, type_int])
 
 _pt_LogicalVolume_id = importFunc('pt_LogicalVolume_id', type_uint, [type_voidp])
 
@@ -54,8 +54,7 @@ class LogicalVolume:
     def __init__(self, volname, unplacedvolume, matCfg=None, scorerCfg=None, surfaceCfg=None):
         self.child = []
         self.cobj = _pt_LogicalVolume_new(volname.encode('utf-8'), unplacedvolume.cobj)
-
-        volid = self.getID()
+        volid = self.getLogicalID(self.cobj)
 
         _pt_ResourceManager_addNewVolume(volid)
         
@@ -76,12 +75,15 @@ class LogicalVolume:
         # _pt_LogicalVolume_delete(self.cobj)
         pass
 
-    def placeChild(self, name, unplacedVolume, transf):
-        self.child.append(unplacedVolume)
-        _pt_LogicalVolume_placeDaughter(self.cobj, name.encode('utf-8'), unplacedVolume.cobj, transf.cobj)
+    def placeChild(self, name, logVolume, transf, scorerGroup=0):
+        self.child.append(logVolume)
+        _pt_LogicalVolume_placeChild(self.cobj, name.encode('utf-8'), logVolume.cobj, transf.cobj, scorerGroup)
 
-    def getID(self):
-        return _pt_LogicalVolume_id(self.cobj)
+    def getLogicalID(self, cobj=None):
+        if cobj is None:
+            return _pt_LogicalVolume_id(self.cobj)
+        else:
+            return _pt_LogicalVolume_id(cobj)
 
 
 class Transformation3D:
