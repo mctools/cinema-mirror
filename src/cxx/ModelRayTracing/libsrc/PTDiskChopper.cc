@@ -54,7 +54,7 @@ void Prompt::DiskChopper::sampleFinalState(Particle &particle) const
     double angEdge = m_angularSpeed*particle.getTime()+m_phase;
     angEdge = fmod(angEdge, m_angularPeriod);
 
-    double hitAngle = atan2(x, y);  
+    double hitAngle = atan2(y, x);  
     if(hitAngle < 0) // so the range are between (0, 2pi)
         hitAngle += 2*M_PI;
     hitAngle = fmod(hitAngle, m_angularPeriod);
