@@ -29,8 +29,8 @@
 namespace Prompt {
   class IsotropicGun : public SimpleThermalGun {
   public:
-    IsotropicGun(const Particle &aParticle, double ekin, const Vector &pos, const Vector &dir )
-    : SimpleThermalGun(aParticle, ekin, pos, dir), m_pos(pos) {};
+    IsotropicGun(const Particle &aParticle, double ekin, const Vector &pos )
+    : SimpleThermalGun(aParticle, ekin, pos), m_pos(pos) {};
     virtual ~IsotropicGun() {};
     virtual void samplePosDir(Vector &pos, Vector &dir) override
     {
