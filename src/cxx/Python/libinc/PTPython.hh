@@ -24,8 +24,11 @@
 #include "PromptCore.hh"
 
 #ifdef __cplusplus
+#include <Python.h>
 extern "C" {
 #endif
+
+PyObject *pt_call_python_method(PyObject *obj, const char* method);
 
 // Converters
 double pt_eKin2k(double ekin);

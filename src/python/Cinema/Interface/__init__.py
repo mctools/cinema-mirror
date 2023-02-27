@@ -35,7 +35,7 @@ type_dbl = ctypes.c_double
 type_dblp = ctypes.POINTER(ctypes.c_double)
 type_cstr = ctypes.c_char_p
 type_voidp = ctypes.c_void_p
-type_pyobject = ctypes.POINTER(ctypes.py_object)
+type_pyobject = ctypes.py_object
 
 type_npdbl1d=np.ctypeslib.ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS')
 type_npdbl2d=np.ctypeslib.ndpointer(dtype=np.float64,ndim=2,flags='C_CONTIGUOUS')

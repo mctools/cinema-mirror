@@ -1,7 +1,25 @@
 #!/usr/bin/env python3
 
 from Cinema.Prompt import Launcher, Visualiser
-from Cinema.Prompt.Geo import UnplacedBox, LogicalVolume, Transformation3D
+from Cinema.Prompt.geo import UnplacedBox, LogicalVolume, Transformation3D
+from Cinema.Prompt.utils import call_python_method
+
+
+class celsius:
+    def __init__(self, degrees):
+        self.degrees = degrees
+
+    def farenheit(self):
+        return ((self.degrees * 9.0) / 5.0) + 32.0
+
+import ctypes
+a = (celsius(100))
+
+res = call_python_method(a, "farenheit")
+print(res)
+
+
+
 
 
 box = UnplacedBox(4,4,4)
@@ -22,6 +40,9 @@ print(f'bi id {b1.getLogicalID()} ')
 
 l = Launcher()
 l.setWorld(world)
+
+
+# l.go(1000)
 
 v= Visualiser()
 

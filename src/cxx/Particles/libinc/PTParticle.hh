@@ -40,9 +40,9 @@ namespace Prompt {
     Particle(double ekin, const Vector& dir, const Vector& pos);
     virtual ~Particle(){};
 
-    virtual void moveForward(double length);
+    void moveForward(double length);
 
-    virtual void setDirection(const Vector& dir);
+    void setDirection(const Vector& dir);
     const Vector &getDirection() const { return m_dir; }
 
     bool hasEffEnergy() const { return !m_effdir.isStrictNullVector(); }

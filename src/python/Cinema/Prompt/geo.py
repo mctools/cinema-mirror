@@ -40,6 +40,7 @@ _pt_ResourceManager_addScorer = importFunc('pt_ResourceManager_addScorer', None,
 _pt_ResourceManager_addSurface = importFunc('pt_ResourceManager_addSurface', None, [type_uint, type_cstr])
 _pt_ResourceManager_addPhysics = importFunc('pt_ResourceManager_addPhysics', None, [type_uint, type_cstr])
 
+
 class UnplacedBox:
     def __init__(self, hx, hy, hz):
         self.cobj = _pt_UnplacedBox_new(hx, hy, hz)
