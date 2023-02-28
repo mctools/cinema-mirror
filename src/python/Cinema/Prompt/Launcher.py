@@ -28,6 +28,7 @@ _pt_Launcher_loadGeometry = importFunc('pt_Launcher_loadGeometry', None, [type_v
 _pt_Launcher_getTrajSize = importFunc('pt_Launcher_getTrajSize', type_sizet, [type_voidp])
 _pt_Launcher_getTrajectory = importFunc('pt_Launcher_getTrajectory', None, [type_voidp, type_npdbl2d])
 _pt_Launcher_go = importFunc('pt_Launcher_go', None, [type_voidp, type_sizet, type_dbl, type_bool, type_bool])
+_pt_Launcher_setGun = importFunc('pt_Launcher_setGun', None, [type_voidp, type_cstr])
 
 _pt_setWorld = importFunc('pt_setWorld', None, [type_voidp])
 
@@ -44,6 +45,12 @@ class Launcher():
     def setWorld(self, logicalvol):
         # setup the vecgeom world
         _pt_setWorld(logicalvol.cobj)
+
+    def setPythonGun(self, pygun):
+        pass
+
+    def setGun(self, cfg):
+        _pt_Launcher_setGun(self.cobj, cfg.encode('utf-8'))      
         
 
     def getTrajSize(self):

@@ -28,7 +28,7 @@
 #include "PTProgressMonitor.hh"
 #include "PTIsotropicGun.hh"
 #include "PTNeutron.hh"
-
+#include "PTGunFactory.hh"
 #include "PTPython.hh"
 
 #include "NCrystal/NCrystal.hh"
@@ -52,9 +52,8 @@ private:
 
    
 Prompt::Launcher::Launcher()
-:m_initSeed(false), 
+: m_stackManager(Singleton<StackManager>::getInstance())
 // m_activeVolume(Singleton<ActiveVolume>::getInstance()), 
-m_stackManager(Singleton<StackManager>::getInstance())
 {
   //This checks that the included NCrystal headers and the linked NCrystal
   //library are from the same release of NCrystal:
@@ -72,10 +71,6 @@ Prompt::Launcher::~Launcher()
 
 void Prompt::Launcher::setSeed(uint64_t seed) 
 { 
-  if(m_initSeed)
-    PROMPT_THROW(CalcError, "Seed is already set");
-
-  m_initSeed = true; 
   Singleton<SingletonPTRand>::getInstance().setSeed(seed);
 }
 
@@ -87,6 +82,11 @@ void Prompt::Launcher::loadGeometry(const std::string &geofile)
   geoman.initFromGDML(geofile.c_str());
   if(geoman.m_gun.use_count())
     m_gun = geoman.m_gun;
+}
+
+void Prompt::Launcher::setGun(const char* cfg)
+{
+  m_gun = Singleton<GunFactory>::getInstance().createGun(std::string(cfg));
 }
 
 

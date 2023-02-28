@@ -53,8 +53,10 @@ void pt_LogicalVolume_placeChild(void* obj, const char* name, void *logicalVolum
     vg::VPlacedVolume* placed = const_cast<vg::VPlacedVolume *>(constplaced);;
 
     if(group)
+    {
         placed->SetCopyNo(group);
-    std::cout << "?????? placed id " << placed->GetCopyNo() << std::endl;
+        std::cout << name << " Group ID " << placed->GetCopyNo() << std::endl;
+    }
 }
 
 unsigned pt_LogicalVolume_id(void* obj)

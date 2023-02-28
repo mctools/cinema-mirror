@@ -18,55 +18,52 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "PTPythonGun.hh"
+#include "PTNeutron.hh"
 #include "PTPython.hh"
-#include "PTLauncher.hh"
 
-namespace pt = Prompt;
-
-
-double pt_rand_generate()
-{
-  return pt::Singleton<pt::SingletonPTRand>::getInstance().generate();
+Prompt::PythonGun::PythonGun(PyObject *obj)
+    : PrimaryGun(Neutron()),  m_pyobj(obj)
+{  
+    Py_INCREF(m_pyobj);
 }
 
-void* pt_Launcher_getInstance()
-{
-  return static_cast<void *>(std::addressof(pt::Singleton<pt::Launcher>::getInstance()));
+Prompt::PythonGun::~PythonGun()
+{ 
+    Py_DECREF(m_pyobj); 
 }
 
-void pt_Launcher_setSeed(void* obj, uint64_t seed)
+std::unique_ptr<Prompt::Particle> Prompt::PythonGun::generate()
 {
-  std::cout << "set seed\n";
-  static_cast<pt::Launcher *>(obj)->setSeed(seed);
+    
+    // pt_call_python_method(m_pyobj, "shot");
+
+    // m_ekin0=m_ekin;
+    // m_pos.set(0,0,0);
+    // m_dir.set(0,0,1);
+    // m_eventid++;
+    // m_weight = 1;
+    // m_alive = true;
+    // m_time = 0;
+    auto p = std::make_unique<Particle>();
+    *p.get() = *this;
+    // std::cout << *p << std::endl;
+    return std::move(p);
 }
 
-void pt_Launcher_loadGeometry(void* obj, const char* fileName)
+
+
+void* pt_PythonGun_new(PyObject *pyobj)
 {
-  static_cast<pt::Launcher *>(obj)->loadGeometry(std::string(fileName));
+    return static_cast<void *> (new Prompt::PythonGun(pyobj)) ;
 }
 
-size_t pt_Launcher_getTrajSize(void* obj)
+void pt_PythonGun_delete(void *obj)
 {
-  return static_cast<pt::Launcher *>(obj)->getTrajSize();
+    delete static_cast<Prompt::PythonGun *> (obj);
 }
 
-void pt_Launcher_getTrajectory(void* obj, double *trj)
+void pt_PythonGun_generate(void *obj)
 {
-  auto &trjv = static_cast<pt::Launcher *>(obj)->getTrajectory();
-  for(const auto &v: trjv)
-  {
-    *(trj++) = v.x();
-    *(trj++) = v.y();
-    *(trj++) = v.z();
-  }
-}
-
-void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj, bool timer)
-{
-  static_cast<pt::Launcher *>(obj)->go(numParticle, printPrecent, recordTrj, timer);
-}
-
-void pt_Launcher_setGun(void *obj, const char* cfg)
-{
-  static_cast<pt::Launcher *>(obj)->setGun(cfg);
+    static_cast<Prompt::PythonGun *> (obj)->generate();
 }

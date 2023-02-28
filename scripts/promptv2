@@ -2,58 +2,81 @@
 
 from Cinema.Prompt import Launcher, Visualiser
 from Cinema.Prompt.geo import UnplacedBox, LogicalVolume, Transformation3D
+from Cinema.Prompt.gun import PythonGun
+
 from Cinema.Prompt.utils import call_python_method
 
 
-class celsius:
-    def __init__(self, degrees):
-        self.degrees = degrees
+# class celsius:
+#     def __init__(self, degrees):
+#         self.degrees = degrees
 
-    def farenheit(self):
-        return ((self.degrees * 9.0) / 5.0) + 32.0
+#     def farenheit(self):
+#         return ((self.degrees * 9.0) / 5.0) + 32.0
+    
+#     def shot(self):
+#         print('shoting!!!')
 
-import ctypes
-a = (celsius(100))
+# import ctypes
+# a = celsius(100)
+# res = call_python_method(a, "farenheit")
+# print(res)
 
-res = call_python_method(a, "farenheit")
-print(res)
+# class gd:
+#     def __init__(self) -> None:
+#         pass
+#     def shot(self):
+#         pass
+#         # print('shoting!')
+
+# g = gd()        
+# gun = PythonGun(g)
+
+# import time
+# tic = time.perf_counter() 
+# for i in range(1000000):
+#     gun.generate()
+# print(f'time {time.perf_counter()-tic}s')
 
 
 
+    # <box name="DetectorSolid" x="500" y="500" z="0.00001" />
+    # <tube name="SampleSolid" rmin="0" rmax="5" z="10" startphi="0" deltaphi="360" aunit="deg"/>
+    # <box name="worldSolid" x="600.0" y="600.0" z="300.0" />
+ 
 
-
-box = UnplacedBox(4,4,4)
-b1 = LogicalVolume("box1", box)
-b1.matCfg = "physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=0.1;abs_bias=0.1"
-
-print(f'bi id {b1.getLogicalID()} ')
-
-world = LogicalVolume("world", UnplacedBox(10, 10, 10))
-world.placeChild("physicalbox", b1, Transformation3D(5 , 5, 5, 0,0,0), 1)
-world.placeChild("physicalbox", b1, Transformation3D(-5 , -5, -5, 0,0,0))
-
-world.placeChild("physicalbox", LogicalVolume("box2", UnplacedBox(4, 4 , 4), 
-                scorerCfg="""Scorer=PSD;name=Monitor2;xmin=-5;xmax=5;
-                          numBins_x=20;ymin=-5;ymax=5;numBins_y=20;type=XY"""), Transformation3D(-5 , 5, -5, 0,0,0),10101)
-
-print(f'bi id {b1.getLogicalID()} ')
+gunCfg = "gun=SimpleThermalGun;energy=0.0253;position=0,0,-100;direction=0,0,1"
+scorerCfg_det = "Scorer=NeutronSq;name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=-100;ptstate=ENTRY;linear=yes;Qmin=0.5; Qmax = 50; numbin=1000"
+matCfg_sample = "LiquidHeavyWaterD2O_T293.6K.ncmat"
 
 l = Launcher()
+l.setSeed(4096)
+
+detector = LogicalVolume("Det", UnplacedBox(500, 500, 0.0001), scorerCfg = scorerCfg_det)
+# b1.matCfg = "physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=0.1;abs_bias=0.1"
+sample = LogicalVolume("sample", UnplacedBox(5, 5, 5), matCfg = matCfg_sample)
+
+world = LogicalVolume("world", UnplacedBox(600, 600, 300))
+
+world.placeChild("physicalbox", detector, Transformation3D(0., 0., 50, 0,0,0), 1)
+world.placeChild("physicalbox2", sample, Transformation3D(0,0,0, 0,0,0))
+
+
 l.setWorld(world)
+l.setGun(gunCfg)
 
+l.go(1000000)
 
-# l.go(1000)
+# v= Visualiser()
 
-v= Visualiser()
+# for i in range(100):
+#     l.go(1, recordTrj=True, timer=False)
+#     trj = l.getTrajectory()
+#     try:
+#         v.addLine(trj)
+#     except ValueError:
+#         # print(trj)
+#         # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
+#         pass
 
-for i in range(100):
-    l.go(1, recordTrj=True, timer=False)
-    trj = l.getTrajectory()
-    try:
-        v.addLine(trj)
-    except ValueError:
-        # print(trj)
-        # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
-        pass
-
-v.show()
+# v.show()
