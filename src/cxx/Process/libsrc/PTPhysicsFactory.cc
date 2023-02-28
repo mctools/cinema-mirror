@@ -244,16 +244,16 @@ std::shared_ptr<Prompt::SurfaceProcess> Prompt::PhysicsFactory::createSurfacePro
     {
       // DiskChopper(double centre_x_mm, double centre_y_mm,  
       //       double theta0_deg, double r_mm, double phase_deg, double rotFreq_Hz, unsigned n);
-      int parCount = 8;
+      int parCount = 6;
 
       // optional parameters
-      double centre_x_mm = 0;
-      if(!cfg.getDoubleIfExist("centre_x_mm", centre_x_mm))
-        parCount--;
+      // double centre_x_mm = 0;
+      // if(!cfg.getDoubleIfExist("centre_x_mm", centre_x_mm))
+      //   parCount--;
 
-      double centre_y_mm = 0;
-      if(!cfg.getDoubleIfExist("centre_y_mm", centre_y_mm))
-        parCount--;
+      // double centre_y_mm = 0;
+      // if(!cfg.getDoubleIfExist("centre_y_mm", centre_y_mm))
+      //   parCount--;
 
       double theta0_deg = 0;
       if(!cfg.getDoubleIfExist("theta0_deg", theta0_deg))
@@ -280,7 +280,7 @@ std::shared_ptr<Prompt::SurfaceProcess> Prompt::PhysicsFactory::createSurfacePro
         PROMPT_THROW2(BadInput, "Cfgstr for a DiskChopper physics is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
-      phy = std::make_shared<DiskChopper>(centre_x_mm, centre_y_mm, theta0_deg, r_mm, phase_deg, rotFreq_Hz, n);
+      phy = std::make_shared<DiskChopper>(theta0_deg, r_mm, phase_deg, rotFreq_Hz, n);
     }
 
     if(phy)

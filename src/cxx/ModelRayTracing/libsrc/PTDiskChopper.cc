@@ -21,10 +21,8 @@
 #include "PTDiskChopper.hh"
 #include "PTUtils.hh"
 
-Prompt::DiskChopper::DiskChopper(double centre_x_mm, double centre_y_mm,  
-                  double theta0_deg, double r_mm, double phase_deg, double rotFreq_Hz, unsigned n)
-:Prompt::RayTracingProcess(), m_centre_x(centre_x_mm), m_centre_y(centre_y_mm),
-      m_theta0(theta0_deg*const_deg2rad), m_r(r_mm), m_phase(phase_deg*const_deg2rad), 
+Prompt::DiskChopper::DiskChopper(double theta0_deg, double r_mm, double phase_deg, double rotFreq_Hz, unsigned n)
+:Prompt::RayTracingProcess(), m_theta0(theta0_deg*const_deg2rad), m_r(r_mm), m_phase(phase_deg*const_deg2rad), 
       m_angularSpeed(2*M_PI*rotFreq_Hz), m_angularPeriod(2*M_PI/n)
 {
     if(m_angularPeriod < m_theta0)
@@ -40,7 +38,7 @@ void Prompt::DiskChopper::sampleFinalState(Particle &particle) const
     
     // check if the neutron hits the opening
     const auto pos  = m_activeVol.getGeoTranslator().global2Local(particle.getPosition());
-    double x (pos.x()-m_centre_x), y(pos.y()-m_centre_y);
+    double x (pos.x()), y(pos.y());
 
 
     // Absorbed by the central part of the disk
