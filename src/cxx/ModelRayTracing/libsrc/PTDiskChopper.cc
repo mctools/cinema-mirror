@@ -52,14 +52,15 @@ void Prompt::DiskChopper::sampleFinalState(Particle &particle) const
     double angEdge = m_angularSpeed*particle.getTime()+m_phase;
     angEdge = fmod(angEdge, m_angularPeriod);
 
-    double hitAngle = atan2(y, x);  
+    double hitAngle = atan2(x, y);  
     if(hitAngle < 0) // so the range are between (0, 2pi)
         hitAngle += 2*M_PI;
     hitAngle = fmod(hitAngle, m_angularPeriod);
 
     // test intersection with the opening
     // std::cout << hitAngle << ", " << angEdge << ", " << m_theta0 << std::endl;
-    if(hitAngle < angEdge || hitAngle > angEdge+m_theta0 )
+    // particle should also moves forward when it hits the slit of the last anglePeriod 
+    if(hitAngle > angEdge-m_angularPeriod+m_theta0 && hitAngle < angEdge || hitAngle > angEdge+m_theta0 )
     {
         particle.kill(Particle::KillType::RT_ABSORB);
         return;        
