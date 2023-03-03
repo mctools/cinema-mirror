@@ -35,7 +35,7 @@ namespace Prompt {
     virtual void sampleEnergy(double &ekin) override;
 
   private:
-    double m_kT;
+    double m_wlT;
 
 
   };
