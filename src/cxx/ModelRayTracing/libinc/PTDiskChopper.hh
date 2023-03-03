@@ -39,8 +39,9 @@ namespace Prompt {
     public:
       DiskChopper(double theta0_deg, double r_mm, double phase_deg, double rotFreq_Hz, unsigned n);
       virtual ~DiskChopper() = default;
-      virtual void sampleFinalState(Particle &particle) const override;
+      virtual bool canSurvive(const Particle &p) const override;
 
+      bool canSurvive(double x, double y, double time) const;
 
     private:
       double m_theta0, m_r, m_phase, m_angularSpeed, m_angularPeriod;
