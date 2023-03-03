@@ -98,7 +98,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
   if(!m_gun.use_count())
   {
     std::cout << "PrimaryGun is not set, fallback to the neutron IsotropicGun\n";
-    m_gun = std::make_shared<IsotropicGun>(Neutron(), 0.0253, Vector{0,0,0}, Vector{1,0,0});
+    m_gun = std::make_shared<IsotropicGun>(Neutron(), 0.0253, Vector{0,0,0});
   }
 
   ActiveVolume &m_activeVolume = Singleton<ActiveVolume>::getInstance();
