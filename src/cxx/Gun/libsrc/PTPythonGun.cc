@@ -35,23 +35,22 @@ Prompt::PythonGun::~PythonGun()
 
 std::unique_ptr<Prompt::Particle> Prompt::PythonGun::generate()
 {
-    
-    // pt_call_python_method(m_pyobj, "shot");
+    auto ret = pt_call_python_method(m_pyobj, "generate");
+    if (! PyArg_ParseTuple(ret, "ddddddddd", &m_ekin, &m_weight, &m_time,
+            &m_pos.x(), &m_pos.y(), &m_pos.z(),
+            &m_dir.x(), &m_dir.y(), &m_dir.z()))
+    {
+        PROMPT_THROW(BadInput, "PyArg_ParseTuple failed\n");
+    }
+    Py_DECREF(ret);
 
-    // m_ekin0=m_ekin;
-    // m_pos.set(0,0,0);
-    // m_dir.set(0,0,1);
-    // m_eventid++;
-    // m_weight = 1;
-    // m_alive = true;
-    // m_time = 0;
-    auto p = std::make_unique<Particle>();
-    *p.get() = *this;
+    m_ekin0=m_ekin;
+    m_eventid++;
+    m_alive = true;
+    auto p = std::make_unique<Particle>(*this);
     // std::cout << *p << std::endl;
     return std::move(p);
 }
-
-
 
 void* pt_PythonGun_new(PyObject *pyobj)
 {

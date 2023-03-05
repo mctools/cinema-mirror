@@ -30,8 +30,8 @@ std::unique_ptr<Prompt::Particle> Prompt::PrimaryGun::generate()
   m_weight = getParticleWeight();
   m_alive=true;
   m_time = getTime();
-  auto p = std::make_unique<Particle>();
-  *p.get() = *this;
+  auto p = std::make_unique<Particle>(*this);
+  // *p.get() = *this;
   // std::cout << *this << std::endl;
   return std::move(p);
 }

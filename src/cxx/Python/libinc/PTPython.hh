@@ -49,6 +49,7 @@ size_t pt_Launcher_getTrajSize(void* obj);
 void pt_Launcher_getTrajectory(void* obj, double *trj);
 void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj, bool timer);
 void pt_Launcher_setGun(void *obj, const char* cfg);
+void pt_Launcher_setPythonGun(void *obj, PyObject* cfg);
 
 // Prompt::Hist1D
 void* pt_Hist1D_new(double xmin, double xmax, unsigned nbins, bool linear);

@@ -43,13 +43,9 @@ PyObject *pt_call_python_method(PyObject *obj, const char* method)
     // Every call to PyGILState_Ensure() must have a matching call to PyGILState_Release().
 
     PyGILState_STATE state = PyGILState_Ensure();
-
-    auto instance = static_cast<PyObject *>(obj);
-    if(!instance)
-        PROMPT_THROW2(BadInput, "Can not cast object to PyObject*")
-
-    auto ret = PyObject_CallMethod(instance, method,"()"); 
-
+    if(!obj)
+        PROMPT_THROW(BadInput, "Input PyObject is not valid")
+    auto ret = PyObject_CallMethod(obj, method,"()"); 
     PyGILState_Release(state);
     return ret;
 }

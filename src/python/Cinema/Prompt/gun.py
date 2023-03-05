@@ -26,17 +26,24 @@ _pt_PythonGun_generate = importFunc('pt_PythonGun_generate', None, [type_voidp])
 
 
 class PythonGun():
-    def __init__(self, pyobj):
-        self.cobj = _pt_PythonGun_new(pyobj)
+    def __init__(self):
+        self.cobj = _pt_PythonGun_new(self)
         
     def __del__(self):
         _pt_PythonGun_delete(self.cobj)
 
-    def shot(self):
-        print('shot(self)')
-
+    # This method will be called by the c++ 
     def generate(self):
+        pass
+        # print('shoting!')
+        # &m_ekin, &m_weight, &m_time,
+        # &m_pos.x(), &m_pos.y(), &m_pos.z(),
+        # &m_dir.x(), &m_dir.y(), &m_dir.z())
+        return 1234., 2234.,3,4,5,6, 0,0,1
+        
+    def pyGenerate(self):
         _pt_PythonGun_generate(self.cobj)
+
 
     
 

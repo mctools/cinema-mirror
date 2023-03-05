@@ -70,3 +70,8 @@ void pt_Launcher_setGun(void *obj, const char* cfg)
 {
   static_cast<pt::Launcher *>(obj)->setGun(cfg);
 }
+
+void pt_Launcher_setPythonGun(void *obj, PyObject* pyobj)
+{
+    static_cast<pt::Launcher *>(obj)->setPythonGun(pyobj);
+}

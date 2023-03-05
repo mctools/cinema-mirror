@@ -30,7 +30,7 @@
 #include "PTNeutron.hh"
 #include "PTGunFactory.hh"
 #include "PTPython.hh"
-
+#include "PTPythonGun.hh"
 #include "NCrystal/NCrystal.hh"
 
 class SingletonPTRandWrapper : public NCrystal::RNGStream{
@@ -87,6 +87,11 @@ void Prompt::Launcher::loadGeometry(const std::string &geofile)
 void Prompt::Launcher::setGun(const char* cfg)
 {
   m_gun = Singleton<GunFactory>::getInstance().createGun(std::string(cfg));
+}
+
+void Prompt::Launcher::setPythonGun(PyObject *pyobj)
+{
+  m_gun = std::make_shared<PythonGun>(pyobj);
 }
 
 
