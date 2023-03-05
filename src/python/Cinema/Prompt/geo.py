@@ -30,7 +30,7 @@ _pt_LogicalVolume_placeChild = importFunc('pt_LogicalVolume_placeChild', None, [
 
 _pt_LogicalVolume_id = importFunc('pt_LogicalVolume_id', type_uint, [type_voidp])
 
-_pt_Transformation3D_newfromdata = importFunc('pt_Transformation3D_newfromdata', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
+_pt_Transformation3D_newfromdata = importFunc('pt_Transformation3D_newfromdata', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 _pt_Transformation3D_delete = importFunc('pt_Transformation3D_delete', None, [type_voidp] )
 
 
@@ -81,15 +81,16 @@ class LogicalVolume:
         _pt_LogicalVolume_placeChild(self.cobj, name.encode('utf-8'), logVolume.cobj, transf.cobj, scorerGroup)
 
     def getLogicalID(self, cobj=None):
-        if cobj is None:
+        if cobj is None: # reutrn the ID of this volume
             return _pt_LogicalVolume_id(self.cobj)
         else:
             return _pt_LogicalVolume_id(cobj)
 
 
 class Transformation3D:
-    def __init__(self, x, y, z, phi, theta, psi):
-        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, phi, theta, psi)
+    def __init__(self, x, y, z, phi=0, theta=0, psi=0, sx=1., sy=1., sz=1.):
+        # RScale followed by rotation followed by translation.
+        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, phi, theta, psi, sx, sy, sz)
 
     def __del__(self):
         _pt_Transformation3D_delete(self.cobj)

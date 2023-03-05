@@ -51,9 +51,10 @@ void* pt_Transformation3D_newfromID(int id)
 }
 
 void* pt_Transformation3D_newfromdata(double x, double y, double z,
-                              double phi, double theta, double psi)
+                              double phi, double theta, double psi,  
+                              double sx, double sy, double sz)
 {
-    return static_cast<void *>(new vecgeom::Transformation3D(x, y, z, phi, theta, psi));
+    return static_cast<void *>(new vecgeom::Transformation3D(x, y, z, phi, theta, psi, sx, sy, sz));
 }   
 
 

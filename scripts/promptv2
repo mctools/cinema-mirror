@@ -20,8 +20,8 @@ sample = LogicalVolume("sample", UnplacedBox(5, 5, 5), matCfg = matCfg_sample)
 
 world = LogicalVolume("world", UnplacedBox(600, 600, 300))
 
-world.placeChild("physicalbox", detector, Transformation3D(0., 0., 50, 0,0,0), 1)
-world.placeChild("physicalbox2", sample, Transformation3D(0,0,0, 0,0,0))
+world.placeChild("physicalbox", detector, Transformation3D(0., 0., 50, sx=2, sy=2), 1)
+world.placeChild("physicalbox2", sample, Transformation3D(0,0,0))
 
 
 l.setWorld(world)
