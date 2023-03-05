@@ -48,6 +48,7 @@ class Launcher():
         _pt_setWorld(logicalvol.cobj)
 
     def setPythonGun(self, pygun):
+        print('setting a python gun')
         _pt_Launcher_setPythonGun(self.cobj, pygun)
 
     def setGun(self, cfg):

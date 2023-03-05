@@ -34,15 +34,31 @@ class PythonGun():
 
     # This method will be called by the c++ 
     def generate(self):
-        pass
-        # print('shoting!')
-        # &m_ekin, &m_weight, &m_time,
-        # &m_pos.x(), &m_pos.y(), &m_pos.z(),
-        # &m_dir.x(), &m_dir.y(), &m_dir.z())
-        return 1234., 2234.,3,4,5,6, 0,0,1
+        en = self.sampleEnergy()
+        w = self.sampleWeight()
+        t = self.sampleTime()
+        pos = self.samplePosition()
+        dir = self.sampleDirection()        
+        return en, w, t, pos[0], pos[1], pos[2], dir[0], dir[1], dir[2]
         
     def pyGenerate(self):
         _pt_PythonGun_generate(self.cobj)
+    
+    def sampleEnergy(self):
+        return 0.0253
+
+    def sampleWeight(self):
+        return 1. 
+    
+    def sampleTime(self):
+        return 0.
+    
+    def samplePosition(self):
+        return 0.,0.,0.
+    
+    def sampleDirection(self):
+        return 0.,0.,1.
+
 
 
     

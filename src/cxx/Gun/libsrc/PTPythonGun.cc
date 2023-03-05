@@ -36,6 +36,7 @@ Prompt::PythonGun::~PythonGun()
 std::unique_ptr<Prompt::Particle> Prompt::PythonGun::generate()
 {
     auto ret = pt_call_python_method(m_pyobj, "generate");
+
     if (! PyArg_ParseTuple(ret, "ddddddddd", &m_ekin, &m_weight, &m_time,
             &m_pos.x(), &m_pos.y(), &m_pos.z(),
             &m_dir.x(), &m_dir.y(), &m_dir.z()))
@@ -48,7 +49,6 @@ std::unique_ptr<Prompt::Particle> Prompt::PythonGun::generate()
     m_eventid++;
     m_alive = true;
     auto p = std::make_unique<Particle>(*this);
-    // std::cout << *p << std::endl;
     return std::move(p);
 }
 

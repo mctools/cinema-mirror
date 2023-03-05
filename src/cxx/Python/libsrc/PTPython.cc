@@ -47,6 +47,7 @@ PyObject *pt_call_python_method(PyObject *obj, const char* method)
         PROMPT_THROW(BadInput, "Input PyObject is not valid")
     auto ret = PyObject_CallMethod(obj, method,"()"); 
     PyGILState_Release(state);
+    Py_INCREF(ret);   //  remember to Py_DECREF after use
     return ret;
 }
 
