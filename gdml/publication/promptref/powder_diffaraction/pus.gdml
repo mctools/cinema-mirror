@@ -3,8 +3,8 @@
 
     <userinfo>
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wavelength=1.54;range_wavelength=0.05;src_x=40;moderator_height_y=40;
-      moderator_positon_z=-1900;slit_width_x=40;slit_height_y=40;slit_position_z=0" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=1.54;range_wl=0.05;src_x=40;src_h=40;
+      src_z=-1900;slit_w=40;slit_h=40;slit_z=0" />
     </userinfo>
 
     <define>

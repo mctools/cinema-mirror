@@ -2,7 +2,7 @@
 <gdml>
 <!-- neutrons are generated in a xs biased sphere and hitting a box -->
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_x=0;moderator_height_y=0;moderator_positon_z=-400;slit_width_x=0;slit_height_y=0;slit_position_z=1;temperature=293.15" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_x=0;src_h=0;src_z=-400;slit_w=0;slit_h=0;slit_z=1;temperature=293.15" />
     </userinfo>
 
     <materials>

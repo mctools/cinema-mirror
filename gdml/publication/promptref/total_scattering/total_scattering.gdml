@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <gdml>
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_x=20;moderator_height_y=20;moderator_positon_z=-10000;slit_width_x=1;slit_height_y=1;slit_position_z=-1000;temperature=293.15" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_x=20;src_h=20;src_z=-10000;slit_w=1;slit_h=1;slit_z=-1000;temperature=293.15" />
     </userinfo>
 
     <define>
