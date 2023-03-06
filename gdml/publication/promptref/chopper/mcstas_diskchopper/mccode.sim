@@ -1,0 +1,84 @@
+McStas simulation description file for Test_DiskChoppers.
+Date:    Mon Mar  6 10:53:38 2023
+Program: 
+
+begin instrument: Test_DiskChoppers
+  File: /home/zypan/projects/mcstas_run/Test_DiskChoppers_20230306_105338/mccode
+  Source: Test_DiskChoppers.instr
+  Parameters: 
+  Trace_enabled: yes
+  Default_main: yes
+  Embedded_runtime: yes
+end instrument
+
+begin simulation: /home/zypan/projects/mcstas_run/Test_DiskChoppers_20230306_105338
+  Format: McCode with text headers
+  URL: http://www.mccode.org
+  Creator: 
+  Instrument: Test_DiskChoppers.instr
+  Ncount: 10000000000
+  Trace: no
+  Gravitation: no
+  Seed: 1680785056
+  Directory: /home/zypan/projects/mcstas_run/Test_DiskChoppers_20230306_105338
+end simulation
+
+begin data
+  Date: Mon Mar  6 11:30:52 2023 (1678073452)
+  type: array_1d(10000)
+  Source: Test_DiskChoppers (Test_DiskChoppers.instr)
+  component: tofin
+  position: 0 0 10
+  title: Time-of-flight monitor
+  Ncount: 10000000000
+  filename: TOF_in.dat
+  statistics: X0=4002.22; dX=1913.01;
+  signal: Min=0; Max=1.4474; Mean=0.202237;
+  values: 2022.37 0.0483998 7.91199e+09
+  xvar: t
+  yvar: (I,I_err)
+  xlabel: Time-of-flight [\gms]
+  ylabel: Intensity
+  xlimits: 0 20000
+  variables: t I I_err N
+end data
+
+begin data
+  Date: Mon Mar  6 11:30:52 2023 (1678073452)
+  type: array_1d(10000)
+  Source: Test_DiskChoppers (Test_DiskChoppers.instr)
+  component: CompInstanceName
+  position: 0 0 10
+  title: Time-of-flight monitor
+  Ncount: 10000000000
+  filename: TOF.dat
+  statistics: X0=3641.14; dX=1922.81;
+  signal: Min=0; Max=1.35119; Mean=0.0523993;
+  values: 523.993 0.0254633 1.75818e+09
+  xvar: t
+  yvar: (I,I_err)
+  xlabel: Time-of-flight [\gms]
+  ylabel: Intensity
+  xlimits: 0 20000
+  variables: t I I_err N
+end data
+
+begin data
+  Date: Mon Mar  6 11:30:52 2023 (1678073452)
+  type: array_1d(10000)
+  Source: Test_DiskChoppers (Test_DiskChoppers.instr)
+  component: wavelength
+  position: 0 0 10
+  title: Wavelength monitor
+  Ncount: 10000000000
+  filename: wld.dat
+  statistics: X0=1.44586; dX=0.786341;
+  signal: Min=0; Max=1.70593; Mean=0.0524379;
+  values: 524.379 0.0254633 2.28897e+09
+  xvar: L
+  yvar: (I,I_err)
+  xlabel: Wavelength [AA]
+  ylabel: Intensity
+  xlimits: 1e-08 10
+  variables: L I I_err N
+end data
