@@ -3,8 +3,8 @@
 
     <userinfo>
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=1.54;range_wl=0.05;src_x=40;src_h=40;
-      src_z=-1900;slit_w=40;slit_h=40;slit_z=0" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=1.54;range_wl=0.0;src_x=0;src_h=0;
+      src_z=-1900;slit_w=0;slit_h=0;slit_z=0" />
     </userinfo>
 
     <define>
@@ -80,7 +80,7 @@
     </materials>
 
     <solids>
-        <box lunit="mm" name="WorldBox" x="5000.0" y="5000.0" z="10000.0" />
+        <box lunit="mm" name="WorldBox" x="5000.0" y="8000.0" z="10000.0" />
         <box lunit="mm" name="MonitorBox" x="40.0" y="40" z="1" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube3000_Wall" rmax="12.7" rmin="12.2" startphi="0.0" z="3000.0" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube3000_He" rmax="12.5" rmin="0.0" startphi="0.0" z="3000.0" />
@@ -103,7 +103,7 @@
             <rotation name="R_box_sub" unit="deg" x="0" y="0" z="0"/>
         </subtraction>
         <box lunit="mm" name="StopBox" x="100" y="100" z="200" />
-        <sphere aunit="deg" lunit="mm" name="Sphere_Detector" rmin="100" rmax="101" deltaphi="360" startphi="0" deltatheta="160.0" starttheta="10" />
+        <sphere aunit="deg" lunit="mm" name="Sphere_Detector" rmin="1000" rmax="1001" deltaphi="360" startphi="0" deltatheta="160.0" starttheta="10" />
     </solids>
 
     <structure>
@@ -239,8 +239,8 @@
             <solidref ref="Sphere_Detector"/>
             <materialref ref="Universe"/>
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=Angular;name=ST_template;sample_position=0,-1750,0;beam_direction=0,-1,0;
-                                                 dist=3650.;angle_min_deg=10.0;angle_max_deg=160;numbin=6000;ptstate=ENTRY"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=Angular;name=ST_template;sample_position=0,-2750,0;beam_direction=0,-1,0;
+                                                 dist=3650.;angle_min_deg=20.0;angle_max_deg=160;numbin=6000;ptstate=ENTRY"/>
         </volume>
 
         <volume name="worldVOL">
@@ -269,12 +269,12 @@
             <physvol name="LV_Tube_SampleCan">
                 <volumeref ref="LV_Tube_SampleCan" />
                 <rotationref ref="R_LV_SampleCan" />
-                <position  name="P_SampleCan" unit="mm"  x="0"  y="-1750"  z="0"/>
+                <position  name="P_SampleCan" unit="mm"  x="0"  y="-2750"  z="0"/>
             </physvol>
             <physvol name="LV_Detector">
                 <volumeref ref="LV_Detector"/>
                 <rotation name="R_Detector" unit="deg" x="-90" y="0" z="0"/>
-                <position name="P_Detector" unit="mm"  x="0" y="-1750" z="0"/>
+                <position name="P_Detector" unit="mm"  x="0" y="-2750" z="0"/>
             </physvol>
 
         </volume>
