@@ -1,6 +1,3 @@
-#ifndef Prompt_DiskChopper_hh
-#define Prompt_DiskChopper_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,42 +18,19 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <string>
+#include "PTScorerVolFluence.hh"
 
-#include "PromptCore.hh"
-#include "PTRayTracingProcess.hh"
+Prompt::ScorerVolFluence::ScorerVolFluence(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear, double volme)
+:Scorer1D("ScorerVolFluence_"+ name, Scorer::ScorerType::PROPAGATE, std::make_unique<Hist1D>("ScorerVolFluence_"+ name, xmin, xmax, nxbins, linear)), m_iVol(1./volme), m_weight(-1.)
+{ }
 
-namespace Prompt {
+Prompt::ScorerVolFluence::~ScorerVolFluence() {}
 
-  // The class DiskChopper is a ray-tracing model for a finite thickness 
-  // neutron black disk with n symmetrical openings. The disk is parallel
-  // with the X-Y plane. The beginning of the opening
-  // is aligned with the T0. The difference can be specified as the phase
-  // The centre is defined using the reference frame of the volume.
-  // The positive rotation direction is right handed in given rotation axis
-  class DiskChopper  : public RayTracingProcess
-  {
-    public:
-      DiskChopper(double theta0_deg, double r_mm, double phase_deg, double rotFreq_Hz, unsigned n);
-      virtual ~DiskChopper() = default;
-      virtual bool canSurvive(const Particle &p) const override;
+void Prompt::ScorerVolFluence::score(Particle &particle)
+{
+  if(m_weight == -1.) m_weight=particle.getWeight();
 
-      bool canSurvive(double x, double y, double time) const;
-
-    private:
-      double m_theta0, m_r, m_phase, m_angularSpeed, m_angularPeriod;
-  };
-
-  // // fixme: todo
-  // class MultiDiskChopper 
-  // {
-  //   public:
-  //     MultiDiskChopper();
-  //     ~MultiDiskChopper();
-  //   private:
-  //     std::vector<MultiDiskChopper> m_disks;
-  // }
-
+  if(particle.getWeight()!=m_weight)
+    PROMPT_THROW(LogicError, "ScorerVolFluence is incorrect in the cross section biasing model. The D value for the material within the solid of insterest should be unity");
+  m_hist->fill(particle.getEKin()+particle.getEnergyChange(), m_iVol*particle.getStep());
 }
-
-#endif

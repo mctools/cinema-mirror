@@ -158,7 +158,7 @@ class GdmlElement():
 
         gun = etree.SubElement(self.userinfo, 'auxiliary')
         gun.set('auxtype', 'PrimaryGun')
-        gun.set('auxvalue', 'gun=MaxwellianGun;moderator_width_x=300;moderator_height_y=200;moderator_positon_z=0.0;slit_width_x=300;slit_height_y=200;slit_position_z=1e100;temperature=293.15;')
+        gun.set('auxvalue', 'gun=MaxwellianGun;src_x=300;src_h=200;src_z=0.0;slit_w=300;slit_h=200;slit_z=1e100;temperature=293.15;')
 
     def set_scorer(self, volume):
 

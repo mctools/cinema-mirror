@@ -2,7 +2,7 @@
 <gdml>
 <!-- aneutron is generated in a xs biased sphere and hitting a box -->
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=100;moderator_height_y=50;moderator_positon_z=-400;slit_width_x=5;slit_height_y=10;slit_position_z=1;temperature=293.15;" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_x=100;src_h=50;src_z=-400;slit_w=5;slit_h=10;slit_z=1;temperature=293.15;" />
     </userinfo>
 
     <materials>
@@ -31,7 +31,7 @@
         <volume name="VolBox">
             <solidref ref="boxSolid" />
             <materialref ref="HWater" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=400;ptstate=ENTRY;linear=no;Qmin=0.01;Qmax=50;numbin=1000"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ;sample_position=0,0,0;beam_direction=0,0,1;dist=400;ptstate=ENTRY;linear=no;Qmin=0.01;Qmax=50;numbin=1000"/>
         </volume>
 
 

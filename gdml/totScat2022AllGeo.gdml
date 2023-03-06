@@ -2,8 +2,8 @@
 <gdml>
 
     <userinfo>
-      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=600;moderator_height_y=600;moderator_positon_z=-30000;slit_width_x=10;slit_height_y=10;slit_position_z=-1000;temperature=300.;" /> -->
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MPIGun;moderator_width_x=500;moderator_height_y=500;moderator_positon_z=-30000;slit_width_x=20;slit_height_y=40;slit_position_z=0" />
+      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_x=600;src_h=600;src_z=-30000;slit_w=10;slit_h=10;slit_z=-1000;temperature=300.;" /> -->
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MPIGun;src_x=500;src_h=500;src_z=-30000;slit_w=20;slit_h=40;slit_z=0" />
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=0.0253;position=0,0,-30000;direction=0,0,1" /> -->
     </userinfo>
    <define>
@@ -119,7 +119,7 @@
         <volume name="LV_Tube300_He">
             <solidref ref="Tube300_He" />
             <materialref ref="G4_He" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_300;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=30000;ptstate=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_300;sample_position=0,0,0;beam_direction=0,0,1;dist=30000;ptstate=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
         </volume>
 
         <volume name="LV_Tube300_Wall">
@@ -140,7 +140,7 @@
 
         <volume name="LV_Tube500_He">
             <solidref ref="Tube500_He" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_500;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=30000;ptstate=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_500;sample_position=0,0,0;beam_direction=0,0,1;dist=30000;ptstate=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
             <materialref ref="G4_He" />
         </volume>
 

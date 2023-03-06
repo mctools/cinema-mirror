@@ -26,10 +26,11 @@
 #include "PTScorerPSD.hh"
 #include "PTScorerESpectrum.hh"
 #include "PTScorerTOF.hh"
-#include "PTScorerVolFlux.hh"
+#include "PTScorerVolFluence.hh"
 #include "PTScorerMultiScat.hh"
 #include "PTScorerRotatingObj.hh"
 #include "PTScorerWlSpectrum.hh"
+#include "PTScorerAngular.hh"
 
 Prompt::ScorerFactory::ScorerFactory()
 {}
@@ -58,7 +59,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     if(ScorDef == "NeutronSq")
     {
       // example cfg
-      // ""Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=-100;
+      // ""Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;dist=-100;
       // ptstate=ENTRY; linear=yes; Qmin=0.5; Qmax = 50; numbin=1000""
 
       // where ptstate can be ENTRY(default) or ABSORB, the default value for linear is yes
@@ -71,7 +72,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       std::string name = cfg.find("name", force);
       auto samplePos = string2vec(cfg.find("sample_position", force));
       auto beamDir = string2vec(cfg.find("beam_direction", force));
-      double moderator2SampleDist = ptstod(cfg.find("src_sample_dist", force));
+      double moderator2SampleDist = ptstod(cfg.find("dist", force));
       double minQ = ptstod(cfg.find("Qmin", force));
       double maxQ = ptstod(cfg.find("Qmax", force));
       int numBin = ptstoi(cfg.find("numbin", force));
@@ -172,6 +173,45 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
       return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, ptstate, qtrue, scatnum, linear);
     }
+    if(ScorDef == "Angular")
+    {
+      // example cfg
+      // "Scorer=Angular;name=ST_template;sample_position=0,-1750,0;beam_direction=0,-1,0;
+      //  dist=3650.;angle_min_deg=10.0;angle_max_deg=160;numbin=6000;ptstate=ENTRY"
+
+      // where ptstate can be ENTRY(default) or ABSORB, the default value for linear is yes
+
+
+      int parCount = 9;
+
+      // The mandatory parameters
+      bool force = true;
+      std::string name = cfg.find("name", force);
+      auto samplePos = string2vec(cfg.find("sample_position", force));
+      auto beamDir = string2vec(cfg.find("beam_direction", force));
+      double moderator2SampleDist = ptstod(cfg.find("dist", force));
+      double angle_min = ptstod(cfg.find("angle_min_deg", force));
+      double angle_max = ptstod(cfg.find("angle_max_deg", force));
+      int numBin = ptstoi(cfg.find("numbin", force));
+      
+
+      // the optional parameters
+
+      Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+       ptstate = getPTS (ptstateInStr);
+      }
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Scorer type NeutronSq is missing or with extra config parameters " << cfg.size() << " " << parCount );
+      }
+      return std::make_shared<Prompt::ScorerAngular>(name, samplePos, beamDir, moderator2SampleDist, angle_min, angle_max, numBin, ptstate);
+    }
 
     else if(ScorDef == "PSD")
     {
@@ -195,33 +235,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         parCount--;
       else
       {
-        if(ptstateInStr=="ENTRY")
-        {
-          ptstate = Scorer::ScorerType::ENTRY;
-        }
-        else if(ptstateInStr=="ABSORB")
-        {
-          ptstate = Scorer::ScorerType::ABSORB;
-        }
-        else if(ptstateInStr=="SURFACE")
-        {
-          ptstate = Scorer::ScorerType::SURFACE;
-        }
-        else if(ptstateInStr=="PROPAGATE")
-        {
-          ptstate = Scorer::ScorerType::PROPAGATE;
-        }
-        else if(ptstateInStr=="EXIT")
-        {
-          ptstate = Scorer::ScorerType::EXIT;
-        }
-        else if(ptstateInStr=="ENTRY2EXIT")
-        {
-          ptstate = Scorer::ScorerType::ENTRY2EXIT;
-        }
-        else {
-          PROMPT_THROW2(BadInput, "ptstate does not support" << " " << ptstateInStr);
-        }
+        ptstate = getPTS (ptstateInStr);
       }
 
       ScorerPSD::PSDType type = ScorerPSD::PSDType::XY;
@@ -344,33 +358,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         parCount--;
       else
       {
-        if(ptstateInStr=="ENTRY")
-        {
-          ptstate = Scorer::ScorerType::ENTRY;
-        }
-        else if(ptstateInStr=="ABSORB")
-        {
-          ptstate = Scorer::ScorerType::ABSORB;
-        }
-        else if(ptstateInStr=="SURFACE")
-        {
-          ptstate = Scorer::ScorerType::SURFACE;
-        }
-        else if(ptstateInStr=="PROPAGATE")
-        {
-          ptstate = Scorer::ScorerType::PROPAGATE;
-        }
-        else if(ptstateInStr=="EXIT")
-        {
-          ptstate = Scorer::ScorerType::EXIT;
-        }
-        else if(ptstateInStr=="ENTRY2EXIT")
-        {
-          ptstate = Scorer::ScorerType::ENTRY2EXIT;
-        }
-        else {
-          PROMPT_THROW2(BadInput, "ptstate does not support" << " " << ptstateInStr);
-        }
+        ptstate = getPTS (ptstateInStr);
       }
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
@@ -396,9 +384,9 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
       return std::make_shared<ScorerMultiScat>(name, minNumber-0.5, maxNumber+0.5, numBin, ptstate, linear);
     }
-    else if(ScorDef == "VolFlux")
+    else if(ScorDef == "VolFluence")
     {
-      // VolFlux: volume flux
+      // VolFluence: volume flux
 
       int parCount = 6;
 
@@ -428,10 +416,10 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type VolFlux is missing or with extra config parameters" << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type VolFluence is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerVolFlux>(name, xmin, xmax, nxbins, linear, vol);
+      return std::make_shared<Prompt::ScorerVolFluence>(name, xmin, xmax, nxbins, linear, vol);
 
     }
     else if(ScorDef == "RotatingObj")
@@ -451,4 +439,36 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       PROMPT_THROW2(BadInput, "Scorer type " << ScorDef << " is not supported. ")
   }
 
+}
+
+
+Prompt::Scorer::ScorerType Prompt::ScorerFactory::getPTS(const std::string& ptstateInStr) const 
+{
+  if(ptstateInStr=="ENTRY")
+  {
+    return Scorer::ScorerType::ENTRY;
+  }
+  else if(ptstateInStr=="ABSORB")
+  {
+    return Scorer::ScorerType::ABSORB;
+  }
+  else if(ptstateInStr=="SURFACE")
+  {
+    return Scorer::ScorerType::SURFACE;
+  }
+  else if(ptstateInStr=="PROPAGATE")
+  {
+    return Scorer::ScorerType::PROPAGATE;
+  }
+  else if(ptstateInStr=="EXIT")
+  {
+    return Scorer::ScorerType::EXIT;
+  }
+  else if(ptstateInStr=="ENTRY2EXIT")
+  {
+    return Scorer::ScorerType::ENTRY2EXIT;
+  }
+  else {
+    PROMPT_THROW2(BadInput, "ptstate does not support" << " " << ptstateInStr);
+  }
 }
