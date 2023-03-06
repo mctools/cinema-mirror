@@ -36,7 +36,6 @@ namespace Prompt {
   protected:
     const Vector m_samplePos, m_refDir;
     const double m_sourceSampleDist;
-    bool m_kill;
     bool m_qtrue;
     int m_scatnum;
 
