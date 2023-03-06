@@ -1,0 +1,103 @@
+/*******************************************************************************
+* Instrument: Test_DiskChoppers
+*
+* %I
+* Written by: Peter Willendrup <pkwi@fysik.dtu.dk>
+* Date: September 2018
+* Origin: DTU
+* %INSTRUMENT_SITE: Tests_optics
+*
+* Simple test instrument that compares the use of 2 DiskChoppers with one MultiDiskChopper
+*
+* %D
+* Simple test instrument that compares the use of 2 DiskChoppers with one MultiDiskChopper
+*
+* %Example: Test_DiskChoppers.instr chopper=0 Detector: Tofl_I=0.00277
+* %Example: Test_DiskChoppers.instr chopper=1 Detector: Tofl_I=0.00277
+* %P
+* chopper:  [int] chopper=0 selects two DiskChoppers, chopper=1 selects one MultiDiskChopper
+* lambda:   [AA] Mean wavelength produced from the source 
+* dlambda: [AA] Halfwidth of wavelenghts produced from the source
+* deltay:     [m]  Vertical displacement of MultiDiskChopper vertical centre of rotation (default is to be positioned like DiskChopper)
+*
+* %L
+*
+* %E
+*******************************************************************************/
+DEFINE INSTRUMENT Test_DiskChoppers()
+
+DECLARE
+%{
+%}
+
+INITIALIZE
+%{
+%}
+
+TRACE
+
+COMPONENT origin = Progress_bar()
+AT (0, 0, 0) RELATIVE ABSOLUTE
+
+
+COMPONENT source = Source_Maxwell_3(
+  yheight = 0.001,
+  xwidth = 0.001,
+  Lmin = 1e-8,
+  Lmax = 10,
+  dist = 10,
+  focus_xw = 0.045,
+  focus_yh = 0.045,
+  T1 = 293,
+  I1 = 1e10) 
+ AT (0, 0, 0) RELATIVE  origin
+ROTATED (0, 0, 0) RELATIVE PREVIOUS
+EXTEND %{
+
+%}
+
+
+COMPONENT tofin = TOF_monitor(
+  nt = 10000,
+  filename = "TOF_in",
+  xwidth = 0.1,
+  yheight = 0.2,
+  tmin = 0,
+  tmax = 2e4) 
+ AT (0, 0, 10) RELATIVE  origin
+
+COMPONENT chopper = DiskChopper(
+    theta_0=20, 
+    radius=0.25, 
+    yheight=0.12, 
+    nu=100, 
+    nslit=4, 
+    isfirst=0)
+AT (0, 0, 10) RELATIVE origin
+
+
+COMPONENT CompInstanceName = TOF_monitor(
+  nt = 10000,
+  filename = "TOF",
+  xwidth = 0.1,
+  yheight = 0.2,
+  tmin = 0,
+  tmax = 2e4) 
+ AT (0, 0, 10) RELATIVE  origin
+
+COMPONENT wavelength = L_monitor(
+  nL = 10000,
+  filename = "wld",
+  xmin = -0.1,
+  xmax = 0.1,
+  ymin = -0.1,
+  ymax = 0.1,
+  Lmin = 1e-8,
+  Lmax = 10) 
+ AT (0, 0, 10) RELATIVE  origin
+
+FINALLY
+%{
+%}
+
+END
