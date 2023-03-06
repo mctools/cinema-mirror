@@ -59,7 +59,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     if(ScorDef == "NeutronSq")
     {
       // example cfg
-      // ""Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=-100;
+      // ""Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;dist=-100;
       // ptstate=ENTRY; linear=yes; Qmin=0.5; Qmax = 50; numbin=1000""
 
       // where ptstate can be ENTRY(default) or ABSORB, the default value for linear is yes
@@ -72,7 +72,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       std::string name = cfg.find("name", force);
       auto samplePos = string2vec(cfg.find("sample_position", force));
       auto beamDir = string2vec(cfg.find("beam_direction", force));
-      double moderator2SampleDist = ptstod(cfg.find("src_sample_dist", force));
+      double moderator2SampleDist = ptstod(cfg.find("dist", force));
       double minQ = ptstod(cfg.find("Qmin", force));
       double maxQ = ptstod(cfg.find("Qmax", force));
       int numBin = ptstoi(cfg.find("numbin", force));
@@ -177,7 +177,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // example cfg
       // "Scorer=Angular;name=ST_template;sample_position=0,-1750,0;beam_direction=0,-1,0;
-      //  src_sample_dist=3650.;angle_min_deg=10.0;angle_max_deg=160;numbin=6000;ptstate=ENTRY"
+      //  dist=3650.;angle_min_deg=10.0;angle_max_deg=160;numbin=6000;ptstate=ENTRY"
 
       // where ptstate can be ENTRY(default) or ABSORB, the default value for linear is yes
 
@@ -189,7 +189,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       std::string name = cfg.find("name", force);
       auto samplePos = string2vec(cfg.find("sample_position", force));
       auto beamDir = string2vec(cfg.find("beam_direction", force));
-      double moderator2SampleDist = ptstod(cfg.find("src_sample_dist", force));
+      double moderator2SampleDist = ptstod(cfg.find("dist", force));
       double angle_min = ptstod(cfg.find("angle_min_deg", force));
       double angle_max = ptstod(cfg.find("angle_max_deg", force));
       int numBin = ptstoi(cfg.find("numbin", force));

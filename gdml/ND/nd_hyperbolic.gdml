@@ -6,12 +6,12 @@
     <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;position=49,0,-999;direction=0,0,1;energy=1e-3" /> -->
 
     <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;
-      moderator_width_x=100;moderator_height_y=100;moderator_positon_z=-999;
+      src_x=100;moderator_height_y=100;moderator_positon_z=-999;
       slit_width_x=200;slit_height_y=200;slit_position_z=0;temperature=300;" />
 
     <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;
       mean_wavelength=6;range_wavelength=1e-6;
-      moderator_width_x=100;moderator_height_y=100;moderator_positon_z=-999;
+      src_x=100;moderator_height_y=100;moderator_positon_z=-999;
       slit_width_x=200;slit_height_y=200;slit_position_z=0" /> -->
 
   </userinfo>

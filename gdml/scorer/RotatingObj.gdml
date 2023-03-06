@@ -3,7 +3,7 @@
 
   <userinfo>
     <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;
-      moderator_width_x=100;moderator_height_y=100;moderator_positon_z=-15000.;
+      src_x=100;moderator_height_y=100;moderator_positon_z=-15000.;
       slit_width_x=5;slit_height_y=5;slit_position_z=0;temperature=300;" />
   </userinfo>
 

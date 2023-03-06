@@ -2,7 +2,7 @@
 <gdml>
 
   <userinfo>
-    <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=0;moderator_height_y=0;moderator_positon_z=-100;slit_width_x=0;slit_height_y=0;slit_position_z=1;temperature=293.15" />
+    <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_x=0;moderator_height_y=0;moderator_positon_z=-100;slit_width_x=0;slit_height_y=0;slit_position_z=1;temperature=293.15" />
   </userinfo>
 
    <define>
@@ -35,7 +35,7 @@
     <volume name="Detector">
       <materialref ref="Vacuum"/>
       <solidref ref="DetectorSolid"/>
-      <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=-100;ptstate=ENTRY;linear=yes;Qmin=0.5; Qmax = 50; numbin=1000"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;dist=-100;ptstate=ENTRY;linear=yes;Qmin=0.5; Qmax = 50; numbin=1000"/>
     </volume>
 
     <volume name="World">
