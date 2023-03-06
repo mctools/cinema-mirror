@@ -45,7 +45,7 @@ class UnplacedBox:
     def __init__(self, hx, hy, hz):
         self.cobj = _pt_UnplacedBox_new(hx, hy, hz)
 
-    # the memory should be managed by vecgeom. 
+    # the memory should be managed by the LogicalVolume. 
     # fixme: double check if it is release at the very end
     def __del__(self):
         # _pt_UnplacedBox_delete(self.cobj)
@@ -71,9 +71,7 @@ class LogicalVolume:
             _pt_ResourceManager_addSurface(volid, surfaceCfg.encode('utf-8')) 
 
     def __del__(self):
-        # the memory should be managed by vecgeom. 
-        # fixme: double check if it is release at the very end
-        # _pt_LogicalVolume_delete(self.cobj)
+        _pt_LogicalVolume_delete(self.cobj)
         pass
 
     def placeChild(self, name, logVolume, transf, scorerGroup=0):
