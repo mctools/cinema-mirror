@@ -2,8 +2,8 @@
 <gdml>
 
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wavelength=10;range_wavelength=19.8;moderator_width_x=0.1;moderator_height_y=0.1;
-                                        moderator_positon_z=0;slit_width_x=45;slit_height_y=120;slit_position_z=10000" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=10;range_wl=19.8;src_x=0.1;src_h=0.1;
+                                        src_z=0;slit_w=45;slit_h=120;slit_z=10000" />
     </userinfo>
 
     <materials>

@@ -10,7 +10,7 @@ scorertest_dict['MultiScat'] = {'gdml': 'MultiScat.gdml', 'mcpl': 'ScorerMultiSc
 scorertest_dict['NeutronSq'] = {'gdml': 'NeutronSq.gdml', 'mcpl': 'ScorerNeutronSq_SofQ_seed113.mcpl.gz', 'value': [25275.25, 169., 169., 657.1160000000001]}
 scorertest_dict['RotatingObj'] = {'gdml': 'RotatingObj.gdml', 'mcpl': 'ScorerRotatingObj_roen_seed113.mcpl.gz', 'value': [50.49999999999999, 2752., 2752., 83.44]}
 scorertest_dict['TOF'] = {'gdml': 'TOF.gdml', 'mcpl': 'ScorerTOF_detector_seed113.mcpl.gz', 'value': [250.25, 819., 819., 0.]}
-scorertest_dict['VolFlux'] = {'gdml': 'VolFlux.gdml', 'mcpl': 'ScorerVolFlux_Sflux_seed113.mcpl.gz', 'value': [60.600505, 0.005264443047830176, 14948., 0.0002324042989916737]}
+scorertest_dict['VolFluence'] = {'gdml': 'VolFluence.gdml', 'mcpl': 'ScorerVolFluence_Sflux_seed113.mcpl.gz', 'value': [60.600505, 0.005264443047830176, 14948., 0.0002324042989916737]}
 scorertest_dict['PSD'] = {'gdml': 'PSD.gdml', 'mcpl': 'ScorerPSD_NeutronHistMap_seed113.mcpl.gz', 'value': [0., 0., 812., 812., 1130., 1130.]}
 scorertest_dict['guide'] = {'gdml': 'guide.gdml', 'mcpl': 'ScorerPSD_Monitor2_seed113.mcpl.gz', 'value': [0., 0., 186.29931081917783, 207., -196.196441756424, -196.196441756424]}
 

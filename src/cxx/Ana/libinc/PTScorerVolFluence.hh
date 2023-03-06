@@ -1,3 +1,6 @@
+#ifndef Prompt_ScorerVolFluence_hh
+#define Prompt_ScorerVolFluence_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,19 +21,19 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerVolFlux.hh"
+#include "PromptCore.hh"
+#include "PTScorer.hh"
 
-Prompt::ScorerVolFlux::ScorerVolFlux(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear, double volme)
-:Scorer1D("ScorerVolFlux_"+ name, Scorer::ScorerType::PROPAGATE, std::make_unique<Hist1D>("ScorerVolFlux_"+ name, xmin, xmax, nxbins, linear)), m_iVol(1./volme), m_weight(-1.)
-{ }
+namespace Prompt {
 
-Prompt::ScorerVolFlux::~ScorerVolFlux() {}
-
-void Prompt::ScorerVolFlux::score(Particle &particle)
-{
-  if(m_weight == -1.) m_weight=particle.getWeight();
-
-  if(particle.getWeight()!=m_weight)
-    PROMPT_THROW(LogicError, "ScorerVolFlux is incorrect in the cross section biasing model. The D value for the material within the solid of insterest should be unity");
-  m_hist->fill(particle.getEKin()+particle.getEnergyChange(), m_iVol*particle.getStep());
+  class ScorerVolFluence  : public Scorer1D {
+  public:
+    ScorerVolFluence(const std::string &name, double xmin, double xmax,
+                  unsigned nxbins, bool linear, double volme);
+    virtual ~ScorerVolFluence();
+    virtual void score(Particle &particle) override;
+  private:
+    double m_iVol, m_weight;
+  };
 }
+#endif

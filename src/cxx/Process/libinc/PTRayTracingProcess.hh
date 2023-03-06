@@ -31,11 +31,13 @@ namespace Prompt {
 
   class RayTracingProcess  : public SurfaceProcess {
     public:
-      RayTracingProcess() :Prompt::SurfaceProcess("RayTracing") 
-          , m_activeVol(Singleton<ActiveVolume>::getInstance()) { };
+      RayTracingProcess() ;
       virtual ~RayTracingProcess() = default;
-
+      virtual void sampleFinalState(Particle &particle) const override;
+ 
     protected:
+      virtual bool canSurvive(const Particle &p) const = 0;
+      void moveToOut(Particle &p) const;
       ActiveVolume &m_activeVol;
   };
 

@@ -1,6 +1,3 @@
-#ifndef Prompt_ScorerVolFlux_hh
-#define Prompt_ScorerVolFlux_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,19 +18,21 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTScorer.hh"
+#include "PTRayTracingProcess.hh"
 
-namespace Prompt {
+Prompt::RayTracingProcess::RayTracingProcess()
+:Prompt::SurfaceProcess("RayTracing") 
+, m_activeVol(Singleton<ActiveVolume>::getInstance()) { }
 
-  class ScorerVolFlux  : public Scorer1D {
-  public:
-    ScorerVolFlux(const std::string &name, double xmin, double xmax,
-                  unsigned nxbins, bool linear, double volme);
-    virtual ~ScorerVolFlux();
-    virtual void score(Particle &particle) override;
-  private:
-    double m_iVol, m_weight;
-  };
+void Prompt::RayTracingProcess::moveToOut(Prompt::Particle &p) const
+{
+    double dis = m_activeVol.distanceToOut(p.getPosition(), p.getDirection());
+    p.moveForward(dis);
 }
-#endif
+
+void Prompt::RayTracingProcess::sampleFinalState(Prompt::Particle &p) const
+{
+    canSurvive(p) ? moveToOut(p) : p.kill(Particle::KillType::RT_ABSORB);;
+}
+
+

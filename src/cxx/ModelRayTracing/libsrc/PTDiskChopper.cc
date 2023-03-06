@@ -30,26 +30,14 @@ Prompt::DiskChopper::DiskChopper(double theta0_deg, double r_mm, double phase_de
 }
 
 
-
-void Prompt::DiskChopper::sampleFinalState(Particle &particle) const
+bool Prompt::DiskChopper::canSurvive(double x, double y, double time) const
 {
-    if(m_activeVol.numSubVolume())
-        PROMPT_THROW2(CalcError, "Sub-volume is not allowed in a ray-tracing volume. The name of this volume is " << m_activeVol.getVolumeName());
-    
-    // check if the neutron hits the opening
-    const auto pos  = m_activeVol.getGeoTranslator().global2Local(particle.getPosition());
-    double x (pos.x()), y(pos.y());
-
-
     // Absorbed by the central part of the disk
     if(m_r*m_r>x*x+y*y)
-    {
-        particle.kill(Particle::KillType::RT_ABSORB);
-        return;
-    }
+        return false;
 
     // calculate the angular positon of the opening edge
-    double angEdge = m_angularSpeed*particle.getTime()+m_phase;
+    double angEdge = m_angularSpeed*time + m_phase;
     angEdge = fmod(angEdge, m_angularPeriod);
 
     double hitAngle = atan2(x, y);  
@@ -61,16 +49,19 @@ void Prompt::DiskChopper::sampleFinalState(Particle &particle) const
     // std::cout << hitAngle << ", " << angEdge << ", " << m_theta0 << std::endl;
     // particle should also moves forward when it hits the slit of the last anglePeriod 
     if(hitAngle > angEdge-m_angularPeriod+m_theta0 && hitAngle < angEdge || hitAngle > angEdge+m_theta0 )
-    {
-        particle.kill(Particle::KillType::RT_ABSORB);
-        return;        
-    }
+        return false;        
     else
-    {
-        double dis = m_activeVol.distanceToOut(pos, particle.getDirection());
-        particle.moveForward(dis);
-    }
-
+        return true;
 }
 
+bool Prompt::DiskChopper::canSurvive(const Particle &particle) const
+{
+    if(m_activeVol.numSubVolume())
+        PROMPT_THROW2(CalcError, "Sub-volume is not allowed in a ray-tracing volume. The name of this volume is " << m_activeVol.getVolumeName());
+    
+    // check if the neutron hits the opening
+    const auto pos  = m_activeVol.getGeoTranslator().global2Local(particle.getPosition());
+    double x (pos.x()), y(pos.y());
+    return canSurvive(x, y, particle.getTime());
+}
 

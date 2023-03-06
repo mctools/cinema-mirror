@@ -39,11 +39,13 @@ namespace Prompt {
   public:
     //used in GeoManager::initFromGDML
     std::shared_ptr<Scorer> createScorer(const std::string &cfg, double v);
-
   private:
+  
     friend class Singleton<ScorerFactory>;
     ScorerFactory();
     ~ScorerFactory() = default;
+    Scorer::ScorerType getPTS(const std::string& ptstateInStr) const;
+
   };
 }
 
