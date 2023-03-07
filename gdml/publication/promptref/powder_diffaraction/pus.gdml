@@ -3,8 +3,8 @@
 
     <userinfo>
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=1.54;range_wl=0.0;src_x=0;src_h=0;
-      src_z=-1900;slit_w=0;slit_h=0;slit_z=0" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=1.54;range_wl=0.0;src_x=40;src_h=40;
+      src_z=-1900;slit_w=40;slit_h=40;slit_z=0" />
     </userinfo>
 
     <define>
@@ -38,15 +38,6 @@
     </define>
 
     <materials>
-
-        <material name="Cd">
-          <atom value="Cd.ncmat"/>
-        </material>
-
-        <material name="Water">
-            <atom value="LiquidWaterH2O_T293.6K.ncmat"/>
-        </material>
-
         <material name="Universe">
           <atom value="freegas::H1/1e-26kgm3"/>
         </material>
@@ -59,10 +50,6 @@
           <atom value="Ge_sg227.ncmat;mos=0.267deg
                       ;dir1=@crys_hkl:5,1,1@lab:0,0,1
                       ;dir2=@crys_hkl:0,1,-1@lab:1,0,0"/>
-        </material>
-
-        <material name="He">
-          <atom value="He_Gas_STP.ncmat"/>
         </material>
 
         <material name="Al2O3">
@@ -80,7 +67,7 @@
     </materials>
 
     <solids>
-        <box lunit="mm" name="WorldBox" x="5000.0" y="8000.0" z="10000.0" />
+        <box lunit="mm" name="WorldBox" x="8000.0" y="10000.0" z="15000.0" />
         <box lunit="mm" name="MonitorBox" x="40.0" y="40" z="1" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube3000_Wall" rmax="12.7" rmin="12.2" startphi="0.0" z="3000.0" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube3000_He" rmax="12.5" rmin="0.0" startphi="0.0" z="3000.0" />
@@ -94,7 +81,7 @@
         <box lunit="mm" name="solidPadBox" x="0.085" y="90" z="525.26" />
         <box lunit="mm" name="alpha1Box" x="50" y="90" z="525.26" />
         <box lunit="mm" name="multiplierBox" x="50" y="50" z="0.5" />
-        <box lunit="mm" name="TrdBox" x="3200" y="3200" z="1015" />
+        <box lunit="mm" name="TrdBox" x="3000" y="3000" z="1015" />
         <trd lunit="mm" name="ColliTrd" x1="90" y1="25" x2="30" y2="25" z="1015" />
         <subtraction name="ColliSub">
             <first ref="TrdBox"/>
@@ -103,10 +90,25 @@
             <rotation name="R_box_sub" unit="deg" x="0" y="0" z="0"/>
         </subtraction>
         <box lunit="mm" name="StopBox" x="100" y="100" z="200" />
-        <sphere aunit="deg" lunit="mm" name="Sphere_Detector" rmin="1000" rmax="1001" deltaphi="360" startphi="0" deltatheta="160.0" starttheta="10" />
+        <sphere aunit="deg" lunit="mm" name="Sphere_Detector" rmin="1000" rmax="1001" deltaphi="360" startphi="0" deltatheta="175" starttheta="2.5" />
     </solids>
 
-    <structure>
+ <structure>
+        <volume name="LV_ColliTrd">
+            <solidref ref="ColliTrd"/>
+            <materialref ref="Universe"/>
+            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
+        </volume>
+
+        <volume name="LV_Trd_Colli">
+            <solidref ref="TrdBox"/>
+            <materialref ref="B4C"/>
+            <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
+            <physvol name="LV_ColliTrd">
+                <volumeref ref="LV_ColliTrd"/>
+            </physvol>
+        </volume>
+
         <volume name="padBox">
             <solidref ref="solidPadBox"/>
             <materialref ref="B4C"/>
@@ -213,12 +215,6 @@
             <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
         </volume>
 
-        <volume name="LV_Trd_Colli">
-            <solidref ref="ColliSub"/>
-            <materialref ref="B4C"/>
-            <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
-        </volume>
-
         <volume name="LV_Box_Mono_L">
             <solidref ref="MonoBox" />
             <materialref ref="Ge" />
@@ -245,7 +241,7 @@
 
         <volume name="worldVOL">
             <solidref ref="WorldBox" />
-            <materialref ref="He" />
+            <materialref ref="Universe" />
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
 
             <physvol name="LV_Box_Mono">
