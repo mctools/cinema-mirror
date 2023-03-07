@@ -3,8 +3,8 @@
 
     <userinfo>
         <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=IsotropicGun;energy=0;position=0,0,0" /> -->
-        <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=1;moderator_height_y=1;moderator_positon_z=0;
-                                    slit_width_x=45;slit_height_y=45;slit_position_z=10000.0;temperature=293;" />
+        <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_x=1;src_h=1;src_z=0;
+                                    slit_w=45;slit_h=45;slit_z=10000.0;temperature=293;" />
     </userinfo>
 
     <materials>
@@ -29,7 +29,7 @@
         <volume name="LV_Chopper1">
             <solidref ref="Chopper1" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=DiskChopper;rotFreq_Hz=100;r_mm=130;theta0_deg=20;n=4;phase_deg=-10"/>           
+            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=DiskChopper;rotFreq_Hz=100;r_mm=130;theta0_deg=20;n=4;phase_deg=0"/>           
         </volume>
 
         <volume name="LV_BlackBody">
