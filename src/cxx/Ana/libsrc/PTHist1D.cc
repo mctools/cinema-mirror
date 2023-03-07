@@ -59,7 +59,7 @@ void Prompt::Hist1D::save(const std::string &filename) const
   //fixme: filename should be removed
   auto bwr = new MCPLBinaryWrite(m_mcpl_file_name);
 
-  double intergral(getIntegral()), overflow(getOverflow()), underflow(getUnderflow());
+  double intergral(getTotalWeight()), overflow(getOverflow()), underflow(getUnderflow());
   bwr->addHeaderComment(m_name);
   bwr->addHeaderComment(getTypeName(typeid(this)).c_str());
   bwr->addHeaderComment(("Total hit: " + std::to_string(getTotalHit())).c_str());

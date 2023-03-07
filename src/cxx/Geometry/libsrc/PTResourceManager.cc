@@ -196,14 +196,30 @@ void Prompt::ResourceManager::addPhysics(size_t volID, const std::string& cfg)
   it_vol->second->bulkMaterialProcess = sc;
 }
 
-void Prompt::ResourceManager::writeScorer2Disk()
+void Prompt::ResourceManager::writeScorer2Disk() const
 {  
   for(auto it=m_volumes.begin();it!=m_volumes.end();++it)
   {
-    for(auto &v : it->second->scorers)
+    for(const auto &v : it->second->scorers)
     {
       v->save_mcpl();
     }
   }
 }
+
+Prompt::Hist1D* Prompt::ResourceManager::getHist(const std::string& name)  
+{
+  auto item = m_globelScorers.find(name);
+  if(item!=m_globelScorers.end())
+  {
+    return const_cast<Hist1D*>(item->second->getHist());
+  }
+  else
+  {
+    PROMPT_THROW2(CalcError, "Histogram not found, name: " <<name);
+    return nullptr;
+  }
+}
+
+
 

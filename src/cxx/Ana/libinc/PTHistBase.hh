@@ -39,13 +39,21 @@ namespace Prompt {
 
     double getXMin() const {return m_xmin;}
     double getXMax() const {return m_xmax;}
-    double getIntegral() const {return m_sumW;};
+    double getTotalWeight() const {return m_sumW;};
     double getOverflow() const {return m_overflow;};
     double getUnderflow() const {return m_underflow;};
-    uint32_t getNBin() const {return m_nbins;};
+    size_t getDataSize() const {return m_nbins;};
+
+    double getAccWeight() const {
+      double sum(0);
+      for(const auto v: m_data)
+        sum += v;
+      return sum;
+    }
+
     double getTotalHit() const {
       double sum(0);
-      for(auto v: m_hit)
+      for(const auto v: m_hit)
         sum += v;
       return sum;
     };
@@ -70,7 +78,7 @@ namespace Prompt {
     double m_sumW;
     double m_underflow;
     double m_overflow;
-    uint32_t m_nbins;
+    size_t m_nbins;
     std::string m_mcpl_file_name;
 
   private:

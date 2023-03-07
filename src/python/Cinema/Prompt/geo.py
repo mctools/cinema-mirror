@@ -71,7 +71,10 @@ class LogicalVolume:
             _pt_ResourceManager_addSurface(volid, surfaceCfg.encode('utf-8')) 
 
     def __del__(self):
-        _pt_LogicalVolume_delete(self.cobj)
+        # the memory should be managed by the LogicalVolume. 
+        # otherwise the code will give the warning message:
+        #    ""deregistering an object from GeoManager while geometry is closed""
+        # _pt_LogicalVolume_delete(self.cobj)
         pass
 
     def placeChild(self, name, logVolume, transf, scorerGroup=0):

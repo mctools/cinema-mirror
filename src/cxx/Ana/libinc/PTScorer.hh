@@ -33,12 +33,15 @@ namespace Prompt {
   public:
     enum class ScorerType {SURFACE, ENTRY, PROPAGATE, EXIT, ENTRY2EXIT, ABSORB};
   public:
-    Scorer(const std::string& name, ScorerType type) : m_name(name), m_type(type) {};
+    Scorer(const std::string& name, ScorerType type) 
+      : m_name(name), m_type(type) {};
     virtual ~Scorer() {std::cout<<"Destructing Scorer " << m_name <<std::endl;};
-    const std::string &getName() { return m_name; }
-    ScorerType getType() { return m_type; }
+    const std::string &getName() const { return m_name; }
+    ScorerType getType() const { return m_type; }
     virtual void score(Particle &particle) = 0;
     virtual void save_mcpl() = 0;
+    virtual const Hist1D* getHist() const { return nullptr; } //fix me
+
   protected:
     const std::string m_name;
     const ScorerType m_type;
@@ -50,6 +53,7 @@ namespace Prompt {
     : Scorer(name, type), m_hist(std::move(hist)) {};
     virtual ~Scorer1D() {  }
     void save_mcpl() override { m_hist->save(m_name); }
+    const Hist1D* getHist() const { return m_hist.get(); }
   protected:
     std::unique_ptr<Hist1D> m_hist;
   };

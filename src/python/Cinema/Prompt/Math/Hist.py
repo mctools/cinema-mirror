@@ -30,34 +30,117 @@ _pt_Hist1D_getHit = importFunc('pt_Hist1D_getHit', None, [type_voidp, type_npdbl
 _pt_Hist1D_getWeight = importFunc('pt_Hist1D_getWeight', None, [type_voidp, type_npdbl1d])
 _pt_Hist1D_fill = importFunc('pt_Hist1D_fill', None, [type_voidp, type_dbl, type_dbl])
 _pt_Hist1D_fill_many = importFunc('pt_Hist1D_fillmany', None, [type_voidp, type_sizet, type_npdbl1d, type_npdbl1d])
+_pt_Hist1D_getNumBin = importFunc('pt_Hist1D_getNumBin', type_uint, [type_voidp])
 
-class Hist1D():
-    def __init__(self, xmin, xmax, num, linear=True):
-        self.cobj = _pt_Hist1D_new(xmin, xmax, num, linear)
-        self.numbin = num
+# Prompt::Hist2D
+_pt_Hist2D_new = importFunc('pt_Hist2D_new', type_voidp, [type_dbl, type_dbl, type_uint, type_dbl, type_dbl, type_uint])
+_pt_Hist2D_delete = importFunc('pt_Hist2D_delete', None, [type_voidp])
+_pt_Hist2D_getWeight = importFunc('pt_Hist2D_getWeight', None, [type_voidp, type_npdbl2d])
+_pt_Hist2D_getHit = importFunc('pt_Hist2D_getHit', None, [type_voidp, type_npdbl2d])
+_pt_Hist2D_getDensity = importFunc('pt_Hist2D_getDensity', None, [type_voidp, type_npdbl2d])
+_pt_Hist2D_fill = importFunc('pt_Hist2D_fill', None, [type_voidp, type_dbl, type_dbl, type_dbl])
+_pt_Hist2D_merge = importFunc('pt_Hist2D_merge', None, [type_voidp, type_voidp])
+_pt_Hist2D_fill_many = importFunc('pt_Hist2D_fillmany', None, [type_voidp, type_sizet, type_npdbl1d, type_npdbl1d, type_npdbl1d])
+
+
+# Prompt::HistBase
+_pt_HistBase_merge = importFunc('pt_HistBase_merge', None, [type_voidp, type_voidp])
+_pt_HistBase_getXMin = importFunc('pt_HistBase_getXMin', type_dbl, [type_voidp])
+_pt_HistBase_getXMax = importFunc('pt_HistBase_getXMax', type_dbl, [type_voidp])
+_pt_HistBase_getTotalWeight = importFunc('pt_HistBase_getTotalWeight', type_dbl, [type_voidp])
+_pt_HistBase_getAccWeight = importFunc('pt_HistBase_getAccWeight', type_dbl, [type_voidp])
+_pt_HistBase_getOverflow = importFunc('pt_HistBase_getOverflow', type_dbl, [type_voidp])
+_pt_HistBase_getUnderflow = importFunc('pt_HistBase_getUnderflow', type_dbl, [type_voidp])
+_pt_HistBase_getTotalHit = importFunc('pt_HistBase_getTotalHit', type_dbl, [type_voidp])
+_pt_HistBase_getDataSize = importFunc('pt_HistBase_getDataSize', type_sizet, [type_voidp])
+_pt_HistBase_scale = importFunc('pt_HistBase_scale', None, [type_voidp, type_dbl])
+_pt_HistBase_reset = importFunc('pt_HistBase_reset', None, [type_voidp])
+_pt_HistBase_getRaw = importFunc('pt_HistBase_getRaw', None, [type_voidp, type_npdbl1d])
+_pt_HistBase_getHit = importFunc('pt_HistBase_getHit', None, [type_voidp, type_npdbl1d])
+_pt_HistBase_dimension = importFunc('pt_HistBase_dimension', type_uint, [type_voidp])
+_pt_HistBase_getName = importFunc('pt_HistBase_getName', type_cstr, [type_voidp])
+
+
+class HistBase():
+    def __init__(self, cobj) -> None:
+        self.cobj = cobj
+
+    def merge(self, anotherhist):
+        _pt_HistBase_merge(self.cobj, anotherhist.cobj)
+
+    def getXMin(self):
+        return _pt_HistBase_getXMin(self.cobj)
+    
+    def getXMax(self):
+        return _pt_HistBase_getXMax(self.cobj)
+
+    def getTotalWeight(self):
+        return _pt_HistBase_getTotalWeight(self.cobj)
+
+    def getAccWeight(self):
+        return _pt_HistBase_getAccWeight(self.cobj)
+    
+    def getOverflow(self):
+        return _pt_HistBase_getOverflow(self.cobj)
+    
+    def getUnderflow(self):
+        return _pt_HistBase_getUnderflow(self.cobj)
+    
+    def getTotalHit(self):
+        return _pt_HistBase_getTotalHit(self.cobj)
+
+    def getDataSize(self):
+        return _pt_HistBase_getDataSize(self.cobj)
+    
+    def scale(self, scale):
+        _pt_HistBase_scale(self.cobj, scale)
+
+    def reset(self):
+        _pt_HistBase_reset(self.cobj)
+    
+    def getWeight(self):
+        d = np.zeros(self.getDataSize())
+        _pt_HistBase_getRaw(self.cobj, d)
+        return d
+    
+    def getHit(self):
+        d = np.zeros(self.getDataSize())
+        _pt_HistBase_getHit(self.cobj, d)
+        return d
+    
+    def dimension(self):
+        return _pt_HistBase_dimension(self.cobj)
+    
+    def getName(self):
+        return _pt_HistBase_getName(self.cobj).decode('utf-8')
+    
+
+    
+_pt_ResourceManager_getHist = importFunc('pt_ResourceManager_getHist', type_voidp, [type_cstr])
+class Hist1D(HistBase):
+    def __init__(self, xmin=None, xmax=None, num=None, linear=True, cobj_name=None):
+        self.cobj_name = cobj_name
+        if cobj_name is None:
+            cobj = _pt_Hist1D_new(xmin, xmax, num, linear)
+        else:
+            cobj = _pt_ResourceManager_getHist(cobj_name.encode('utf-8'))   
+
+        super().__init__(cobj)     
+        self.numbin = _pt_Hist1D_getNumBin(self.cobj)
 
     def __del__(self):
-        _pt_Hist1D_delete(self.cobj)
+        if self.cobj_name is None: # the object is create in C++
+            _pt_Hist1D_delete(self.cobj)
 
     def getEdge(self):
         edge = np.zeros(self.numbin+1)
         _pt_Hist1D_getEdge(self.cobj, edge)
         return edge
 
-    def getHit(self):
-        hit = np.zeros(self.numbin)
-        _pt_Hist1D_getHit(self.cobj, hit)
-        return hit
-
     def getCentre(self):
         edge = self.getEdge()
         center = edge[:-1]+np.diff(edge)*0.5
         return center
-
-    def getWeight(self):
-        w = np.zeros(self.numbin)
-        _pt_Hist1D_getWeight(self.cobj, w)
-        return w
 
     def fill(self, x, weight=1.):
         _pt_Hist1D_fill(self.cobj, x, weight)
@@ -90,8 +173,7 @@ _pt_Est1D_fill = importFunc('pt_Est1D_fill', None, [type_voidp, type_dbl, type_d
 
 class Est1D(Hist1D):
     def __init__(self, xmin, xmax, num, linear=True):
-        self.cobj = _pt_Est1D_new(xmin, xmax, num, linear)
-        self.numbin = num
+        super().__init__(xmin, xmax, num, linear)
 
     def __del__(self):
         _pt_Est1D_delete(self.cobj)
@@ -149,15 +231,6 @@ class SpectrumEstimator(Hist1D):
             print (e)
 
 
-# Prompt::Hist2D
-_pt_Hist2D_new = importFunc('pt_Hist2D_new', type_voidp, [type_dbl, type_dbl, type_uint, type_dbl, type_dbl, type_uint])
-_pt_Hist2D_delete = importFunc('pt_Hist2D_delete', None, [type_voidp])
-_pt_Hist2D_getWeight = importFunc('pt_Hist2D_getWeight', None, [type_voidp, type_npdbl2d])
-_pt_Hist2D_getHit = importFunc('pt_Hist2D_getHit', None, [type_voidp, type_npdbl2d])
-_pt_Hist2D_getDensity = importFunc('pt_Hist2D_getDensity', None, [type_voidp, type_npdbl2d])
-_pt_Hist2D_fill = importFunc('pt_Hist2D_fill', None, [type_voidp, type_dbl, type_dbl, type_dbl])
-_pt_Hist2D_merge = importFunc('pt_Hist2D_merge', None, [type_voidp, type_voidp])
-_pt_Hist2D_fill_many = importFunc('pt_Hist2D_fillmany', None, [type_voidp, type_sizet, type_npdbl1d, type_npdbl1d, type_npdbl1d])
 
 
 class CobjHist2(object):
@@ -252,8 +325,35 @@ class Hist2D():
         _pt_Hist2D_merge(self.mcobj.cobj, hist2.mcobj.cobj)
 
 
+# Class NumpyHist1D is written to validate the class Hist1D only. It shouldn't be used in practice due to its significantly slower performance.
+class NumpyHist1D():
+    def __init__(self, xbin, range):
+        range=np.array(range)
+        # if range.shape != 2:
+        #     raise IOError('wrong range shape')
+        self.range=range
+        self.xedge=np.linspace(range[0], range[1], xbin+1)
+        if range[0] == range[1]:
+            raise IOError('wrong range input')
+        self.xbinfactor=xbin/float(range[1]-range[0])
+        self.xmin=range[0]
+        self.xmax=range[1]
+        self.hist =np.zeros([xbin])
 
-# Class NumpyHist2D is written to validate the class Hist2D only. It shouldn't be used in practice due to its significantly slow performance.
+    def fill(self, x, weights=None):
+        h, xedge = np.histogram(x, bins=self.xedge, weights=weights)
+        self.hist += h
+
+    def getHistVal(self):
+        return self.hist
+
+    def getXedges(self):
+        return self.xedge
+
+    def getYedges(self):
+        return self.yedge
+
+# Class NumpyHist2D is written to validate the class Hist2D only. It shouldn't be used in practice due to its significantly slower performance.
 class NumpyHist2D():
     def __init__(self, xbin, ybin, range):
         range=np.array(range)

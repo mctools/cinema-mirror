@@ -51,12 +51,31 @@ void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool r
 void pt_Launcher_setGun(void *obj, const char* cfg);
 void pt_Launcher_setPythonGun(void *obj, PyObject* cfg);
 
+// Prompt::HistBase
+void pt_HistBase_merge(void* obj, void* obj2);
+double pt_HistBase_getXMin(void* obj);
+double pt_HistBase_getXMax(void* obj);
+double pt_HistBase_getTotalWeight(void* obj);
+double pt_HistBase_getAccWeight(void* obj);
+double pt_HistBase_getOverflow(void* obj);
+double pt_HistBase_getUnderflow(void* obj);
+double pt_HistBase_getTotalHit(void* obj);
+size_t pt_HistBase_getDataSize(void* obj);
+void pt_HistBase_scale(void* obj, double scale);
+void pt_HistBase_reset(void* obj);
+void pt_HistBase_getRaw(void* obj, double* data);
+void pt_HistBase_getHit(void* obj, double* data);
+unsigned pt_HistBase_dimension(void* obj);
+const char* pt_HistBase_getName(void* obj);
+
+
 // Prompt::Hist1D
 void* pt_Hist1D_new(double xmin, double xmax, unsigned nbins, bool linear);
 void pt_Hist1D_delete(void* obj);
 void pt_Hist1D_getEdge(void* obj, double* edge);
 void pt_Hist1D_getWeight(void* obj, double* w);
 void pt_Hist1D_getHit(void* obj, double* h);
+unsigned pt_Hist1D_getNumBin(void* obj); 
 void pt_Hist1D_fill(void* obj, double val, double weight);
 void pt_Hist1D_fillmany(void* obj, size_t n, double* val, double* weight);
 

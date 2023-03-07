@@ -38,7 +38,7 @@ TEST_CASE("test_maxwellgun")
     << " " << p->getDirection()<< std::endl;
     hist->fill(p->getEKin());
   }
-  std::cout << "integral " << hist->getIntegral() << std::endl;
+  std::cout << "integral " << hist->getTotalWeight() << std::endl;
   hist->save("test_maxwellgun");
 
 }

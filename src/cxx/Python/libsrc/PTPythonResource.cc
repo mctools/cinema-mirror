@@ -22,3 +22,8 @@ void pt_ResourceManager_addPhysics(unsigned volID, const char* cfg)
 {
     pt::Singleton<pt::ResourceManager>::getInstance().addPhysics(volID, cfg);
 }
+
+void* pt_ResourceManager_getHist(const char* cfg)
+{
+    return static_cast<void*>(pt::Singleton<pt::ResourceManager>::getInstance().getHist(cfg));
+}
