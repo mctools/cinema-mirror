@@ -99,10 +99,10 @@ size_t Prompt::ActiveVolume::numSubVolume() const
   return m_currPV->GetLogicalVolume()->GetNTotal();
 }
 
-double Prompt::ActiveVolume::distanceToOut(const Vector& pos, const Vector &dir) const
+double Prompt::ActiveVolume::distanceToOut(const Vector& loc_pos, const Vector &loc_dir) const
 {
-  return m_currPV->DistanceToOut(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&pos),
-                                 *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&dir));
+  return m_currPV->DistanceToOut(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&loc_pos),
+                                 *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&loc_dir));
 }
 
 

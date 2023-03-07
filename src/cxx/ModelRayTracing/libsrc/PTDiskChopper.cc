@@ -54,14 +54,13 @@ bool Prompt::DiskChopper::canSurvive(double x, double y, double time) const
         return true;
 }
 
-bool Prompt::DiskChopper::canSurvive(const Particle &particle) const
+bool Prompt::DiskChopper::canSurvive(const Prompt::Vector &locPos, const Prompt::Vector &locDir, double time) const
 {
     if(m_activeVol.numSubVolume())
         PROMPT_THROW2(CalcError, "Sub-volume is not allowed in a ray-tracing volume. The name of this volume is " << m_activeVol.getVolumeName());
     
     // check if the neutron hits the opening
-    const auto pos  = m_activeVol.getGeoTranslator().global2Local(particle.getPosition());
-    double x (pos.x()), y(pos.y());
-    return canSurvive(x, y, particle.getTime());
+    double x (locPos.x()), y(locPos.y());
+    return canSurvive(x, y, time);
 }
 
