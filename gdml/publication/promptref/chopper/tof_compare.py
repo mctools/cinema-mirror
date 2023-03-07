@@ -67,18 +67,25 @@ def pt_data2(filepattern, seedStart, seedEnd):
     x_hist, content_hist = psd.getHistMany(seedStart, seedEnd) 
     return x_hist[:-1], content_hist/np.diff(x_hist)
 
+def tol_correct(y):
+
+    tol = 1.0e-1
+    y = np.array(y)
+    y = tol * (y<tol) + y * (y>=tol)
+    return y
+
 # read prompt data
 # -- from local output
-# xp, yp = pt_data('ScorerTOF_Out_seed4096.mcpl.gz')
-# xp_norm, yp_norm=pt_data('ScorerTOF_In_seed4096.mcpl.gz')
+xp, yp = pt_data('ScorerTOF_Out_seed4096.mcpl.gz')
+xp_norm, yp_norm=pt_data('ScorerTOF_In_seed4096.mcpl.gz')
 # -- from parallel output
-xp, yp = pt_data2('TOF_Out', 1, 30)
-xp_norm, yp_norm = pt_data2('TOF_In', 1, 30)
+# xp, yp = pt_data2('TOF_Out', 1, 30)
+# xp_norm, yp_norm = pt_data2('TOF_In', 1, 30)
 
 # read mcstas data
 # -- from mcstas code
-nvals, xm, ym, weightm = mc_data('./Test_DiskChoppers_20230228_222851/TOF.dat')
-nvals_n, xm_n, ym_n, weightm_n = mc_data('./Test_DiskChoppers_20230228_222851/TOF_in.dat')
+nvals, xm, ym, weightm = mc_data('./mcstas_diskchopper/TOF.dat')
+nvals_n, xm_n, ym_n, weightm_n = mc_data('./mcstas_diskchopper/TOF_in.dat')
 
 # -- from numpy
 # file = mc_data2('./Test_DiskChoppers_20230228_222851/TOF.dat')
@@ -89,13 +96,15 @@ T = 293 # unit K
 xs = np.linspace(0,0.02,10000)[1:]
 ys = get_maxwell_tof(get_wavelength(pathlength/xs))
 
+plt.yscale('log')
+plt.plot(xp,  tol_correct(yp*norm_f(xp_norm, yp_norm, 10000)), linestyle='-',  color='b', label="Prompt")
+plt.plot(xm/1e6, tol_correct(ym*norm_f(xm_n/1e6, ym_n, 10000)), linestyle=':', linewidth=5, color='red',label="McStas")
 
-plt.plot(xm/1e6, ym*norm_f(xm_n/1e6, ym_n, 10000), linestyle='-', color='b',label="McStas")
-plt.plot(xp,  yp*norm_f(xp_norm, yp_norm, 10000), linestyle='dotted', linewidth=5, color='orange',label="Prompt")
 # plt.plot(xs, ys*norm_f(xs,ys,10000), linestyle='-.', color='g', linewidth=2, label="Sears")
 plt.xlabel('Time-of-flight(s)')
 plt.ylabel('Normalized Intersity')
 plt.legend()
+plt.tight_layout()
 
 print(f'Counts from mcstas: {weightm.sum()}')
 print(f'Counts from prompt: {yp.sum()}')
