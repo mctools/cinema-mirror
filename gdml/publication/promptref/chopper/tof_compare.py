@@ -1,11 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from mccodelib import mcplotloader
 
 from Cinema.Prompt import PromptFileReader
 from Cinema.Interface import plotStyle
-
-import yn_ana_mcpl_code
 
 plotStyle()
 const_c = 299792458 #m/s
@@ -35,24 +32,11 @@ def norm_f(x, y, numbin):
 
     return factor
 
-
 def mc_data(filename):
 
-    Loader = mcplotloader.McCodeDataLoader(filename)
-    Loader.load()
-
-    node = Loader.plot_graph
-    # n = node.getnumdata()
-    data = node.getdata_idx(0)
-    nvals = np.array(data.Nvals)
-    x = np.array(data.xvals)
-    y = np.array(data.yvals) 
-    return nvals, x, y, y*nvals
-
-def mc_data2(filename):
-
     f = np.loadtxt(filename)
-    return f
+    nvals, x, y, weight = f[:,3], f[:,0], f[:,1], f[:,3]*f[:,1]
+    return nvals, x, y, weight
 
 def pt_data(filename):
 
@@ -60,12 +44,6 @@ def pt_data(filename):
     x=f.getData('edge')
     y=f.getData('content')
     return x[:-1], y/np.diff(x)
-
-def pt_data2(filepattern, seedStart, seedEnd):
-
-    psd = yn_ana_mcpl_code.McplAnalysor1D(f'./*{filepattern}_seed*.mcpl.gz')
-    x_hist, content_hist = psd.getHistMany(seedStart, seedEnd) 
-    return x_hist[:-1], content_hist/np.diff(x_hist)
 
 def tol_correct(y):
 
@@ -76,20 +54,13 @@ def tol_correct(y):
 
 # read prompt data
 # -- from local output
-xp, yp = pt_data('ScorerTOF_Out_seed4096.mcpl.gz')
-xp_norm, yp_norm=pt_data('ScorerTOF_In_seed4096.mcpl.gz')
-# -- from parallel output
-# xp, yp = pt_data2('TOF_Out', 1, 30)
-# xp_norm, yp_norm = pt_data2('TOF_In', 1, 30)
+xp, yp = pt_data('./prompt/ScorerTOF_Out_seed4096.mcpl.gz')
+xp_norm, yp_norm=pt_data('./prompt/ScorerTOF_In_seed4096.mcpl.gz')
 
 # read mcstas data
 # -- from mcstas code
 nvals, xm, ym, weightm = mc_data('./mcstas_diskchopper/TOF.dat')
 nvals_n, xm_n, ym_n, weightm_n = mc_data('./mcstas_diskchopper/TOF_in.dat')
-
-# -- from numpy
-# file = mc_data2('./Test_DiskChoppers_20230228_222851/TOF.dat')
-# print(file)
 
 # Sear formular
 T = 293 # unit K
@@ -99,13 +70,10 @@ ys = get_maxwell_tof(get_wavelength(pathlength/xs))
 plt.yscale('log')
 plt.plot(xp,  tol_correct(yp*norm_f(xp_norm, yp_norm, 10000)), linestyle='-',  color='b', label="Prompt")
 plt.plot(xm/1e6, tol_correct(ym*norm_f(xm_n/1e6, ym_n, 10000)), linestyle=':', linewidth=5, color='red',label="McStas")
-
-# plt.plot(xs, ys*norm_f(xs,ys,10000), linestyle='-.', color='g', linewidth=2, label="Sears")
+# plt.plot(xs, ys*norm_f(xs,ys,10000), linestyle='-.', color='g', linewidth=2, label="Sears") #To benchmark with formular
 plt.xlabel('Time-of-flight(s)')
 plt.ylabel('Normalized Intersity')
 plt.legend()
 plt.tight_layout()
 
-print(f'Counts from mcstas: {weightm.sum()}')
-print(f'Counts from prompt: {yp.sum()}')
 plt.show()
