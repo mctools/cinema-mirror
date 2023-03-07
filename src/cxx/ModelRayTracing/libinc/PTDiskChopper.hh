@@ -39,7 +39,7 @@ namespace Prompt {
     public:
       DiskChopper(double theta0_deg, double r_mm, double phase_deg, double rotFreq_Hz, unsigned n);
       virtual ~DiskChopper() = default;
-      virtual bool canSurvive(const Particle &p) const override;
+      virtual bool canSurvive(const Prompt::Vector &locPos, const Prompt::Vector &locDir, double time) const override;
 
       bool canSurvive(double x, double y, double time) const;
 

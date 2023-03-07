@@ -71,7 +71,7 @@ namespace Prompt {
     size_t numSubVolume() const;
 
     // return the the safety 
-    double distanceToOut(const Vector& pos, const Vector &dir) const;
+    double distanceToOut(const Vector& loc_pos, const Vector &loc_dir) const;
 
   private:
     friend class Singleton<ActiveVolume>;

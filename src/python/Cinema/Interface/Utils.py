@@ -33,7 +33,7 @@ def findData(fn, dir='data'):
         if fs[1] in files:
             fnlist.append(os.path.join(root, fs[1]))
     if len(fnlist)!=1:
-        raise RuntimeError('file not found')
+        raise RuntimeError(f'{len(fnlist)} {fn} files found')
     return fnlist[0]
 
 

@@ -24,15 +24,11 @@ Prompt::RayTracingProcess::RayTracingProcess()
 :Prompt::SurfaceProcess("RayTracing") 
 , m_activeVol(Singleton<ActiveVolume>::getInstance()) { }
 
-void Prompt::RayTracingProcess::moveToOut(Prompt::Particle &p) const
-{
-    double dis = m_activeVol.distanceToOut(p.getPosition(), p.getDirection());
-    p.moveForward(dis);
-}
-
 void Prompt::RayTracingProcess::sampleFinalState(Prompt::Particle &p) const
 {
-    canSurvive(p) ? moveToOut(p) : p.kill(Particle::KillType::RT_ABSORB);;
+    auto loc_pos = m_activeVol.getGeoTranslator().global2Local(p.getPosition());
+    auto loc_dir = m_activeVol.getGeoTranslator().global2Local_direction(p.getDirection());
+    canSurvive(loc_pos, loc_dir, p.getTime()) ? p.moveForward(m_activeVol.distanceToOut(loc_pos, loc_dir)) : p.kill(Particle::KillType::RT_ABSORB);
 }
 
 

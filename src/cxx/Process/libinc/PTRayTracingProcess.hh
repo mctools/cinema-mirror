@@ -36,8 +36,7 @@ namespace Prompt {
       virtual void sampleFinalState(Particle &particle) const override;
  
     protected:
-      virtual bool canSurvive(const Particle &p) const = 0;
-      void moveToOut(Particle &p) const;
+      virtual bool canSurvive(const Prompt::Vector &locPos, const Prompt::Vector &locDir, double time) const = 0;
       ActiveVolume &m_activeVol;
   };
 
