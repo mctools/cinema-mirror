@@ -21,6 +21,7 @@
 ################################################################################
 
 from ..Interface import *
+from .Math.Hist import Hist1D, Hist2D, _pt_HistBase_dimension
 
 _pt_Launcher_getInstance = importFunc('pt_Launcher_getInstance', type_voidp, [] )
 _pt_Launcher_setSeed = importFunc('pt_Launcher_setSeed', None, [type_voidp, type_sizet] )
@@ -30,6 +31,8 @@ _pt_Launcher_getTrajectory = importFunc('pt_Launcher_getTrajectory', None, [type
 _pt_Launcher_go = importFunc('pt_Launcher_go', None, [type_voidp, type_sizet, type_dbl, type_bool, type_bool])
 _pt_Launcher_setGun = importFunc('pt_Launcher_setGun', None, [type_voidp, type_cstr])
 _pt_Launcher_setPythonGun = importFunc('pt_Launcher_setPythonGun', None, [type_voidp, type_pyobject])
+
+_pt_ResourceManager_getHist = importFunc('pt_ResourceManager_getHist', type_voidp, [type_cstr])
 
 _pt_setWorld = importFunc('pt_setWorld', None, [type_voidp])
 
@@ -66,3 +69,15 @@ class Launcher():
 
     def go(self, numPrimary, printPrecent=0.1, recordTrj=False, timer=True):
         _pt_Launcher_go(self.cobj, numPrimary, printPrecent, recordTrj, timer)
+
+
+    def getHist(self, cfg):
+        cobj = _pt_ResourceManager_getHist(cfg.encode('utf-8'))  
+        dim = _pt_HistBase_dimension(cobj)
+
+        if dim == 1:
+            return Hist1D(cobj=cobj)
+        elif dim == 2:
+            return Hist2D(cobj=cobj)
+        else:
+            raise RuntimeError("no implemented")

@@ -34,7 +34,7 @@ namespace Prompt {
     virtual ~Hist2D();
 
     void operator+=(const Hist2D& hist);
-    unsigned dimension() const override { return 2; }  ;
+    unsigned dimension() const override { return 2; }  
     void save(const std::string &filename) const override;
 
     uint32_t getNBinX() const {return m_xnbins;}

@@ -6,14 +6,16 @@ from Cinema.Prompt.gun import PythonGun
 from Cinema.Prompt.Math.Hist import Hist1D
 
 
-# gunCfg = "gun=SimpleThermalGun;energy=3;position=0,0,-100;direction=0,0,1"
+gunCfg = "gun=SimpleThermalGun;energy=3;position=0,0,-100;direction=0,0,1"
 scorerCfg_det = "Scorer=NeutronSq;name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;dist=-100;ptstate=ENTRY;linear=yes;Qmin=0.5; Qmax = 50; numbin=100"
+scorerCfg_detpsd = "Scorer=PSD;name=NeutronHistMap;xmin=-500;xmax=500;numBins_x=10;ymin=-500;ymax=500;numBins_y=10;ptstate=SURFACE;type=XY"
+
 matCfg_sample = "LiquidHeavyWaterD2O_T293.6K.ncmat"
 
 l = Launcher()
 l.setSeed(4096)
 
-detector = LogicalVolume("Det", UnplacedBox(500, 500, 0.0001), scorerCfg = scorerCfg_det)
+detector = LogicalVolume("Det", UnplacedBox(500, 500, 0.0001), scorerCfg = [scorerCfg_det, scorerCfg_detpsd])
 # b1.matCfg = "physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=0.1;abs_bias=0.1"
 sample = LogicalVolume("sample", UnplacedBox(5, 5, 5), matCfg = matCfg_sample)
 
@@ -24,15 +26,18 @@ world.placeChild("physicalbox2", sample, Transformation3D(0,0,0))
 
 
 l.setWorld(world)
-# l.setGun(gunCfg)
 
-gun = PythonGun()
-l.setPythonGun(gun)
+l.setGun(gunCfg)
 
-l.go(100000)
+# gun = PythonGun()
+# l.setPythonGun(gun)
 
-hist = Hist1D(cobj_name=scorerCfg_det)
-hist.plot(show=True)
+l.go(1000000)
+
+hist = l.getHist(scorerCfg_det)
+histmap = l.getHist(scorerCfg_detpsd)
+
+histmap.plot(show=True)
 
 
 # v= Visualiser()

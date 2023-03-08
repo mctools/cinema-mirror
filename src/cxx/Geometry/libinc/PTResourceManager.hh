@@ -29,7 +29,7 @@
 #include "PTSurfaceProcess.hh"
 #include "PTScorer.hh"
 #include "PTSingleton.hh"
-#include "PTHist1D.hh"
+#include "PTHistBase.hh"
 namespace Prompt {
     // A VolumePhysicsScorer should attach to a unique volume by volume idx
     // So VolMap is a map for all the volumes and its VolumePhysicsScorer 
@@ -70,7 +70,7 @@ namespace Prompt {
             void addPhysics(size_t volID, const std::string& cfg);
 
             void writeScorer2Disk() const;
-            Prompt::Hist1D* getHist(const std::string& name); 
+            Prompt::HistBase* getHist(const std::string& name); 
 
         private:
             friend class Singleton<ResourceManager>;

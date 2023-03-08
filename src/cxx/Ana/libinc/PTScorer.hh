@@ -40,8 +40,7 @@ namespace Prompt {
     ScorerType getType() const { return m_type; }
     virtual void score(Particle &particle) = 0;
     virtual void save_mcpl() = 0;
-    virtual const Hist1D* getHist() const { return nullptr; } //fix me
-
+    virtual const HistBase* getHist() const = 0 ; 
   protected:
     const std::string m_name;
     const ScorerType m_type;
@@ -53,7 +52,7 @@ namespace Prompt {
     : Scorer(name, type), m_hist(std::move(hist)) {};
     virtual ~Scorer1D() {  }
     void save_mcpl() override { m_hist->save(m_name); }
-    const Hist1D* getHist() const { return m_hist.get(); }
+    const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }
   protected:
     std::unique_ptr<Hist1D> m_hist;
   };
@@ -64,6 +63,8 @@ namespace Prompt {
     : Scorer(name, type), m_hist(std::move(hist)) {};
     virtual ~Scorer2D() {  }
     void save_mcpl() override { m_hist->save(m_name); }
+    const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }
+
   protected:
     std::unique_ptr<Hist2D> m_hist;
   };

@@ -65,7 +65,11 @@ class LogicalVolume:
             _pt_ResourceManager_addPhysics(volid, matCfg.encode('utf-8')) 
 
         if scorerCfg is not None:
-            _pt_ResourceManager_addScorer(volid, scorerCfg.encode('utf-8')) 
+            if isinstance(scorerCfg, list):
+                for cfg in scorerCfg:
+                    _pt_ResourceManager_addScorer(volid, cfg.encode('utf-8')) 
+            else:
+                _pt_ResourceManager_addScorer(volid, scorerCfg.encode('utf-8')) 
 
         if surfaceCfg is not None:
             _pt_ResourceManager_addSurface(volid, surfaceCfg.encode('utf-8')) 

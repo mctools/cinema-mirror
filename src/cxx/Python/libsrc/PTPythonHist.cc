@@ -196,6 +196,26 @@ void pt_Hist2D_merge(void* obj, void* obj2)
   hist1->merge(*static_cast<pt::HistBase*>(obj2));
 }
 
+double pt_Hist2D_getYMin(void* obj)
+{
+  return static_cast<pt::Hist2D*>(obj)->getYMin();
+}
+
+double pt_Hist2D_getYMax(void* obj)
+{
+  return static_cast<pt::Hist2D*>(obj)->getYMax();
+}
+
+unsigned  pt_Hist2D_getNBinX(void* obj)
+{
+  return static_cast<pt::Hist2D*>(obj)->getNBinX();
+}
+
+unsigned  pt_Hist2D_getNBinY(void* obj)
+{
+  return static_cast<pt::Hist2D*>(obj)->getNBinY();
+}
+
 void pt_Hist2D_fill(void* obj, double xval, double yval, double weight)
 {
   static_cast<pt::Hist2D *>(obj)->fill(xval, yval, weight);

@@ -207,12 +207,13 @@ void Prompt::ResourceManager::writeScorer2Disk() const
   }
 }
 
-Prompt::Hist1D* Prompt::ResourceManager::getHist(const std::string& name)  
+Prompt::HistBase* Prompt::ResourceManager::getHist(const std::string& name)  
 {
   auto item = m_globelScorers.find(name);
   if(item!=m_globelScorers.end())
   {
-    return const_cast<Hist1D*>(item->second->getHist());
+    auto it = dynamic_cast<const HistBase*>(item->second->getHist());
+    return const_cast<HistBase*>(it);
   }
   else
   {

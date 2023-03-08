@@ -41,7 +41,11 @@ _pt_Hist2D_getDensity = importFunc('pt_Hist2D_getDensity', None, [type_voidp, ty
 _pt_Hist2D_fill = importFunc('pt_Hist2D_fill', None, [type_voidp, type_dbl, type_dbl, type_dbl])
 _pt_Hist2D_merge = importFunc('pt_Hist2D_merge', None, [type_voidp, type_voidp])
 _pt_Hist2D_fill_many = importFunc('pt_Hist2D_fillmany', None, [type_voidp, type_sizet, type_npdbl1d, type_npdbl1d, type_npdbl1d])
-
+_pt_Hist2D_getWeight = importFunc('pt_Hist2D_getWeight', None, [type_voidp, type_npdbl2d])
+_pt_Hist2D_getYMin = importFunc('pt_Hist2D_getYMin', type_dbl, [type_voidp])
+_pt_Hist2D_getYMax = importFunc('pt_Hist2D_getYMax', type_dbl, [type_voidp])
+_pt_Hist2D_getNBinX = importFunc('pt_Hist2D_getNBinX', type_uint, [type_voidp])
+_pt_Hist2D_getNBinY = importFunc('pt_Hist2D_getNBinY', type_uint, [type_voidp])
 
 # Prompt::HistBase
 _pt_HistBase_merge = importFunc('pt_HistBase_merge', None, [type_voidp, type_voidp])
@@ -59,7 +63,6 @@ _pt_HistBase_getRaw = importFunc('pt_HistBase_getRaw', None, [type_voidp, type_n
 _pt_HistBase_getHit = importFunc('pt_HistBase_getHit', None, [type_voidp, type_npdbl1d])
 _pt_HistBase_dimension = importFunc('pt_HistBase_dimension', type_uint, [type_voidp])
 _pt_HistBase_getName = importFunc('pt_HistBase_getName', type_cstr, [type_voidp])
-
 
 class HistBase():
     def __init__(self, cobj) -> None:
@@ -116,20 +119,23 @@ class HistBase():
     
 
     
-_pt_ResourceManager_getHist = importFunc('pt_ResourceManager_getHist', type_voidp, [type_cstr])
 class Hist1D(HistBase):
-    def __init__(self, xmin=None, xmax=None, num=None, linear=True, cobj_name=None):
-        self.cobj_name = cobj_name
-        if cobj_name is None:
+    def __init__(self, xmin=None, xmax=None, num=None, linear=True, cobj=None):
+        if all(item is not None for item in [xmin, xmax, num]):
+            self.managedBySelf = True
             cobj = _pt_Hist1D_new(xmin, xmax, num, linear)
-        else:
-            cobj = _pt_ResourceManager_getHist(cobj_name.encode('utf-8'))   
+        elif cobj is not None:  
+            self.managedBySelf = False 
+
+        if not hasattr(self, 'managedBySelf'):
+            raise RuntimeError('Failed to create Hist1D')
 
         super().__init__(cobj)     
         self.numbin = _pt_Hist1D_getNumBin(self.cobj)
 
     def __del__(self):
-        if self.cobj_name is None: # the object is create in C++
+        # the object is not borrowed from C++, so delete it by python
+        if self.managedBySelf: 
             _pt_Hist1D_delete(self.cobj)
 
     def getEdge(self):
@@ -165,6 +171,105 @@ class Hist1D(HistBase):
                 plt.show()
         except Exception as e:
             print (e)
+        
+
+class Hist2D(HistBase):
+    def __init__(self, xmin=None, xmax=None, xnum=None, ymin=None, ymax=None, ynum=None, metadata=None, cobj=None):
+        if all(item is not None for item in [xmin, xmax, xnum, ymin, ymax, ynum]):
+            self.managedBySelf = True
+            cobj = _pt_Hist2D_new(xmin, xmax, xnum, ymin, ymax, ynum)
+        elif cobj is not None:  
+            self.managedBySelf = False 
+
+        if not hasattr(self, 'managedBySelf'):
+            raise RuntimeError('Failed to create Hist1D')
+
+        super().__init__(cobj)    
+
+        self.xmin = _pt_HistBase_getXMin(self.cobj)
+        self.xmax = _pt_HistBase_getXMax(self.cobj)
+
+        self.ymin = _pt_Hist2D_getYMin(self.cobj)
+        self.ymax = _pt_Hist2D_getYMax(self.cobj)
+
+        self.xNumBin = _pt_Hist2D_getNBinX(self.cobj)
+        self.yNumBin = _pt_Hist2D_getNBinY(self.cobj)
+
+ 
+        self.xedge = np.linspace(self.xmin, self.xmax, self.xNumBin+1)
+        self.xcenter = self.xedge[:-1]+np.diff(self.xedge)*0.5
+
+        self.yedge = np.linspace(self.ymin, self.ymax, self.yNumBin+1)
+        self.ycenter = self.yedge[:-1]+np.diff(self.yedge)*0.5
+
+        self.metadata = metadata
+    
+    def __del__(self):
+        # the object is not borrowed from C++, so delete it by python
+        if self.managedBySelf: 
+            _pt_Hist2D_delete(self.cobj)
+
+
+    def getEdge(self):
+        return self.xedge, self.yedge
+
+    def getWeight(self):
+        w = np.zeros([self.xNumBin, self.yNumBin])
+        _pt_Hist2D_getWeight(self.cobj, w)
+        return w
+
+    def getHit(self):
+        hit = np.zeros([self.xNumBin,self.yNumBin])
+        _pt_Hist2D_getHit(self.cobj, hit)
+        return hit
+
+    def getDensity(self):
+        d = np.zeros([self.xNumBin, self.yNumBin])
+        _pt_Hist2D_getWeight(self.cobj, d)
+        return d
+
+    def fill(self, x, y, weight=1.):
+        _pt_Hist2D_fill(self.cobj, x, y, weight)
+
+    def fillmany(self, x, y, weight=None):
+        if weight is None:
+            weight = np.ones(x.size)
+        if x.size !=weight.size and x.size !=y.size:
+            raise RunTimeError('fillnamy different size')
+        _pt_Hist2D_fill_many(self.cobj, x.size, x, y, weight )
+
+    def plot(self, show=False):
+        try:
+            import matplotlib.pyplot as plt
+            import matplotlib.colors as colors
+            fig=plt.figure()
+            ax = fig.add_subplot(111)
+            H = self.getWeight().T
+
+            X, Y = np.meshgrid(self.xcenter, self.ycenter)
+            pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
+            fig.colorbar(pcm, ax=ax)
+            plt.grid()
+            if show:
+                plt.show()
+
+        except Exception as e:
+            print(e)
+
+    def save(self, fn):
+        import h5py
+        f0=h5py.File(fn,"w")
+        f0.create_dataset("q", data=self.xcenter, compression="gzip")
+        f0.create_dataset("omega", data=self.ycenter, compression="gzip")
+        X, Y = np.meshgrid(np.diff(self.yedge), np.diff(self.xedge))
+        f0.create_dataset("s", data=self.getWeight()/(X*Y), compression="gzip")
+        mtd = f0.create_group('metadata')
+        for key, value in self.metadata.items():
+            mtd.create_dataset(key, data = value)
+        f0.close()
+
+    def merge(self, hist2):
+        _pt_Hist2D_merge(self.mcobj.cobj, hist2.mcobj.cobj)
 
 
 _pt_Est1D_new = importFunc('pt_Est1D_new', type_voidp, [type_dbl, type_dbl, type_uint, type_bool])
@@ -233,96 +338,14 @@ class SpectrumEstimator(Hist1D):
 
 
 
-class CobjHist2(object):
-    def __init__(self, xmin, xmax, xnum, ymin, ymax, ynum):
-        super().__init__()
-        self.cobj =_pt_Hist2D_new(xmin, xmax, xnum, ymin, ymax, ynum)
+# class CobjHist2(object):
+#     def __init__(self, xmin, xmax, xnum, ymin, ymax, ynum):
+#         super().__init__()
+#         self.cobj =_pt_Hist2D_new(xmin, xmax, xnum, ymin, ymax, ynum)
 
-    def __del__(self):
-        _pt_Hist2D_delete(self.cobj)
+#     def __del__(self):
+#         _pt_Hist2D_delete(self.cobj)
 
-
-class Hist2D():
-    def __init__(self, xmin, xmax, xnum, ymin, ymax, ynum, metadata=None):
-        self.mcobj = CobjHist2(xmin, xmax, xnum, ymin, ymax, ynum)
-        self.xedge = np.linspace(xmin, xmax, xnum+1)
-        self.xcenter = self.xedge[:-1]+np.diff(self.xedge)*0.5
-
-        self.yedge = np.linspace(ymin, ymax, ynum+1)
-        self.ycenter = self.yedge[:-1]+np.diff(self.yedge)*0.5
-
-        self.xNumBin = xnum
-        self.yNumBin = ynum
-
-        self.xmin = xmin
-        self.xmax = xmax
-
-        self.ymin = ymin
-        self.ymax = ymax
-
-        self.metadata = metadata
-
-
-    def getEdge(self):
-        return self.xedge, self.yedge
-
-    def getWeight(self):
-        w = np.zeros([self.xNumBin, self.yNumBin])
-        _pt_Hist2D_getWeight(self.mcobj.cobj, w)
-        return w
-
-    def getHit(self):
-        hit = np.zeros([self.xNumBin,self.yNumBin])
-        _pt_Hist2D_getHit(self.mcobj.cobj, hit)
-        return hit
-
-    def getDensity(self):
-        d = np.zeros([self.xNumBin, self.yNumBin])
-        _pt_Hist2D_getWeight(self.mcobj.cobj, d)
-        return d
-
-    def fill(self, x, y, weight=1.):
-        _pt_Hist2D_fill(self.mcobj.cobj, x, y, weight)
-
-    def fillmany(self, x, y, weight=None):
-        if weight is None:
-            weight = np.ones(x.size)
-        if x.size !=weight.size and x.size !=y.size:
-            raise RunTimeError('fillnamy different size')
-        _pt_Hist2D_fill_many(self.mcobj.cobj, x.size, x, y, weight )
-
-    def plot(self, show=False):
-        try:
-            import matplotlib.pyplot as plt
-            import matplotlib.colors as colors
-            fig=plt.figure()
-            ax = fig.add_subplot(111)
-            H = self.getWeight().T
-
-            X, Y = np.meshgrid(self.xcenter, self.ycenter)
-            pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
-            fig.colorbar(pcm, ax=ax)
-            plt.grid()
-            if show:
-                plt.show()
-
-        except Exception as e:
-            print(e)
-
-    def save(self, fn):
-        import h5py
-        f0=h5py.File(fn,"w")
-        f0.create_dataset("q", data=self.xcenter, compression="gzip")
-        f0.create_dataset("omega", data=self.ycenter, compression="gzip")
-        X, Y = np.meshgrid(np.diff(self.yedge), np.diff(self.xedge))
-        f0.create_dataset("s", data=self.getWeight()/(X*Y), compression="gzip")
-        mtd = f0.create_group('metadata')
-        for key, value in self.metadata.items():
-            mtd.create_dataset(key, data = value)
-        f0.close()
-
-    def merge(self, hist2):
-        _pt_Hist2D_merge(self.mcobj.cobj, hist2.mcobj.cobj)
 
 
 # Class NumpyHist1D is written to validate the class Hist1D only. It shouldn't be used in practice due to its significantly slower performance.
