@@ -83,3 +83,12 @@ def plotStyle(fontSize=16):
             l.get_frame().set_linewidth(0.0)
         return l
     plt.legend=_plt_legend
+
+def singleton(cls):
+    _instance = {}
+
+    def inner():
+        if cls not in _instance:
+            _instance[cls] = cls()
+        return _instance[cls]
+    return inner

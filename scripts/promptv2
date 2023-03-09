@@ -3,7 +3,6 @@
 from Cinema.Prompt import Launcher, Visualiser
 from Cinema.Prompt.geo import UnplacedBox, LogicalVolume, Transformation3D
 from Cinema.Prompt.gun import PythonGun
-from Cinema.Prompt.Math.Hist import Hist1D
 
 
 gunCfg = "gun=SimpleThermalGun;energy=3;position=0,0,-100;direction=0,0,1"
@@ -13,6 +12,7 @@ scorerCfg_detpsd = "Scorer=PSD;name=NeutronHistMap;xmin=-500;xmax=500;numBins_x=
 matCfg_sample = "LiquidHeavyWaterD2O_T293.6K.ncmat"
 
 l = Launcher()
+
 l.setSeed(4096)
 
 detector = LogicalVolume("Det", UnplacedBox(500, 500, 0.0001), scorerCfg = [scorerCfg_det, scorerCfg_detpsd])
@@ -27,29 +27,10 @@ world.placeChild("physicalbox2", sample, Transformation3D(0,0,0))
 
 l.setWorld(world)
 
-l.setGun(gunCfg)
+l.showWorld(100)
+# l.setGun(gunCfg)
 
 # gun = PythonGun()
 # l.setPythonGun(gun)
 
-l.go(1000000)
-
-hist = l.getHist(scorerCfg_det)
-histmap = l.getHist(scorerCfg_detpsd)
-
-histmap.plot(show=True)
-
-
-# v= Visualiser()
-
-# for i in range(100):
-#     l.go(1, recordTrj=True, timer=False)
-#     trj = l.getTrajectory()
-#     try:
-#         v.addLine(trj)
-#     except ValueError:
-#         # print(trj)
-#         # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
-#         pass
-
-# v.show()
+# l.go(1000000)

@@ -22,6 +22,7 @@
 
 from ..Interface import *
 from .Math.Hist import Hist1D, Hist2D, _pt_HistBase_dimension
+from .Visualiser import Visualiser
 
 _pt_Launcher_getInstance = importFunc('pt_Launcher_getInstance', type_voidp, [] )
 _pt_Launcher_setSeed = importFunc('pt_Launcher_setSeed', None, [type_voidp, type_sizet] )
@@ -36,9 +37,12 @@ _pt_ResourceManager_getHist = importFunc('pt_ResourceManager_getHist', type_void
 
 _pt_setWorld = importFunc('pt_setWorld', None, [type_voidp])
 
+
+@singleton
 class Launcher():
     def __init__(self):
         self.cobj = _pt_Launcher_getInstance()
+        self.worldExist = False
 
     def setSeed(self, seed):
         _pt_Launcher_setSeed(self.cobj, seed)
@@ -47,8 +51,29 @@ class Launcher():
         _pt_Launcher_loadGeometry(self.cobj, fileName.encode('utf-8'));
 
     def setWorld(self, logicalvol):
+        if self.worldExist:
+            raise RuntimeError('World exist already')
         # setup the vecgeom world
         _pt_setWorld(logicalvol.cobj)
+        self.worldExist = True
+    
+    def showWorld(self, particles=None):
+        if not self.worldExist:
+            raise RuntimeError('World is not set')
+        v = Visualiser() 
+        if particles is None:
+            v.show()
+        else:
+            for i in range(particles):
+                self.go(1, recordTrj=True, timer=False)
+                trj = self.getTrajectory()
+                try:
+                    v.addLine(trj)
+                except ValueError:
+                    # print(trj)
+                    # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
+                    pass
+            v.show()
 
     def setPythonGun(self, pygun):
         print('setting a python gun')

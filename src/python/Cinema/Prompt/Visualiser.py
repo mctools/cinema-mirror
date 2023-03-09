@@ -27,6 +27,7 @@ import random
 import matplotlib.colors as mcolors
 from .Mesh import Mesh
 
+@singleton
 class Visualiser():
     def __init__(self, blacklist='', printWorld=False, nSegments=30, dumpMesh=False):
         self.color =  list(mcolors.CSS4_COLORS.keys())

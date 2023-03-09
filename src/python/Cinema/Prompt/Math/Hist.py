@@ -269,7 +269,9 @@ class Hist2D(HistBase):
         f0.close()
 
     def merge(self, hist2):
-        _pt_Hist2D_merge(self.mcobj.cobj, hist2.mcobj.cobj)
+        if id(self.cobj) == id(hist2.cobj):
+            raise RuntimeError('merging a histogram with itself. The histogram can be scaled up by 2 instead')
+        _pt_Hist2D_merge(self.cobj, hist2.cobj)
 
 
 _pt_Est1D_new = importFunc('pt_Est1D_new', type_voidp, [type_dbl, type_dbl, type_uint, type_bool])
