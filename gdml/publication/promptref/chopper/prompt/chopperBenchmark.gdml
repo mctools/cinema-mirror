@@ -3,8 +3,8 @@
 
     <userinfo>
         <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=IsotropicGun;energy=0;position=0,0,0" /> -->
-        <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=1;moderator_height_y=1;moderator_positon_z=0;
-                                    slit_width_x=45;slit_height_y=45;slit_position_z=10000.0;temperature=293;" />
+        <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_w=1;src_h=1;src_z=0;
+                                    slit_w=45;slit_h=45;slit_z=10000.0;temperature=293;" />
     </userinfo>
 
     <materials>
@@ -13,14 +13,9 @@
         </material>
     </materials>
 
-    <material name="B">
-        <atom value="physics=ncrystal;nccfg='B4C.ncmat';scatter_bias=0.0;abs_bias=1.0"/>
-    </material>
-
     <solids>
-        <box lunit="mm" name="WorldBox" x="1200.0" y="1200.0" z="20002.0" />
+        <box lunit="mm" name="WorldBox" x="1200.0" y="1200.0" z="21000.0" />
         <tube lunit="mm" name="Chopper1" rmin="0.0" rmax="250.0" z="0.0000002" deltaphi="360.0" startphi="0.0"/>
-        <tube lunit="mm" name="BlackBody" rmin="250.0" rmax="400.0" z="100.0" deltaphi="360.0" startphi="0.0"/>
         <box name="DetectorSolid1" x="1200.0" y="1200.0" z="0.0000002" />
         <box name="DetectorSolid2" x="1200.0" y="1200.0" z="0.0000002" />
     </solids>
@@ -29,28 +24,19 @@
         <volume name="LV_Chopper1">
             <solidref ref="Chopper1" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=DiskChopper;rotFreq_Hz=100;r_mm=130;theta0_deg=20;n=4;phase_deg=-10"/>           
-        </volume>
-
-        <volume name="LV_BlackBody">
-            <solidref ref="BlackBody" />
-            <materialref ref="B" />
+            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=DiskChopper;rotFreq_Hz=100;r_mm=130;theta0_deg=20;n=4;phase_deg=0"/>           
         </volume>
 
         <volume name="DetectorIn">
             <materialref ref="Vacuum"/>
             <solidref ref="DetectorSolid1"/>
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=In;xmin=-400;xmax=400;numBins_x=100;ymin=-400;ymax=400;numBins_y=100;ptstate=SURFACE;type=XY"/>
             <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=In; Tmin=0.0; Tmax=0.02; numbin=10000"/>
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=WlSpectrum; name=In; Wlmin=0.0; Wlmax=10; numbin=10000"/>
         </volume>
 
         <volume name="DetectorOut">
             <materialref ref="Vacuum"/>
             <solidref ref="DetectorSolid2"/>
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=Out;xmin=-400;xmax=400;numBins_x=100;ymin=-400;ymax=400;numBins_y=100;ptstate=SURFACE;type=XY"/>
             <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=Out; Tmin=0.0; Tmax=0.02; numbin=10000"/>
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=WlSpectrum; name=Out; Wlmin=0.0; Wlmax=10; numbin=10000"/>
         </volume>
 
         <volume name="worldVOL">
@@ -62,11 +48,6 @@
                 <position name="P_PhyVol1" unit="mm" x="0.0" y="-190.0" z="10000.0" />
                 <rotation name="R_PhyVol1" unit="deg" x="0.0" y="0.0" z="0.0" />
             </physvol>
-
-            <physvol>
-                <volumeref ref="LV_BlackBody"/>
-                <position name="P_PhyVol2" unit="mm" x="0.0" y="-190.0" z="10000.0" />
-            </physvol>            
 
             <physvol>
                 <volumeref ref="DetectorOut"/>

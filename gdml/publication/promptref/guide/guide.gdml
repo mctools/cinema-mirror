@@ -2,7 +2,7 @@
 <gdml>
     <userinfo>
       <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;
-        mean_wl=3.39;range_wl=0.3;src_x=50;
+        mean_wl=3.39;range_wl=0.3;src_w=50;
         src_h=50;src_z=0;slit_w=50;
         slit_h=50;slit_z=1000" />
     </userinfo>

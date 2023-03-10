@@ -37,7 +37,7 @@ bool Prompt::DiskChopper::canSurvive(double x, double y, double time) const
         return false;
 
     // calculate the angular positon of the opening edge
-    double angEdge = m_angularSpeed*time + m_phase;
+    double angEdge = m_angularSpeed*time + m_phase - m_theta0/2;
     angEdge = fmod(angEdge, m_angularPeriod);
 
     double hitAngle = atan2(x, y);  

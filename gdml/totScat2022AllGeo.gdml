@@ -2,8 +2,8 @@
 <gdml>
 
     <userinfo>
-      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_x=600;src_h=600;src_z=-30000;slit_w=10;slit_h=10;slit_z=-1000;temperature=300.;" /> -->
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MPIGun;src_x=500;src_h=500;src_z=-30000;slit_w=20;slit_h=40;slit_z=0" />
+      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_w=600;src_h=600;src_z=-30000;slit_w=10;slit_h=10;slit_z=-1000;temperature=300.;" /> -->
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MPIGun;src_w=500;src_h=500;src_z=-30000;slit_w=20;slit_h=40;slit_z=0" />
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=0.0253;position=0,0,-30000;direction=0,0,1" /> -->
     </userinfo>
    <define>

@@ -3,7 +3,7 @@
 
     <userinfo>
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=1.54;range_wl=0.0;src_x=40;src_h=40;
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=1.54;range_wl=0.0;src_w=40;src_h=40;
       src_z=-1900;slit_w=40;slit_h=40;slit_z=0" />
     </userinfo>
 
