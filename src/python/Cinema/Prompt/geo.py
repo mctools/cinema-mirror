@@ -21,14 +21,14 @@
 from ..Interface import *
 
 
-_pt_UnplacedBox_new = importFunc('pt_UnplacedBox_new', type_voidp, [type_dbl, type_dbl, type_dbl])
-_pt_UnplacedBox_delete = importFunc('pt_UnplacedBox_delete', None, [type_voidp] )
+_pt_Box_new = importFunc('pt_Box_new', type_voidp, [type_dbl, type_dbl, type_dbl])
+_pt_Box_delete = importFunc('pt_Box_delete', None, [type_voidp] )
 
-_pt_LogicalVolume_new = importFunc('pt_LogicalVolume_new', type_voidp, [type_cstr, type_voidp])
-_pt_LogicalVolume_delete = importFunc('pt_LogicalVolume_delete', None, [type_voidp] )
-_pt_LogicalVolume_placeChild = importFunc('pt_LogicalVolume_placeChild', None, [type_voidp, type_cstr, type_voidp, type_voidp, type_int])
+_pt_Volume_new = importFunc('pt_Volume_new', type_voidp, [type_cstr, type_voidp])
+_pt_Volume_delete = importFunc('pt_Volume_delete', None, [type_voidp] )
+_pt_Volume_placeChild = importFunc('pt_Volume_placeChild', None, [type_voidp, type_cstr, type_voidp, type_voidp, type_int])
 
-_pt_LogicalVolume_id = importFunc('pt_LogicalVolume_id', type_uint, [type_voidp])
+_pt_Volume_id = importFunc('pt_Volume_id', type_uint, [type_voidp])
 
 _pt_Transformation3D_newfromdata = importFunc('pt_Transformation3D_newfromdata', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 _pt_Transformation3D_delete = importFunc('pt_Transformation3D_delete', None, [type_voidp] )
@@ -41,20 +41,20 @@ _pt_ResourceManager_addSurface = importFunc('pt_ResourceManager_addSurface', Non
 _pt_ResourceManager_addPhysics = importFunc('pt_ResourceManager_addPhysics', None, [type_uint, type_cstr])
 
 
-class UnplacedBox:
+class Box:
     def __init__(self, hx, hy, hz):
-        self.cobj = _pt_UnplacedBox_new(hx, hy, hz)
+        self.cobj = _pt_Box_new(hx, hy, hz)
 
-    # the memory should be managed by the LogicalVolume. 
+    # the memory should be managed by the Volume. 
     # fixme: double check if it is release at the very end
     def __del__(self):
-        # _pt_UnplacedBox_delete(self.cobj)
+        # _pt_Box_delete(self.cobj)
         pass
 
-class LogicalVolume:
-    def __init__(self, volname, unplacedvolume, matCfg=None, scorerCfg=None, surfaceCfg=None):
+class Volume:
+    def __init__(self, volname, solid, matCfg=None, scorerCfg=None, surfaceCfg=None):
         self.child = []
-        self.cobj = _pt_LogicalVolume_new(volname.encode('utf-8'), unplacedvolume.cobj)
+        self.cobj = _pt_Volume_new(volname.encode('utf-8'), solid.cobj)
         volid = self.getLogicalID(self.cobj)
 
         _pt_ResourceManager_addNewVolume(volid)
@@ -75,21 +75,21 @@ class LogicalVolume:
             _pt_ResourceManager_addSurface(volid, surfaceCfg.encode('utf-8')) 
 
     def __del__(self):
-        # the memory should be managed by the LogicalVolume. 
+        # the memory should be managed by the Volume. 
         # otherwise the code will give the warning message:
         #    ""deregistering an object from GeoManager while geometry is closed""
-        # _pt_LogicalVolume_delete(self.cobj)
+        # _pt_Volume_delete(self.cobj)
         pass
 
     def placeChild(self, name, logVolume, transf, scorerGroup=0):
         self.child.append(logVolume)
-        _pt_LogicalVolume_placeChild(self.cobj, name.encode('utf-8'), logVolume.cobj, transf.cobj, scorerGroup)
+        _pt_Volume_placeChild(self.cobj, name.encode('utf-8'), logVolume.cobj, transf.cobj, scorerGroup)
 
     def getLogicalID(self, cobj=None):
         if cobj is None: # reutrn the ID of this volume
-            return _pt_LogicalVolume_id(self.cobj)
+            return _pt_Volume_id(self.cobj)
         else:
-            return _pt_LogicalVolume_id(cobj)
+            return _pt_Volume_id(cobj)
 
 
 class Transformation3D:

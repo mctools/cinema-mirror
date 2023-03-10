@@ -7,17 +7,17 @@ extern "C" {
 
 void pt_setWorld(void* logicalWorld);
 
-// UnplacedBox
-void* pt_UnplacedBox_new(double hx, double hy, double hz);
-void pt_UnplacedBox_delete(void* obj);
+// Box
+void* pt_Box_new(double hx, double hy, double hz);
+void pt_Box_delete(void* obj);
 
 
-// LogicalVolume 
-void* pt_LogicalVolume_new(const char* name, void *unplacedVolume);
-void pt_LogicalVolume_delete(void* obj);
-void pt_LogicalVolume_placeChild(void* obj, const char* name, void *logicalVolume, void *transformation, int group);
-unsigned pt_LogicalVolume_id(void* obj);
-// unsigned pt_LogicalVolume_copyid(void *obj):
+// Volume 
+void* pt_Volume_new(const char* name, void *unplacedVolume);
+void pt_Volume_delete(void* obj);
+void pt_Volume_placeChild(void* obj, const char* name, void *Volume, void *transformation, int group);
+unsigned pt_Volume_id(void* obj);
+// unsigned pt_Volume_copyid(void *obj):
 
 #ifdef __cplusplus
 }
