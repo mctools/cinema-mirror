@@ -57,7 +57,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
     if(gunDef == "MaxwellianGun")
     {
       // example cfgstr:
-      // gun=MaxwellianGun;src_x=100;src_h=50;src_z=-10;
+      // gun=MaxwellianGun;src_w=100;src_h=50;src_z=-10;
       // slit_w=5;slit_h=10;slit_z=10;temperature=293.15;
 
       // temperature is optional with default value 293.15kelvin
@@ -66,7 +66,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
 
       // The mandatory parameters
       bool force = true;
-      double src_x = ptstod(cfg.find("src_x", force));
+      double src_w = ptstod(cfg.find("src_w", force));
       double src_h = ptstod(cfg.find("src_h", force));
       double src_z = ptstod(cfg.find("src_z", force));
       double slit_w = ptstod(cfg.find("slit_w", force));
@@ -89,7 +89,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       }
 
      return std::make_shared<MaxwellianGun>(Neutron(), temp,
-          std::array<double, 6> {src_x, src_h, src_z,
+          std::array<double, 6> {src_w, src_h, src_z,
                                  slit_w, slit_h, slit_z});
     }
     else if(gunDef == "SimpleThermalGun")
@@ -154,7 +154,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
     else if(gunDef == "UniModeratorGun")
     {
       // example cfgstr:
-      // gun=UniModeratorGun;mean_wl=3.39;range_wl=0.3;src_x=100;src_h=50;src_z=-400;
+      // gun=UniModeratorGun;mean_wl=3.39;range_wl=0.3;src_w=100;src_h=50;src_z=-400;
       // slit_w=5;slit_h=10;slit_z=1
 
 
@@ -164,7 +164,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       bool force = true;
       double mean_wl = ptstod(cfg.find("mean_wl",force));
       double range_wl = ptstod(cfg.find("range_wl",force));
-      double src_x = ptstod(cfg.find("src_x", force));
+      double src_w = ptstod(cfg.find("src_w", force));
       double src_h = ptstod(cfg.find("src_h", force));
       double src_z = ptstod(cfg.find("src_z", force));
       double slit_w = ptstod(cfg.find("slit_w", force));
@@ -177,20 +177,20 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       }
 
       return std::make_shared<UniModeratorGun>(Neutron(), mean_wl, range_wl,
-            std::array<double, 6> {src_x, src_h, src_z,
+            std::array<double, 6> {src_w, src_h, src_z,
                                  slit_w, slit_h, slit_z});
     }
     else if(gunDef == "MPIGun")
     {
       // example cfgstr:
-      // gun=MPIGun;src_x=100;src_h=50;src_z=-400;
+      // gun=MPIGun;src_w=100;src_h=50;src_z=-400;
       // slit_w=5;slit_h=10;slit_z=1
 
       int parCount = 7;
 
       // The mandatory parameters
       bool force = true;
-      double src_x = ptstod(cfg.find("src_x", force));
+      double src_w = ptstod(cfg.find("src_w", force));
       double src_h = ptstod(cfg.find("src_h", force));
       double src_z = ptstod(cfg.find("src_z", force));
       double slit_w = ptstod(cfg.find("slit_w", force));
@@ -203,7 +203,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       }
 
       return std::make_shared<MPIGun>(Neutron(),
-            std::array<double, 6> {src_x, src_h, src_z,
+            std::array<double, 6> {src_w, src_h, src_z,
                                  slit_w, slit_h, slit_z});
     }
     else if(gunDef == "MCPLGun")

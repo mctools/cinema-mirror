@@ -2,7 +2,7 @@
 <gdml>
 <!-- aneutron is generated in a xs biased sphere and hitting a box -->
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=3.39;range_wl=0.3;src_x=100;src_h=50;src_z=-400;slit_w=5;slit_h=10;slit_z=1" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=3.39;range_wl=0.3;src_w=100;src_h=50;src_z=-400;slit_w=5;slit_h=10;slit_z=1" />
     </userinfo>
 
     <materials>
