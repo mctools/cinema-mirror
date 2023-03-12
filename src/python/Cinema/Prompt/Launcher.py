@@ -20,6 +20,8 @@
 ##                                                                            ##
 ################################################################################
 
+__all__ = ['Launcher']
+
 from ..Interface import *
 
 _pt_Launcher_getInstance = importFunc('pt_Launcher_getInstance', type_voidp, [] )

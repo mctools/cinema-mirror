@@ -43,6 +43,7 @@ class Visualiser():
         self.plotter.show_bounds()
         self.plotter.view_zy()
         self.plotter.show_axes()
+
         self.plotter.show_grid()
         self.plotter.enable_mesh_picking(callback=self.callback, left_clicking=False, show_message=False)
         self.plotter.add_key_event('s', self.save)

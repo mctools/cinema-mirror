@@ -20,63 +20,24 @@
 ##                                                                            ##
 ################################################################################
 
-#
-# import time
-#
-from .Launcher import Launcher as Launcher
-from .Mesh import Mesh as Mesh
-from .Visualiser import Visualiser as Visualiser
 
-import mcpl
-from io import BytesIO
-import numpy as np
+from . import Launcher
+from .Launcher import *
 
-_recodedict = {}
-_recodedict['ekin'] = 'ekin'
-_recodedict['q'] = 'polx'
-_recodedict['qtrue'] = 'poly'
-_recodedict['ekin_atbirth'] = 'polz'
-_recodedict['ekin_tof'] = 'x'
-# _recodedict['dummy1'] = 'y'
-# _recodedict['dummy1'] = 'z'
-# _recodedict['dummyvector1'] = 'ux'
-# _recodedict['dummyvector2'] = 'uy'
-# _recodedict['dummyvector3'] = 'uz'
-_recodedict['time'] = 'time'
-_recodedict['weight'] = 'weight'
-_recodedict['scatNum'] = 'pdgcode'
-# _recodedict['dummy3'] = 'userflags'
+from . import PromptFileReader
+from .PromptFileReader import *
 
-class PromptFileReader:
-    def __init__(self, fn, particleBlocklength=10000, dumpHeader=True):
-        self.pfile = mcpl.MCPLFile(fn)
-        self.particleBlocklength = particleBlocklength
-        if dumpHeader:
-            self.pfile.dump_hdr()
-            print("comments:\n", self.getComments())
+from . import Mesh
+from .Mesh import *
 
-    def dataKeys(self):
-        return self.pfile.blobs.keys()
+from . import Visualiser
+from .Visualiser import *
 
-    def getData(self, k):
-        raw=BytesIO(self.pfile.blobs[k])
-        return np.load(raw)
+from . import Histogram
+from .Histogram import *
 
-    def getComments(self):
-        return self.pfile.comments
-
-    # this can be used like:
-    # for p in reader.blockIterator():
-    #     print( p.x, p.y, p.z, p.ekin )
-    def blockIterator(self):
-     return self.pfile.particle_blocks
-
-    def particleIterator(self):
-     return self.pfile.particle_blocks
-
-    def getRecordKeys(self):
-        return _recodedict.keys()
-
-    def getRecordData(self, pb, recordkey):
-        value = getattr(pb, _recodedict[recordkey])
-        return value
+# __all__ = Launcher.__all__
+# __all__ += PromptFileReader.__all__
+# __all__ += Mesh.__all__
+# __all__ += Visualiser.__all__
+__all__ = Histogram.__all__
