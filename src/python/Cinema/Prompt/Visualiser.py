@@ -93,8 +93,9 @@ class Visualiser():
             count+=1
 
         if combineMesh:
-            rcolor = random.choice(self.color)
-            self.plotter.add_mesh(allmesh.combine(), color=random.choice(self.color), opacity=0.3)
+            g = allmesh.combine()
+            g.add_field_data(['Combined geometry'], 'mesh_info')
+            self.plotter.add_mesh(g, color=random.choice(self.color), opacity=0.3)
 
 
     def callback(self, mesh):
