@@ -144,7 +144,7 @@ else:  # run in a single thread
             myLcher.go(1, recordTrj=True, timer=False)
             trj = myLcher.getTrajectory()
             try:
-                v.addLine(trj)
+                v.addTrj(trj)
             except ValueError:
                 print("skip ValueError in File '/Prompt/scripts/prompt.py', in <module>, v.addLine(trj)")
         v.show()
