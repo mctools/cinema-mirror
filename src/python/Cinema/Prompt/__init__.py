@@ -36,6 +36,10 @@ from .Visualiser import *
 from . import Histogram
 from .Histogram import *
 
+from . import geo
+from .geo import *
+
+
 # __all__ = Launcher.__all__
 # __all__ += PromptFileReader.__all__
 # __all__ += Mesh.__all__

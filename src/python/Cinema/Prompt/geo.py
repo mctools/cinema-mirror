@@ -20,6 +20,7 @@
 
 from ..Interface import *
 
+__all__ = ['Box', 'Volume', 'Transformation3D']
 
 _pt_Box_new = importFunc('pt_Box_new', type_voidp, [type_dbl, type_dbl, type_dbl])
 _pt_Box_delete = importFunc('pt_Box_delete', None, [type_voidp] )
@@ -51,6 +52,16 @@ class Box:
         # _pt_Box_delete(self.cobj)
         pass
 
+
+class Transformation3D:
+    def __init__(self, x, y, z, phi=0, theta=0, psi=0, sx=1., sy=1., sz=1.):
+        # RScale followed by rotation followed by translation.
+        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, phi, theta, psi, sx, sy, sz)
+
+    def __del__(self):
+        _pt_Transformation3D_delete(self.cobj)
+
+        
 class Volume:
     def __init__(self, volname, solid, matCfg=None, scorerCfg=None, surfaceCfg=None):
         self.child = []
@@ -81,7 +92,7 @@ class Volume:
         # _pt_Volume_delete(self.cobj)
         pass
 
-    def placeChild(self, name, logVolume, transf, scorerGroup=0):
+    def placeChild(self, name, logVolume, transf=Transformation3D(0,0,0), scorerGroup=0):
         self.child.append(logVolume)
         _pt_Volume_placeChild(self.cobj, name.encode('utf-8'), logVolume.cobj, transf.cobj, scorerGroup)
 
@@ -92,10 +103,3 @@ class Volume:
             return _pt_Volume_id(cobj)
 
 
-class Transformation3D:
-    def __init__(self, x, y, z, phi=0, theta=0, psi=0, sx=1., sy=1., sz=1.):
-        # RScale followed by rotation followed by translation.
-        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, phi, theta, psi, sx, sy, sz)
-
-    def __del__(self):
-        _pt_Transformation3D_delete(self.cobj)

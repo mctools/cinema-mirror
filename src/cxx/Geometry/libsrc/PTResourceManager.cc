@@ -30,6 +30,17 @@ bool Prompt::ResourceManager::hasVolume(size_t volID) const
     return m_volumes.find(volID)==m_volumes.end() ? false : true;
 }
 
+std::string Prompt::ResourceManager::getLogicalVolumeMaterialName(unsigned volID) const
+{
+  std::string names;
+  auto it = m_volumes.find(volID);
+  if(it!=m_volumes.end())
+  {
+    return it->second->bulkMaterialProcess->getName();
+  }
+  return "";
+}
+
 std::string Prompt::ResourceManager::getLogicalVolumeScorerName(unsigned logid) const
 {
   std::string names;

@@ -16,7 +16,9 @@ l = Launcher()
 l.setSeed(4096)
 
 detector = Volume("Det", Box(500, 500, 0.0001), scorerCfg = [scorerCfg_det, scorerCfg_detpsd])
-sample = Volume("sample", Box(5, 5, 5), matCfg = matCfg_sample)
+sample = Volume("sample", Box(20,20,20), matCfg = matCfg_sample)
+
+sample.placeChild("ssample", Volume('sbox', Box(5,5,5)))
 
 world = Volume("world", Box(600, 600, 300))
 

@@ -50,7 +50,7 @@ class Launcher():
         _pt_Launcher_setSeed(self.cobj, seed)
 
     def loadGeometry(self, fileName):
-        _pt_Launcher_loadGeometry(self.cobj, fileName.encode('utf-8'));
+        _pt_Launcher_loadGeometry(self.cobj, fileName.encode('utf-8'))
 
     def setWorld(self, logicalvol):
         if self.worldExist:

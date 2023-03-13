@@ -61,6 +61,7 @@ namespace Prompt {
 
             std::shared_ptr<VolumePhysicsScorer> getVolumePhysicsScorer(size_t volID) const;
             std::string getLogicalVolumeScorerName(unsigned volID) const;
+            std::string getLogicalVolumeMaterialName(unsigned volID) const;
 
             bool hasScorer(const std::string& cfg) const;
             CfgScorerMap::const_iterator findGlobalScorer(const std::string& cfg) const;

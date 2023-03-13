@@ -145,11 +145,12 @@ void pt_getLogVolumeInfo(size_t pvolID, char* cp)
   const auto node = tree.m_fullTreeNode[pvolID];
   auto &resman = Prompt::Singleton<Prompt::ResourceManager>::getInstance();
   std::string info = "Material : ";
+  info += resman.getLogicalVolumeMaterialName(node->logical);
 
   auto scorinfo = resman.getLogicalVolumeScorerName(node->logical);
   if(!scorinfo.empty())
   {
-    info += " Associated scorer: ";
+    info += "\n Associated scorer: ";
     info += scorinfo;
   }
   sprintf (cp, "%s ", info.c_str());

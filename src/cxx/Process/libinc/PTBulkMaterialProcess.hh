@@ -30,6 +30,7 @@ namespace Prompt {
   class BulkMaterialProcess  {
   public:
     BulkMaterialProcess(const std::string& name);
+    const std::string& getName() const { return m_name; }
     virtual ~BulkMaterialProcess();
 
     double sampleStepLength(const Prompt::Particle &particle) const;
