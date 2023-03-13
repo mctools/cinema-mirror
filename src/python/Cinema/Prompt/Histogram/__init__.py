@@ -20,6 +20,12 @@
 ##                                                                            ##
 ################################################################################
 
+# __all__ = ['eKin2k', 'angleCosine2Q', 'wl2ekin', 'ekin2wl', 'ekin2v', 'v2ekin', ' angleCosine2QMany', 'v2ekinMany']
+__all__ = []
+from . import Hist
+from .Hist import *
+__all__ += Hist.__all__
+
 from Cinema.Interface import *
 import numpy as np
 
@@ -27,7 +33,8 @@ eKin2k = importFunc('pt_eKin2k', type_dbl, [type_dbl] )
 angleCosine2Q = importFunc('pt_angleCosine2Q', type_dbl, [type_dbl, type_dbl, type_dbl] )
 wl2ekin = importFunc('pt_wl2ekin', type_dbl, [type_dbl] )
 ekin2wl = importFunc('pt_ekin2wl', type_dbl, [type_dbl] )
-#output unit mm/sec`
+
+#output unit mm/sec
 ekin2v = importFunc('pt_ekin2speed', type_dbl, [type_dbl] )
 v2ekin = importFunc('pt_speed2ekin', type_dbl, [type_dbl] )
 

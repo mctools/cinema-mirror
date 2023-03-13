@@ -23,7 +23,7 @@
 import numpy as np
 from scipy.spatial import KDTree
 import glob, os
-from Cinema.Prompt.Math.Hist import Hist1D, Hist2D
+from Cinema.Prompt.Histogram.Hist import Hist1D, Hist2D
 
 class DD():
     def __init__(self):

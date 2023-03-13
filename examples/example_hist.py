@@ -22,7 +22,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from Prompt.Math.Hist import Hist1D, Hist2D
+from Prompt.Math.Histogram import Hist1D, Hist2D
 from Prompt.Math import *
 import Prompt.Math.Units as Units
 

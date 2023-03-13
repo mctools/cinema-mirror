@@ -20,8 +20,10 @@
 ##                                                                            ##
 ################################################################################
 
+__all__ = ['Launcher']
+
 from ..Interface import *
-from .Math.Hist import Hist1D, Hist2D, _pt_HistBase_dimension
+from .Histogram import Hist1D, Hist2D, _pt_HistBase_dimension
 from .Visualiser import Visualiser
 
 _pt_Launcher_getInstance = importFunc('pt_Launcher_getInstance', type_voidp, [] )
@@ -57,10 +59,10 @@ class Launcher():
         _pt_setWorld(logicalvol.cobj)
         self.worldExist = True
     
-    def showWorld(self, particles=None):
+    def showWorld(self, particles=None, mergeMesh=False):
         if not self.worldExist:
             raise RuntimeError('World is not set')
-        v = Visualiser() 
+        v = Visualiser([], printWorld=False, mergeMesh=mergeMesh) 
         if particles is None:
             v.show()
         else:
@@ -68,7 +70,7 @@ class Launcher():
                 self.go(1, recordTrj=True, timer=False)
                 trj = self.getTrajectory()
                 try:
-                    v.addLine(trj)
+                    v.addTrj(trj)
                 except ValueError:
                     # print(trj)
                     # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")

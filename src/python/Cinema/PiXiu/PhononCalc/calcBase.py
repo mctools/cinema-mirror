@@ -1,7 +1,7 @@
 import numpy as np
 import math #isclose
 import time
-from  Cinema.Prompt.Math.Hist import Hist2D
+from  Cinema.Prompt.Histogram import Hist2D
 from Cinema.Interface.units import hbar
 
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor

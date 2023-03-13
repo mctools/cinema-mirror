@@ -20,6 +20,10 @@
 ##                                                                            ##
 ################################################################################
 
+
+__all__ = ['Hist1D', 'Hist2D', 'SpectrumEstimator', 'NumpyHist1D', 'NumpyHist2D', 'Est1D', '_pt_HistBase_dimension']
+
+
 from Cinema.Interface import *
 import numpy as np
 

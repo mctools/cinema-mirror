@@ -158,7 +158,7 @@ void pt_getLogVolumeInfo(size_t pvolID, char* cp)
 //size of points: 3*n
 //size of faces: n
 //size of NumPolygonPoints: m
-void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPolygonPoints, size_t *faces)
+void pt_getMesh(size_t pvolID, size_t nSegments, float *points, size_t *NumPolygonPoints, size_t *faces)
 {
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
   const auto node = tree.m_fullTreeNode[pvolID];
