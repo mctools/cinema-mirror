@@ -22,8 +22,12 @@ from ..Interface import *
 
 __all__ = ['Box', 'Volume', 'Transformation3D']
 
+#box
 _pt_Box_new = importFunc('pt_Box_new', type_voidp, [type_dbl, type_dbl, type_dbl])
 _pt_Box_delete = importFunc('pt_Box_delete', None, [type_voidp] )
+
+#Tessellated
+_pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 
 _pt_Volume_new = importFunc('pt_Volume_new', type_voidp, [type_cstr, type_voidp])
 _pt_Volume_delete = importFunc('pt_Volume_delete', None, [type_voidp] )
@@ -52,6 +56,9 @@ class Box:
         # _pt_Box_delete(self.cobj)
         pass
 
+class Tessellated:
+    def __init__(self, x1, y1, x2, y2, z) -> None:
+        self.cobj = _pt_Box_new(x1, y1, x2, y2, z)
 
 class Transformation3D:
     def __init__(self, x, y, z, phi=0, theta=0, psi=0, sx=1., sy=1., sz=1.):

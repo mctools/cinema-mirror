@@ -11,6 +11,8 @@ void pt_setWorld(void* logicalWorld);
 void* pt_Box_new(double hx, double hy, double hz);
 void pt_Box_delete(void* obj);
 
+void *pt_Tessellated_new(double x1, double x2, double y1, double y2, double z);
+
 
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume);
