@@ -20,12 +20,9 @@ detector = Volume("Det", Box(500, 500, 0.0001), scorerCfg = [scorerCfg_det, scor
 sample = Volume("sample", Box(20,20,20), matCfg = matCfg_sample)
 sample.placeChild("ssample", Volume('sbox', Box(5,5,5)))
 
-vT = Volume("T", Tessellated(20, 20, 30, 30, 40), matCfg = matCfg_sample)
 
-
-world.placeChild("TP", vT, Transformation3D(0., 0., -150))
 world.placeChild("physicalbox", detector, Transformation3D(0., 0., 50, sx=2, sy=2), 1)
-world.placeChild("physicalbox2", sample, Transformation3D(0,0,0))
+world.placeChild("physicalbox2", sample, Transformation3D(0,0,-150))
 
 
 l.setWorld(world)
