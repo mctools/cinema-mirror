@@ -75,6 +75,7 @@ class Visualiser():
                     continue
 
             name, points, faces = am.getMesh(nSegments)
+            # print(name, points, faces)
             name=f'{count}_{name}'
             if points.size==0:
                 continue

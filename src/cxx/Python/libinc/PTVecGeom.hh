@@ -2,6 +2,7 @@
 #define Prompt_VecGeom_hh
 
 #ifdef __cplusplus
+#include <cstddef>
 extern "C" {
 #endif
 
@@ -11,7 +12,8 @@ void pt_setWorld(void* logicalWorld);
 void* pt_Box_new(double hx, double hy, double hz);
 void pt_Box_delete(void* obj);
 
-void *pt_Tessellated_new(double x1, double x2, double y1, double y2, double z);
+// Tessellated
+void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, float *point);
 
 
 // Volume 

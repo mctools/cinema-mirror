@@ -224,7 +224,8 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   double step = m_currPV->GetLogicalVolume()->GetNavigator()->ComputeStepAndPropagatedState(*p, *dir, stepLength, *m_currState, *m_nextState);
   std::swap(m_currState, m_nextState);
 
-  bool sameVolume (step == stepLength);
+  // bool sameVolume (step == stepLength);
+  bool sameVolume (m_nextState->GetNavIndex() == m_currState->GetNavIndex());
   // assert(stepLength >= step);
   if(stepLength < step)
     PROMPT_THROW2(BadInput, "stepLength < step " << stepLength << " " << step << "\n");

@@ -19,6 +19,7 @@
 ################################################################################
 
 from ..Interface import *
+from .Mesh import _pt_Transformation3D_transform
 
 __all__ = ['Box', 'Volume', 'Transformation3D']
 
@@ -26,9 +27,12 @@ __all__ = ['Box', 'Volume', 'Transformation3D']
 _pt_Box_new = importFunc('pt_Box_new', type_voidp, [type_dbl, type_dbl, type_dbl])
 _pt_Box_delete = importFunc('pt_Box_delete', None, [type_voidp] )
 
-#Tessellated
-_pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 
+#Tessellated
+_pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npsbl2d] )
+
+
+#Volume
 _pt_Volume_new = importFunc('pt_Volume_new', type_voidp, [type_cstr, type_voidp])
 _pt_Volume_delete = importFunc('pt_Volume_delete', None, [type_voidp] )
 _pt_Volume_placeChild = importFunc('pt_Volume_placeChild', None, [type_voidp, type_cstr, type_voidp, type_voidp, type_int])
@@ -57,8 +61,10 @@ class Box:
         pass
 
 class Tessellated:
-    def __init__(self, x1, y1, x2, y2, z) -> None:
-        self.cobj = _pt_Box_new(x1, y1, x2, y2, z)
+    def __init__(self, faces, points, tranMat=None) -> None:
+        if tranMat is not None:
+            tranMat.transformInplace(points)
+        self.cobj = _pt_Tessellated_new(faces.shape[0], faces, points)
 
 class Transformation3D:
     def __init__(self, x, y, z, phi=0, theta=0, psi=0, sx=1., sy=1., sz=1.):
@@ -68,6 +74,9 @@ class Transformation3D:
     def __del__(self):
         _pt_Transformation3D_delete(self.cobj)
 
+    def transformInplace(self, input):
+        _pt_Transformation3D_transform(self.cobj, input.shape[0], input, input)
+        return input
         
 class Volume:
     def __init__(self, volname, solid, matCfg=None, scorerCfg=None, surfaceCfg=None):

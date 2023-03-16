@@ -1,11 +1,18 @@
 #include "PTVecGeom.hh"
-
+#include "PromptCore.hh"
 
 #include "VecGeom/management/GeoManager.h"
 #include "VecGeom/volumes/UnplacedBox.h"
 #include "VecGeom/volumes/UnplacedVolume.h"
 #include "VecGeom/volumes/SpecializedTessellated.h"
 #include "VecGeom/volumes/UnplacedTessellated.h"
+#include "VecGeom/volumes/MultiUnion.h"
+
+#include "VecGeom/navigation/BVHNavigator.h"
+#include "VecGeom/navigation/NewSimpleNavigator.h"
+#include "VecGeom/navigation/SimpleABBoxNavigator.h"
+#include "VecGeom/navigation/SimpleABBoxLevelLocator.h"
+#include "VecGeom/navigation/BVHLevelLocator.h"
 
 namespace vg = VECGEOM_NAMESPACE;
 
@@ -14,6 +21,21 @@ void pt_setWorld(void* logicalWorld)
 {
     vg::GeoManager::Instance().SetWorld(static_cast<vg::LogicalVolume *>(logicalWorld)->Place());
     vg::GeoManager::Instance().CloseGeometry();
+      //accelaration
+    vecgeom::BVHManager::Init();
+    for (auto &lvol : vecgeom::GeoManager::Instance().GetLogicalVolumesMap()) {
+        auto ndaughters = lvol.second->GetDaughtersp()->size();
+
+        if (ndaughters <= 2)
+        lvol.second->SetNavigator(vecgeom::NewSimpleNavigator<>::Instance());
+        else
+        lvol.second->SetNavigator(vecgeom::BVHNavigator<>::Instance());
+
+        if (lvol.second->ContainsAssembly())
+        lvol.second->SetLevelLocator(vecgeom::SimpleAssemblyAwareABBoxLevelLocator::GetInstance());
+        else
+        lvol.second->SetLevelLocator(vecgeom::BVHLevelLocator::GetInstance());
+    }
 }
 
 //   Box *worldUnplaced      = new UnplacedBox(10, 10, 10)
@@ -28,26 +50,46 @@ void pt_Box_delete(void* obj)
 }
 
 
-void *pt_Tessellated_new(double x1, double x2, double y1, double y2,
-                                                     double z)
+void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, float *point)
 {
   // Create a tessellated solid from Trd parameters
-  vg::SimpleTessellated *stsl  = new vg::SimpleTessellated("pt_Tessellated_new");
-  vg::UnplacedTessellated *tsl = (vg::UnplacedTessellated *)stsl->GetUnplacedVolume();
-  // Top facet
-  tsl->AddQuadrilateralFacet(vg::Vector3D(-x2, y2, z), vg::Vector3D(-x2, -y2, z), vg::Vector3D(x2, -y2, z), vg::Vector3D(x2, y2, z));
-  // Bottom facet
-  tsl->AddQuadrilateralFacet(vg::Vector3D(-x1, y1, -z), vg::Vector3D(x1, y1, -z), vg::Vector3D(x1, -y1, -z), vg::Vector3D(-x1, -y1, -z));
-  // Front facet
-  tsl->AddQuadrilateralFacet(vg::Vector3D(-x2, -y2, z), vg::Vector3D(-x1, -y1, -z), vg::Vector3D(x1, -y1, -z), vg::Vector3D(x2, -y2, z));
-  // Right facet
-  tsl->AddQuadrilateralFacet(vg::Vector3D(x2, -y2, z), vg::Vector3D(x1, -y1, -z), vg::Vector3D(x1, y1, -z), vg::Vector3D(x2, y2, z));
-  // Behind facet
-  tsl->AddQuadrilateralFacet(vg::Vector3D(x2, y2, z), vg::Vector3D(x1, y1, -z), vg::Vector3D(-x1, y1, -z), vg::Vector3D(-x2, y2, z));
-  // Left facet
-  tsl->AddQuadrilateralFacet(vg::Vector3D(-x2, y2, z), vg::Vector3D(-x1, y1, -z), vg::Vector3D(-x1, -y1, -z), vg::Vector3D(-x2, -y2, z));
-  tsl->Close();
-  return static_cast<void *>(stsl);
+//   vg::SimpleTessellated *stsl  = new vg::SimpleTessellated("pt_Tessellated_new");
+//   vg::UnplacedTessellated *tsl = (vg::UnplacedTessellated *)stsl->GetUnplacedVolume();
+
+    vg::UnplacedTessellated *tsl = new vg::UnplacedTessellated ();
+
+    for(size_t i=0;i<faceVecSize;i++)
+    {
+        auto nVert = (*(faces++));
+        if(nVert==3)
+        {
+            tsl->AddTriangularFacet(*reinterpret_cast<const vg::Vector3D<float>*>((point+ (*(faces++))*3)),
+            *reinterpret_cast<const vg::Vector3D<float>*>(point+ (*(faces++))*3),
+            *reinterpret_cast<const vg::Vector3D<float>*>(point+ (*(faces++))*3));
+            i += 3;
+        }
+        else if(nVert==4)
+        {
+            tsl->AddQuadrilateralFacet(*reinterpret_cast<const vg::Vector3D<float>*>(point+(*(faces++))*3),
+            *reinterpret_cast<const vg::Vector3D<float>*>(point+(*(faces++))*3),
+            *reinterpret_cast<const vg::Vector3D<float>*>(point+(*(faces++))*3),
+            *reinterpret_cast<const vg::Vector3D<float>*>(point+(*(faces++))*3));
+            i += 4;
+        }
+        else
+        {
+            std::cout << *(faces++) << " "
+            << *(faces++) << " "
+            << *(faces++) << " "
+            << *(faces++) << " "
+            << *(faces++) << "\n";
+            PROMPT_THROW2(CalcError, "the face should constain either 3 or 4 vert " 
+                << faceVecSize << " " << i << " " << nVert);
+        }
+    }
+    tsl->Close();
+
+    return static_cast<void *>(tsl);
 }
 
 
@@ -55,7 +97,7 @@ void *pt_Tessellated_new(double x1, double x2, double y1, double y2,
 void* pt_Volume_new(const char* name, void *unplacedVolume)
 {
     auto p = static_cast<void *>(new vg::LogicalVolume(name, static_cast<vg::VUnplacedVolume *>(unplacedVolume)));
-    const std::map<unsigned int, vecgeom::LogicalVolume *> & vmap  = vecgeom::GeoManager::Instance().GetLogicalVolumesMap();
+    const std::map<unsigned int, vg::LogicalVolume *> & vmap  = vg::GeoManager::Instance().GetLogicalVolumesMap();
     for(auto it=vmap.begin(); it!=vmap.end(); ++it)
     {
         std::cout << "pt_Volume_new " << it->second->GetName() << ", vol id " << it->first << std::endl; 

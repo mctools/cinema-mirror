@@ -21,7 +21,6 @@
 ################################################################################
 
 from ..Interface import *
-import copy
 
 _pt_Transformation3D_new = importFunc('pt_Transformation3D_new', type_voidp, [type_voidp])
 _pt_Transformation3D_newfromID = importFunc('pt_Transformation3D_newfromID', type_voidp, [type_uint])
