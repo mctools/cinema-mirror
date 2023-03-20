@@ -17,7 +17,7 @@
 
     <solids>
         <box lunit="mm" name="WorldSolid" x="150.0" y="150.0" z="150.0" />
-        <cutTube aunit="deg" lunit="mm" name="CutTubeSolid" rmin="0.0" rmax="25.0" z="50.0" deltaphi="360.0" startphi="0.0" lowX="-10" lowY="-10" lowZ="-10" highX="10" highY="10" highZ="10"/>
+        <cutTube aunit="deg" lunit="mm" name="CutTubeSolid" rmin="10.0" rmax="25.0" z="50.0" deltaphi="360.0" startphi="0.0" lowX="-5" lowY="-5" lowZ="-5" highX="5" highY="5" highZ="5"/>
     </solids>
 
     <structure>
