@@ -120,24 +120,25 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
     {
       auto particle = *(m_stackManager.pop()).get();
 
+      // allocate the point in a volume,
+      // returns ture when the particle is outside the world
+      if(m_activeVolume.locateActiveVolume(particle.getPosition()))
+        continue;
+
       if(recordTrj)
       {
         std::vector<Vector> tmp;
         tmp.reserve(m_trajectory.size());
         m_trajectory.swap(tmp);
-      }
+      } 
 
-      //! allocate the point in a volume
-      m_activeVolume.locateActiveVolume(particle.getPosition());
-      while(!m_activeVolume.exitWorld() && particle.isAlive())
+      while(!m_activeVolume.exitWorld() && particle.isAlive() )
       {
         if(recordTrj)
         {
           m_trajectory.push_back(particle.getPosition());
         }
 
-        //! first step of a particle in a volume
-        // std::cout << activeVolume.getVolumeName() << " " << particle.getPosition() << std::endl;
         m_activeVolume.setupVolPhysAndGeoTrans();
         m_activeVolume.scoreSurface(particle);
 

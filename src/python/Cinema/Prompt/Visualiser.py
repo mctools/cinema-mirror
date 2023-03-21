@@ -54,6 +54,8 @@ class Visualiser():
         self.plotter.screenshot('screenshot.png')
 
     def addTrj(self, data):
+        if data.size < 2:
+            return
         line = pv.lines_from_points(data)
         line.add_field_data(['a neutron trajectory'], 'mesh_info')
         #draw the first and last position as red dots
@@ -112,6 +114,8 @@ class Visualiser():
             self.plotter.add_mesh(self.trj.combine(), color='blue', opacity=0.2, line_width=2 )
 
         if self.redpoints.keys()!=[]:
-            self.plotter.add_mesh(self.redpoints.combine(), color='red', opacity=0.3, point_size=8 )
+            crp = self.redpoints.combine()
+            if crp.points.size>0:
+                self.plotter.add_mesh(crp, color='red', opacity=0.3, point_size=8 )
 
         self.plotter.show(title='Cinema Visualiser')

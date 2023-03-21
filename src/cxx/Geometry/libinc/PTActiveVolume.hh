@@ -38,11 +38,12 @@ namespace Prompt {
   public:
     void setup();
     
-    //return false if the track is terminated, i.e. exist world
+    // return false if the particle leaving a volume 
+    // the current NavigationState is updated 
     bool proprogateInAVolume(Particle &particle);
 
-    //locate the active volume
-    void locateActiveVolume(const Vector &p) const;
+    //locate the active volume, returns false if is outside the world
+    bool locateActiveVolume(const Vector &p) const;
     bool exitWorld() const;
     void setupVolPhysAndGeoTrans();
     size_t getVolumeID() const;
@@ -79,7 +80,6 @@ namespace Prompt {
     ~ActiveVolume();
 
     vecgeom::GeoManager &m_geo;
-    const vecgeom::VPlacedVolume *m_currPV;
     std::shared_ptr<VolumePhysicsScorer> m_matphysscor;
     // NavigationState is NavStateIndex when VECGEOM_USE_NAVINDEX is enabled
     // It is NavStatePath otherwise

@@ -25,7 +25,6 @@
 
 Prompt::ActiveVolume::ActiveVolume()
 :m_geo(vecgeom::GeoManager::Instance()), 
-m_currPV(nullptr),
 m_currState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth())),
 m_nextState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth()))
 {}
@@ -54,13 +53,18 @@ Prompt::VolumePhysicsScorer *getLogicalVolumePhysicsScorer(const vecgeom::Logica
   return (Prompt::VolumePhysicsScorer *)lv.GetUserExtensionPtr();
 }
 
-void Prompt::ActiveVolume::locateActiveVolume(const Vector &p) const
+bool Prompt::ActiveVolume::locateActiveVolume(const Vector &p) const
 {
   m_currState->Clear();
-  auto pv = vecgeom::GlobalLocator::LocateGlobalPoint(m_geo.GetWorld(),
+  // auto pv = vecgeom::GlobalLocator::LocateGlobalPoint(m_geo.GetWorld(),
+  //                         *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&p), *m_currState, true);
+  auto pv = vecgeom::GlobalLocator::LocateGlobalPointExclVolume(m_geo.GetWorld(), m_geo.GetWorld(), 
                           *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&p), *m_currState, true);
-  pt_assert_always(pv == m_currState->Top());
-}
+
+  if(!pv)
+    std::cout << "particle at " << p << " is outside the world" << std::endl;
+  return exitWorld() || !pv;
+} 
 
 bool Prompt::ActiveVolume::exitWorld() const
 {
@@ -71,7 +75,6 @@ void Prompt::ActiveVolume::setupVolPhysAndGeoTrans()
 {
   // Find next step
   // m_currState->Top() gets the placed volume
-  m_currPV = m_currState->Top();
   m_matphysscor = Singleton<ResourceManager>::getInstance().getVolumePhysicsScorer(getVolumeID());
   if(!m_matphysscor)
     PROMPT_THROW2(CalcError, "Volume with id " << getVolumeID() << " is not found in the resource manager");
@@ -97,7 +100,7 @@ void Prompt::ActiveVolume::getNormal(const Vector& pos, Vector &normal) const
 {
   const auto &vegpos = *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&pos);
   auto &vegnormal = *reinterpret_cast<vecgeom::Vector3D<vecgeom::Precision>*>(&normal);
-  m_currPV->Normal(vegpos, vegnormal);
+   m_currState->Top()->Normal(vegpos, vegnormal);
 }
 
 
@@ -108,29 +111,29 @@ const Prompt::GeoTranslator& Prompt::ActiveVolume::getGeoTranslator() const
 
 size_t Prompt::ActiveVolume::getVolumeID() const
 {
-  return m_currPV->GetLogicalVolume()->id();
+  return  m_currState->Top()->GetLogicalVolume()->id();
 }
 
 size_t Prompt::ActiveVolume::numSubVolume() const
 {
-  return m_currPV->GetLogicalVolume()->GetNTotal();
+  return  m_currState->Top()->GetLogicalVolume()->GetNTotal();
 }
 
 double Prompt::ActiveVolume::distanceToOut(const Vector& loc_pos, const Vector &loc_dir) const
 {
-  return m_currPV->DistanceToOut(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&loc_pos),
+  return  m_currState->Top()->DistanceToOut(*reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&loc_pos),
                                  *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&loc_dir));
 }
 
 
 std::string Prompt::ActiveVolume::getVolumeName() const
 {
-  return m_currPV->GetLogicalVolume()->GetName();
+  return  m_currState->Top()->GetLogicalVolume()->GetName();
 }
 
 const vecgeom::VPlacedVolume *Prompt::ActiveVolume::getVolume() const
 {
-  return m_currPV;
+  return  m_currState->Top();
 }
 
 
@@ -221,28 +224,22 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   //!   - if ray leaves volume: m_nextState.Top() will point to current volume
   //!   - if step limit > step: m_nextState == in_state
   //!   ComputeStep is essentialy equal to ComputeStepAndPropagatedState without the relaction part
-  double step = m_currPV->GetLogicalVolume()->GetNavigator()->ComputeStepAndPropagatedState(*p, *dir, stepLength, *m_currState, *m_nextState);
-  std::swap(m_currState, m_nextState);
+  double step =  m_currState->Top()->GetLogicalVolume()->GetNavigator()->ComputeStepAndPropagatedState(*p, *dir, stepLength, *m_currState, *m_nextState);
 
-  // bool sameVolume (step == stepLength);
-  bool sameVolume (m_nextState->GetNavIndex() == m_currState->GetNavIndex());
-  // assert(stepLength >= step);
+  bool sameVolume (m_currState->Top() == m_nextState->Top());
+
+  if(!sameVolume)
+    std::swap(m_currState, m_nextState);
+
   if(stepLength < step)
-    PROMPT_THROW2(BadInput, "stepLength < step " << stepLength << " " << step << "\n");
+    PROMPT_THROW2(CalcError, "stepLength < step " << stepLength << " " << step << "\n");
 
   //Move next step
   const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
   particle.moveForward(sameVolume ? step : (step + resolution) );
 
-  if(sameVolume)
-  {
-    //sample the interaction at the location
-    m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, false);
-    return true;
-  }
-  else
-  {
-    m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, true);
-    return false;
-  }
+  //sample the interaction at the location
+  m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
+  return sameVolume;
+
 }
