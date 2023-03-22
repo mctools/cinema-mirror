@@ -17,13 +17,13 @@
 
     <solids>
         <box lunit="mm" name="WorldSolid" x="150.0" y="150.0" z="150.0" />
-        <hype lunit="mm" name="HypeSolid" rmin="0" rmax="20" z="100" inst="3" outst="4" />
+        <hype lunit="mm" name="HypeSolid" rmin="10" rmax="20" z="100" inst="0.785" outst="0.785"/>
     </solids>
 
     <structure>
         <volume name="VolHype">
             <solidref ref="HypeSolid" />
-            <materialref ref="Vacuum" />
+            <materialref ref="Cd" />
         </volume>
 
         <volume name="VolWorld">
