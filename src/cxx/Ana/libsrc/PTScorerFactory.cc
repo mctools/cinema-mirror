@@ -31,6 +31,7 @@
 #include "PTScorerRotatingObj.hh"
 #include "PTScorerWlSpectrum.hh"
 #include "PTScorerAngular.hh"
+#include "PTScorerSplit.hh"
 
 Prompt::ScorerFactory::ScorerFactory()
 {}
@@ -421,6 +422,12 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
       return std::make_shared<Prompt::ScorerVolFluence>(name, xmin, xmax, nxbins, linear, vol);
 
+    }
+    else if(ScorDef == "Split")
+    {
+      std::string name = cfg.find("name", true);
+      int split = ptstoi(cfg.find("split", true));
+      return std::make_shared<Prompt::ScorerSplit>(name, split);
     }
     else if(ScorDef == "RotatingObj")
     {
