@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerVolFlux_hh
-#define Prompt_ScorerVolFlux_hh
+#ifndef Prompt_ScorerVolFluence_hh
+#define Prompt_ScorerVolFluence_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -26,11 +26,11 @@
 
 namespace Prompt {
 
-  class ScorerVolFlux  : public Scorer1D {
+  class ScorerVolFluence  : public Scorer1D {
   public:
-    ScorerVolFlux(const std::string &name, double xmin, double xmax,
+    ScorerVolFluence(const std::string &name, double xmin, double xmax,
                   unsigned nxbins, bool linear, double volme);
-    virtual ~ScorerVolFlux();
+    virtual ~ScorerVolFluence();
     virtual void score(Particle &particle) override;
   private:
     double m_iVol, m_weight;

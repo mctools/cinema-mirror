@@ -37,16 +37,25 @@ namespace Prompt {
   class DiskChopper  : public RayTracingProcess
   {
     public:
-      DiskChopper(double centre_x_mm, double centre_y_mm,  
-                  double theta0_deg, double r_mm, double phase_deg, double rotFreq_Hz, unsigned n);
+      DiskChopper(double theta0_deg, double r_mm, double phase_deg, double rotFreq_Hz, unsigned n);
       virtual ~DiskChopper() = default;
-      virtual void sampleFinalState(Particle &particle) const override;
+      virtual bool canSurvive(const Prompt::Vector &locPos, const Prompt::Vector &locDir, double time) const override;
 
+      bool canSurvive(double x, double y, double time) const;
 
     private:
-      double m_centre_x, m_centre_y;
       double m_theta0, m_r, m_phase, m_angularSpeed, m_angularPeriod;
   };
+
+  // // fixme: todo
+  // class MultiDiskChopper 
+  // {
+  //   public:
+  //     MultiDiskChopper();
+  //     ~MultiDiskChopper();
+  //   private:
+  //     std::vector<MultiDiskChopper> m_disks;
+  // }
 
 }
 

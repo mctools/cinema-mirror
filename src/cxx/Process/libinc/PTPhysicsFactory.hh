@@ -31,7 +31,7 @@ namespace Prompt {
   class PhysicsFactory  {
   public:
     enum class PhysicsType {
-      BOUNDARY_PHYSICS,
+      SURFACE_PHYSICS,
       NC_SCATTER,
       NC_ABSORB,
       NC_SCATTER_ABSORB,

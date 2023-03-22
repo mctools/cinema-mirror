@@ -6,13 +6,13 @@
       position=0,0,-1000;direction=0.1,0,1" /> -->
 
     <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;
-      moderator_width_x=100;moderator_height_y=100;moderator_positon_z=-15000.;
-      slit_width_x=5;slit_height_y=5;slit_position_z=0;temperature=300;" />
+      src_w=100;src_h=100;src_z=-15000.;
+      slit_w=5;slit_h=5;slit_z=0;temperature=300;" />
 
     <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;
-      mean_wavelength=10;range_wavelength=1e-6;
-      moderator_width_x=100;moderator_height_y=100;moderator_positon_z=-15000.;
-      slit_width_x=5;slit_height_y=5;slit_position_z=0;" /> -->
+      mean_wl=10;range_wl=1e-6;
+      src_w=100;src_h=100;src_z=-15000.;
+      slit_w=5;slit_h=5;slit_z=0;" /> -->
 
   </userinfo>
 

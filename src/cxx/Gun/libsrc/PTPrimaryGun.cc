@@ -27,9 +27,11 @@ std::unique_ptr<Prompt::Particle> Prompt::PrimaryGun::generate()
   m_ekin0=m_ekin;
   samplePosDir(m_pos, m_dir);
   m_eventid++;
-  m_weight=1.;
+  m_weight = getParticleWeight();
   m_alive=true;
+  m_time = getTime();
   auto p = std::make_unique<Particle>();
   *p.get() = *this;
+  // std::cout << *this << std::endl;
   return std::move(p);
 }

@@ -1,0 +1,3 @@
+Step1. Run .instr in ./mcstas_diskchopper with mcstas
+Step2. Run .gdml in ./prompt with Prompt
+Step3. Run tof_compare.py to compare the results from above

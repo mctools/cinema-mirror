@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <gdml>
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;moderator_width_x=20;moderator_height_y=20;moderator_positon_z=-10000;slit_width_x=1;slit_height_y=1;slit_position_z=-1000;temperature=293.15" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_w=20;src_h=20;src_z=-10000;slit_w=1;slit_h=1;slit_z=-1000;temperature=293.15" />
     </userinfo>
 
     <define>
@@ -50,11 +50,11 @@
         <volume name="Detector">
           <materialref ref="He3_20bar"/>
           <solidref ref="DetectorSolid"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_HW;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=-1;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ1_HW;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=1;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ2_HW;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=2;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ3_HW;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=3;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
-          <!-- <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_V;sample_position=0,0,0;beam_direction=0,0,1;src_sample_dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=-1;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/> -->
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_HW;sample_position=0,0,0;beam_direction=0,0,1;dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=-1;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ1_HW;sample_position=0,0,0;beam_direction=0,0,1;dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=1;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ2_HW;sample_position=0,0,0;beam_direction=0,0,1;dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=2;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ3_HW;sample_position=0,0,0;beam_direction=0,0,1;dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=3;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/>
+          <!-- <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ_V;sample_position=0,0,0;beam_direction=0,0,1;dist=10000;ptstate=ENTRY;Qtrue=yes;scatnum=-1;Qmin=0.5;Qmax=50;numbin=500;linear=yes"/> -->
         </volume>
 
         <volume name="World">

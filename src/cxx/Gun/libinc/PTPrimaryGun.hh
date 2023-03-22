@@ -30,11 +30,13 @@ namespace Prompt {
   class PrimaryGun : public Particle {
   public:
     PrimaryGun(const Particle &aParticle)
-    : Particle(aParticle), m_rng(Singleton<SingletonPTRand>::getInstance()) {};
-    virtual ~PrimaryGun() {};
+    : Particle(aParticle), m_rng(Singleton<SingletonPTRand>::getInstance()) {  };
+    virtual ~PrimaryGun() = default;
     virtual std::unique_ptr<Particle> generate();
     virtual void sampleEnergy(double &ekin) = 0;
     virtual void samplePosDir(Vector &pos, Vector &dir) = 0;
+    virtual double getParticleWeight() { return 1.;}
+    virtual double getTime() { return 0.;}
 
   protected:
     SingletonPTRand &m_rng;

@@ -1,3 +1,6 @@
+#ifndef Prompt_MCPLBinary_hh
+#define Prompt_MCPLBinary_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,19 +21,35 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerVolFlux.hh"
+#include <string>
 
-Prompt::ScorerVolFlux::ScorerVolFlux(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear, double volme)
-:Scorer1D("ScorerVolFlux_"+ name, Scorer::ScorerType::PROPAGATE, std::make_unique<Hist1D>("ScorerVolFlux_"+ name, xmin, xmax, nxbins, linear)), m_iVol(1./volme), m_weight(-1.)
-{ }
+#include "PromptCore.hh"
+#include "mcpl.h"
 
-Prompt::ScorerVolFlux::~ScorerVolFlux() {}
+namespace Prompt {
 
-void Prompt::ScorerVolFlux::score(Particle &particle)
-{
-  if(m_weight == -1.) m_weight=particle.getWeight();
+  class MCPLBinary {
+    public:
+      MCPLBinary(const std::string &fn) 
+          : m_filename(fn), m_file()
+          {
+            m_file.internal = 0;
+            m_file_r.internal = 0;
+          };
 
-  if(particle.getWeight()!=m_weight)
-    PROMPT_THROW(LogicError, "ScorerVolFlux is incorrect in the cross section biasing model. The D value for the material within the solid of insterest should be unity");
-  m_hist->fill(particle.getEKin()+particle.getEnergyChange(), m_iVol*particle.getStep());
+      virtual ~MCPLBinary() = default; 
+      const std::string& getFileName() { return m_filename; }
+
+
+    protected:
+      std::string m_filename;
+      mcpl_outfile_t m_file;
+      mutable mcpl_particle_t *m_particleInFile;
+
+      mcpl_file_t m_file_r;
+
+      bool m_using_double, m_with_extra3double, m_with_extraUserUnsigned;
+
+  };
 }
+#endif
