@@ -1,10 +1,7 @@
-<?xml version='1.0' encoding='utf-8'?>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
-
+<?xml version="1.0"?>
+<gdml>
     <userinfo>
-      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=1.54;range_wl=0.0;src_w=40;src_h=40;
-      src_z=-1900;slit_w=40;slit_h=40;slit_z=0" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wavelength=1.54;range_wavelength=0.05;moderator_width_x=40;moderator_height_y=40;moderator_positon_z=-1900;slit_width_x=40;slit_height_y=40;slit_position_z=0" />
     </userinfo>
 
     <define>
@@ -38,12 +35,21 @@
     </define>
 
     <materials>
-        <material name="Universe">
-          <atom value="freegas::H1/1e-26kgm3"/>
+
+        <material name="Cd">
+          <atom value="../ncmat/Cd.ncmat"/>
+        </material>
+
+        <material name="Water">
+            <atom value="LiquidWaterH2O_T293.6K.ncmat"/>
+        </material>
+
+        <material name="Vacuum">
+          <atom value="../ncmat/vacuum.ncmat"/>
         </material>
 
         <material name="Air">
-            <atom value="ambient_air.ncmat"/>
+            <atom value="../ncmat/ambient_air.ncmat"/>
         </material>
 
         <material name="Ge">
@@ -52,8 +58,20 @@
                       ;dir2=@crys_hkl:0,1,-1@lab:1,0,0"/>
         </material>
 
+        <material name="He">
+          <atom value="He_Gas_STP.ncmat"/>
+        </material>
+
+        <material name="Universe">
+          <atom value="freegas::H1/1e-26kgm3"/>
+        </material>
+
         <material name="Al2O3">
           <atom value="Al2O3_sg167_Corundum.ncmat"/>
+        </material>
+
+        <material name="G4_He3">
+            <atom value="../ncmat/PUB_He3_Gas_8bar.ncmat" />
         </material>
 
         <material  name="B4C">
@@ -93,10 +111,10 @@
         <sphere aunit="deg" lunit="mm" name="Sphere_Detector" rmin="1000" rmax="1001" deltaphi="360" startphi="0" deltatheta="175" starttheta="2.5" />
     </solids>
 
- <structure>
+    <structure>
         <volume name="LV_ColliTrd">
             <solidref ref="ColliTrd"/>
-            <materialref ref="Universe"/>
+            <materialref ref="Vacuum"/>
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
         </volume>
 
@@ -117,7 +135,7 @@
 
         <volume name="LV_alpha1Colli">
             <solidref ref="alpha1Box" />
-            <materialref  ref="Universe" />
+            <materialref  ref="Vacuum" />
             <physvol name="LV_Pad_1">
                 <volumeref ref="padBox" />
                 <positionref ref="P_Pad_1" />
@@ -223,7 +241,7 @@
 
         <volume name="LV_Box_Mono_G">
             <solidref ref="MonoBox" />
-            <materialref ref="Universe"/>
+            <materialref ref="Vacuum"/>
             <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
 
             <physvol name="ModuleHe3_L">
@@ -233,10 +251,9 @@
 
         <volume name="LV_Detector">
             <solidref ref="Sphere_Detector"/>
-            <materialref ref="Universe"/>
+            <materialref ref="G4_He3"/>
             <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=Angular;name=ST_template;sample_position=0,-2750,0;beam_direction=0,-1,0;
-                                                 dist=3650.;angle_min_deg=20.0;angle_max_deg=160;numbin=6000;ptstate=ENTRY"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronStheta;name=ST_template;sample_position=0,-2750,0;beam_direction=0,-1,0;src_sample_dist=3650.;Qmin=10.0;Qmax=160;numbin=6000;type=ENTRY"/>
         </volume>
 
         <volume name="worldVOL">
