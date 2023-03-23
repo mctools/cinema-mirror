@@ -67,12 +67,6 @@
         <box lunit="mm" name="alpha1Box" x="50" y="90" z="525.26" />
         <box lunit="mm" name="TrdBox" x="3000" y="3000" z="1015" />
         <trd lunit="mm" name="ColliTrd" x1="90" y1="25" x2="30" y2="25" z="1015" />
-        <subtraction name="ColliSub">
-            <first ref="TrdBox"/>
-            <second ref="ColliTrd"/>
-            <position name="P_box_sub" unit="mm" x="0" y="0" z="0"/>
-            <rotation name="R_box_sub" unit="deg" x="0" y="0" z="0"/>
-        </subtraction>
         <box lunit="mm" name="StopBox" x="100" y="100" z="200" />
         <sphere aunit="deg" lunit="mm" name="Sphere_Detector" rmin="1000" rmax="1001" deltaphi="360" startphi="0" deltatheta="175" starttheta="2.5" />
     </solids>
