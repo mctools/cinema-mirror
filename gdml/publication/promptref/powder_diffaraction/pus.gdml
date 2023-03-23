@@ -1,15 +1,11 @@
 <?xml version="1.0"?>
 <gdml>
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wavelength=1.54;range_wavelength=0.05;moderator_width_x=40;moderator_height_y=40;moderator_positon_z=-1900;slit_width_x=40;slit_height_y=40;slit_position_z=0" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=1.54;range_wl=0.05;src_w=40;src_h=40;src_z=-1900;slit_w=40;slit_h=40;slit_z =0" />
     </userinfo>
 
     <define>
-        <constant name="HALFPI" value="pi/2." />
-        <constant name="PI" value="1.*pi" />
-        <constant name="TWOPI" value="2.*pi" />
         <rotation name="R_LV_SampleCan" unit="deg" y="-90" />
-        <rotation name="R_LV_Module" unit="deg" y="0.0" />
         <position name="P_Pad_1"  unit="mm" x="-24.95745" />
         <position name="P_Pad_2"  unit="mm" x="-22.58055" />
         <position name="P_Pad_3"  unit="mm" x="-20.20365" />
@@ -35,31 +31,10 @@
     </define>
 
     <materials>
-
-        <material name="Cd">
-          <atom value="../ncmat/Cd.ncmat"/>
-        </material>
-
-        <material name="Water">
-            <atom value="LiquidWaterH2O_T293.6K.ncmat"/>
-        </material>
-
-        <material name="Vacuum">
-          <atom value="../ncmat/vacuum.ncmat"/>
-        </material>
-
-        <material name="Air">
-            <atom value="../ncmat/ambient_air.ncmat"/>
-        </material>
-
         <material name="Ge">
           <atom value="Ge_sg227.ncmat;mos=0.267deg
                       ;dir1=@crys_hkl:5,1,1@lab:0,0,1
                       ;dir2=@crys_hkl:0,1,-1@lab:1,0,0"/>
-        </material>
-
-        <material name="He">
-          <atom value="He_Gas_STP.ncmat"/>
         </material>
 
         <material name="Universe">
@@ -71,7 +46,7 @@
         </material>
 
         <material name="G4_He3">
-            <atom value="../ncmat/PUB_He3_Gas_8bar.ncmat" />
+          <atom value="freegas::He/1.076487kgm3/He_is_He3"/>
         </material>
 
         <material  name="B4C">
@@ -86,19 +61,10 @@
 
     <solids>
         <box lunit="mm" name="WorldBox" x="8000.0" y="10000.0" z="15000.0" />
-        <box lunit="mm" name="MonitorBox" x="40.0" y="40" z="1" />
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube3000_Wall" rmax="12.7" rmin="12.2" startphi="0.0" z="3000.0" />
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube3000_He" rmax="12.5" rmin="0.0" startphi="0.0" z="3000.0" />
         <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="2.5" rmin="0.0" startphi="0.0" z="30.0" />
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube3000" rmax="12.7" rmin="0.0" startphi="0.0" z="3000.0" />
-            <!--<box lunit="mm" name="MonoBox" x="54" y="116" z="8.0" /> -->
         <box lunit="mm" name="MonoBox" x="116" y="54" z="8" />
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="He3Tube" rmax="12.5" rmin="0.0" startphi="0.0" z="600.0" />
-        <box lunit="mm" name="ModuleBox_L" x="25.4" y="175" z="600" />
-        <box lunit="mm" name="ModuleBox_G" x="25.4" y="175" z="600" />
         <box lunit="mm" name="solidPadBox" x="0.085" y="90" z="525.26" />
         <box lunit="mm" name="alpha1Box" x="50" y="90" z="525.26" />
-        <box lunit="mm" name="multiplierBox" x="50" y="50" z="0.5" />
         <box lunit="mm" name="TrdBox" x="3000" y="3000" z="1015" />
         <trd lunit="mm" name="ColliTrd" x1="90" y1="25" x2="30" y2="25" z="1015" />
         <subtraction name="ColliSub">
@@ -114,14 +80,12 @@
     <structure>
         <volume name="LV_ColliTrd">
             <solidref ref="ColliTrd"/>
-            <materialref ref="Vacuum"/>
-            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
+            <materialref ref="Universe"/>
         </volume>
 
         <volume name="LV_Trd_Colli">
             <solidref ref="TrdBox"/>
             <materialref ref="B4C"/>
-            <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
             <physvol name="LV_ColliTrd">
                 <volumeref ref="LV_ColliTrd"/>
             </physvol>
@@ -130,12 +94,11 @@
         <volume name="padBox">
             <solidref ref="solidPadBox"/>
             <materialref ref="B4C"/>
-            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
         </volume>
 
         <volume name="LV_alpha1Colli">
             <solidref ref="alpha1Box" />
-            <materialref  ref="Vacuum" />
+            <materialref  ref="Universe" />
             <physvol name="LV_Pad_1">
                 <volumeref ref="padBox" />
                 <positionref ref="P_Pad_1" />
@@ -230,19 +193,16 @@
             <solidref ref="SampleCan" />
             <materialref ref="Al2O3" />
             <rotation name="R_sample" unit="deg" x="0" y="-90" z="0"/>
-            <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
         </volume>
 
         <volume name="LV_Box_Mono_L">
             <solidref ref="MonoBox" />
             <materialref ref="Ge" />
-            <auxiliary auxtype="Color" auxvalue="#ffe4ff00" />
         </volume>
 
         <volume name="LV_Box_Mono_G">
             <solidref ref="MonoBox" />
-            <materialref ref="Vacuum"/>
-            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
+            <materialref ref="Universe"/>
 
             <physvol name="ModuleHe3_L">
                 <volumeref ref="LV_Box_Mono_L" />
@@ -252,14 +212,12 @@
         <volume name="LV_Detector">
             <solidref ref="Sphere_Detector"/>
             <materialref ref="G4_He3"/>
-            <auxiliary auxtype="Color" auxvalue="#00ff1700" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronStheta;name=ST_template;sample_position=0,-2750,0;beam_direction=0,-1,0;src_sample_dist=3650.;Qmin=10.0;Qmax=160;numbin=6000;type=ENTRY"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=Angular;name=ST_template;sample_position=0,-2750,0;beam_direction=0,-1,0;dist=3650.;angle_min_deg=10.0;angle_max_deg=160;numbin=6000;ptstate=ENTRY"/>
         </volume>
 
         <volume name="worldVOL">
             <solidref ref="WorldBox" />
             <materialref ref="Universe" />
-            <auxiliary auxtype="Color" auxvalue="#ff9f0000" />
 
             <physvol name="LV_Box_Mono">
                 <volumeref ref="LV_Box_Mono_G" />
