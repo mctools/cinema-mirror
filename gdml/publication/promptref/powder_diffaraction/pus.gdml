@@ -1,6 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
-
+<?xml version="1.0"?>
+<gdml>
     <userinfo>
       <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
       <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=1.5549;range_wl=0.05;src_w=40;src_h=40;
@@ -8,10 +7,6 @@
     </userinfo>
 
     <define>
-        <constant name="HALFPI" value="pi/2." />
-        <constant name="PI" value="1.*pi" />
-        <constant name="TWOPI" value="2.*pi" />
-        <rotation name="R_LV_Module" unit="deg" y="0.0" />
         <position name="P_Pad_1"  unit="mm" x="-24.95745" />
         <position name="P_Pad_2"  unit="mm" x="-22.58055" />
         <position name="P_Pad_3"  unit="mm" x="-20.20365" />
@@ -37,23 +32,23 @@
     </define>
 
     <materials>
-        <material name="Universe">
-          <atom value="freegas::H1/1e-26kgm3"/>
-        </material>
-
-        <material name="Air">
-            <atom value="ambient_air.ncmat"/>
-        </material>
-
         <material name="Ge">
           <atom value="Ge_PUS.ncmat;mos=0.267deg
                       ;dir1=@crys_hkl:5,1,1@lab:0,0,1
                       ;dir2=@crys_hkl:0,1,-1@lab:1,0,0"/>
         </material>
 
+        <material name="Universe">
+          <atom value="freegas::H1/1e-26kgm3"/>
+        </material>
+
         <material name="Al2O3">
           <atom value="physics=ncrystal;nccfg='Al2O3_sg167_Corundum.ncmat;density=0.5x';
                        scatter_bias=5.0;abs_bias=5.0"/>
+        </material>
+
+        <material name="G4_He3">
+          <atom value="freegas::He/1.076487kgm3/He_is_He3"/>
         </material>
 
         <material  name="B4C">
@@ -68,27 +63,19 @@
 
     <solids>
         <box lunit="mm" name="WorldBox" x="8000.0" y="10000.0" z="15000.0" />
-        <box lunit="mm" name="MonitorBox" x="40.0" y="40" z="1" />
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube3000_Wall" rmax="12.7" rmin="12.2" startphi="0.0" z="3000.0" />
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube3000_He" rmax="12.5" rmin="0.0" startphi="0.0" z="3000.0" />
         <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="2.5" rmin="0.0" startphi="0.0" z="30.0" /> -->
         <orb r="2.5" name="SampleCan"/>
-
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="Tube3000" rmax="12.7" rmin="0.0" startphi="0.0" z="3000.0" />
         <box lunit="mm" name="MonoBox" x="116" y="54" z="8" />
-        <tube aunit="deg" deltaphi="360.0" lunit="mm" name="He3Tube" rmax="12.5" rmin="0.0" startphi="0.0" z="600.0" />
-        <box lunit="mm" name="ModuleBox_L" x="25.4" y="175" z="600" />
-        <box lunit="mm" name="ModuleBox_G" x="25.4" y="175" z="600" />
         <box lunit="mm" name="solidPadBox" x="0.085" y="90" z="525.26" />
         <box lunit="mm" name="alpha1Box" x="50" y="90" z="525.26" />
         <box lunit="mm" name="multiplierBox" x="50" y="50" z="0.5" />
         <box lunit="mm" name="TrdBox" x="8000" y="8000" z="1015" />
         <trd lunit="mm" name="ColliTrd" x1="90" y1="25" x2="30" y2="25" z="1015" />
         <box lunit="mm" name="StopBox" x="100" y="100" z="200" />
-        <sphere aunit="deg" lunit="mm" name="Sphere_Detector" rmin="1200" rmax="1201" deltaphi="360" startphi="0" deltatheta="175" starttheta="2.5" />
+        <sphere aunit="deg" lunit="mm" name="Sphere_Detector" rmin="1200" rmax="1201" deltaphi="360" startphi="0" deltatheta="140" starttheta="20" />
     </solids>
 
- <structure>
+    <structure>
         <volume name="LV_ColliTrd">
             <solidref ref="ColliTrd"/>
             <materialref ref="Universe"/>
