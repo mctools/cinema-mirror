@@ -22,7 +22,9 @@ class McplAnalysor1D(PromptFileReader):
         super().__init__(self.filePath)
         edge = self.getData('edge')
         content = self.getData('content')
-        return edge[:-1], content/np.diff(edge)
+        x_hist = edge[:-1]
+        y_hist = content/np.diff(edge)
+        return x_hist, y_hist
     
     def getHistMany(self, seedStart, seedEnd):
         files = self.filesMany()
@@ -77,18 +79,19 @@ q_HWb4, p_HWb4 = HWb4.getHistMany(seedStart=1, seedEnd=25)
 plotStyle()
 
 # Normalization of simulation data and measured data (Figure 8)
-# d2o_soper = d2o_soper+self_cross_section
-# plt.scatter(q_soper, d2o_soper/np.trapz(d2o_soper, q_soper), s=12, color='black',label='Measured') #Soper(2013)
-# area = np.trapz(p_HW1[0:300], q_HW1[0:300])
-# plt.plot(q_HW1, p_HW1/area, label='Simulation') #Pn=1(Q)
-# plt.xlabel('Q, Å$^{-1}$') 
-# plt.ylabel('Interference DCS, arb.unit')
-# plt.grid()
-# plt.legend(fontsize=12*1.5, loc='best')
-# plt.tight_layout()
-# plt.show()
+plt.figure()
+d2o_soper = d2o_soper+self_cross_section
+plt.scatter(q_soper, d2o_soper/np.trapz(d2o_soper, q_soper), s=12, color='black',label='Measured') #Soper(2013)
+area = np.trapz(p_HW1[0:300], q_HW1[0:300])
+plt.plot(q_HW1, p_HW1/area, label='Simulated') #Pn=1(Q)
+plt.xlabel('Q, Å$^{-1}$') 
+plt.ylabel('Interference DCS, arb.unit')
+plt.grid()
+plt.legend(fontsize=12*1.5, loc='best')
+plt.tight_layout()
 
 # Comparison between P(Q) for different scattering numbers obtained from non-biased and biased runs (Figure 9)
+plt.figure()
 plt.ticklabel_format(axis='y', style='sci', scilimits=(0,1))
 plt.plot(q_HW, p_HW/numPar1*2, zorder=2, label='All Scatterings$\\times$2')
 plt.plot(q_HW1, p_HW1/numPar1, zorder=2, label=f'Single Scattering')
