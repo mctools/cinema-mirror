@@ -1,0 +1,4 @@
+1. Run prompt -g res4.gdml -n 1e7
+2. Edit abs_bias=1 in res4.gdml
+3. Change PSD scorer name in res4.gdml
+3. Rerun step 1
