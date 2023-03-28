@@ -67,9 +67,9 @@ class Tessellated:
         self.cobj = _pt_Tessellated_new(faces.shape[0], faces, points)
 
 class Transformation3D:
-    def __init__(self, x, y, z, phi=0, theta=0, psi=0, sx=1., sy=1., sz=1.):
+    def __init__(self, x=0, y=0, z=0, rx=0, ry=0, rz=0, sx=1., sy=1., sz=1.):
         # RScale followed by rotation followed by translation.
-        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, phi, theta, psi, sx, sy, sz)
+        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, rx, ry, rz, sx, sy, sz)
 
     def __del__(self):
         _pt_Transformation3D_delete(self.cobj)
