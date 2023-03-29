@@ -1,5 +1,4 @@
 import numpy as np
-from Cinema.Interface.units import avogadro
 from Cinema.Prompt import PromptFileReader
 from Cinema.Interface import plotStyle
 import matplotlib.pyplot as plt
@@ -40,12 +39,12 @@ class McplAnalysor1D(PromptFileReader):
 # constant
 inc_d = 7.64 # barn/atom , bound incoherent scattering cross section of deuterium atom
 inc_o = 4.232 # barn/atom , bound incoherent scattering cross section of oxygen atom
-self_cross_section = (2*inc_d+inc_o)/(4*np.pi)/3  #  barn/atom, self cross section per atom of heavy water
+self_cross_section = (2*inc_d+inc_o)/(4*np.pi)/3  #  barn/atom/sr, self cross section per atom of heavy water
 numPar1 = 2e10 # incident neutron number of non-biased run
 numPar2 = 2e9 # incident neutron number of biased run
 
 # Soper Data 
-soperData=h5py.File("HeavyWater_Soper.h5","r")
+soperData=h5py.File("HeavyWater_Soper.h5","r") # Soper(2013)
 q_soper=np.array(soperData['Q'])
 d2o_soper=np.array(soperData['d2o_cross_section']) # Interference differential scattering cross section for heavy water
 soperData.close()
@@ -77,13 +76,13 @@ HWb4 = McplAnalysor1D('./HW_biased_Data/*ScorerNeutronSq_PofQ4_HW_seed*.mcpl.gz'
 q_HWb4, p_HWb4 = HWb4.getHistMany(seedStart=1, seedEnd=25)
 
 plotStyle()
-
 # Normalization of simulation data and measured data (Figure 8)
 plt.figure()
 d2o_soper = d2o_soper+self_cross_section
-plt.scatter(q_soper, d2o_soper/np.trapz(d2o_soper, q_soper), s=12, color='black',label='Measured') #Soper(2013)
-area = np.trapz(p_HW1[0:300], q_HW1[0:300])
-plt.plot(q_HW1, p_HW1/area, label='Simulated') #Pn=1(Q)
+plt.scatter(q_soper, d2o_soper/np.trapz(d2o_soper[18:399], q_soper[18:399]), s=12, color='black',label='Measured') 
+area = np.trapz(p_HW1[9:200], q_HW1[9:200])
+plt.plot(q_HW1, p_HW1/area, label='Simulated') 
+plt.xlim([0,35])
 plt.xlabel('Q, Å$^{-1}$') 
 plt.ylabel('Interference DCS, arb.unit')
 plt.grid()
