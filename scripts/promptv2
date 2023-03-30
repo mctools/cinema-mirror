@@ -21,7 +21,7 @@ sample = Volume("sample", Box(20,20,20))
 water = Volume('sbox', Box(2,2,2), matCfg = matCfg_sample)
 
 for i in range(10):
-    sample.placeChild("ssample", water, Transformation3D(0,0,2.2*(i-5.0)))
+    sample.placeChild("ssample", water, Transformation3D(0,0,2.2*(i-5.0)), scorerGroup=i)
 
 
 world.placeChild("physicalbox", detector, Transformation3D(0., 0., 50, sx=2, sy=2), 1)
