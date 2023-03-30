@@ -31,6 +31,7 @@ namespace Prompt {
   class StackManager {
   public:
     void add(std::unique_ptr<Particle> aparticle);
+    void add(const Particle& aparticle, unsigned number);
     std::unique_ptr<Particle> pop();
     bool empty() const;
 

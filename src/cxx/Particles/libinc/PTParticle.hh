@@ -38,6 +38,8 @@ namespace Prompt {
   public:
     Particle();
     Particle(double ekin, const Vector& dir, const Vector& pos);
+    Particle(const Particle& p);
+
     virtual ~Particle(){};
 
     void moveForward(double length);
@@ -113,6 +115,10 @@ inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& 
   m_dir.normalise();
 }
 
+inline Prompt::Particle::Particle(const Particle& p)
+{
+  *this = p;
+}
 
 inline void Prompt::Particle::moveForward(double length)
 {

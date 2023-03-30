@@ -37,7 +37,11 @@ void Prompt::ScorerNeutronSq::score(Prompt::Particle &particle)
   {
     double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
     if(m_qtrue)
-      m_hist->fill(neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin()), particle.getWeight());  
+    {
+      double qt = neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin());
+      if(qt)
+        m_hist->fill(qt, particle.getWeight()/qt); 
+    }
     else //static approximation
     {
       double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();

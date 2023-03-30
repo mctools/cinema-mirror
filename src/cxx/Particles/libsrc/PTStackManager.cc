@@ -38,6 +38,17 @@ void Prompt::StackManager::add(std::unique_ptr<Prompt::Particle> aParticle)
   m_stack.emplace_back(std::move(aParticle));
 }
 
+void Prompt::StackManager::add(const Prompt::Particle& aparticle, unsigned number)
+{
+  pt_assert_always(number);
+  for(unsigned i=0;i<number;i++)
+  {
+    auto np = std::make_unique<Particle>(aparticle);
+    m_stack.emplace_back(std::move(np));
+  }
+}
+
+
 std::unique_ptr<Prompt::Particle> Prompt::StackManager::pop()
 {
   auto p = std::move(m_stack.back());
