@@ -163,7 +163,7 @@
         <volume name="LV_Box_Module300_L">
             <solidref ref="Module300_L" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMapM300;xmin=-170;xmax=170;numBins_x=68;ymin=-125;ymax=125;numBins_y=50;type=YZ"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMapM300;xmin=-170;xmax=170;numbin_x=68;ymin=-125;ymax=125;numbin_y=50;type=YZ"/>
             <physvol name="LV_Tube300_1">
                 <volumeref ref="LV_Tube300" />
                 <positionref ref="P_LV_Tube_1" />
@@ -201,7 +201,7 @@
         <volume name="LV_Box_Module500_L">
             <solidref ref="Module500_L" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMapM500;xmin=-270;xmax=270;numBins_x=108;ymin=-125;ymax=125;numBins_y=50;type=YZ"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMapM500;xmin=-270;xmax=270;numbin_x=108;ymin=-125;ymax=125;numbin_y=50;type=YZ"/>
             <physvol name="LV_Tube500_1">
                 <volumeref ref="LV_Tube500" />
                 <positionref ref="P_LV_Tube_1" />
