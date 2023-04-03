@@ -153,7 +153,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       //  dist=3650.;Anglemin=10.0;Anglemax=160;numbin=6000;ptstate=ENTRY;linear=yes"
 
 
-      int parCount = 9;
+      int parCount = 10;
 
       // The mandatory parameters
       bool force = true;
@@ -175,6 +175,24 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       else
       {
        ptstate = getPTS (ptstateInStr);
+      }
+
+      bool linear = true;
+      std::string linearInStr = cfg.find("linear");
+      if(linearInStr.empty())
+        parCount--;
+      else
+      {
+        if(linearInStr=="yes")
+        {
+          linear = true;
+        }
+        else if(linearInStr=="no")
+          linear = false;
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"linear\" should either be \"yes\" or \"no\"");
+        }
+
       }
 
       if(parCount!=cfg.size())
