@@ -273,7 +273,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // ESpectrum: energy spectrum
       // example cfg
-      // ""Scorer=ESD; name=detector; Emin=0.0; Emax=0.0253; numbin=100""
+      // "Scorer=ESD; name=detector; Emin=0.0; Emax=0.0253; numbin=100; ptstate=ENTRY"
 
       int parCount = 6;
 
@@ -302,9 +302,9 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     }
     else if(ScorDef == "WlSpectrum")
     {
-      // ESpectrum: energy spectrum
+      // WlSpectrum: wavelength spectrum
       // example cfg
-      // ""Scorer=ESD; name=detector; Emin=0.0; Emax=0.0253; numbin=100""
+      // "Scorer=WlSpectrum; name=detector; Emin=0.0; Emax=0.0253; numbin=100; ptstate=ENTRY"
 
       int parCount = 6;
 
@@ -326,7 +326,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type ESpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type WlSpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
       return std::make_shared<ScorerWlSpectrum>(name, minWl, maxWl, numBin, ptstate);
@@ -335,7 +335,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // TOF: time-of-flight
       // example cfg
-      // ""Scorer=TOF; name=detector; Tmin=0.0; Tmax=0.5; numbin=1000""
+      // "Scorer=TOF; name=detector; Tmin=0.0; Tmax=0.5; numbin=1000; ptstate=ENTRY"
 
       int parCount = 6;
 
