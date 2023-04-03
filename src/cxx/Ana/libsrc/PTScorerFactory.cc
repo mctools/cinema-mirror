@@ -63,8 +63,6 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // "Scorer=NeutronSq; name=SofQ;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;
       // ptstate=ENTRY;linear=yes;Qmin=0.5;Qmax=50;numbin=1000;Qtrue=yes;scatnum=-1"
 
-      // where ptstate can be ENTRY(default) or ABSORB, the default value for linear is yes
-
 
       int parCount = 12;
 
@@ -151,10 +149,8 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     if(ScorDef == "Angular")
     {
       // example cfg
-      // "Scorer=Angular;name=ST_template;sample_position=0,-1750,0;beam_direction=0,-1,0;
-      //  dist=3650.;angle_min_deg=10.0;angle_max_deg=160;numbin=6000;ptstate=ENTRY"
-
-      // where ptstate can be ENTRY(default) or ABSORB, the default value for linear is yes
+      // "Scorer=Angular;name=ST_template;sample_pos=0,-1750,0;beam_dir=0,-1,0;
+      //  dist=3650.;Anglemin=10.0;Anglemax=160;numbin=6000;ptstate=ENTRY;linear=yes"
 
 
       int parCount = 9;
@@ -162,11 +158,11 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      auto samplePos = string2vec(cfg.find("sample_position", force));
-      auto beamDir = string2vec(cfg.find("beam_direction", force));
+      auto samplePos = string2vec(cfg.find("sample_pos", force));
+      auto beamDir = string2vec(cfg.find("beam_dir", force));
       double moderator2SampleDist = ptstod(cfg.find("dist", force));
-      double angle_min = ptstod(cfg.find("angle_min_deg", force));
-      double angle_max = ptstod(cfg.find("angle_max_deg", force));
+      double angle_min = ptstod(cfg.find("Anglemin", force));
+      double angle_max = ptstod(cfg.find("Anglemax", force));
       int numBin = ptstoi(cfg.find("numbin", force));
       
 
@@ -183,7 +179,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type NeutronSq is missing or with extra config parameters " << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type Angular is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
       return std::make_shared<Prompt::ScorerAngular>(name, samplePos, beamDir, moderator2SampleDist, angle_min, angle_max, numBin, ptstate);
     }
