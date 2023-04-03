@@ -28,7 +28,7 @@ namespace Prompt {
 
   class ScorerWlSpectrum  : public Scorer1D {
   public:
-    ScorerWlSpectrum(const std::string &name, double xmin, double xmax, unsigned nxbins);
+    ScorerWlSpectrum(const std::string &name, double xmin, double xmax, unsigned nxbins, ScorerType stype=Scorer::ScorerType::ENTRY);
     virtual ~ScorerWlSpectrum();
     virtual void score(Particle &particle) override;
   };
