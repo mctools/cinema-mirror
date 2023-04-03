@@ -367,7 +367,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // MultiScat: multiple scattering
       // example cfg
-      // ""Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; ptstate=PROPAGATE; linear=yes""
+      // "Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; ptstate=PROPAGATE; linear=yes"
       // the default value for linear is yes
 
       int parCount = 6;
@@ -375,11 +375,39 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      double minNumber = ptstod(cfg.find("Numbermin", force));
-      double maxNumber = ptstod(cfg.find("Numbermax", force));
+      
+      // the optional parameters
+      int minNumber = 0;
+      if(cfg.find("Numbermin")=="") 
+        parCount--;
+      else
+      {
+        int minNumberInInt = ptstoi(cfg.find("Numbermin"));
+        if(minNumberInInt>=0 )
+        {
+          minNumber = minNumberInInt;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"Numbermin\" should an integer greater than or equal to 0");
+        }
+      }
+
+      int maxNumber = 5;
+      if(cfg.find("Numbermax")=="") 
+        parCount--;
+      else
+      {
+        int maxNumberInInt = ptstoi(cfg.find("Numbermax"));
+        if(maxNumberInInt>=0 )
+        {
+          maxNumber = maxNumberInInt;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"Numbermax\" should an integer greater than or equal to 0");
+        }
+      }
       int numBin = maxNumber-minNumber+1;
 
-      // the optional parameters
       Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
       std::string ptstateInStr = cfg.find("ptstate");
       if(ptstateInStr.empty())
