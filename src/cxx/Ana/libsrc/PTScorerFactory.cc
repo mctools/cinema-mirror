@@ -275,7 +275,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // example cfg
       // ""Scorer=ESD; name=detector; Emin=0.0; Emax=0.0253; numbin=100""
 
-      int parCount = 5;
+      int parCount = 6;
 
       // The mandatory parameters
       bool force = true;
@@ -284,12 +284,21 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double maxE = ptstod(cfg.find("Emax", force));
       int numBin = ptstoi(cfg.find("numbin", force));
 
+      Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        ptstate = getPTS (ptstateInStr);
+      }
+
       if(parCount!=cfg.size())
       {
         PROMPT_THROW2(BadInput, "Scorer type ESpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerESpectrum>(name, minE, maxE, numBin);
+      return std::make_shared<ScorerESpectrum>(name, minE, maxE, numBin, ptstate);
     }
     else if(ScorDef == "WlSpectrum")
     {
