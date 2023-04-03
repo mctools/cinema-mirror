@@ -18,46 +18,27 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "PTScorerSplit.hh"
 #include "PTStackManager.hh"
 
+Prompt::ScorerSplit::ScorerSplit(const std::string &name, unsigned split)
+:Scorer1D("ScorerSplit_"+ name, Scorer::ScorerType::ENTRY, 
+  std::make_unique<Hist1D>("ScorerSplit_"+ name, 1e-10, 1e2, 1200, false)), m_split(split), m_lastsplit(-1)
+{ }
 
-std::ostream& Prompt::operator << (std::ostream &o, const StackManager&s)
+Prompt::ScorerSplit::~ScorerSplit() {}
+
+void Prompt::ScorerSplit::score(Particle &particle)
 {
-  o<<"********StackManager*****************\n";
-
-  for(auto it=s.m_stack.begin();it!=s.m_stack.end();++it)
+  if(m_lastsplit != particle.getEventID() )
   {
-    o<< *it->get() << std::endl;
-    o<<"*************************\n";
+    m_hist->fill(particle.getWeight());
+    if (m_split>1)
+    {
+      particle.scaleWeight(1./m_split);
+      auto &stackManager = Singleton<StackManager>::getInstance();
+      stackManager.add(particle, m_split-1);
+    }
+    m_lastsplit = particle.getEventID();
   }
-  return o;
-}
-
-void Prompt::StackManager::add(std::unique_ptr<Prompt::Particle> aParticle)
-{
-  m_stack.emplace_back(std::move(aParticle));
-}
-
-void Prompt::StackManager::add(const Prompt::Particle& aparticle, unsigned number)
-{
-  pt_assert_always(number);
-  for(unsigned i=0;i<number;i++)
-  {
-    auto np = std::make_unique<Particle>(aparticle);
-    m_stack.emplace_back(std::move(np));
-  }
-}
-
-
-std::unique_ptr<Prompt::Particle> Prompt::StackManager::pop()
-{
-  auto p = std::move(m_stack.back());
-  m_stack.pop_back();
-  return p;
-}
-
-
-bool Prompt::StackManager::empty() const
-{
-  return m_stack.empty();
 }

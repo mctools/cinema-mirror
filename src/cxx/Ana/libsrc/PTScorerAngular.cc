@@ -37,5 +37,5 @@ void Prompt::ScorerAngular::score(Prompt::Particle &particle)
 {
     
   double angle_cos = (m_samplePos-particle.getPosition()).angleCos(m_refDir);
-  m_hist->fill(std::acos(angle_cos)*const_rad2deg, particle.getWeight());
+  m_hist->fill(180-std::acos(angle_cos)*const_rad2deg, particle.getWeight());
 }
