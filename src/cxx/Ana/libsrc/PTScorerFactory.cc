@@ -315,7 +315,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double maxWl = ptstod(cfg.find("Wlmax", force));
       int numBin = ptstoi(cfg.find("numbin", force));
 
-       Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
+      Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
       std::string ptstateInStr = cfg.find("ptstate");
       if(ptstateInStr.empty())
         parCount--;
@@ -337,7 +337,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // example cfg
       // ""Scorer=TOF; name=detector; Tmin=0.0; Tmax=0.5; numbin=1000""
 
-      int parCount = 5;
+      int parCount = 6;
 
       // The mandatory parameters
       bool force = true;
@@ -346,12 +346,21 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double maxT = ptstod(cfg.find("Tmax", force));
       int numBin = ptstoi(cfg.find("numbin", force));
 
+      Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        ptstate = getPTS (ptstateInStr);
+      }
+
       if(parCount!=cfg.size())
       {
         PROMPT_THROW2(BadInput, "Scorer type TOF is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerTOF>(name, minT, maxT, numBin);
+      return std::make_shared<ScorerTOF>(name, minT, maxT, numBin, ptstate);
     }
     else if(ScorDef == "MultiScat")
     {
