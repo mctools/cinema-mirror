@@ -71,8 +71,8 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      auto samplePos = string2vec(cfg.find("sample_position", force));
-      auto beamDir = string2vec(cfg.find("beam_direction", force));
+      auto samplePos = string2vec(cfg.find("sample_pos", force));
+      auto beamDir = string2vec(cfg.find("beam_dir", force));
       double moderator2SampleDist = ptstod(cfg.find("dist", force));
       double minQ = ptstod(cfg.find("Qmin", force));
       double maxQ = ptstod(cfg.find("Qmax", force));
