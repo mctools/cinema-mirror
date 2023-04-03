@@ -60,8 +60,8 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     if(ScorDef == "NeutronSq")
     {
       // example cfg
-      // ""Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;dist=-100;
-      // ptstate=ENTRY; linear=yes; Qmin=0.5; Qmax = 50; numbin=1000""
+      // "Scorer=NeutronSq; name=SofQ;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;
+      // ptstate=ENTRY;linear=yes;Qmin=0.5;Qmax=50;numbin=1000;Qtrue=yes;scatnum=-1"
 
       // where ptstate can be ENTRY(default) or ABSORB, the default value for linear is yes
 
@@ -120,33 +120,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         parCount--;
       else
       {
-        if(ptstateInStr=="ENTRY")
-        {
-          ptstate = Scorer::ScorerType::ENTRY;
-        }
-        else if(ptstateInStr=="ABSORB")
-        {
-          ptstate = Scorer::ScorerType::ABSORB;
-        }
-        else if(ptstateInStr=="SURFACE")
-        {
-          ptstate = Scorer::ScorerType::SURFACE;
-        }
-        else if(ptstateInStr=="PROPAGATE")
-        {
-          ptstate = Scorer::ScorerType::PROPAGATE;
-        }
-        else if(ptstateInStr=="EXIT")
-        {
-          ptstate = Scorer::ScorerType::EXIT;
-        }
-        else if(ptstateInStr=="ENTRY2EXIT")
-        {
-          ptstate = Scorer::ScorerType::ENTRY2EXIT;
-        }
-        else {
-          PROMPT_THROW2(BadInput, "ptstate does not support" << " " << ptstateInStr);
-        }
+        ptstate = getPTS (ptstateInStr);
       }
 
       bool linear = true;
