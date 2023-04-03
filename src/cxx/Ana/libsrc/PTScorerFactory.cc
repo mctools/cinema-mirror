@@ -439,7 +439,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       std::string name = cfg.find("name", force);
       double xmin = ptstod(cfg.find("xmin", force));
       double xmax = ptstod(cfg.find("xmax", force));
-      int nxbins = ptstoi(cfg.find("numBins_x", force));
+      int nxbins = ptstoi(cfg.find("numbin", force));
 
       Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
       std::string ptstateInStr = cfg.find("ptstate");
