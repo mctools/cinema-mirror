@@ -31,7 +31,7 @@
         <volume name="VolBox">
             <solidref ref="boxSolid" />
             <materialref ref="HWater" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ;sample_position=0,0,0;beam_direction=0,0,1;dist=400;ptstate=ENTRY;linear=no;Qmin=0.01;Qmax=50;numbin=1000"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=NeutronSq;name=SofQ;sample_pos=0,0,0;beam_dir=0,0,1;dist=400;ptstate=ENTRY;linear=no;Qmin=0.01;Qmax=50;numbin=1000"/>
         </volume>
 
 
