@@ -224,10 +224,10 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       std::string name = cfg.find("name", force);
       double xmin = ptstod(cfg.find("xmin", force));
       double xmax = ptstod(cfg.find("xmax", force));
-      int nxbins = ptstoi(cfg.find("numBins_x", force));
+      int nxbins = ptstoi(cfg.find("numbin_x", force));
       double ymin = ptstod(cfg.find("ymin", force));
       double ymax = ptstod(cfg.find("ymax", force));
-      int nybins = ptstoi(cfg.find("numBins_y", force));
+      int nybins = ptstoi(cfg.find("numbin_y", force));
 
       Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
       std::string ptstateInStr = cfg.find("ptstate");
