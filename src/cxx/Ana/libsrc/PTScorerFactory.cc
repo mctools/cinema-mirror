@@ -404,6 +404,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       {
         ptstate = getPTS (ptstateInStr);
       }
+
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
       if(linearInStr.empty())
@@ -432,13 +433,22 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // VolFluence: volume flux
 
-      int parCount = 6;
+      int parCount = 7;
 
       bool force = true;
       std::string name = cfg.find("name", force);
       double xmin = ptstod(cfg.find("xmin", force));
       double xmax = ptstod(cfg.find("xmax", force));
       int nxbins = ptstoi(cfg.find("numBins_x", force));
+
+      Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        ptstate = getPTS (ptstateInStr);
+      }
 
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
@@ -463,7 +473,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type VolFluence is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerVolFluence>(name, xmin, xmax, nxbins, linear, vol);
+      return std::make_shared<Prompt::ScorerVolFluence>(name, xmin, xmax, nxbins, vol, ptstate, linear);
 
     }
     else if(ScorDef == "Split")
