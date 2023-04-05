@@ -74,10 +74,15 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double moderator2SampleDist = ptstod(cfg.find("dist", force));
       double minQ = ptstod(cfg.find("Qmin", force));
       double maxQ = ptstod(cfg.find("Qmax", force));
-      int numBin = ptstoi(cfg.find("numbin", force));
+
+      int numBin = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        numBin = ptstoi(cfg.find("numbin"));
+      }
       
-
-
       // the optional parameters
       bool qtrue = true;
       std::string qtrueInStr = cfg.find("Qtrue");
@@ -163,7 +168,14 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       double moderator2SampleDist = ptstod(cfg.find("dist", force));
       double angle_min = ptstod(cfg.find("Anglemin", force));
       double angle_max = ptstod(cfg.find("Anglemax", force));
-      int numBin = ptstoi(cfg.find("numbin", force));
+
+      int numBin = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        numBin = ptstoi(cfg.find("numbin"));
+      }
       
 
       // the optional parameters
@@ -213,10 +225,24 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       std::string name = cfg.find("name", force);
       double xmin = ptstod(cfg.find("xmin", force));
       double xmax = ptstod(cfg.find("xmax", force));
-      int nxbins = ptstoi(cfg.find("numbin_x", force));
       double ymin = ptstod(cfg.find("ymin", force));
       double ymax = ptstod(cfg.find("ymax", force));
-      int nybins = ptstoi(cfg.find("numbin_y", force));
+
+      int nxbins = 100;
+      if(cfg.find("numbin_x")=="") 
+        parCount--;
+      else
+      {
+        nxbins = ptstoi(cfg.find("numbin_x"));
+      }
+
+      int nybins = 100;
+      if(cfg.find("numbin_y")=="") 
+        parCount--;
+      else
+      {
+        nybins = ptstoi(cfg.find("numbin_y"));
+      }
 
       Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
       std::string ptstateInStr = cfg.find("ptstate");
@@ -271,7 +297,14 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       std::string name = cfg.find("name", force);
       double minE = ptstod(cfg.find("Emin", force));
       double maxE = ptstod(cfg.find("Emax", force));
-      int numBin = ptstoi(cfg.find("numbin", force));
+
+      int numBin = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        numBin = ptstoi(cfg.find("numbin"));
+      }
 
       Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
       std::string ptstateInStr = cfg.find("ptstate");
@@ -302,7 +335,14 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       std::string name = cfg.find("name", force);
       double minWl = ptstod(cfg.find("Wlmin", force));
       double maxWl = ptstod(cfg.find("Wlmax", force));
-      int numBin = ptstoi(cfg.find("numbin", force));
+
+      int numBin = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        numBin = ptstoi(cfg.find("numbin"));
+      }
 
       Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
       std::string ptstateInStr = cfg.find("ptstate");
@@ -333,7 +373,14 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       std::string name = cfg.find("name", force);
       double minT = ptstod(cfg.find("Tmin", force));
       double maxT = ptstod(cfg.find("Tmax", force));
-      int numBin = ptstoi(cfg.find("numbin", force));
+
+      int numBin = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        numBin = ptstoi(cfg.find("numbin"));
+      }
 
       Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
       std::string ptstateInStr = cfg.find("ptstate");
@@ -439,7 +486,14 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       std::string name = cfg.find("name", force);
       double xmin = ptstod(cfg.find("xmin", force));
       double xmax = ptstod(cfg.find("xmax", force));
-      int nxbins = ptstoi(cfg.find("numbin", force));
+
+      int nxbins = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        nxbins = ptstoi(cfg.find("numbin"));
+      }
 
       Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
       std::string ptstateInStr = cfg.find("ptstate");
