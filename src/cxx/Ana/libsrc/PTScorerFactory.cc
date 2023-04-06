@@ -113,7 +113,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
           scatnum = scatnumInInt;
         }
         else {
-          PROMPT_THROW2(BadInput, "The value for \"scatnum\" should an integer greater than or equal to -1");
+          PROMPT_THROW2(BadInput, "The value for \"scatnum\" should be an integer greater than or equal to -1");
         }
       }
 
@@ -423,7 +423,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
           minNumber = minNumberInInt;
         }
         else {
-          PROMPT_THROW2(BadInput, "The value for \"Numbermin\" should an integer greater than or equal to 0");
+          PROMPT_THROW2(BadInput, "The value for \"Numbermin\" should be an integer greater than or equal to 0");
         }
       }
 
@@ -438,7 +438,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
           maxNumber = maxNumberInInt;
         }
         else {
-          PROMPT_THROW2(BadInput, "The value for \"Numbermax\" should an integer greater than or equal to 0");
+          PROMPT_THROW2(BadInput, "The value for \"Numbermax\" should be an integer greater than or equal to 0");
         }
       }
       int numBin = maxNumber-minNumber+1;
