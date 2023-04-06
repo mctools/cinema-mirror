@@ -107,8 +107,19 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
 
       // the optional parameters
       double energy = 0;
-      if(!cfg.getDoubleIfExist("energy", energy))
+      if(cfg.find("energy")=="") 
         parCount--;
+      else
+      {
+        double energyInInt = ptstod(cfg.find("energy"));
+        if(energyInInt>=0 )
+        {
+          energy = energyInInt;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"energy\" should be greater than or equal to 0");
+        }
+      }
 
       Vector direction = Vector{0.,0.,1.};
       if(!cfg.getVectorIfExist("direction", direction))
@@ -136,12 +147,18 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
 
       // the optional parameters
       double energy = 0;
-      std::string energyInStr = cfg.find("energy");
-      if(energyInStr.empty())
+      if(cfg.find("energy")=="") 
         parCount--;
       else
       {
-        energy = ptstod(energyInStr);
+        double energyInInt = ptstod(cfg.find("energy"));
+        if(energyInInt>=0 )
+        {
+          energy = energyInInt;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"energy\" should be greater than or equal to 0");
+        }
       }
 
       if(parCount!=cfg.size())
