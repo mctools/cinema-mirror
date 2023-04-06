@@ -179,14 +179,31 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
 
       // The mandatory parameters
       bool force = true;
-      double mean_wl = ptstod(cfg.find("mean_wl",force));
-      double range_wl = ptstod(cfg.find("range_wl",force));
+      // double mean_wl = ptstod(cfg.find("mean_wl",force));
+      // double range_wl = ptstod(cfg.find("range_wl",force));
       double src_w = ptstod(cfg.find("src_w", force));
       double src_h = ptstod(cfg.find("src_h", force));
       double src_z = ptstod(cfg.find("src_z", force));
       double slit_w = ptstod(cfg.find("slit_w", force));
       double slit_h = ptstod(cfg.find("slit_h", force));
       double slit_z = ptstod(cfg.find("slit_z", force));
+
+      // the optional parameters
+      double mean_wl = 1;
+      if(cfg.find("mean_wl")=="") 
+        parCount--;
+      else
+      {
+        mean_wl = ptstod(cfg.find("mean_wl"));
+      }
+
+      double range_wl = 0.0001;
+      if(cfg.find("range_wl")=="") 
+        parCount--;
+      else
+      {
+        range_wl = ptstod(cfg.find("range_wl"));
+      }
 
       if(parCount!=cfg.size())
       {
