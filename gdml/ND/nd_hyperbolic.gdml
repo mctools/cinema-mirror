@@ -77,14 +77,14 @@
       <materialref ref="Vacuum"/>
       <solidref ref="sideDetSolid"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=side;xmin=-300;
-        xmax=300;numBins_x=5;ymin=-2500;ymax=2500;numBins_y=50;type=YZ"/>
+        xmax=300;numbin_x=5;ymin=-2500;ymax=2500;numbin_y=50;type=YZ"/>
     </volume>
 
     <volume name="Detector">
       <materialref ref="Vacuum"/>
       <solidref ref="DetectorSolid"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap;
-        xmin=-250;xmax=250;numBins_x=50;ymin=-250;ymax=250;numBins_y=50;type=XY"/>
+        xmin=-250;xmax=250;numbin_x=50;ymin=-250;ymax=250;numbin_y=50;type=XY"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=detector;
         Emin=0.0; Emax=0.5; numbin=200"/>
     </volume>
@@ -93,7 +93,7 @@
       <materialref ref="Vacuum"/>
       <solidref ref="GuideEntrySolid"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap2;
-        xmin=-50;xmax=50;numBins_x=11;ymin=-50;ymax=50;numBins_y=11;type=XY"/>
+        xmin=-50;xmax=50;numbin_x=11;ymin=-50;ymax=50;numbin_y=11;type=XY"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=detector2;
         Emin=0.0; Emax=0.5; numbin=200"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=entryTOF;

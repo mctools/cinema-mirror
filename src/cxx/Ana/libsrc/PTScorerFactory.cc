@@ -60,10 +60,8 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     if(ScorDef == "NeutronSq")
     {
       // example cfg
-      // ""Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;dist=-100;
-      // ptstate=ENTRY; linear=yes; Qmin=0.5; Qmax = 50; numbin=1000""
-
-      // where ptstate can be ENTRY(default) or ABSORB, the default value for linear is yes
+      // "Scorer=NeutronSq; name=SofQ;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;
+      // ptstate=ENTRY;linear=yes;Qmin=0.5;Qmax=50;numbin=1000;Qtrue=yes;scatnum=-1"
 
 
       int parCount = 12;
@@ -71,15 +69,20 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      auto samplePos = string2vec(cfg.find("sample_position", force));
-      auto beamDir = string2vec(cfg.find("beam_direction", force));
+      auto samplePos = string2vec(cfg.find("sample_pos", force));
+      auto beamDir = string2vec(cfg.find("beam_dir", force));
       double moderator2SampleDist = ptstod(cfg.find("dist", force));
       double minQ = ptstod(cfg.find("Qmin", force));
       double maxQ = ptstod(cfg.find("Qmax", force));
-      int numBin = ptstoi(cfg.find("numbin", force));
+
+      int numBin = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        numBin = ptstoi(cfg.find("numbin"));
+      }
       
-
-
       // the optional parameters
       bool qtrue = true;
       std::string qtrueInStr = cfg.find("Qtrue");
@@ -120,33 +123,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         parCount--;
       else
       {
-        if(ptstateInStr=="ENTRY")
-        {
-          ptstate = Scorer::ScorerType::ENTRY;
-        }
-        else if(ptstateInStr=="ABSORB")
-        {
-          ptstate = Scorer::ScorerType::ABSORB;
-        }
-        else if(ptstateInStr=="SURFACE")
-        {
-          ptstate = Scorer::ScorerType::SURFACE;
-        }
-        else if(ptstateInStr=="PROPAGATE")
-        {
-          ptstate = Scorer::ScorerType::PROPAGATE;
-        }
-        else if(ptstateInStr=="EXIT")
-        {
-          ptstate = Scorer::ScorerType::EXIT;
-        }
-        else if(ptstateInStr=="ENTRY2EXIT")
-        {
-          ptstate = Scorer::ScorerType::ENTRY2EXIT;
-        }
-        else {
-          PROMPT_THROW2(BadInput, "ptstate does not support" << " " << ptstateInStr);
-        }
+        ptstate = getPTS (ptstateInStr);
       }
 
       bool linear = true;
@@ -177,23 +154,28 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     if(ScorDef == "Angular")
     {
       // example cfg
-      // "Scorer=Angular;name=ST_template;sample_position=0,-1750,0;beam_direction=0,-1,0;
-      //  dist=3650.;angle_min_deg=10.0;angle_max_deg=160;numbin=6000;ptstate=ENTRY"
-
-      // where ptstate can be ENTRY(default) or ABSORB, the default value for linear is yes
+      // "Scorer=Angular;name=ST_template;sample_pos=0,-1750,0;beam_dir=0,-1,0;
+      //  dist=3650.;Anglemin=10.0;Anglemax=160;numbin=6000;ptstate=ENTRY;linear=yes"
 
 
-      int parCount = 9;
+      int parCount = 10;
 
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      auto samplePos = string2vec(cfg.find("sample_position", force));
-      auto beamDir = string2vec(cfg.find("beam_direction", force));
+      auto samplePos = string2vec(cfg.find("sample_pos", force));
+      auto beamDir = string2vec(cfg.find("beam_dir", force));
       double moderator2SampleDist = ptstod(cfg.find("dist", force));
-      double angle_min = ptstod(cfg.find("angle_min_deg", force));
-      double angle_max = ptstod(cfg.find("angle_max_deg", force));
-      int numBin = ptstoi(cfg.find("numbin", force));
+      double angle_min = ptstod(cfg.find("Anglemin", force));
+      double angle_max = ptstod(cfg.find("Anglemax", force));
+
+      int numBin = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        numBin = ptstoi(cfg.find("numbin"));
+      }
       
 
       // the optional parameters
@@ -207,9 +189,27 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
        ptstate = getPTS (ptstateInStr);
       }
 
+      bool linear = true;
+      std::string linearInStr = cfg.find("linear");
+      if(linearInStr.empty())
+        parCount--;
+      else
+      {
+        if(linearInStr=="yes")
+        {
+          linear = true;
+        }
+        else if(linearInStr=="no")
+          linear = false;
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"linear\" should either be \"yes\" or \"no\"");
+        }
+
+      }
+
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type NeutronSq is missing or with extra config parameters " << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type Angular is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
       return std::make_shared<Prompt::ScorerAngular>(name, samplePos, beamDir, moderator2SampleDist, angle_min, angle_max, numBin, ptstate);
     }
@@ -225,10 +225,24 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       std::string name = cfg.find("name", force);
       double xmin = ptstod(cfg.find("xmin", force));
       double xmax = ptstod(cfg.find("xmax", force));
-      int nxbins = ptstoi(cfg.find("numBins_x", force));
       double ymin = ptstod(cfg.find("ymin", force));
       double ymax = ptstod(cfg.find("ymax", force));
-      int nybins = ptstoi(cfg.find("numBins_y", force));
+
+      int nxbins = 100;
+      if(cfg.find("numbin_x")=="") 
+        parCount--;
+      else
+      {
+        nxbins = ptstoi(cfg.find("numbin_x"));
+      }
+
+      int nybins = 100;
+      if(cfg.find("numbin_y")=="") 
+        parCount--;
+      else
+      {
+        nybins = ptstoi(cfg.find("numbin_y"));
+      }
 
       Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
       std::string ptstateInStr = cfg.find("ptstate");
@@ -274,73 +288,121 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // ESpectrum: energy spectrum
       // example cfg
-      // ""Scorer=ESD; name=detector; Emin=0.0; Emax=0.0253; numbin=100""
+      // "Scorer=ESD; name=detector; Emin=0.0; Emax=0.0253; numbin=100; ptstate=ENTRY"
 
-      int parCount = 5;
+      int parCount = 6;
 
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
       double minE = ptstod(cfg.find("Emin", force));
       double maxE = ptstod(cfg.find("Emax", force));
-      int numBin = ptstoi(cfg.find("numbin", force));
+
+      int numBin = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        numBin = ptstoi(cfg.find("numbin"));
+      }
+
+      Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        ptstate = getPTS (ptstateInStr);
+      }
 
       if(parCount!=cfg.size())
       {
         PROMPT_THROW2(BadInput, "Scorer type ESpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerESpectrum>(name, minE, maxE, numBin);
+      return std::make_shared<ScorerESpectrum>(name, minE, maxE, numBin, ptstate);
     }
     else if(ScorDef == "WlSpectrum")
     {
-      // ESpectrum: energy spectrum
+      // WlSpectrum: wavelength spectrum
       // example cfg
-      // ""Scorer=ESD; name=detector; Emin=0.0; Emax=0.0253; numbin=100""
+      // "Scorer=WlSpectrum; name=detector; Emin=0.0; Emax=0.0253; numbin=100; ptstate=ENTRY"
 
-      int parCount = 5;
+      int parCount = 6;
 
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
       double minWl = ptstod(cfg.find("Wlmin", force));
       double maxWl = ptstod(cfg.find("Wlmax", force));
-      int numBin = ptstoi(cfg.find("numbin", force));
+
+      int numBin = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        numBin = ptstoi(cfg.find("numbin"));
+      }
+
+      Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        ptstate = getPTS (ptstateInStr);
+      }
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type ESpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type WlSpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerWlSpectrum>(name, minWl, maxWl, numBin);
+      return std::make_shared<ScorerWlSpectrum>(name, minWl, maxWl, numBin, ptstate);
     }
     else if(ScorDef == "TOF")
     {
       // TOF: time-of-flight
       // example cfg
-      // ""Scorer=TOF; name=detector; Tmin=0.0; Tmax=0.5; numbin=1000""
+      // "Scorer=TOF; name=detector; Tmin=0.0; Tmax=0.5; numbin=1000; ptstate=ENTRY"
 
-      int parCount = 5;
+      int parCount = 6;
 
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
       double minT = ptstod(cfg.find("Tmin", force));
       double maxT = ptstod(cfg.find("Tmax", force));
-      int numBin = ptstoi(cfg.find("numbin", force));
+
+      int numBin = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        numBin = ptstoi(cfg.find("numbin"));
+      }
+
+      Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        ptstate = getPTS (ptstateInStr);
+      }
 
       if(parCount!=cfg.size())
       {
         PROMPT_THROW2(BadInput, "Scorer type TOF is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerTOF>(name, minT, maxT, numBin);
+      return std::make_shared<ScorerTOF>(name, minT, maxT, numBin, ptstate);
     }
     else if(ScorDef == "MultiScat")
     {
       // MultiScat: multiple scattering
       // example cfg
-      // ""Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; ptstate=PROPAGATE; linear=yes""
+      // "Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; ptstate=PROPAGATE; linear=yes"
       // the default value for linear is yes
 
       int parCount = 6;
@@ -348,11 +410,39 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      double minNumber = ptstod(cfg.find("Numbermin", force));
-      double maxNumber = ptstod(cfg.find("Numbermax", force));
+      
+      // the optional parameters
+      int minNumber = 0;
+      if(cfg.find("Numbermin")=="") 
+        parCount--;
+      else
+      {
+        int minNumberInInt = ptstoi(cfg.find("Numbermin"));
+        if(minNumberInInt>=0 )
+        {
+          minNumber = minNumberInInt;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"Numbermin\" should an integer greater than or equal to 0");
+        }
+      }
+
+      int maxNumber = 5;
+      if(cfg.find("Numbermax")=="") 
+        parCount--;
+      else
+      {
+        int maxNumberInInt = ptstoi(cfg.find("Numbermax"));
+        if(maxNumberInInt>=0 )
+        {
+          maxNumber = maxNumberInInt;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"Numbermax\" should an integer greater than or equal to 0");
+        }
+      }
       int numBin = maxNumber-minNumber+1;
 
-      // the optional parameters
       Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
       std::string ptstateInStr = cfg.find("ptstate");
       if(ptstateInStr.empty())
@@ -361,6 +451,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       {
         ptstate = getPTS (ptstateInStr);
       }
+
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
       if(linearInStr.empty())
@@ -389,13 +480,29 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // VolFluence: volume flux
 
-      int parCount = 6;
+      int parCount = 7;
 
       bool force = true;
       std::string name = cfg.find("name", force);
       double xmin = ptstod(cfg.find("xmin", force));
       double xmax = ptstod(cfg.find("xmax", force));
-      int nxbins = ptstoi(cfg.find("numBins_x", force));
+
+      int nxbins = 100;
+      if(cfg.find("numbin")=="") 
+        parCount--;
+      else
+      {
+        nxbins = ptstoi(cfg.find("numbin"));
+      }
+
+      Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        ptstate = getPTS (ptstateInStr);
+      }
 
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
@@ -420,7 +527,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type VolFluence is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerVolFluence>(name, xmin, xmax, nxbins, linear, vol);
+      return std::make_shared<Prompt::ScorerVolFluence>(name, xmin, xmax, nxbins, vol, ptstate, linear);
 
     }
     else if(ScorDef == "Split")

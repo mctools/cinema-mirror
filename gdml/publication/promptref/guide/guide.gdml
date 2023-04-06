@@ -55,14 +55,14 @@
         <volume name="logMonitor1">
             <solidref ref="Monitor1Solid"/>
             <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=Monitor1;
-              xmin=-25;xmax=25;numBins_x=20;ymin=-25;ymax=25;numBins_y=20;type=XY"/>
+              xmin=-25;xmax=25;numbin_x=20;ymin=-25;ymax=25;numbin_y=20;type=XY"/>
             <materialref ref="Vaccum"/>
         </volume>
 
         <volume name="logMonitor2">
             <solidref ref="Monitor2Solid"/>
             <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=Monitor2;
-              xmin=-35;xmax=35;numBins_x=20;ymin=-35;ymax=35;numBins_y=20;type=XY"/>
+              xmin=-35;xmax=35;numbin_x=20;ymin=-35;ymax=35;numbin_y=20;type=XY"/>
             <materialref ref="Vaccum"/>
         </volume>
 
