@@ -65,6 +65,7 @@ class Tessellated:
         if tranMat is not None:
             tranMat.transformInplace(points)
         self.cobj = _pt_Tessellated_new(faces.shape[0], faces, points)
+        print(f'Python views the address as {hex(self.cobj)}')
 
 class Transformation3D:
     def __init__(self, x=0, y=0, z=0, rx=0, ry=0, rz=0, sx=1., sy=1., sz=1.):
@@ -81,7 +82,9 @@ class Transformation3D:
 class Volume:
     def __init__(self, volname, solid, matCfg=None, scorerCfg=None, surfaceCfg=None):
         self.child = []
+        self.shape = solid.cobj
         self.cobj = _pt_Volume_new(volname.encode('utf-8'), solid.cobj)
+
         volid = self.getLogicalID(self.cobj)
 
         _pt_ResourceManager_addNewVolume(volid)
@@ -110,6 +113,8 @@ class Volume:
 
     def placeChild(self, name, logVolume, transf=Transformation3D(0,0,0), scorerGroup=0):
         self.child.append(logVolume)
+        print(f'Python views the shape address in placeChild as {hex(logVolume.shape)}')
+
         _pt_Volume_placeChild(self.cobj, name.encode('utf-8'), logVolume.cobj, transf.cobj, scorerGroup)
 
     def getLogicalID(self, cobj=None):

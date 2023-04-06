@@ -14,28 +14,57 @@
 #include "VecGeom/navigation/SimpleABBoxLevelLocator.h"
 #include "VecGeom/navigation/BVHLevelLocator.h"
 
+
+#include "VecGeom/management/HybridManager2.h"
+#include "VecGeom/navigation/HybridNavigator2.h"
+#include "VecGeom/navigation/HybridLevelLocator.h"
+#include "VecGeom/navigation/HybridSafetyEstimator.h"
+
 namespace vg = VECGEOM_NAMESPACE;
+
+
+void pt_initNavigators(bool use_bvh_navigator)
+{
+  if (use_bvh_navigator)
+    vg::BVHManager::Init();
+
+  for (auto &lvol : vg::GeoManager::Instance().GetLogicalVolumesMap()) {
+    auto ndaughters = lvol.second->GetDaughtersp()->size();
+
+    if (ndaughters <= 2) {
+      lvol.second->SetNavigator(vg::NewSimpleNavigator<>::Instance());
+    } else if (ndaughters <= 10) {
+      if (use_bvh_navigator) {
+        lvol.second->SetNavigator(vg::BVHNavigator<>::Instance());
+      } else {
+        lvol.second->SetNavigator(vg::SimpleABBoxNavigator<>::Instance());
+      }
+    } else { // ndaughters > 10
+      if (use_bvh_navigator) {
+        lvol.second->SetNavigator(vg::BVHNavigator<>::Instance());
+      } else {
+        lvol.second->SetNavigator(vg::HybridNavigator<>::Instance());
+        vg::HybridManager2::Instance().InitStructure((lvol.second));
+      }
+    }
+
+    if (lvol.second->ContainsAssembly()) {
+      lvol.second->SetLevelLocator(vg::SimpleAssemblyAwareABBoxLevelLocator::GetInstance());
+    } else {
+      if (use_bvh_navigator)
+        lvol.second->SetLevelLocator(vg::BVHLevelLocator::GetInstance());
+      else
+        lvol.second->SetLevelLocator(vg::SimpleABBoxLevelLocator::GetInstance());
+    }
+  }
+}
 
 
 void pt_setWorld(void* logicalWorld)
 {
     vg::GeoManager::Instance().SetWorld(static_cast<vg::LogicalVolume *>(logicalWorld)->Place());
     vg::GeoManager::Instance().CloseGeometry();
-      //accelaration
-    vecgeom::BVHManager::Init();
-    for (auto &lvol : vecgeom::GeoManager::Instance().GetLogicalVolumesMap()) {
-        auto ndaughters = lvol.second->GetDaughtersp()->size();
-
-        if (ndaughters <= 2)
-        lvol.second->SetNavigator(vecgeom::NewSimpleNavigator<>::Instance());
-        else
-        lvol.second->SetNavigator(vecgeom::BVHNavigator<>::Instance());
-
-        if (lvol.second->ContainsAssembly())
-        lvol.second->SetLevelLocator(vecgeom::SimpleAssemblyAwareABBoxLevelLocator::GetInstance());
-        else
-        lvol.second->SetLevelLocator(vecgeom::BVHLevelLocator::GetInstance());
-    }
+    pt_initNavigators(false);
 }
 
 //   Box *worldUnplaced      = new UnplacedBox(10, 10, 10)
@@ -89,7 +118,18 @@ void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, float *point)
     }
     tsl->Close();
 
-    return static_cast<void *>(tsl);
+
+    
+
+    std::cout << "Added "<< tsl->GetStruct().fFacets.size() << " data structures, address " << tsl << " \n";
+    if(!tsl->GetStruct().fSolidClosed)
+          std::cout << " WTF, data not closed \n";
+    else
+            std::cout << " data are closed \n";
+    auto p = static_cast<void *>(tsl);
+    std::cout << "P address " << p << " \n";
+
+    return p;
 }
 
 
@@ -111,19 +151,22 @@ void pt_Volume_delete(void* obj)
     delete static_cast<vg::LogicalVolume *>(obj);
 }
 
+// Returns True if string contains
+// the given sub string.
+bool contains(
+        const std::string& str,
+        const std::string& subString)
+{
+    // Check if substring exists in string
+    return str.find(subString) != std::string::npos;
+}
+
 void pt_Volume_placeChild(void* obj, const char* name, void *volume,
                                     void *transformation, int group)
 {
-    auto vol = static_cast<vg::LogicalVolume *>(volume);
     auto transf = static_cast<const vg::Transformation3D *>(transformation);
+    auto vol = static_cast<vg::LogicalVolume *>(volume);
     auto constplaced = static_cast<vg::LogicalVolume *>(obj)->PlaceDaughter(name, vol, transf);
-    vg::VPlacedVolume* placed = const_cast<vg::VPlacedVolume *>(constplaced);;
-
-    if(group)
-    {
-        placed->SetCopyNo(group);
-        std::cout << name << " Group ID " << placed->GetCopyNo() << std::endl;
-    }
 }
 
 unsigned pt_Volume_id(void* obj)

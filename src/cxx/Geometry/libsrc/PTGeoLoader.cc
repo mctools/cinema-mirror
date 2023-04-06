@@ -31,6 +31,7 @@
 #include "VecGeom/navigation/SimpleABBoxNavigator.h"
 #include "VecGeom/navigation/SimpleABBoxLevelLocator.h"
 #include "VecGeom/navigation/BVHLevelLocator.h"
+#include "VecGeom/navigation/HybridNavigator2.h"
 
 #include "PTScorerFactory.hh"
 #include "PTGunFactory.hh"
@@ -38,6 +39,7 @@
 
 #include "PTUtils.hh"
 #include "PTNeutron.hh"
+#include "PTVecGeom.hh"
 
 Prompt::GeoLoader::GeoLoader()
 :m_gun(nullptr), m_resman(Singleton<ResourceManager>::getInstance() )
@@ -50,22 +52,7 @@ Prompt::GeoLoader::~GeoLoader()
 
 void Prompt::GeoLoader::setupNavigator()
 {
-  //accelaration
-  vecgeom::BVHManager::Init();
-  for (auto &lvol : vecgeom::GeoManager::Instance().GetLogicalVolumesMap()) {
-    auto ndaughters = lvol.second->GetDaughtersp()->size();
-
-    if (ndaughters <= 2)
-      lvol.second->SetNavigator(vecgeom::NewSimpleNavigator<>::Instance());
-    else
-      lvol.second->SetNavigator(vecgeom::BVHNavigator<>::Instance());
-
-    if (lvol.second->ContainsAssembly())
-      lvol.second->SetLevelLocator(vecgeom::SimpleAssemblyAwareABBoxLevelLocator::GetInstance());
-    else
-      lvol.second->SetLevelLocator(vecgeom::BVHLevelLocator::GetInstance());
-  }
-
+  pt_initNavigators(false);
 }
 
 void Prompt::GeoLoader::initFromGDML(const std::string &gdml_file)

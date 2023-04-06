@@ -5,7 +5,7 @@ from Cinema.Prompt.geo import Box, Volume, Transformation3D, Tessellated
 from Cinema.Prompt.gun import PythonGun
 
 
-gunCfg = "gun=IsotropicGun;energy=0.001;position=0,0,1000"
+gunCfg = "gun=IsotropicGun;energy=0.001;position=0,0,0"
 scorerCfg_det = "Scorer=NeutronSq;name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;dist=-100;ptstate=ENTRY;linear=yes;Qmin=0.5; Qmax = 50; numbin=100"
 scorerCfg_detpsd = "Scorer=PSD;name=NeutronHistMap;xmin=-500;xmax=500;numBins_x=10;ymin=-500;ymax=500;numBins_y=10;ptstate=SURFACE;type=XY"
 
@@ -18,16 +18,17 @@ world = Volume("world", Box(600, 600, 600))
 
 import pyvista
 sphere = pyvista.Sphere(100)
-tes = Volume('T', Tessellated(sphere.faces, sphere.points), matCfg = matCfg_sample) 
+t = Tessellated(sphere.faces, sphere.points)
+tes = Volume('T', t, matCfg = matCfg_sample) 
 
 # tes = Volume('T', Box(10,10,10), matCfg = matCfg_sample) 
 
-world.placeChild("TP", tes, Transformation3D(0., 0., 0))
+world.placeChild("Tessellated_TP", tes, Transformation3D(0., 0., 0))
 
-
+tes.shape
 l.setWorld(world)
 l.setGun(gunCfg)
-l.showWorld(10)
+l.showWorld(1000)
 
 # gun = PythonGun()
 # l.setPythonGun(gun)

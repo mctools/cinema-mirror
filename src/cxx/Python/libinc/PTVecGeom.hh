@@ -6,6 +6,7 @@
 extern "C" {
 #endif
 
+void pt_initNavigators(bool use_bvh_navigator);
 void pt_setWorld(void* logicalWorld);
 
 // Box
