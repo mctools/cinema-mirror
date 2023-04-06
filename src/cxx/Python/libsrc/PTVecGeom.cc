@@ -118,18 +118,7 @@ void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, float *point)
     }
     tsl->Close();
 
-
-    
-
-    std::cout << "Added "<< tsl->GetStruct().fFacets.size() << " data structures, address " << tsl << " \n";
-    if(!tsl->GetStruct().fSolidClosed)
-          std::cout << " WTF, data not closed \n";
-    else
-            std::cout << " data are closed \n";
-    auto p = static_cast<void *>(tsl);
-    std::cout << "P address " << p << " \n";
-
-    return p;
+    return static_cast<void *>(tsl);
 }
 
 
@@ -151,22 +140,19 @@ void pt_Volume_delete(void* obj)
     delete static_cast<vg::LogicalVolume *>(obj);
 }
 
-// Returns True if string contains
-// the given sub string.
-bool contains(
-        const std::string& str,
-        const std::string& subString)
-{
-    // Check if substring exists in string
-    return str.find(subString) != std::string::npos;
-}
-
 void pt_Volume_placeChild(void* obj, const char* name, void *volume,
                                     void *transformation, int group)
 {
     auto transf = static_cast<const vg::Transformation3D *>(transformation);
     auto vol = static_cast<vg::LogicalVolume *>(volume);
     auto constplaced = static_cast<vg::LogicalVolume *>(obj)->PlaceDaughter(name, vol, transf);
+    vg::VPlacedVolume* placed = const_cast<vg::VPlacedVolume *>(constplaced);;
+
+    if(group)
+    {
+        placed->SetCopyNo(group);
+        std::cout << name << " Group ID " << placed->GetCopyNo() << std::endl;
+    }
 }
 
 unsigned pt_Volume_id(void* obj)
