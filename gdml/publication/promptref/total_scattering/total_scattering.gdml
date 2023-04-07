@@ -33,7 +33,7 @@
           <materialref ref="HeavyWater"/>
           <!-- <materialref ref="HeavyWater_biased"/> -->
           <solidref ref="SampleSolid"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat;name=HW;Numbermin=1;Numbermax=8;ptstate=PROPAGATE;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat;name=HW;Numbermin=1;Numbermax=8;linear=yes"/>
         </volume>
 
         <volume name="Detector">
