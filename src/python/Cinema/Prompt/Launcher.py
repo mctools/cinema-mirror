@@ -31,7 +31,7 @@ _pt_Launcher_setSeed = importFunc('pt_Launcher_setSeed', None, [type_voidp, type
 _pt_Launcher_loadGeometry = importFunc('pt_Launcher_loadGeometry', None, [type_voidp, type_cstr] )
 _pt_Launcher_getTrajSize = importFunc('pt_Launcher_getTrajSize', type_sizet, [type_voidp])
 _pt_Launcher_getTrajectory = importFunc('pt_Launcher_getTrajectory', None, [type_voidp, type_npdbl2d])
-_pt_Launcher_go = importFunc('pt_Launcher_go', None, [type_voidp, type_sizet, type_dbl, type_bool, type_bool])
+_pt_Launcher_go = importFunc('pt_Launcher_go', None, [type_voidp, type_sizet, type_dbl, type_bool, type_bool, type_bool])
 _pt_Launcher_setGun = importFunc('pt_Launcher_setGun', None, [type_voidp, type_cstr])
 _pt_Launcher_setPythonGun = importFunc('pt_Launcher_setPythonGun', None, [type_voidp, type_pyobject])
 
@@ -94,8 +94,8 @@ class Launcher():
         _pt_Launcher_getTrajectory(self.cobj, trj)
         return trj
 
-    def go(self, numPrimary, printPrecent=0.1, recordTrj=False, timer=True):
-        _pt_Launcher_go(self.cobj, numPrimary, printPrecent, recordTrj, timer)
+    def go(self, numPrimary, printPrecent=0.1, recordTrj=False, timer=True, save2Dis=False):
+        _pt_Launcher_go(self.cobj, numPrimary, printPrecent, recordTrj, timer, save2Dis)
 
 
     def getHist(self, cfg):

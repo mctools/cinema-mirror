@@ -95,7 +95,7 @@ void Prompt::Launcher::setPythonGun(PyObject *pyobj)
 }
 
 
-void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj, bool timer)
+void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj, bool timer, bool save)
 {
   // fixme: recordTrj should be done in the particle class with an optional switch.
   // to save 1. particle id, event id, the volume id, the physical id
@@ -183,6 +183,9 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
   if(timer)
   {   
     delete moni;
-    Singleton<ResourceManager>::getInstance().writeScorer2Disk();
   }
+
+  if(save)
+      Singleton<ResourceManager>::getInstance().writeScorer2Disk();
+
 }

@@ -61,9 +61,9 @@ void pt_Launcher_getTrajectory(void* obj, double *trj)
   }
 }
 
-void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj, bool timer)
+void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj, bool timer, bool save2Disk)
 {
-  static_cast<pt::Launcher *>(obj)->go(numParticle, printPrecent, recordTrj, timer);
+  static_cast<pt::Launcher *>(obj)->go(numParticle, printPrecent, recordTrj, timer, save2Disk);
 }
 
 void pt_Launcher_setGun(void *obj, const char* cfg)
