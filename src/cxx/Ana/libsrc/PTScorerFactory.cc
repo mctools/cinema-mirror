@@ -402,14 +402,15 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // MultiScat: multiple scattering
       // example cfg
-      // "Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; ptstate=PROPAGATE; linear=yes"
+      // "Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; linear=yes"
       // the default value for linear is yes
 
-      int parCount = 6;
+      int parCount = 5;
 
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
+      Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
       
       // the optional parameters
       int minNumber = 0;
@@ -442,15 +443,6 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         }
       }
       int numBin = maxNumber-minNumber+1;
-
-      Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
-      std::string ptstateInStr = cfg.find("ptstate");
-      if(ptstateInStr.empty())
-        parCount--;
-      else
-      {
-        ptstate = getPTS (ptstateInStr);
-      }
 
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
