@@ -178,9 +178,7 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       int parCount = 9;
 
       // The mandatory parameters
-      bool force = true;
-      // double mean_wl = ptstod(cfg.find("mean_wl",force));
-      // double range_wl = ptstod(cfg.find("range_wl",force));
+      bool force = true; 
       double src_w = ptstod(cfg.find("src_w", force));
       double src_h = ptstod(cfg.find("src_h", force));
       double src_z = ptstod(cfg.find("src_z", force));
