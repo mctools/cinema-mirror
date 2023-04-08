@@ -21,6 +21,7 @@
 #include "PTHistBase.hh"
 #include <stdexcept>
 #include <fstream>
+#include <cstring>
 #include "PTRandCanonical.hh"
 
 
@@ -62,6 +63,22 @@ void Prompt::HistBase::merge(const Prompt::HistBase &hist)
   m_overflow += hist.m_overflow;
   m_sumW += hist.m_sumW;
 
+}
+
+
+
+void Prompt::HistBase::setWeight(double *data, size_t n)
+{
+  if(n != m_data.size())
+    PROMPT_THROW(CalcError, "wrong vector size");
+  memcpy(m_data.data(), data, sizeof(double)*n);
+}
+
+void Prompt::HistBase::setHit(double *data, size_t n)
+{
+  if(n != m_hit.size())
+    PROMPT_THROW(CalcError, "wrong vector size");
+  memcpy(m_hit.data(), data, sizeof(double)*n);
 }
 
 void Prompt::HistBase::scale(double scalefact)

@@ -53,6 +53,8 @@ void pt_Launcher_setPythonGun(void *obj, PyObject* cfg);
 
 // Prompt::HistBase
 void pt_HistBase_merge(void* obj, void* obj2);
+void pt_HistBase_setWeight(void *obj, double *data, size_t n);
+void pt_HistBase_setHit(void *obj, double *data, size_t n);
 double pt_HistBase_getXMin(void* obj);
 double pt_HistBase_getXMax(void* obj);
 double pt_HistBase_getTotalWeight(void* obj);

@@ -67,13 +67,24 @@ _pt_HistBase_getRaw = importFunc('pt_HistBase_getRaw', None, [type_voidp, type_n
 _pt_HistBase_getHit = importFunc('pt_HistBase_getHit', None, [type_voidp, type_npdbl1d])
 _pt_HistBase_dimension = importFunc('pt_HistBase_dimension', type_uint, [type_voidp])
 _pt_HistBase_getName = importFunc('pt_HistBase_getName', type_cstr, [type_voidp])
-
+_pt_HistBase_setWeight = importFunc('pt_HistBase_setWeight', None, [type_voidp, type_npdbl1d, type_sizet])
+_pt_HistBase_setHit = importFunc('pt_HistBase_setHit', None, [type_voidp, type_npdbl1d, type_sizet])
 class HistBase():
     def __init__(self, cobj) -> None:
         self.cobj = cobj
 
     def merge(self, anotherhist):
         _pt_HistBase_merge(self.cobj, anotherhist.cobj)
+
+    def setWeight(self, w: np.ndarray):
+        if w.size != self.getDataSize():
+            raise RuntimeError('')
+        _pt_HistBase_setWeight(self.cobj, w.flatten(), w.size)
+
+    def setHit(self, h: np.ndarray):
+        if h.size != self.getDataSize():
+            raise RuntimeError('')
+        _pt_HistBase_setHit(self.cobj, h.flatten(), h.size)
 
     def getXMin(self):
         return _pt_HistBase_getXMin(self.cobj)

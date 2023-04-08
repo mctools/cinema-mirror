@@ -36,7 +36,9 @@ namespace Prompt {
     virtual ~HistBase();
 
     virtual void merge(const HistBase &);
-
+    void setWeight(double *data, size_t n);
+    void setHit(double *data, size_t n);
+    
     double getXMin() const {return m_xmin;}
     double getXMax() const {return m_xmax;}
     double getTotalWeight() const {return m_sumW;};

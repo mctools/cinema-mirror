@@ -4,25 +4,29 @@ from Cinema.Prompt import Launcher, Visualiser
 from Cinema.Prompt.geo import Box, Volume, Transformation3D, Tessellated
 from Cinema.Prompt.gun import PythonGun
 from mpi4py import MPI
-import numpy
+import numpy as np
 
 class Prompt:
-    def __init__(self, seed=4096) -> None:
+    def __init__(self, seed : int = 4096) -> None:
         self.l = Launcher()
         self.l.setSeed(seed)
         self.makeWorld()
 
     def makeWorld(self):
-        raise NotImplementedError('')
+        raise NotImplementedError('') 
 
     def setGun(self, gun):
-        self.l.setGun(gunCfg)
+        if isinstance(gun, str):
+            self.l.setGun(gunCfg)
+        else:
+            self.l.setPythonGun(gun)
+
     
-    def show(self, num=0):
+    def show(self, num : int = 0):
         self.l.showWorld(1000)
 
-    def simulate(self, num=100, timer=True, save2Disk=False):
-        self.l.go(num, timer=timer, save2Dis=save2Disk)
+    def simulate(self, num : int = 0, timer=True, save2Disk=False):
+        self.l.go(int(num), timer=timer, save2Dis=save2Disk)
 
     def getScorerHist(self, cfg):
         return self.l.getHist(cfg)
@@ -35,17 +39,37 @@ class PromptMPI(Prompt):
         super().__init__(seed+self.rank)
         
 
-    def simulate(self, num=100):
+    def simulate(self, num : int = 0):
         batchSize = int(num/self.size)
         if self.rank:
           super().simulate(batchSize,  timer=False)
         else:
           super().simulate(num-batchSize*(self.size-1))
 
-    def show(self, num=0):
+    def show(self, num : int = 0):
         if not self.rank:
             self.l.showWorld(num)
         self.comm.Barrier()
+
+    def getScorerHist(self, cfg, dst=0):
+        hist = super().getScorerHist(cfg)
+        weight = hist.getWeight()
+        hit = hist.getHit()
+        print(f'rank {self.rank} hist info: {hist.getWeight().sum()} {hist.getHit().sum()}')
+
+        recvw = None
+        recvh = None
+
+        if self.rank == dst: # only create the buffer for rank0
+            recvw = np.empty([self.size, weight.size], dtype='float')
+            recvh = np.empty([self.size, hit.size], dtype='float')
+        sim.comm.Gather(weight, recvw, root=dst)
+        sim.comm.Gather(hit, recvh, root=dst)
+        
+        if self.rank == dst:
+            hist.setHit(recvh.sum(axis=0))
+            hist.setWeight(recvw.sum(axis=0))
+        return hist
 
 
 class MySim(PromptMPI):
@@ -72,37 +96,19 @@ class MySim(PromptMPI):
 
 gunCfg = "gun=SimpleThermalGun;position=0,0,-200;direction=0,0,1"
 sim = MySim(4096)
-sim.setGun(gunCfg)
+
+if True:
+    sim.setGun(gunCfg)
+else:
+    gun = PythonGun()
+    sim.l.setGun(gun)
+
 # sim.show(1000)
 
-# gun = PythonGun()
-# l.setPythonGun(gun)
-sim.simulate(1000000)
+sim.simulate(1e6)
 
-# if sim.rank:
-#     sim.simulate(1000, timer=False)
-# else:
-#     sim.simulate(1000000)
-
-wl=sim.getScorerHist('Scorer=WlSpectrum; name=detector; Wlmin=0.0; Wlmax=5; numbin=200')
-x=wl.getCentre()
-z=wl.getWeight()
-print(f'total {z.sum()}')
-
-size = sim.comm.Get_size()
-rank = sim.comm.Get_rank()
-
-import numpy as np
-sendbuf = z
-recvbuf = None
-if rank == 0:
-    recvbuf = np.empty([size, 200], dtype='float')
-sim.comm.Gather(sendbuf, recvbuf, root=0)
-if rank == 0:
-    # for i in range(size):
-    #     assert np.allclose(recvbuf[i,:], i)
-    import matplotlib.pyplot as plt
-    plt.plot(x,recvbuf.sum(axis=0))
-    plt.title(f'total {recvbuf.sum()}')
-    plt.show()
+wlhist = sim.getScorerHist('Scorer=WlSpectrum; name=detector; Wlmin=0.0; Wlmax=5; numbin=200')
+if sim.rank==0:
+    print(f'total {wlhist.getWeight().sum()} {wlhist.getHit().sum()}')
+    wlhist.plot(show=True)
 

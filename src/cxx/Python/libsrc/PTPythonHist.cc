@@ -39,6 +39,18 @@ void pt_HistBase_merge(void* obj, void* obj2)
   hist1->merge(*static_cast<pt::HistBase*>(obj2));
 }
 
+void pt_HistBase_setWeight(void *obj, double *data, size_t n)
+{
+  auto hist = static_cast<pt::HistBase*>(obj);
+  hist->setWeight(data, n);
+}
+
+void pt_HistBase_setHit(void *obj, double *data, size_t n)
+{
+  auto hist = static_cast<pt::HistBase*>(obj);
+  hist->setHit(data, n);
+}
+
 double pt_HistBase_getXMin(void* obj)
 {
   return static_cast<pt::HistBase*>(obj)->getXMin();
