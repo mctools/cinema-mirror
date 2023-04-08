@@ -22,7 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
-#include "PTScorerNeutronSq.hh"
+#include "PTScorer.hh"
 
 namespace Prompt {
 
