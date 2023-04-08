@@ -192,7 +192,14 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
         parCount--;
       else
       {
-        mean_wl = ptstod(cfg.find("mean_wl"));
+        double mean_wlInDou = ptstod(cfg.find("mean_wl"));
+        if(mean_wlInDou>0 )
+        {
+          mean_wl = mean_wlInDou;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"mean_wl\" should be positive");
+        }
       }
 
       double range_wl = 0.0001;
@@ -200,7 +207,14 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
         parCount--;
       else
       {
-        range_wl = ptstod(cfg.find("range_wl"));
+        double range_wlInDou = ptstod(cfg.find("range_wl"));
+        if(range_wlInDou>=0 )
+        {
+          range_wl = range_wlInDou;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"range_wl\" should be greater than or equal to 0");
+        }
       }
 
       if(parCount!=cfg.size())
