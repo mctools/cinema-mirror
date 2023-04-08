@@ -8,7 +8,7 @@ import sys, os
 plotStyle()
 
 pusData = np.loadtxt('PUS_data.dat')
-f = PromptFileReader(f'ScorerNeutronSq_ST_template_seed4096.mcpl.gz')
+f = PromptFileReader(f'ScorerDeltaMomentum_ST_template_seed4096.mcpl.gz')
 x=f.getData('edge')
 x=x[:-1]+np.diff(x)*0.5
 y=f.getData('content')

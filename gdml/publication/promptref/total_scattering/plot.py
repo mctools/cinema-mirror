@@ -50,29 +50,29 @@ d2o_soper=np.array(soperData['d2o_cross_section']) # Interference differential s
 soperData.close()
 
 # data for non-biased run 
-HW = McplAnalysor1D('./HW_nonbiased_Data/*ScorerNeutronSq_PofQ_HW_seed*.mcpl.gz')
+HW = McplAnalysor1D('./HW_nonbiased_Data/*ScorerDeltaMomentum_PofQ_HW_seed*.mcpl.gz')
 q_HW, p_HW = HW.getHistMany(seedStart=1, seedEnd=50)
 
-HW1 = McplAnalysor1D('./HW_nonbiased_Data/*ScorerNeutronSq_PofQ1_HW_seed*.mcpl.gz')
+HW1 = McplAnalysor1D('./HW_nonbiased_Data/*ScorerDeltaMomentum_PofQ1_HW_seed*.mcpl.gz')
 q_HW1, p_HW1 = HW1.getHistMany(seedStart=1, seedEnd=50)
 
-HW2 = McplAnalysor1D('./HW_nonbiased_Data/*ScorerNeutronSq_PofQ2_HW_seed*.mcpl.gz')
+HW2 = McplAnalysor1D('./HW_nonbiased_Data/*ScorerDeltaMomentum_PofQ2_HW_seed*.mcpl.gz')
 q_HW2, p_HW2 = HW2.getHistMany(seedStart=1, seedEnd=50)
 
-HW4 = McplAnalysor1D('./HW_nonbiased_Data/*ScorerNeutronSq_PofQ4_HW_seed*.mcpl.gz')
+HW4 = McplAnalysor1D('./HW_nonbiased_Data/*ScorerDeltaMomentum_PofQ4_HW_seed*.mcpl.gz')
 q_HW4, p_HW4 = HW4.getHistMany(seedStart=1, seedEnd=50)
 
 # data for biased run 
-HWb = McplAnalysor1D('./HW_biased_Data/*ScorerNeutronSq_PofQ_HW_seed*.mcpl.gz')
+HWb = McplAnalysor1D('./HW_biased_Data/*ScorerDeltaMomentum_PofQ_HW_seed*.mcpl.gz')
 q_HWb, p_HWb = HWb.getHistMany(seedStart=1, seedEnd=50)
 
-HWb1 = McplAnalysor1D('./HW_biased_Data/*ScorerNeutronSq_PofQ1_HW_seed*.mcpl.gz')
+HWb1 = McplAnalysor1D('./HW_biased_Data/*ScorerDeltaMomentum_PofQ1_HW_seed*.mcpl.gz')
 q_HWb1, p_HWb1 = HWb1.getHistMany(seedStart=1, seedEnd=50)
 
-HWb2 = McplAnalysor1D('./HW_biased_Data/*ScorerNeutronSq_PofQ2_HW_seed*.mcpl.gz')
+HWb2 = McplAnalysor1D('./HW_biased_Data/*ScorerDeltaMomentum_PofQ2_HW_seed*.mcpl.gz')
 q_HWb2, p_HWb2 = HWb2.getHistMany(seedStart=1, seedEnd=50)
 
-HWb4 = McplAnalysor1D('./HW_biased_Data/*ScorerNeutronSq_PofQ4_HW_seed*.mcpl.gz')
+HWb4 = McplAnalysor1D('./HW_biased_Data/*ScorerDeltaMomentum_PofQ4_HW_seed*.mcpl.gz')
 q_HWb4, p_HWb4 = HWb4.getHistMany(seedStart=1, seedEnd=50)
 
 plotStyle()

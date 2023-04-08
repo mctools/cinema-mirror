@@ -22,7 +22,7 @@
 #include "PTUtils.hh"
 #include "PTCfgParser.hh"
 
-#include "PTScorerNeutronSq.hh"
+#include "PTScorerDeltaMomentum.hh"
 #include "PTScorerPSD.hh"
 #include "PTScorerESpectrum.hh"
 #include "PTScorerTOF.hh"
@@ -57,10 +57,10 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
   else
   {
 
-    if(ScorDef == "NeutronSq")
+    if(ScorDef == "DeltaMomentum")
     {
       // example cfg
-      // "Scorer=NeutronSq; name=SofQ;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;
+      // "Scorer=DeltaMomentum; name=SofQ;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;
       // ptstate=ENTRY;linear=yes;Qmin=0.5;Qmax=50;numbin=1000;Qtrue=yes;scatnum=-1"
 
 
@@ -146,10 +146,10 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type NeutronSq is missing or with extra config parameters " << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type DeltaMomentum is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerNeutronSq>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, ptstate, qtrue, scatnum, linear);
+      return std::make_shared<Prompt::ScorerDeltaMomentum>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, ptstate, qtrue, scatnum, linear);
     }
     if(ScorDef == "Angular")
     {

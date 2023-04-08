@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerNeutronSq_hh
-#define Prompt_ScorerNeutronSq_hh
+#ifndef Prompt_ScorerDeltaMomentum_hh
+#define Prompt_ScorerDeltaMomentum_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -26,12 +26,12 @@
 
 namespace Prompt {
 
-  class ScorerNeutronSq  : public Scorer1D {
+  class ScorerDeltaMomentum : public Scorer1D {
   public:
-    ScorerNeutronSq(const std::string &name, const Vector &samplePos, const Vector &refDir,
+    ScorerDeltaMomentum(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin,
       ScorerType stype=Scorer::ScorerType::ENTRY, bool qtrue=true, int scatnum=-1, bool linear=true);
-    virtual ~ScorerNeutronSq();
+    virtual ~ScorerDeltaMomentum();
     virtual void score(Particle &particle) override;
   protected:
     const Vector m_samplePos, m_refDir;

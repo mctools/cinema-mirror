@@ -4,7 +4,7 @@ import numpy as np
 import os
 from Cinema.Prompt import PromptFileReader
 
-f1='ScorerNeutronSq_SofQ_seed4096.mcpl.gz'
+f1='ScorerDeltaMomentum_SofQ_seed4096.mcpl.gz'
 os.system(f'rm {f1}')
 os.system('prompt -g watersphere_bias.gdml -n 1e4')
 
