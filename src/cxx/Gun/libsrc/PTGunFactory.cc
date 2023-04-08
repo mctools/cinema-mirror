@@ -111,10 +111,10 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
         parCount--;
       else
       {
-        double energyInInt = ptstod(cfg.find("energy"));
-        if(energyInInt>=0 )
+        double energyInDou = ptstod(cfg.find("energy"));
+        if(energyInDou>=0 )
         {
-          energy = energyInInt;
+          energy = energyInDou;
         }
         else {
           PROMPT_THROW2(BadInput, "The value for \"energy\" should be greater than or equal to 0");
@@ -151,10 +151,10 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
         parCount--;
       else
       {
-        double energyInInt = ptstod(cfg.find("energy"));
-        if(energyInInt>=0 )
+        double energyInDou = ptstod(cfg.find("energy"));
+        if(energyInDou>=0 )
         {
-          energy = energyInInt;
+          energy = energyInDou;
         }
         else {
           PROMPT_THROW2(BadInput, "The value for \"energy\" should be greater than or equal to 0");
