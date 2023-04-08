@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerDeltaMomentum_hh
-#define Prompt_ScorerDeltaMomentum_hh
+#ifndef Prompt_ScorerNeutronSq_hh
+#define Prompt_ScorerNeutronSq_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -30,13 +30,13 @@ namespace Prompt {
   public:
     ScorerDeltaMomentum(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin,
-      ScorerType stype=Scorer::ScorerType::ENTRY, bool qtrue=true, int scatnum=-1, bool linear=true);
+      ScorerType stype=Scorer::ScorerType::ENTRY, int method=0, int scatnum=-1, bool linear=true);
     virtual ~ScorerDeltaMomentum();
     virtual void score(Particle &particle) override;
   protected:
     const Vector m_samplePos, m_refDir;
     const double m_sourceSampleDist;
-    bool m_qtrue;
+    int m_method;
     int m_scatnum;
 
   };

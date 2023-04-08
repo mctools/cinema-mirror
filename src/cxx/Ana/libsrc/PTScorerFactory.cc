@@ -84,23 +84,36 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       }
       
       // the optional parameters
-      bool qtrue = true;
-      std::string qtrueInStr = cfg.find("Qtrue");
-      if(qtrueInStr.empty())
+      int method = 0;
+      if(cfg.find("method")=="") 
         parCount--;
       else
       {
-        if(qtrueInStr=="yes")
+        int methodInInt = ptstoi(cfg.find("method"));
+        if(methodInInt>=0 )
         {
-          qtrue = true;
+          method = methodInInt;
         }
-        else if(qtrueInStr=="no")
-          qtrue = false;
         else {
-          PROMPT_THROW2(BadInput, "The value for \"Qtrue\" should either be \"yes\" or \"no\"");
+          PROMPT_THROW2(BadInput, "The value for \"method\" should be an integer greater than or equal to 0");
         }
-
       }
+      // std::string qtrueInStr = cfg.find("method");
+      // if(qtrueInStr.empty())
+      //   parCount--;
+      // else
+      // {
+      //   if(qtrueInStr=="yes")
+      //   {
+      //     qtrue = true;
+      //   }
+      //   else if(qtrueInStr=="no")
+      //     qtrue = false;
+      //   else {
+      //     PROMPT_THROW2(BadInput, "The value for \"Qtrue\" should either be \"yes\" or \"no\"");
+      //   }
+
+      // }
 
       int scatnum = -1;
       if(cfg.find("scatnum")=="") 
@@ -149,7 +162,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type DeltaMomentum is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerDeltaMomentum>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, ptstate, qtrue, scatnum, linear);
+      return std::make_shared<Prompt::ScorerDeltaMomentum>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, ptstate, method, scatnum, linear);
     }
     if(ScorDef == "Angular")
     {

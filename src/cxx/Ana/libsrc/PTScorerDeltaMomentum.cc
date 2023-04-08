@@ -21,9 +21,9 @@
 #include "PTScorerDeltaMomentum.hh"
 
 Prompt::ScorerDeltaMomentum::ScorerDeltaMomentum(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, bool qtrue, int scatnum, bool linear)
+      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, int method, int scatnum, bool linear)
 :Scorer1D("ScorerDeltaMomentum_" + name, stype, std::make_unique<Hist1D>("ScorerDeltaMomentum_" + name, qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir), 
-m_sourceSampleDist(sourceSampleDist), m_qtrue(qtrue), m_scatnum(scatnum)
+m_sourceSampleDist(sourceSampleDist), m_method(method), m_scatnum(scatnum)
 {}
 
 Prompt::ScorerDeltaMomentum::~ScorerDeltaMomentum(){}
@@ -36,13 +36,13 @@ void Prompt::ScorerDeltaMomentum::score(Prompt::Particle &particle)
   if(m_scatnum==-1||particle.getNumScat()==m_scatnum)
   {
     double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
-    if(m_qtrue)
+    if(m_method==0)
     {
       double qt = neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin());
       if(qt)
         m_hist->fill(qt, particle.getWeight()/qt); 
     }
-    else //static approximation
+    else if(m_method==1) //static approximation
     {
       double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();
       double v = dist/particle.getTime();
