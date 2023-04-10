@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerNeutronSq_hh
-#define Prompt_ScorerNeutronSq_hh
+#ifndef Prompt_ScorerDeltaMomentum_hh
+#define Prompt_ScorerDeltaMomentum_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
