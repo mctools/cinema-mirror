@@ -45,3 +45,75 @@ from .geo import *
 # __all__ += Mesh.__all__
 # __all__ += Visualiser.__all__
 __all__ = Histogram.__all__
+
+
+# from . import Launcher, Visualiser
+# from .geo import Box, Volume, Transformation3D, Tessellated
+from .gun import PythonGun
+from mpi4py import MPI
+import numpy as np
+
+class Prompt:
+    def __init__(self, seed : int = 4096) -> None:
+        self.l = Launcher()
+        self.l.setSeed(seed)
+        self.makeWorld()
+
+    def makeWorld(self):
+        raise NotImplementedError('') 
+
+    def setGun(self, gun):
+        if isinstance(gun, str):
+            self.l.setGun(gun)
+        else:
+            self.l.setPythonGun(gun)
+
+    
+    def show(self, num : int = 0):
+        self.l.showWorld(1000)
+
+    def simulate(self, num : int = 0, timer=True, save2Disk=False):
+        self.l.go(int(num), timer=timer, save2Dis=save2Disk)
+
+    def getScorerHist(self, cfg):
+        return self.l.getHist(cfg)
+
+class PromptMPI(Prompt):
+    def __init__(self, seed=4096) -> None:
+        self.comm = MPI.COMM_WORLD
+        self.rank = self.comm.Get_rank()
+        self.size = self.comm.Get_size()
+        super().__init__(seed+self.rank)
+        
+
+    def simulate(self, num : int = 0):
+        batchSize = int(num/self.size)
+        if self.rank:
+          super().simulate(batchSize,  timer=False)
+        else:
+          super().simulate(num-batchSize*(self.size-1))
+
+    def show(self, num : int = 0):
+        if not self.rank:
+            self.l.showWorld(num)
+        self.comm.Barrier()
+
+    def getScorerHist(self, cfg, dst=0):
+        hist = super().getScorerHist(cfg)
+        weight = hist.getWeight()
+        hit = hist.getHit()
+        print(f'rank {self.rank} hist info: {hist.getWeight().sum()} {hist.getHit().sum()}')
+
+        recvw = None
+        recvh = None
+
+        if self.rank == dst: # only create the buffer for rank0
+            recvw = np.empty([self.size, weight.size], dtype='float')
+            recvh = np.empty([self.size, hit.size], dtype='float')
+        self.comm.Gather(weight, recvw, root=dst)
+        self.comm.Gather(hit, recvh, root=dst)
+        
+        if self.rank == dst:
+            hist.setHit(recvh.sum(axis=0))
+            hist.setWeight(recvw.sum(axis=0))
+        return hist
