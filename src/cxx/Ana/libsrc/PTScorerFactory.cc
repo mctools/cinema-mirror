@@ -90,30 +90,14 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       else
       {
         int methodInInt = ptstoi(cfg.find("method"));
-        if(methodInInt>=0 )
+        if(methodInInt==0 || methodInInt==1)
         {
           method = methodInInt;
         }
         else {
-          PROMPT_THROW2(BadInput, "The value for \"method\" should be an integer greater than or equal to 0");
+          PROMPT_THROW2(BadInput, "The value for \"method\" should either be 0 or 1");
         }
       }
-      // std::string qtrueInStr = cfg.find("method");
-      // if(qtrueInStr.empty())
-      //   parCount--;
-      // else
-      // {
-      //   if(qtrueInStr=="yes")
-      //   {
-      //     qtrue = true;
-      //   }
-      //   else if(qtrueInStr=="no")
-      //     qtrue = false;
-      //   else {
-      //     PROMPT_THROW2(BadInput, "The value for \"Qtrue\" should either be \"yes\" or \"no\"");
-      //   }
-
-      // }
 
       int scatnum = -1;
       if(cfg.find("scatnum")=="") 
