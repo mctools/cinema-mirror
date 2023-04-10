@@ -35,10 +35,10 @@ class MyGun(PythonGun):
         return 0,0,-209
 
 
-gunCfg = "gun=SimpleThermalGun;position=0,0,-200;direction=0,0,1"
 sim = MySim(seed=1010)
 
-if False:
+if False: #could be in either old style or the python style
+    gunCfg = "gun=SimpleThermalGun;position=0,0,-200;direction=0,0,1"
     sim.setGun(gunCfg)
 else:
     gun = MyGun()
