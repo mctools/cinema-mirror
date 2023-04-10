@@ -29,7 +29,7 @@
         <volume name="DetectorOut">
             <materialref ref="Vacuum"/>
             <solidref ref="DetectorSolid2"/>
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=Out; Tmin=0.0; Tmax=0.02; numbin=98"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=Out; min=0.0; max=0.02; numbin=98"/>
         </volume>
 
         <volume name="worldVOL">

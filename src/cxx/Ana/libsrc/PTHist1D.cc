@@ -29,6 +29,8 @@ Prompt::Hist1D::Hist1D(const std::string &name, double xmin, double xmax, unsign
 :HistBase(name, nbins), m_binfactor(0), m_linear(linear), m_logxmin(0)
 {
   m_xmin=xmin, m_xmax=xmax, m_nbins=nbins;
+  if(nbins==0)
+    PROMPT_THROW(BadInput, "bin size is zero");
   if(linear) {
     if(xmin==xmax)
       PROMPT_THROW(BadInput, "xmin and xman can not be equal");

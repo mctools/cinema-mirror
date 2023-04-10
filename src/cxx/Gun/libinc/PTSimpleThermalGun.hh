@@ -39,11 +39,7 @@ namespace Prompt {
         double cosr = cos(M_PI*0.5*m_rng.generate());
         ekin = 0.0253*(-log(m_rng.generate())-log(m_rng.generate())*cosr*cosr);
       }
-      else if(m_ekin<0)
-      {
-        ekin = 0.0253*m_rng.generate();
-      }
-      else
+      else if(m_ekin>0)
       {
         ekin = m_ekin;
       }

@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerAngular_hh
-#define Prompt_ScorerAngular_hh
+#ifndef Prompt_ScorerDeltaMomentum_hh
+#define Prompt_ScorerDeltaMomentum_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -26,16 +26,19 @@
 
 namespace Prompt {
 
-  class ScorerAngular  : public Scorer1D {
+  class ScorerDeltaMomentum : public Scorer1D {
   public:
-    ScorerAngular(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double angle_min, double angle_max, unsigned numbin,
-      ScorerType stype=Scorer::ScorerType::ENTRY, bool linear=true);
-    virtual ~ScorerAngular();
+    ScorerDeltaMomentum(const std::string &name, const Vector &samplePos, const Vector &refDir,
+      double sourceSampleDist, double qmin, double qmax, unsigned numbin,
+      ScorerType stype=Scorer::ScorerType::ENTRY, int method=0, int scatnum=-1, bool linear=true);
+    virtual ~ScorerDeltaMomentum();
     virtual void score(Particle &particle) override;
   protected:
     const Vector m_samplePos, m_refDir;
     const double m_sourceSampleDist;
+    int m_method;
+    int m_scatnum;
+
   };
 }
 #endif

@@ -2,12 +2,12 @@
 <gdml>
 
   <userinfo>
-    <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=0.0253;position=0,0,-100;direction=0,0,1" />
+    <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_w=0;src_h=0;src_z=-100;slit_w=0;slit_h=0;slit_z=1;temperature=293.15" />
   </userinfo>
 
    <define>
     <position name="DetectorPos" x="0" y="0" z="50." />
-    <rotation name="rot" unit="deg" x="90" y="0" z="0" />
+    <rotation name="SampleRot" unit="deg" x="90" y="0" z="0" />
   </define>
 
   <materials>
@@ -35,7 +35,7 @@
     <volume name="Detector">
       <materialref ref="Vacuum"/>
       <solidref ref="DetectorSolid"/>
-      <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum; name=SofQ; sample_pos=0,0,1; beam_dir=0,0,1; dist=-100; ptstate=ENTRY; linear=yes;min=0.5; max=50; numbin=1000"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=SofQ;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;ptstate=ENTRY;linear=yes;min=0.5; max = 50; numbin=1000"/>
     </volume>
 
     <volume name="World">
@@ -43,6 +43,7 @@
       <solidref ref="worldSolid"/>
       <physvol>
         <volumeref ref="Sample"/>
+        <rotationref ref="SampleRot"/>
       </physvol>
 
       <physvol>
