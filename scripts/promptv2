@@ -11,7 +11,7 @@ class MySim(PromptMPI):
 
     def makeWorld(self):
         scorerCfg_detpsd = "Scorer=PSD;name=NeutronHistMap;xmin=-500;xmax=500;numbin_x=10;ymin=-500;ymax=500;numbin_y=10;ptstate=SURFACE;type=XY"
-        scorerCfg_detwl = "Scorer=WlSpectrum; name=detector; Wlmin=0.0; Wlmax=5; numbin=200"
+        scorerCfg_detwl = "Scorer=WlSpectrum; name=detector; min=0.0; max=5; numbin=200"
         matCfg_sample = "physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=10;abs_bias=1"
 
         world = Volume("world", Box(210, 210, 210))
@@ -44,11 +44,12 @@ else:
     gun = MyGun()
     sim.setGun(gun)
 
-sim.show(1000)
+if False:
+    sim.show(1000)
+else:
+    sim.simulate(1e6)
 
-# sim.simulate(1e6)
-
-wlhist = sim.getScorerHist('Scorer=WlSpectrum; name=detector; Wlmin=0.0; Wlmax=5; numbin=200')
+wlhist = sim.getScorerHist('Scorer=WlSpectrum; name=detector; min=0.0; max=5; numbin=200')
 if sim.rank==0:
     print(f'total {wlhist.getWeight().sum()} {wlhist.getHit().sum()}')
     wlhist.plot(show=True)

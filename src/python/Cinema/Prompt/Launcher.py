@@ -67,7 +67,7 @@ class Launcher():
             v.show()
         else:
             for i in range(particles):
-                self.go(1, recordTrj=True, timer=False)
+                self.go(1, recordTrj=True, timer=False, save2Dis=False)
                 trj = self.getTrajectory()
                 try:
                     v.addTrj(trj)
@@ -94,7 +94,7 @@ class Launcher():
         _pt_Launcher_getTrajectory(self.cobj, trj)
         return trj
 
-    def go(self, numPrimary, printPrecent=0.1, recordTrj=False, timer=True, save2Dis=False):
+    def go(self, numPrimary, printPrecent=0.1, recordTrj=False, timer=True, save2Dis=True):
         _pt_Launcher_go(self.cobj, numPrimary, printPrecent, recordTrj, timer, save2Dis)
 
 

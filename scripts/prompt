@@ -48,7 +48,7 @@ else:
 if args.visualize is True:
     v = Visualiser(args.blacklist, printWorld=False, nSegments=args.nSegments, mergeMesh=args.mergemesh, dumpMesh=args.dumpmesh)
     for i in range(int(args.neutronNum)):
-        myLcher.go(1, recordTrj=True, timer=False)
+        myLcher.go(1, recordTrj=True, timer=False, save2Dis=False)
         trj = myLcher.getTrajectory()
         try:
             v.addTrj(trj)
