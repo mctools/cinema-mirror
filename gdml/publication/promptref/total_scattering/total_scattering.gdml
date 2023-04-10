@@ -33,18 +33,18 @@
           <materialref ref="HeavyWater"/>
           <!-- <materialref ref="HeavyWater_biased"/> -->
           <solidref ref="SampleSolid"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat;name=HW;Numbermin=1;Numbermax=8;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat;name=HW;min=1;max=8;linear=yes"/>
         </volume>
 
         <volume name="Detector">
           <materialref ref="He3_20bar"/>
           <solidref ref="DetectorSolid"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=-1;Qmin=0.1;Qmax=50.1;numbin=1000;linear=yes"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ1_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=1;Qmin=0.1;Qmax=50.1;numbin=1000;linear=yes"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ2_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=2;Qmin=0.1;Qmax=50.1;numbin=1000;linear=yes"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ3_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=3;Qmin=0.1;Qmax=50.1;numbin=1000;linear=yes"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ4_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=4;Qmin=0.1;Qmax=50.1;numbin=1000;linear=yes"/>
-          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ5_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=5;Qmin=0.1;Qmax=50.1;numbin=1000;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=-1;min=0.1;max=50.1;numbin=1000;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ1_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=1;min=0.1;max=50.1;numbin=1000;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ2_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=2;min=0.1;max=50.1;numbin=1000;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ3_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=3;min=0.1;max=50.1;numbin=1000;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ4_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=4;min=0.1;max=50.1;numbin=1000;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ5_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=5;min=0.1;max=50.1;numbin=1000;linear=yes"/>
         </volume>
 
         <volume name="World">

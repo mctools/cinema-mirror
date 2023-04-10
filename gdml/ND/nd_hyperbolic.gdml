@@ -86,7 +86,7 @@
       <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap;
         xmin=-250;xmax=250;numbin_x=50;ymin=-250;ymax=250;numbin_y=50;type=XY"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=detector;
-        Emin=0.0; Emax=0.5; numbin=200"/>
+        min=0.0; max=0.5; numbin=200"/>
     </volume>
 
     <volume name="GuideEntry">
@@ -95,9 +95,9 @@
       <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap2;
         xmin=-50;xmax=50;numbin_x=11;ymin=-50;ymax=50;numbin_y=11;type=XY"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=detector2;
-        Emin=0.0; Emax=0.5; numbin=200"/>
+        min=0.0; max=0.5; numbin=200"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=entryTOF;
-        Tmin=0.0; Tmax=0.01; numbin=200"/>
+        min=0.0; max=0.01; numbin=200"/>
     </volume>
 
     <volume name="World">

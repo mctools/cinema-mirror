@@ -61,7 +61,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // example cfg
       // "Scorer=DeltaMomentum; name=SofQ;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;
-      // ptstate=ENTRY;linear=yes;Qmin=0.5;Qmax=50;numbin=1000;Qtrue=yes;scatnum=-1"
+      // ptstate=ENTRY;linear=yes;min=0.5;max=50;numbin=1000;Qtrue=yes;scatnum=-1"
 
 
       int parCount = 12;
@@ -72,8 +72,8 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       auto samplePos = string2vec(cfg.find("sample_pos", force));
       auto beamDir = string2vec(cfg.find("beam_dir", force));
       double moderator2SampleDist = ptstod(cfg.find("dist", force));
-      double minQ = ptstod(cfg.find("Qmin", force));
-      double maxQ = ptstod(cfg.find("Qmax", force));
+      double minQ = ptstod(cfg.find("min", force));
+      double maxQ = ptstod(cfg.find("max", force));
 
       int numBin = 100;
       if(cfg.find("numbin")=="") 
@@ -168,7 +168,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // example cfg
       // "Scorer=Angular;name=ST_template;sample_pos=0,-1750,0;beam_dir=0,-1,0;
-      //  dist=3650.;Anglemin=10.0;Anglemax=160;numbin=6000;ptstate=ENTRY;linear=yes"
+      //  dist=3650.;min=10.0;max=160;numbin=6000;ptstate=ENTRY;linear=yes"
 
 
       int parCount = 10;
@@ -179,8 +179,8 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       auto samplePos = string2vec(cfg.find("sample_pos", force));
       auto beamDir = string2vec(cfg.find("beam_dir", force));
       double moderator2SampleDist = ptstod(cfg.find("dist", force));
-      double angle_min = ptstod(cfg.find("Anglemin", force));
-      double angle_max = ptstod(cfg.find("Anglemax", force));
+      double angle_min = ptstod(cfg.find("min", force));
+      double angle_max = ptstod(cfg.find("max", force));
 
       int numBin = 100;
       if(cfg.find("numbin")=="") 
@@ -301,15 +301,15 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // ESpectrum: energy spectrum
       // example cfg
-      // "Scorer=ESD; name=detector; Emin=0.0; Emax=0.0253; numbin=100; ptstate=ENTRY"
+      // "Scorer=ESD; name=detector; min=0.0; max=0.0253; numbin=100; ptstate=ENTRY"
 
       int parCount = 6;
 
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      double minE = ptstod(cfg.find("Emin", force));
-      double maxE = ptstod(cfg.find("Emax", force));
+      double minE = ptstod(cfg.find("min", force));
+      double maxE = ptstod(cfg.find("max", force));
 
       int numBin = 100;
       if(cfg.find("numbin")=="") 
@@ -339,15 +339,15 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // WlSpectrum: wavelength spectrum
       // example cfg
-      // "Scorer=WlSpectrum; name=detector; Emin=0.0; Emax=0.0253; numbin=100; ptstate=ENTRY"
+      // "Scorer=WlSpectrum; name=detector; min=0.0; max=0.0253; numbin=100; ptstate=ENTRY"
 
       int parCount = 6;
 
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      double minWl = ptstod(cfg.find("Wlmin", force));
-      double maxWl = ptstod(cfg.find("Wlmax", force));
+      double minWl = ptstod(cfg.find("min", force));
+      double maxWl = ptstod(cfg.find("max", force));
 
       int numBin = 100;
       if(cfg.find("numbin")=="") 
@@ -377,15 +377,15 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // TOF: time-of-flight
       // example cfg
-      // "Scorer=TOF; name=detector; Tmin=0.0; Tmax=0.5; numbin=1000; ptstate=ENTRY"
+      // "Scorer=TOF; name=detector; min=0.0; max=0.5; numbin=1000; ptstate=ENTRY"
 
       int parCount = 6;
 
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      double minT = ptstod(cfg.find("Tmin", force));
-      double maxT = ptstod(cfg.find("Tmax", force));
+      double minT = ptstod(cfg.find("min", force));
+      double maxT = ptstod(cfg.find("max", force));
 
       int numBin = 100;
       if(cfg.find("numbin")=="") 
@@ -415,7 +415,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
     {
       // MultiScat: multiple scattering
       // example cfg
-      // "Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=5; linear=yes"
+      // "Scorer=MultiScat; name=D2O; min=1; max=5; linear=yes"
       // the default value for linear is yes
 
       int parCount = 5;
@@ -427,32 +427,32 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       
       // the optional parameters
       int minNumber = 0;
-      if(cfg.find("Numbermin")=="") 
+      if(cfg.find("min")=="") 
         parCount--;
       else
       {
-        int minNumberInInt = ptstoi(cfg.find("Numbermin"));
+        int minNumberInInt = ptstoi(cfg.find("min"));
         if(minNumberInInt>=0 )
         {
           minNumber = minNumberInInt;
         }
         else {
-          PROMPT_THROW2(BadInput, "The value for \"Numbermin\" should be an integer greater than or equal to 0");
+          PROMPT_THROW2(BadInput, "The value for \"min\" should be an integer greater than or equal to 0");
         }
       }
 
       int maxNumber = 5;
-      if(cfg.find("Numbermax")=="") 
+      if(cfg.find("max")=="") 
         parCount--;
       else
       {
-        int maxNumberInInt = ptstoi(cfg.find("Numbermax"));
+        int maxNumberInInt = ptstoi(cfg.find("max"));
         if(maxNumberInInt>=0 )
         {
           maxNumber = maxNumberInInt;
         }
         else {
-          PROMPT_THROW2(BadInput, "The value for \"Numbermax\" should be an integer greater than or equal to 0");
+          PROMPT_THROW2(BadInput, "The value for \"max\" should be an integer greater than or equal to 0");
         }
       }
       int numBin = maxNumber-minNumber+1;
@@ -489,8 +489,8 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
 
       bool force = true;
       std::string name = cfg.find("name", force);
-      double xmin = ptstod(cfg.find("xmin", force));
-      double xmax = ptstod(cfg.find("xmax", force));
+      double xmin = ptstod(cfg.find("min", force));
+      double xmax = ptstod(cfg.find("max", force));
 
       int nxbins = 100;
       if(cfg.find("numbin")=="") 

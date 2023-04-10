@@ -213,7 +213,7 @@
             <solidref ref="Sphere_Detector"/>
             <materialref ref="Universe"/>
             <auxiliary auxtype="Scorer" auxvalue="Scorer=Angular;name=ST_template;sample_pos=0,-2750,0;beam_dir=0,-1,0;
-                                                 dist=3650.;Anglemin=5.0;Anglemax=160;numbin=1000;ptstate=ENTRY"/>
+                                                 dist=3650.;min=5.0;max=160;numbin=1000;ptstate=ENTRY"/>
         </volume>
 
         <volume name="worldVOL">

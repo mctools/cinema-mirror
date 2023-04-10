@@ -101,7 +101,7 @@
         <volume name="LV_Tube_SampleStick">
             <solidref ref="SampleStick" />
             <materialref ref="HeavyWater" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat; name=D2O; Numbermin=1; Numbermax=10; linear=yes"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat; name=D2O; min=1; max=10; linear=yes"/>
         </volume>
 
         <!-- <volume name="LV_Tube_SampleHolder">
@@ -112,14 +112,14 @@
         <volume name="LV_MonitorIn">
             <solidref ref="MonitorIn" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=MonitorIn; Emin=0.0; Emax=5.0; numbin=207"/>
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=MonitorIn; Tmin=0.0; Tmax=5.0; numbin=207"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=MonitorIn; min=0.0; max=5.0; numbin=207"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=MonitorIn; min=0.0; max=5.0; numbin=207"/>
         </volume>
 
         <volume name="LV_Tube300_He">
             <solidref ref="Tube300_He" />
             <materialref ref="G4_He" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=SofQ_300;sample_pos=0,0,0;beam_dir=0,0,1;dist=30000;ptstate=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=SofQ_300;sample_pos=0,0,0;beam_dir=0,0,1;dist=30000;ptstate=ABSORB;linear=yes;min=0.1; max=120; numbin=1000"/>
         </volume>
 
         <volume name="LV_Tube300_Wall">
@@ -140,7 +140,7 @@
 
         <volume name="LV_Tube500_He">
             <solidref ref="Tube500_He" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=SofQ_500;sample_pos=0,0,0;beam_dir=0,0,1;dist=30000;ptstate=ABSORB;linear=yes;Qmin=0.1; Qmax=120; numbin=1000"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=SofQ_500;sample_pos=0,0,0;beam_dir=0,0,1;dist=30000;ptstate=ABSORB;linear=yes;min=0.1; max=120; numbin=1000"/>
             <materialref ref="G4_He" />
         </volume>
 
