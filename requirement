@@ -2,6 +2,7 @@
 numba==0.55.1
 
 #required packages for Prompt visualisation
+mpi4py
 vtk==9.1.0
 pyvista==0.34.1
 matplotlib

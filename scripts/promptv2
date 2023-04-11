@@ -3,13 +3,13 @@
 from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.geo import Box, Volume, Transformation3D
 from Cinema.Prompt.gun import PythonGun
-
+import numpy as np
 
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)
 
-    def makeWorld(self):
+    def makeWorld(self, anyUserParameters=np.zeros(2)):
         scorerCfg_detpsd = "Scorer=PSD;name=NeutronHistMap;xmin=-500;xmax=500;numbin_x=10;ymin=-500;ymax=500;numbin_y=10;ptstate=SURFACE;type=XY"
         scorerCfg_detwl = "Scorer=WlSpectrum; name=detector; min=0.0; max=5; numbin=200"
         matCfg_sample = "physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=10;abs_bias=1"
@@ -37,6 +37,7 @@ class MyGun(PythonGun):
 
 sim = MySim(seed=1010)
 
+# set gun
 if False: #could be in either old style or the python style
     gunCfg = "gun=SimpleThermalGun;position=0,0,-200;direction=0,0,1"
     sim.setGun(gunCfg)
@@ -44,6 +45,7 @@ else:
     gun = MyGun()
     sim.setGun(gun)
 
+# vis or production
 if False:
     sim.show(1000)
 else:

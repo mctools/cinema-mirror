@@ -96,7 +96,9 @@ class PromptMPI(Prompt):
     def show(self, num : int = 0):
         if not self.rank:
             self.l.showWorld(num)
-        self.comm.Barrier()
+            self.comm.Barrier()
+        else:
+            self.comm.Barrier()
 
     def getScorerHist(self, cfg, dst=0):
         hist = super().getScorerHist(cfg)
@@ -108,12 +110,12 @@ class PromptMPI(Prompt):
         recvh = None
 
         if self.rank == dst: # only create the buffer for rank0
-            recvw = np.empty([self.size, weight.size], dtype='float')
-            recvh = np.empty([self.size, hit.size], dtype='float')
-        self.comm.Gather(weight, recvw, root=dst)
-        self.comm.Gather(hit, recvh, root=dst)
-        
+            recvw = np.empty(weight.size, dtype='float')
+            recvh = np.empty(hit.size, dtype='float')
+        self.comm.Reduce(weight, recvw, op = MPI.SUM, root=dst)
+        self.comm.Reduce(hit, recvh, op = MPI.SUM, root=dst)
+
         if self.rank == dst:
-            hist.setHit(recvh.sum(axis=0))
-            hist.setWeight(recvw.sum(axis=0))
+            hist.setHit(recvh)
+            hist.setWeight(recvw)
         return hist
