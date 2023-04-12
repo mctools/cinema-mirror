@@ -21,15 +21,7 @@
 from ..Interface import *
 from .Mesh import _pt_Transformation3D_transform
 
-__all__ = ['Box', 'Volume', 'Transformation3D']
-
-#box
-_pt_Box_new = importFunc('pt_Box_new', type_voidp, [type_dbl, type_dbl, type_dbl])
-_pt_Box_delete = importFunc('pt_Box_delete', None, [type_voidp] )
-
-
-#Tessellated
-_pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npsbl2d] )
+__all__ = ['Volume', 'Transformation3D']
 
 
 #Volume
@@ -50,24 +42,8 @@ _pt_ResourceManager_addSurface = importFunc('pt_ResourceManager_addSurface', Non
 _pt_ResourceManager_addPhysics = importFunc('pt_ResourceManager_addPhysics', None, [type_uint, type_cstr])
 
 
-class Box:
-    def __init__(self, hx, hy, hz):
-        self.cobj = _pt_Box_new(hx, hy, hz)
-
-    # the memory should be managed by the Volume. 
-    # fixme: double check if it is release at the very end
-    def __del__(self):
-        # _pt_Box_delete(self.cobj)
-        pass
-
-class Tessellated:
-    def __init__(self, faces, points, tranMat=None) -> None:
-        if tranMat is not None:
-            tranMat.transformInplace(points)
-        self.cobj = _pt_Tessellated_new(faces.shape[0], faces, points)
-
 class Transformation3D:
-    def __init__(self, x=0, y=0, z=0, rx=0, ry=0, rz=0, sx=1., sy=1., sz=1.):
+    def __init__(self, x=0., y=0., z=0., rx=0., ry=0., rz=0., sx=1., sy=1., sz=1.):
         # RScale followed by rotation followed by translation.
         self.cobj = _pt_Transformation3D_newfromdata(x, y, z, rx, ry, rz, sx, sy, sz)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from Cinema.Prompt import Launcher, Visualiser
-from Cinema.Prompt.geo import Box, Volume, Transformation3D, Tessellated
+from Cinema.Prompt.geo.geo import Box, Volume, Transformation3D, Tessellated
 from Cinema.Prompt.gun import PythonGun
 
 

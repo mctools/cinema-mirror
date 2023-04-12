@@ -16,7 +16,7 @@
    
     <materials>
         <material name="Air">
-          <atom value="freegas::N78O22/1.225e-9kgm3"/>
+          <atom value="freegas::N78O22/1.225kgm3"/>
         </material>
 
         <material name="Ge">

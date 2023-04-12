@@ -36,7 +36,6 @@ from .Visualiser import *
 from . import Histogram
 from .Histogram import *
 
-from . import geo
 from .geo import *
 
 
@@ -70,7 +69,7 @@ class Prompt:
 
     
     def show(self, num : int = 0):
-        self.l.showWorld(1000)
+        self.l.showWorld(num)
 
     def simulate(self, num : int = 0, timer=True, save2Disk=False):
         self.l.go(int(num), timer=timer, save2Dis=save2Disk)
@@ -94,7 +93,7 @@ class PromptMPI(Prompt):
           super().simulate(num-batchSize*(self.size-1))
 
     def show(self, num : int = 0):
-        if not self.rank:
+        if self.rank==0:
             self.l.showWorld(num)
             self.comm.Barrier()
         else:
