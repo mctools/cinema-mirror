@@ -52,6 +52,9 @@ else:
     sim.simulate(1e6)
 
 wlhist = sim.getScorerHist('Scorer=WlSpectrum; name=detector; min=0.0; max=5; numbin=200')
+np.allclose(wlhist.getWeight().sum(), 817540.6738638073)
+np.allclose(wlhist.getHit().sum(), 201053.0)
+
 if sim.rank==0:
     print(f'total {wlhist.getWeight().sum()} {wlhist.getHit().sum()}')
     wlhist.plot(show=True)
