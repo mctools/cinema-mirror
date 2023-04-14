@@ -22,6 +22,7 @@ X = design.get_samples(30)
 Y = target_function(X)
 
 from emukit.examples.gp_bayesian_optimization.single_objective_bayesian_optimization import GPBayesianOptimization
+from emukit.examples.gp_bayesian_optimization.unknown_constraint_bayesian_optimization 
 from emukit.core.loop import UserFunctionResult
 
 num_iterations = 10

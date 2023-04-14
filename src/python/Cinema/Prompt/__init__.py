@@ -56,7 +56,8 @@ class Prompt:
     def __init__(self, seed : int = 4096) -> None:
         self.l = Launcher()
         self.l.setSeed(seed)
-        self.makeWorld()
+        self.setScorer()
+        self.l.setWorld(self.makeWorld())
 
     def makeWorld(self):
         raise NotImplementedError('') 
@@ -66,7 +67,9 @@ class Prompt:
             self.l.setGun(gun)
         else:
             self.l.setPythonGun(gun)
-
+ 
+    def setScorer(self):
+        self.scorer = {}
     
     def show(self, num : int = 0):
         self.l.showWorld(num)
@@ -76,6 +79,8 @@ class Prompt:
 
     def getScorerHist(self, cfg):
         return self.l.getHist(cfg)
+    
+
 
 class PromptMPI(Prompt):
     def __init__(self, seed=4096) -> None:
