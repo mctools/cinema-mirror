@@ -1,3 +1,6 @@
+#ifndef Prompt_ScorerDeltaMomentum_hh
+#define Prompt_ScorerDeltaMomentum_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,16 +21,24 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerTOF.hh"
+#include "PromptCore.hh"
+#include "PTScorer.hh"
 
+namespace Prompt {
 
-Prompt::ScorerTOF::ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins, ScorerType stype)
-:Scorer1D("ScorerTOF_"+name, stype,std::make_unique<Hist1D>("ScorerTOF_"+name, xmin, xmax, nxbins))
-{}
+  class ScorerDeltaMomentum : public Scorer1D {
+  public:
+    ScorerDeltaMomentum(const std::string &name, const Vector &samplePos, const Vector &refDir,
+      double sourceSampleDist, double qmin, double qmax, unsigned numbin,
+      ScorerType stype=Scorer::ScorerType::ENTRY, int method=0, int scatnum=-1, bool linear=true);
+    virtual ~ScorerDeltaMomentum();
+    virtual void score(Particle &particle) override;
+  protected:
+    const Vector m_samplePos, m_refDir;
+    const double m_sourceSampleDist;
+    int m_method;
+    int m_scatnum;
 
-Prompt::ScorerTOF::~ScorerTOF() {}
-
-void Prompt::ScorerTOF::score(Prompt::Particle &particle)
-{
-  m_hist->fill(particle.getTime(), particle.getWeight());
+  };
 }
+#endif

@@ -18,16 +18,27 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerTOF.hh"
+#include "PTScorerSplit.hh"
+#include "PTStackManager.hh"
 
+Prompt::ScorerSplit::ScorerSplit(const std::string &name, unsigned split)
+:Scorer1D("ScorerSplit_"+ name, Scorer::ScorerType::ENTRY, 
+  std::make_unique<Hist1D>("ScorerSplit_"+ name, 1e-10, 1e2, 1200, false)), m_split(split), m_lastsplit(-1)
+{ }
 
-Prompt::ScorerTOF::ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins, ScorerType stype)
-:Scorer1D("ScorerTOF_"+name, stype,std::make_unique<Hist1D>("ScorerTOF_"+name, xmin, xmax, nxbins))
-{}
+Prompt::ScorerSplit::~ScorerSplit() {}
 
-Prompt::ScorerTOF::~ScorerTOF() {}
-
-void Prompt::ScorerTOF::score(Prompt::Particle &particle)
+void Prompt::ScorerSplit::score(Particle &particle)
 {
-  m_hist->fill(particle.getTime(), particle.getWeight());
+  if(m_lastsplit != particle.getEventID() )
+  {
+    m_hist->fill(particle.getWeight());
+    if (m_split>1)
+    {
+      particle.scaleWeight(1./m_split);
+      auto &stackManager = Singleton<StackManager>::getInstance();
+      stackManager.add(particle, m_split-1);
+    }
+    m_lastsplit = particle.getEventID();
+  }
 }

@@ -107,8 +107,19 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
 
       // the optional parameters
       double energy = 0;
-      if(!cfg.getDoubleIfExist("energy", energy))
+      if(cfg.find("energy")=="") 
         parCount--;
+      else
+      {
+        double energyInDou = ptstod(cfg.find("energy"));
+        if(energyInDou>=0 )
+        {
+          energy = energyInDou;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"energy\" should be greater than or equal to 0");
+        }
+      }
 
       Vector direction = Vector{0.,0.,1.};
       if(!cfg.getVectorIfExist("direction", direction))
@@ -136,12 +147,18 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
 
       // the optional parameters
       double energy = 0;
-      std::string energyInStr = cfg.find("energy");
-      if(energyInStr.empty())
+      if(cfg.find("energy")=="") 
         parCount--;
       else
       {
-        energy = ptstod(energyInStr);
+        double energyInDou = ptstod(cfg.find("energy"));
+        if(energyInDou>=0 )
+        {
+          energy = energyInDou;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"energy\" should be greater than or equal to 0");
+        }
       }
 
       if(parCount!=cfg.size())
@@ -161,15 +178,44 @@ std::shared_ptr<Prompt::PrimaryGun> Prompt::GunFactory::createGun(const std::str
       int parCount = 9;
 
       // The mandatory parameters
-      bool force = true;
-      double mean_wl = ptstod(cfg.find("mean_wl",force));
-      double range_wl = ptstod(cfg.find("range_wl",force));
+      bool force = true; 
       double src_w = ptstod(cfg.find("src_w", force));
       double src_h = ptstod(cfg.find("src_h", force));
       double src_z = ptstod(cfg.find("src_z", force));
       double slit_w = ptstod(cfg.find("slit_w", force));
       double slit_h = ptstod(cfg.find("slit_h", force));
       double slit_z = ptstod(cfg.find("slit_z", force));
+
+      // the optional parameters
+      double mean_wl = 1;
+      if(cfg.find("mean_wl")=="") 
+        parCount--;
+      else
+      {
+        double mean_wlInDou = ptstod(cfg.find("mean_wl"));
+        if(mean_wlInDou>0 )
+        {
+          mean_wl = mean_wlInDou;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"mean_wl\" should be positive");
+        }
+      }
+
+      double range_wl = 0.0001;
+      if(cfg.find("range_wl")=="") 
+        parCount--;
+      else
+      {
+        double range_wlInDou = ptstod(cfg.find("range_wl"));
+        if(range_wlInDou>=0 )
+        {
+          range_wl = range_wlInDou;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"range_wl\" should be greater than or equal to 0");
+        }
+      }
 
       if(parCount!=cfg.size())
       {

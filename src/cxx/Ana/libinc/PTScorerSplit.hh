@@ -1,3 +1,6 @@
+#ifndef Prompt_ScorerSplit_hh
+#define Prompt_ScorerSplit_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,16 +21,19 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerTOF.hh"
+#include "PromptCore.hh"
+#include "PTScorer.hh"
 
+namespace Prompt {
 
-Prompt::ScorerTOF::ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins, ScorerType stype)
-:Scorer1D("ScorerTOF_"+name, stype,std::make_unique<Hist1D>("ScorerTOF_"+name, xmin, xmax, nxbins))
-{}
-
-Prompt::ScorerTOF::~ScorerTOF() {}
-
-void Prompt::ScorerTOF::score(Prompt::Particle &particle)
-{
-  m_hist->fill(particle.getTime(), particle.getWeight());
+  class ScorerSplit : public Scorer1D {
+  public:
+    ScorerSplit(const std::string &name, unsigned split);
+    virtual ~ScorerSplit();
+    virtual void score(Particle &particle) override;
+  private:
+    unsigned m_split;
+    int long long m_lastsplit; 
+  };
 }
+#endif

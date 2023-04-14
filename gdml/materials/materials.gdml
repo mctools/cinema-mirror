@@ -37,7 +37,7 @@
         <volume name="VolSphere">
             <solidref ref="SphereSolid" />
             <materialref ref="WaterBiased" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=VolFluence;name=Sflux;xmin=1e-5;xmax=1.2;numBins_x=100;linear=no"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=VolFluence;name=Sflux;min=1e-5;max=1.2;numbin=100;linear=no"/>
             <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=roen;
               rotation_axis=0,1,0;point_on_axis=0,0,0;rot_fre=1000"/>
         </volume>
@@ -46,14 +46,14 @@
             <solidref ref="boxSolid" />
             <materialref ref="Air" />
             <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=Side;
-              xmin=-100;xmax=100;numBins_x=100;ymin=-100;ymax=100;numBins_y=100;type=XY"/>
+              xmin=-100;xmax=100;numbin_x=100;ymin=-100;ymax=100;numbin_y=100;type=XY"/>
         </volume>
 
         <volume name="VolBoxTop">
             <solidref ref="boxSolid" />
             <materialref ref="Air" />
             <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=Top;
-              xmin=-100;xmax=100;numBins_x=100;ymin=-100;ymax=100;numBins_y=100;type=XY"/>
+              xmin=-100;xmax=100;numbin_x=100;ymin=-100;ymax=100;numbin_y=100;type=XY"/>
         </volume>
 
         <volume name="VolWorld">

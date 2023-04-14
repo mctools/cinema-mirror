@@ -1,0 +1,7 @@
+File HeavyWater_Soper.h5 is the measured data from Soper(2013).
+To get figure 8 and figure 9 in the paper Prompt, please follow the steps:
+1. Run ./runHW.sh to get data of the simulation with non-biased heavy water sample. 
+2. Change the materialref of the volume Sample in total_scattering.gdml from 'HeavyWater' to 'HeavyWater_biased'.
+3. Change the particle number of runHW.sh from 4e8 to 4e7.
+4. Run ./runHW.sh again to get data of the simulation with biased heavy water sample.
+5. Run python plot.py

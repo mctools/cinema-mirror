@@ -18,16 +18,37 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorerTOF.hh"
+#include "PTScorerDeltaMomentum.hh"
 
-
-Prompt::ScorerTOF::ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins, ScorerType stype)
-:Scorer1D("ScorerTOF_"+name, stype,std::make_unique<Hist1D>("ScorerTOF_"+name, xmin, xmax, nxbins))
+Prompt::ScorerDeltaMomentum::ScorerDeltaMomentum(const std::string &name, const Vector &samplePos, const Vector &refDir,
+      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, int method, int scatnum, bool linear)
+:Scorer1D("ScorerDeltaMomentum_" + name, stype, std::make_unique<Hist1D>("ScorerDeltaMomentum_" + name, qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir), 
+m_sourceSampleDist(sourceSampleDist), m_method(method), m_scatnum(scatnum)
 {}
 
-Prompt::ScorerTOF::~ScorerTOF() {}
+Prompt::ScorerDeltaMomentum::~ScorerDeltaMomentum(){}
 
-void Prompt::ScorerTOF::score(Prompt::Particle &particle)
+void Prompt::ScorerDeltaMomentum::score(Prompt::Particle &particle)
 {
-  m_hist->fill(particle.getTime(), particle.getWeight());
+  if(particle.getPGD()!=const_neutron_pgd)
+    return; // for neutron only
+  
+  if(m_scatnum==-1||particle.getNumScat()==m_scatnum)
+  {
+    double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
+    if(m_method==0)
+    {
+      double qt = neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin());
+      if(qt)
+        m_hist->fill(qt, particle.getWeight()/qt); 
+    }
+    else if(m_method==1) //static approximation
+    {
+      double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();
+      double v = dist/particle.getTime();
+      double ekin = 0.5*const_neutron_mass_evc2*v*v;
+      double q = neutronAngleCosine2Q(angle_cos, ekin, ekin);
+      m_hist->fill(q, particle.getWeight());
+    }
+  }
 }

@@ -164,7 +164,7 @@ class GdmlElement():
 
         scorer = etree.SubElement(volume, 'auxiliary')
         scorer.set('auxtype', 'Scorer')
-        scorer.set('auxvalue', 'Scorer=PSD;name=BunnyImage;xmin=-200;xmax=200;numBins_x=500;ymin=-150;ymax=150;numBins_y=500;ptstate=ENTRY;type=XY')
+        scorer.set('auxvalue', 'Scorer=PSD;name=BunnyImage;xmin=-200;xmax=200;numbin_x=500;ymin=-150;ymax=150;numbin_y=500;ptstate=ENTRY;type=XY')
 
     def set_box(self, name, xyz, unit):
 

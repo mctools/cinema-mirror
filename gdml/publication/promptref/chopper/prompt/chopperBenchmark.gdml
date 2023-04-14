@@ -24,19 +24,19 @@
         <volume name="LV_Chopper1">
             <solidref ref="Chopper1" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=DiskChopper;rotFreq_Hz=100;r_mm=130;theta0_deg=20;n=4;phase_deg=0"/>           
+            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=DiskChopper;rotFreq=100;r=130;theta0=20;n=4;phase=0"/>           
         </volume>
 
         <volume name="DetectorIn">
             <materialref ref="Vacuum"/>
             <solidref ref="DetectorSolid1"/>
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=In; Tmin=0.0; Tmax=0.02; numbin=10000"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=In; min=0.0; max=0.02; numbin=10000"/>
         </volume>
 
         <volume name="DetectorOut">
             <materialref ref="Vacuum"/>
             <solidref ref="DetectorSolid2"/>
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=Out; Tmin=0.0; Tmax=0.02; numbin=10000"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=Out; min=0.0; max=0.02; numbin=10000"/>
         </volume>
 
         <volume name="worldVOL">

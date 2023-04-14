@@ -35,7 +35,7 @@
     <volume name="Detector">
       <materialref ref="Vacuum"/>
       <solidref ref="DetectorSolid"/>
-      <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=detector; Tmin=0.0; Tmax=0.5; numbin=1000"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=detector; min=0.0; max=0.5; numbin=1000"/>
     </volume>
 
     <volume name="World">

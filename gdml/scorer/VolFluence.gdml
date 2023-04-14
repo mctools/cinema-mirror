@@ -34,7 +34,7 @@
         <volume name="VolBox">
             <solidref ref="boxSolid" />
             <materialref ref="HWater" />
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=VolFluence;name=Sflux;xmin=1e-5;xmax=1.2;numBins_x=100"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=VolFluence;name=Sflux;min=1e-5;max=1.2;numbin=100"/>
         </volume>
 
 

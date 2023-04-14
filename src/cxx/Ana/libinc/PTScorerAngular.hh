@@ -22,17 +22,20 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
-#include "PTScorerNeutronSq.hh"
+#include "PTScorer.hh"
 
 namespace Prompt {
 
-  class ScorerAngular  : public ScorerNeutronSq {
+  class ScorerAngular  : public Scorer1D {
   public:
     ScorerAngular(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double angle_min, double angle_max, unsigned numbin,
       ScorerType stype=Scorer::ScorerType::ENTRY, bool linear=true);
     virtual ~ScorerAngular();
     virtual void score(Particle &particle) override;
+  protected:
+    const Vector m_samplePos, m_refDir;
+    const double m_sourceSampleDist;
   };
 }
 #endif
