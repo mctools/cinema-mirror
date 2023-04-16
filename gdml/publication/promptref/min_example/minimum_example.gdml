@@ -28,7 +28,7 @@
             <solidref ref="WorldSolid" />
             <materialref ref="Universe" />
             <!-- Defining PSD scorer and attaching it to World -->
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD; name=NeutronHistMap; xmin=-500; xmax=500; numBins_x=1000; ymin=-500; ymax=500; numBins_y=1000; ptstate=EXIT; type=YZ"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD; name=NeutronHistMap; xmin=-500; xmax=500; numbin_x=1000; ymin=-500; ymax=500; numbin_y=1000; ptstate=EXIT; type=YZ"/>
             <physvol name="PhysVol_Sample">
                 <volumeref ref="VolSample" />
             </physvol>
