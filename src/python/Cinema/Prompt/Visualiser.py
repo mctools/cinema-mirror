@@ -29,14 +29,14 @@ from .Mesh import Mesh
 
 
 class Visualiser():
-    def __init__(self, blacklist, printWorld=False, nSegments=30, mergeMesh=False, dumpMesh=False):
+    def __init__(self, blacklist, printWorld=False, nSegments=30, mergeMesh=False, dumpMesh=False, window_size=[1920, 1080]):
         self.color =  list(mcolors.CSS4_COLORS.keys())
         self.worldMesh = Mesh()
         self.blacklist = blacklist
         if printWorld:
             self.worldMesh.printMesh()
 
-        self.plotter = pv.Plotter()
+        self.plotter = pv.Plotter(window_size=window_size)
         self.loadMesh(nSegments, dumpMesh, mergeMesh)
         self.trj=pv.MultiBlock()
         self.redpoints=pv.MultiBlock()
