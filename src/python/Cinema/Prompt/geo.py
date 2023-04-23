@@ -18,6 +18,7 @@
 ##                                                                            ##
 ################################################################################
 
+from scipy.spatial.transform import Rotation as scipyRot
 from ..Interface import *
 from .Mesh import _pt_Transformation3D_transform
 
@@ -33,7 +34,7 @@ _pt_Volume_id = importFunc('pt_Volume_id', type_uint, [type_voidp])
 
 _pt_Transformation3D_newfromdata = importFunc('pt_Transformation3D_newfromdata', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 _pt_Transformation3D_delete = importFunc('pt_Transformation3D_delete', None, [type_voidp] )
-
+_pt_Transformlation3D_setRotation  = importFunc('pt_Transformlation3D_setRotation', None, [type_voidp, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 
 #resource manager 
 _pt_ResourceManager_addNewVolume = importFunc('pt_ResourceManager_addNewVolume', None, [type_uint])
@@ -43,12 +44,29 @@ _pt_ResourceManager_addPhysics = importFunc('pt_ResourceManager_addPhysics', Non
 
 
 class Transformation3D:
-    def __init__(self, x=0., y=0., z=0., rx=0., ry=0., rz=0., sx=1., sy=1., sz=1.):
+    def __init__(self, x=0., y=0., z=0., rot_z=0., rot_new_y=0., rot_new_z=0., sx=1., sy=1., sz=1.):
         # RScale followed by rotation followed by translation.
-        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, rx, ry, rz, sx, sy, sz)
+        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, rot_z, rot_new_y, rot_new_z, sx, sy, sz)
+        r = scipyRot.from_euler('zyz', [rot_z, rot_new_y, -rot_new_z], degrees=True)
+        print(f'python matrix {rot_z, rot_new_y, rot_new_z},  {r.as_matrix()} \n')
+
 
     def __del__(self):
         _pt_Transformation3D_delete(self.cobj)
+
+    def _setRot(self, rot : scipyRot):
+        mat = rot.as_matrix()
+        _pt_Transformlation3D_setRotation(self.cobj, mat[0,0], mat[0,1], mat[0,2],
+                                          mat[1,0], mat[1,1], mat[1,2],
+                                          mat[2,0], mat[2,1], mat[2,2])
+        
+    def rotAxis(self, angle, axis, degrees=True):
+        self._setRot(scipyRot.from_rotvec(angle * axis/np.linalg.norm(axis), degrees=degrees))
+        return self
+        
+    #  a wrapper of scipy.spatial.transform.Rotation    
+    def setRot_from_quau(self, ):
+        pass
 
     def transformInplace(self, input):
         _pt_Transformation3D_transform(self.cobj, input.shape[0], input, input)

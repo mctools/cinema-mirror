@@ -27,6 +27,8 @@ def makeTrapezoidGuide(length, x_neg, y_neg, x_pos, y_pos, m,
                  inner_mat='freegas::N78O22/1.225e-3kgm3'):
     inner = Volume('inner', Trapezoid(x_neg, x_pos, y_neg, y_pos, length), matCfg=inner_mat)
     outer = Volume('outer', Trapezoid(x_neg+thickness, x_pos+thickness, 
-                                      y_neg+thickness, y_pos+thickness, length), matCfg=outer_mateiral, surfaceCfg=f'physics=Mirror;m={m}')
+                                      y_neg+thickness, y_pos+thickness, length), 
+                                      matCfg=outer_mateiral, 
+                                      surfaceCfg=f'physics=Mirror;m={m}')
     outer.placeChild('ininout', inner) 
     return outer
