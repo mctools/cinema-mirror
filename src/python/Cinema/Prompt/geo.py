@@ -87,24 +87,27 @@ class Volume:
     def __init__(self, volname, solid, matCfg=None, scorerCfg=None, surfaceCfg=None):
         self.child = []
         self.cobj = _pt_Volume_new(volname.encode('utf-8'), solid.cobj)
-        volid = self.getLogicalID(self.cobj)
+        self.volid = self.getLogicalID(self.cobj)
+        self.matCfg = matCfg
+        self.scorerCfg = scorerCfg
+        self.surfaceCfg = surfaceCfg
 
-        _pt_ResourceManager_addNewVolume(volid)
+        _pt_ResourceManager_addNewVolume(self.volid)
         
         if matCfg is None:
-            _pt_ResourceManager_addPhysics(volid, "freegas::H1/1e-26kgm3".encode('utf-8')) # set as the universe
+            self.setMaterial('freegas::H1/1e-26kgm3') # set as the universe
         else:
-            _pt_ResourceManager_addPhysics(volid, matCfg.encode('utf-8')) 
+            self.setMaterial(matCfg) 
 
         if scorerCfg is not None:
             if isinstance(scorerCfg, list):
                 for cfg in scorerCfg:
-                    _pt_ResourceManager_addScorer(volid, cfg.encode('utf-8')) 
+                    self.setScorer(cfg) 
             else:
-                _pt_ResourceManager_addScorer(volid, scorerCfg.encode('utf-8')) 
+                self.setScorer(scorerCfg) 
 
         if surfaceCfg is not None:
-            _pt_ResourceManager_addSurface(volid, surfaceCfg.encode('utf-8')) 
+            self.setSurface(surfaceCfg) 
 
     def __del__(self):
         # the memory should be managed by the Volume. 
@@ -112,6 +115,15 @@ class Volume:
         #    ""deregistering an object from GeoManager while geometry is closed""
         # _pt_Volume_delete(self.cobj)
         pass
+
+    def setMaterial(self, cfg : str):
+        _pt_ResourceManager_addPhysics(self.volid, cfg.encode('utf-8')) # set as the universe
+
+    def setScorer(self, cfg : str):
+         _pt_ResourceManager_addScorer(self.volid, cfg.encode('utf-8')) 
+
+    def setSurface(self, cfg : str):
+        _pt_ResourceManager_addSurface(self.volid, cfg.encode('utf-8')) 
 
     def placeChild(self, name, logVolume, transf=Transformation3D(0,0,0), scorerGroup=0):
         self.child.append(logVolume)
