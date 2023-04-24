@@ -119,7 +119,7 @@ class Volume:
     def setMaterial(self, cfg : str):
         _pt_ResourceManager_addPhysics(self.volid, cfg.encode('utf-8')) # set as the universe
 
-    def setScorer(self, cfg : str):
+    def addScorer(self, cfg : str):
          _pt_ResourceManager_addScorer(self.volid, cfg.encode('utf-8')) 
 
     def setSurface(self, cfg : str):

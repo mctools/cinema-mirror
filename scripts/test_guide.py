@@ -26,32 +26,50 @@ from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.solid import Box, Tube, Trapezoid
 from Cinema.Prompt.geo import Volume, Transformation3D
 from Cinema.Prompt.component import makeTrapezoidGuide
+from Cinema.Prompt.scorer import PSD
+
 from Cinema.Prompt.gun import PythonGun
 import numpy as np
-
-
 
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)
 
-    def setScorer(self):
-        self.scorer['PSD1'] = 'Scorer=PSD;name=NeutronHistMap;xmin=-25;xmax=25;numbin_x=20;ymin=-25;ymax=25;numbin_y=20;ptstate=SURFACE;type=XY'
-        self.scorer['PSD2'] = 'Scorer=PSD;name=NeutronHistMap2;xmin=-35;xmax=35;numbin_x=20;ymin=-35;ymax=35;numbin_y=20;ptstate=SURFACE;type=XY'
-
-
     def makeWorld(self, anyUserParameters=np.zeros(2)):
 
+        # define scorers
+        det = PSD()
+        det.cfg_name = 'apsd'
+        det.cfg_xmin = -25.
+        det.cfg_xmax = 25
+        det.cfg_numbin_x = 20
+
+        det.cfg_ymin = -25.
+        det.cfg_ymax = 25
+        det.cfg_numbin_y = 20
+        self.scorer['PSD1'] = det.makeCfg()
+
+        det.cfg_xmin=-35
+        det.cfg_xmax=35
+        det.cfg_ymin=-35
+        det.cfg_ymax=35  
+        self.scorer['PSD2'] = det.makeCfg()
+      
+
+        # Geometry
         air = "freegas::N78O22/1.225kgm3"
         worldsize = 6500.
         world = Volume("world", Box(worldsize*0.5, worldsize*0.5, worldsize*0.5))
+        # world.setMaterial("freegas::N78O22/1.225e3kgm3")
 
-        det1 = Volume("detector", Box(50, 50, 0.01), scorerCfg=self.scorer['PSD1'] )
+        det1 = Volume("detector", Box(50, 50, 0.01) )
+        det1.addScorer(self.scorer['PSD1'])
+
         world.placeChild('det1', det1, Transformation3D(0, 0, 1000))
-
         world.placeChild('guide', makeTrapezoidGuide(500., 25, 25, 25, 25, 1.), Transformation3D(0, 0, 1600))
      
-        det2 = Volume("detector", Box(50, 50, 0.01), scorerCfg=self.scorer['PSD2'] )
+        det2 = Volume("detector", Box(50, 50, 0.01))
+        det2.addScorer(self.scorer['PSD2'] )
         world.placeChild('det2', det2, Transformation3D(0, 0, 3200))
 
         return world

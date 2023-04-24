@@ -19,31 +19,35 @@
 ##                                                                            ##
 ################################################################################
 
-
 class Scorer():
     def __init__(self) -> None:
         self.para = {}
 
-    def makeCfg(self):
+    def makeCfg(self):     
         cfg = ''
-        for k, v in self.para.items():
-            cfg += k 
-            cfg += '='
-            cfg += str(v)
-            cfg += ';'
+        for k, v in self.__dict__.items():
+            if k.__contains__('cfg_'):
+                cfg += k.replace('cfg_','') 
+                cfg += '='
+                cfg += str(v)
+                cfg += ';'
         return cfg
 
 class PSD(Scorer):
     def __init__(self) -> None:
         super().__init__()
-        self.para['name']='PSD'
-        self.para['xmin']=-25
-        self.para['xmax']=25
-        self.para['ymin']=-25
-        self.para['ymax']=25
-        self.para['numbin_y']=25
-        self.para['ptstate']='SURFACE'
-        self.para['type']='XY'
-        self.para['Scorer']='PSD'
-        # user should modify paramters outside the class for now
-        # set setpsttype helper method should be added later
+        self.cfg_name = 'PSD'
+        self.cfg_xmin = -1.
+        self.cfg_xmax = 1.
+        self.cfg_numbin_x = 10 
+        self.cfg_ymin = -1.
+        self.cfg_ymax = 1.
+        self.cfg_numbin_y = 10 
+        self.cfg_ptstate = 'SURFACE' 
+        self.cfg_type = 'XY'
+
+
+    def makeCfg(self):
+        cfg = 'Scorer=PSD;'
+        return cfg + super().makeCfg()
+        

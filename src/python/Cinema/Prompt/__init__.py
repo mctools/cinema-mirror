@@ -55,9 +55,8 @@ import numpy as np
 class Prompt:
     def __init__(self, seed : int = 4096) -> None:
         self.l = Launcher()
+        self.scorer = {}
         self.l.setSeed(seed)
-        self.scorer={}
-        self.setScorer()
         self.l.setWorld(self.makeWorld())
 
     def makeWorld(self):
@@ -68,10 +67,7 @@ class Prompt:
             self.l.setGun(gun)
         else:
             self.l.setPythonGun(gun)
- 
-    def setScorer(self):
-        raise NotImplementedError('') 
-    
+     
     def show(self, num : int = 0):
         self.l.showWorld(num)
 
