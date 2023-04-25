@@ -75,9 +75,9 @@ void* pt_Box_new(double hx, double hy, double hz)
     return static_cast<void *>(new vg::UnplacedBox(hx, hy, hz));
 }
 
-void* pt_Tube_new(double rmin, double rmax, double z, double deltaphi, double startphi)
+void* pt_Tube_new(double rmin, double rmax, double z, double startphi, double deltaphi)
 {
-    return static_cast<void *>(new vg::SUnplacedTube<>(rmin, rmax, z, deltaphi, startphi));
+    return static_cast<void *>(new vg::SUnplacedTube<>(rmin, rmax, z, startphi, deltaphi));
 }
 
 //Trapezoid
