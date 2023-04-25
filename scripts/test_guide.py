@@ -21,7 +21,6 @@
 ################################################################################
 
 
-
 from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.solid import Box, Tube, Trapezoid
 from Cinema.Prompt.geo import Volume, Transformation3D
@@ -31,11 +30,19 @@ from Cinema.Prompt.scorer import PSD
 from Cinema.Prompt.gun import PythonGun
 import numpy as np
 
+
+from emukit.examples.gp_bayesian_optimization.single_objective_bayesian_optimization import GPBayesianOptimization
+from emukit.core import ContinuousParameter, InformationSourceParameter, ParameterSpace
+from emukit.core.initial_designs import RandomDesign
+from emukit.core.loop import UserFunctionResult
+
+
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)
 
-    def makeWorld(self, anyUserParameters=np.zeros(2)):
+    def makeWorld(self, space=np.ones(2)*25):
+        print(space, type(space))
 
         # define scorers
         det = PSD()
@@ -49,10 +56,10 @@ class MySim(PromptMPI):
         det.cfg_numbin_y = 20
         self.scorer['PSD1'] = det.makeCfg()
 
-        det.cfg_xmin=-35
-        det.cfg_xmax=35
-        det.cfg_ymin=-35
-        det.cfg_ymax=35  
+        det.cfg_xmin=-10
+        det.cfg_xmax=10
+        det.cfg_ymin=-10
+        det.cfg_ymax=10 
         self.scorer['PSD2'] = det.makeCfg()
       
 
@@ -66,36 +73,80 @@ class MySim(PromptMPI):
         det1.addScorer(self.scorer['PSD1'])
 
         world.placeChild('det1', det1, Transformation3D(0, 0, 1000))
-        world.placeChild('guide', makeTrapezoidGuide(500., 25, 25, 25, 25, 1.), Transformation3D(0, 0, 1600))
+        world.placeChild('guide', makeTrapezoidGuide(500., space[0], space[0], space[1], space[1], 3.), Transformation3D(0, 0, 1600))
      
-        det2 = Volume("detector", Box(50, 50, 0.01))
+        det2 = Volume("detector", Box(10, 10, 0.01))
         det2.addScorer(self.scorer['PSD2'] )
-        world.placeChild('det2', det2, Transformation3D(0, 0, 3200))
+        world.placeChild('det2', det2, Transformation3D(0, 0, 2200))
 
         self.setWorld(world)
 
 
 
+
 sim = MySim()
-
-for i in range(10):
-    sim.makeWorld()
-
-    # set gun
-    gunCfg = "gun=UniModeratorGun;src_w=50;src_h=50;src_z=0;slit_w=50;slit_h=50;slit_z=1100;mean_wl=3.39"
-    sim.setGun(gunCfg)
-
-    # vis or production
-    if False:
-        sim.show(10)
-    else:
-        sim.simulate(1e6)
-
-    hist1 = sim.getScorerHist(sim.scorer['PSD1'])
-    hist2 = sim.getScorerHist(sim.scorer['PSD2'])
-    # hist1.plot(show=False)
-    print(f'weight {hist2.getWeight().sum()}')
-    if sim.rank==0:
-        hist2.plot(show=True)
-
+incident = 1e5
+def target_function(X : np.ndarray) -> float:
     sim.clear()    
+    sim.makeWorld(X)
+    # set gun
+    gunCfg = "gun=UniModeratorGun;src_w=50;src_h=50;src_z=0;slit_w=50;slit_h=50;slit_z=1100;mean_wl=10.39"
+    sim.setGun(gunCfg)
+    sim.simulate(incident)
+    # sim.show(100)
+    hist2 = sim.getScorerHist(sim.scorer['PSD2'])
+    return -hist2.getWeight().sum() # it is a minimisation optimiser
+
+space = ParameterSpace([ContinuousParameter("boxlenght1", 5, 50), ContinuousParameter("boxlenght2", 5, 50)])
+design = RandomDesign(space) 
+inti_size = 50
+X = design.get_samples(inti_size)
+
+Y = np.zeros([inti_size, 1])
+for i in range(inti_size):
+    Y[i, 0] = target_function(X[i])
+
+bo = GPBayesianOptimization(variables_list=space.parameters, X=X, Y=Y)
+
+results = None
+num_iterations = 30
+for _ in range(num_iterations):
+    X_new = bo.get_next_points(results)
+    Y_new = target_function(X_new[0])
+
+    results = [UserFunctionResult(X_new[0], np.array([Y_new]))]
+    print (X_new, Y_new)
+
+X = bo.loop_state.X
+Y = bo.loop_state.Y
+
+
+print(X, Y)
+
+
+## plot
+import matplotlib.pyplot as plt
+
+plt.figure()
+
+print(f'size {X.size}')
+for i, (xs, ys) in enumerate(zip(X, Y)):
+    plt.plot(xs[0], -ys/incident, 'ro', markersize= 2 + 10 * (i+1.)/len(X))
+
+plt.xlabel('Guide opening size, mm')
+plt.ylabel('Neutron transmission eff.')
+
+plt.figure()
+
+print(f'size {X.size}')
+for i, (xs, ys) in enumerate(zip(X, Y)):
+    plt.plot(xs[1], -ys/incident, 'ro', markersize= 2 + 10 * (i+1.)/len(X))
+
+plt.xlabel('Guide opening size, mm')
+plt.ylabel('Neutron transmission eff.')
+
+
+plt.show()
+
+
+# The best paramters found: 29.5329642  11.57057061, eff (ys/incident) 26.67%
