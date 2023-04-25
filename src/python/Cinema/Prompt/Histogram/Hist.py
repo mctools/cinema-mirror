@@ -180,9 +180,12 @@ class Hist1D(HistBase):
             w = self.getWeight()
             uncet = np.sqrt(self.getHit()/10.)
             err = np.divide(w, uncet, where=(uncet!=0.))
+            if label is None:
+                label = f'Weight {w.sum()}'
             plt.errorbar(center, w, yerr=err, fmt='o', label=label)
 
             if show:
+                plt.legend(loc=0)
                 plt.show()
         except Exception as e:
             print (e)
@@ -266,7 +269,9 @@ class Hist2D(HistBase):
             fig.colorbar(pcm, ax=ax)
             plt.grid()
             if show:
+                plt.title(f'Weight {H.sum()}')
                 plt.show()
+                
 
         except Exception as e:
             print(e)

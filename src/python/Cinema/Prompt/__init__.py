@@ -52,15 +52,23 @@ from .gun import PythonGun
 from mpi4py import MPI
 import numpy as np
 
+_pt_ResourceManager_clear = importFunc('pt_ResourceManager_clear', None, [])
+
 class Prompt:
     def __init__(self, seed : int = 4096) -> None:
         self.l = Launcher()
         self.scorer = {}
         self.l.setSeed(seed)
-        self.l.setWorld(self.makeWorld())
 
     def makeWorld(self):
         raise NotImplementedError('') 
+    
+    def clear(self):
+        _pt_ResourceManager_clear()
+        self.l.worldExist = False
+    
+    def setWorld(self, world):
+        self.l.setWorld(world)
 
     def setGun(self, gun):
         if isinstance(gun, str):
@@ -77,7 +85,6 @@ class Prompt:
     def getScorerHist(self, cfg):
         return self.l.getHist(cfg)
     
-
 
 class PromptMPI(Prompt):
     def __init__(self, seed=4096) -> None:

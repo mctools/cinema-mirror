@@ -25,7 +25,6 @@
 #include <VecGeom/gdml/Middleware.h>
 #include <VecGeom/gdml/Frontend.h>
 #include <VecGeom/volumes/PlacedVolume.h>
-#include "VecGeom/management/GeoManager.h"
 #include "VecGeom/navigation/BVHNavigator.h"
 #include "VecGeom/navigation/NewSimpleNavigator.h"
 #include "VecGeom/navigation/SimpleABBoxNavigator.h"

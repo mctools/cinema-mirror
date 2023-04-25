@@ -207,6 +207,17 @@ void Prompt::ResourceManager::addPhysics(size_t volID, const std::string& cfg)
   it_vol->second->bulkMaterialProcess = sc;
 }
 
+#include <VecGeom/management/GeoManager.h>
+
+void Prompt::ResourceManager::clear()
+{
+  m_volumes.clear();
+  m_globelPhysics.clear();
+  m_globelScorers.clear();
+  m_globelSurface.clear();
+  vecgeom::GeoManager::Instance().Clear();
+}
+
 void Prompt::ResourceManager::writeScorer2Disk() const
 {  
   for(auto it=m_volumes.begin();it!=m_volumes.end();++it)

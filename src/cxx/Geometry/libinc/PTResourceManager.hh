@@ -70,6 +70,8 @@ namespace Prompt {
             void addSurface(size_t volID, const std::string& cfg);
             void addPhysics(size_t volID, const std::string& cfg);
 
+            void clear();
+
             void writeScorer2Disk() const;
             Prompt::HistBase* getHist(const std::string& name); 
 

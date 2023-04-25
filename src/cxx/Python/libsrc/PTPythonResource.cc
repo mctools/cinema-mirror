@@ -27,3 +27,8 @@ void* pt_ResourceManager_getHist(const char* cfg)
 {
     return static_cast<void*>(pt::Singleton<pt::ResourceManager>::getInstance().getHist(cfg));
 }
+
+void pt_ResourceManager_clear()
+{
+   pt::Singleton<pt::ResourceManager>::getInstance().clear();
+}

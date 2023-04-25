@@ -72,24 +72,30 @@ class MySim(PromptMPI):
         det2.addScorer(self.scorer['PSD2'] )
         world.placeChild('det2', det2, Transformation3D(0, 0, 3200))
 
-        return world
+        self.setWorld(world)
+
 
 
 sim = MySim()
 
-# set gun
-gunCfg = "gun=UniModeratorGun;src_w=50;src_h=50;src_z=0;slit_w=50;slit_h=50;slit_z=1100;mean_wl=3.39"
-sim.setGun(gunCfg)
+for i in range(10):
+    sim.makeWorld()
 
-# vis or production
-if False:
-    sim.show(10)
-else:
-    sim.simulate(1e6)
+    # set gun
+    gunCfg = "gun=UniModeratorGun;src_w=50;src_h=50;src_z=0;slit_w=50;slit_h=50;slit_z=1100;mean_wl=3.39"
+    sim.setGun(gunCfg)
 
-hist1 = sim.getScorerHist(sim.scorer['PSD1'])
-hist2 = sim.getScorerHist(sim.scorer['PSD2'])
-# hist1.plot(show=False)
-print(f'weight {hist2.getWeight().sum()}')
-if sim.rank==0:
-    hist2.plot(show=True)
+    # vis or production
+    if False:
+        sim.show(10)
+    else:
+        sim.simulate(1e6)
+
+    hist1 = sim.getScorerHist(sim.scorer['PSD1'])
+    hist2 = sim.getScorerHist(sim.scorer['PSD2'])
+    # hist1.plot(show=False)
+    print(f'weight {hist2.getWeight().sum()}')
+    if sim.rank==0:
+        hist2.plot(show=True)
+
+    sim.clear()    
