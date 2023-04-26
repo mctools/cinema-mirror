@@ -254,21 +254,20 @@ std::shared_ptr<Prompt::SurfaceProcess> Prompt::PhysicsFactory::createSurfacePro
       // double centre_y_mm = 0;
       // if(!cfg.getDoubleIfExist("centre_y_mm", centre_y_mm))
       //   parCount--;
-
       double theta0_deg = 0;
-      if(!cfg.getDoubleIfExist("theta0_deg", theta0_deg))
+      if(!cfg.getDoubleIfExist("theta0", theta0_deg))
         parCount--;
 
       double r_mm = 0;
-      if(!cfg.getDoubleIfExist("r_mm", r_mm))
+      if(!cfg.getDoubleIfExist("r", r_mm))
         parCount--;
 
       double phase_deg = 0;
-      if(!cfg.getDoubleIfExist("phase_deg", phase_deg))
+      if(!cfg.getDoubleIfExist("phase", phase_deg))
         parCount--;
 
       double rotFreq_Hz = 0;
-      if(!cfg.getDoubleIfExist("rotFreq_Hz", rotFreq_Hz))
+      if(!cfg.getDoubleIfExist("rotFreq", rotFreq_Hz))
         parCount--;
 
       unsigned n = 0;
@@ -282,6 +281,7 @@ std::shared_ptr<Prompt::SurfaceProcess> Prompt::PhysicsFactory::createSurfacePro
 
       phy = std::make_shared<DiskChopper>(theta0_deg, r_mm, phase_deg, rotFreq_Hz, n);
     }
+
 
     if(phy)
     {

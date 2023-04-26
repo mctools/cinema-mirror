@@ -23,7 +23,7 @@
         <volume name="LV_Chopper1">
             <solidref ref="Chopper1" />
             <materialref ref="Vacuum" />
-            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=DiskChopper;rotFreq_Hz=100;r_mm=130;theta0_deg=20;n=4;phase_deg=0"/>           
+            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=DiskChopper;rotFreq=100;r=130;theta0=20;n=4;phase=0"/>           
         </volume>
 
         <volume name="DetectorOut">
