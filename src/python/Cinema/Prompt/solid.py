@@ -42,8 +42,8 @@ class Box:
         pass
 
 class Tube:
-    def __init__(self, rmin, rmax, z, deltaphi, startphi):
-        self.cobj = _pt_Tube_new(rmin, rmax, z, deltaphi, startphi)
+    def __init__(self, rmin, rmax, z, startphi, deltaphi):
+        self.cobj = _pt_Tube_new(rmin, rmax, z, startphi, deltaphi)
 
 class Trapezoid:
     def __init__(self, x1, x2, y1, y2, z) -> None:
