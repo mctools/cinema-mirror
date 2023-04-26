@@ -37,7 +37,7 @@ from emukit.core.initial_designs import RandomDesign
 from emukit.core.loop import UserFunctionResult
 
 
-class MySim(PromptMPI):
+class MySim(Prompt):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)
 
@@ -99,7 +99,7 @@ def target_function(X : np.ndarray) -> float:
 
 space = ParameterSpace([ContinuousParameter("boxlenght1", 5, 50), ContinuousParameter("boxlenght2", 5, 50)])
 design = RandomDesign(space) 
-inti_size = 50
+inti_size = 230
 X = design.get_samples(inti_size)
 
 Y = np.zeros([inti_size, 1])
@@ -107,9 +107,11 @@ for i in range(inti_size):
     Y[i, 0] = target_function(X[i])
 
 bo = GPBayesianOptimization(variables_list=space.parameters, X=X, Y=Y)
+bo.noiseless=False
+
 
 results = None
-num_iterations = 30
+num_iterations = 130
 for _ in range(num_iterations):
     X_new = bo.get_next_points(results)
     Y_new = target_function(X_new[0])
@@ -150,3 +152,7 @@ plt.show()
 
 
 # The best paramters found: 29.5329642  11.57057061, eff (ys/incident) 26.67%
+# 28.41990654 16.0491007 28.1%, 
+# 26.41687317 14.3383753 30.2%, 100, 100
+# 20.83001173 12.03239256 33.3%, 500, 100
+# 23.85848214 12.57996356
