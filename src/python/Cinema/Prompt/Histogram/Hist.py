@@ -268,8 +268,8 @@ class Hist2D(HistBase):
             pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
             fig.colorbar(pcm, ax=ax)
             plt.grid()
+            plt.title(f'Weight {H.sum()}')
             if show:
-                plt.title(f'Weight {H.sum()}')
                 plt.show()
                 
 

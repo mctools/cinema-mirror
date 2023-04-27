@@ -54,8 +54,8 @@ class DiskChopper(SurfaceProcess):
 
         
 def makeTrapezoidGuide(length, x_neg, y_neg, x_pos, y_pos, m, 
-                 thickness=1., outer_mateiral='solid::Cd/8.65gcm3',
-                 inner_mat='freegas::N78O22/1.225e-3kgm3'):
+                 thickness=800., outer_mateiral='solid::Cd/8.65gcm3',
+                 inner_mat='freegas::H1/1e-26kgm3'):
     inner = Volume('inner', Trapezoid(x_neg, x_pos, y_neg, y_pos, length), matCfg=inner_mat)
     outer = Volume('outer', Trapezoid(x_neg+thickness, x_pos+thickness, 
                                       y_neg+thickness, y_pos+thickness, length), 
