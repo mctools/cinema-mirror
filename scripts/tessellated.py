@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 from Cinema.Prompt import Launcher, Visualiser
-from Cinema.Prompt.geo.geo import Box, Volume, Transformation3D, Tessellated
+from Cinema.Prompt.solid import Box, Tessellated
 from Cinema.Prompt.gun import PythonGun
 
+from Cinema.Prompt.geo import Volume, Transformation3D
 
 gunCfg = "gun=IsotropicGun;energy=0.001;position=0,0,0"
 scorerCfg_det = "Scorer=NeutronSq;name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;dist=-100;ptstate=ENTRY;linear=yes;Qmin=0.5; Qmax = 50; numbin=100"
@@ -25,10 +26,9 @@ tes = Volume('T', t, matCfg = matCfg_sample)
 
 world.placeChild("Tessellated_TP", tes, Transformation3D(0., 0., 0))
 
-tes.shape
 l.setWorld(world)
 l.setGun(gunCfg)
-l.showWorld(1000)
+l.showWorld(100)
 
 # gun = PythonGun()
 # l.setPythonGun(gun)

@@ -25,12 +25,6 @@
 #include <VecGeom/gdml/Middleware.h>
 #include <VecGeom/gdml/Frontend.h>
 #include <VecGeom/volumes/PlacedVolume.h>
-#include "VecGeom/navigation/BVHNavigator.h"
-#include "VecGeom/navigation/NewSimpleNavigator.h"
-#include "VecGeom/navigation/SimpleABBoxNavigator.h"
-#include "VecGeom/navigation/SimpleABBoxLevelLocator.h"
-#include "VecGeom/navigation/BVHLevelLocator.h"
-#include "VecGeom/navigation/HybridNavigator2.h"
 
 #include "PTScorerFactory.hh"
 #include "PTGunFactory.hh"
@@ -51,7 +45,7 @@ Prompt::GeoLoader::~GeoLoader()
 
 void Prompt::GeoLoader::setupNavigator()
 {
-  pt_initNavigators(false);
+  pt_initNavigators(true);
 }
 
 void Prompt::GeoLoader::initFromGDML(const std::string &gdml_file)

@@ -48,17 +48,17 @@ void Prompt::ActiveVolume::setup()
   m_nextState = vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth());
 }
 
-Prompt::VolumePhysicsScorer *getLogicalVolumePhysicsScorer(const vecgeom::LogicalVolume &lv)
-{
-  return (Prompt::VolumePhysicsScorer *)lv.GetUserExtensionPtr();
-}
+// Prompt::VolumePhysicsScorer *getLogicalVolumePhysicsScorer(const vecgeom::LogicalVolume &lv)
+// {
+//   return (Prompt::VolumePhysicsScorer *)lv.GetUserExtensionPtr();
+// }
 
 bool Prompt::ActiveVolume::locateActiveVolume(const Vector &p) const
 {
   m_currState->Clear();
-  // auto pv = vecgeom::GlobalLocator::LocateGlobalPoint(m_geo.GetWorld(),
-  //                         *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&p), *m_currState, true);
-  auto pv = vecgeom::GlobalLocator::LocateGlobalPointExclVolume(m_geo.GetWorld(), m_geo.GetWorld(), 
+  m_nextState->Clear();
+
+  auto pv = vecgeom::GlobalLocator::LocateGlobalPoint(m_geo.GetWorld(),
                           *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&p), *m_currState, true);
 
   if(!pv)
@@ -224,7 +224,16 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   //!   - if ray leaves volume: m_nextState.Top() will point to current volume
   //!   - if step limit > step: m_nextState == in_state
   //!   ComputeStep is essentialy equal to ComputeStepAndPropagatedState without the relaction part
+
   double step =  m_currState->Top()->GetLogicalVolume()->GetNavigator()->ComputeStepAndPropagatedState(*p, *dir, stepLength, *m_currState, *m_nextState);
+
+  if(!step)
+  {
+    std::cout << "in proprogateInAVolume bulkMaterialProcess->getName() " 
+    << m_matphysscor->bulkMaterialProcess->getName() << " steplength " << stepLength << ", step to  boundary" << step << "\n" ;
+    PROMPT_THROW2(CalcError, "Vecgeom is unable to computer the distance to the next boundary for logical volume id " << getVolumeID());
+  }
+
 
   bool sameVolume (m_currState->Top() == m_nextState->Top());
 
