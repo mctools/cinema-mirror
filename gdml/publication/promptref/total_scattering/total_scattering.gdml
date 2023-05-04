@@ -24,7 +24,7 @@
 
     <solids>
         <box  name="WorldSolid" x="5000.0" y="5000.0" z="20100.0" lunit="mm"/>
-        <sphere name="SampleSolid" rmin="0.0" rmax="12.0" deltaphi="360.0" startphi="0.0" deltatheta="360.0" starttheta="0.0" aunit="deg" lunit="mm"/>
+        <sphere name="SampleSolid" rmin="0.0" rmax="12.0" deltaphi="360.0" startphi="0.0" deltatheta="180.0" starttheta="0.0" aunit="deg" lunit="mm"/>
         <sphere name="DetectorSolid" rmin="2000" rmax="2001.0" deltaphi="360.0" startphi="0.0" deltatheta="179.9" starttheta="0.05" aunit="deg" lunit="mm"/>
     </solids>
 
