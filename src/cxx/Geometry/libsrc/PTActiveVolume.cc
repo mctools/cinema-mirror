@@ -224,13 +224,15 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   //!   - if ray leaves volume: m_nextState.Top() will point to current volume
   //!   - if step limit > step: m_nextState == in_state
   //!   ComputeStep is essentialy equal to ComputeStepAndPropagatedState without the relaction part
+  double safety (0.);
 
-  double step =  m_currState->Top()->GetLogicalVolume()->GetNavigator()->ComputeStepAndPropagatedState(*p, *dir, stepLength, *m_currState, *m_nextState);
+  double step =  m_currState->Top()->GetLogicalVolume()->GetNavigator()->ComputeStepAndSafetyAndPropagatedState(*p, *dir, stepLength, *m_currState, *m_nextState, true, safety);
 
   if(!step)
   {
     std::cout << "in proprogateInAVolume bulkMaterialProcess->getName() " 
-    << m_matphysscor->bulkMaterialProcess->getName() << " steplength " << stepLength << ", step to  boundary" << step << "\n" ;
+    << m_matphysscor->bulkMaterialProcess->getName() << " steplength " << stepLength << ", step to  boundary "  << step 
+    << ", safety is "  << safety << "\n" ;
     PROMPT_THROW2(CalcError, "Vecgeom is unable to computer the distance to the next boundary for logical volume id " << getVolumeID());
   }
 
