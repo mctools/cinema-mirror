@@ -15,7 +15,7 @@
 
     <solids>
         <box lunit="mm" name="WorldBox" x="1200.0" y="1200.0" z="21000.0" />
-        <tube lunit="mm" name="Chopper1" rmin="0.0" rmax="250.0" z="0.0000002" deltaphi="360.0" startphi="0.0"/>
+        <tube lunit="mm" name="Chopper1" rmin="0.0" rmax="250.0" z="0.1" deltaphi="360.0" startphi="0.0"/>
         <box name="DetectorSolid2" x="1200.0" y="1200.0" z="0.0000002" />
     </solids>
 
@@ -44,7 +44,7 @@
 
             <physvol>
                 <volumeref ref="DetectorOut"/>
-                <position name="DetPost" x="0.0" y="0.0" z="10000.00001" />
+                <position name="DetPost" x="0.0" y="0.0" z="10010.0" />
             </physvol>
         </volume>
         
