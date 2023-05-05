@@ -54,6 +54,119 @@ import numpy as np
 
 _pt_ResourceManager_clear = importFunc('pt_ResourceManager_clear', None, [])
 
+
+class Parameter:
+    def __init__(self, name : str, lower, upper, promptval) -> None:
+        self.name = name
+        self.upper_lim = upper
+        self.lower_lim = lower
+        self.promptval = promptval
+        if self.promptval>self.upper_lim or self.promptval<self.lower_lim:
+            raise RuntimeError(f'promptval {promptval} is not in the range [{self.lower_lim},{self.upper_lim}]')
+        if self.lower_lim>=self.upper_lim:
+            raise RuntimeError(f'wrong parameter range [{self.lower_lim},{self.upper_lim}]')
+
+
+    def get(self, trail = None):
+        if trail:
+            return trail.suggest_float(self.name, self.lower_lim, self.upper_lim)
+        else:
+            return self.promptval
+        
+    def __repr__(self) -> str:
+        return f'Parameter "{self.name}", [{self.lower_lim},{self.upper_lim}], Prompt value {self.promptval}\n'
+     
+
+class Optimiser:
+    def __init__(self, sim, trailNeutronNum=1e5) -> None:
+        self.parameters = []
+        self.sim = sim
+        self.trailNeutronNum = trailNeutronNum
+
+    def addParameter(self, name, lower, upper, promptval):
+        self.parameters.append(Parameter(name, lower, upper, promptval))
+
+    def getParameters(self, trail = None):
+        l = {}
+        for p in self.parameters:
+            l[p.name] =p.get(trail)
+        return l       
+
+    def objective(self, trial):
+        raise NotImplementedError('')
+
+    def visInitialGeometry(self, num=100):
+        self.sim.clear() 
+        self.sim.makeWorld(self.getParameters())
+        self.sim.show(num)
+
+
+    def optimize(self, n_trials):
+        import optuna
+        self.study = optuna.create_study(directions=["maximize"])
+        self.study.optimize(self.objective, n_trials)
+        return self.study
+    
+    def analysis(self, study=None):
+        if study is None:
+            study = self.study
+
+        # Visualize the optimization history.
+        from optuna.visualization import plot_contour
+        from optuna.visualization import plot_intermediate_values
+        from optuna.visualization import plot_optimization_history
+        from optuna.visualization import plot_parallel_coordinate
+        from optuna.visualization import plot_param_importances
+        from optuna.visualization import plot_slice
+        plot_optimization_history(study).show()
+
+        # Visualize the learning curves of the trials.
+        # plot_intermediate_values(study).show()
+
+        # Visualize high-dimensional parameter relationships.
+        plot_parallel_coordinate(study).show()
+
+        # # Select parameters to visualize.
+        # plot_parallel_coordinate(study, params=["x", "y"]).show()
+
+        # Visualize hyperparameter relationships.
+        plot_contour(study).show()
+
+        # # Select parameters to visualize.
+        # plot_contour(study, params=["x", "y"]).show()
+
+        # Visualize individual hyperparameters.
+        plot_slice(study).show()
+
+        # # Select parameters to visualize.
+        # plot_slice(study, params=["x", "y"]).show()
+
+        # Visualize parameter importances.
+        plot_param_importances(study).show()
+
+    
+
+    def optimize_botorch(self, n_trials):
+        from botorch.settings import validate_input_scaling
+        import optuna
+
+        # Show warnings from BoTorch such as unnormalized input data warnings.
+        validate_input_scaling(True)
+
+        sampler = optuna.integration.BoTorchSampler(
+            n_startup_trials=int(n_trials*0.5),
+        )
+
+        self.study = optuna.create_study(
+            directions=["maximize"],
+            sampler=sampler,
+        )
+
+        self.study.optimize(self.objective, n_trials=n_trials)
+
+        return self.study
+  
+        
 class Prompt:
     def __init__(self, seed : int = 4096) -> None:
         self.l = Launcher()

@@ -1,23 +1,20 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from Cinema.Prompt import Prompt, PromptMPI
+from Cinema.Prompt import Prompt, PromptMPI, Optimiser
 from Cinema.Prompt.solid import Box, Tube, Trapezoid
 from Cinema.Prompt.geo import Volume, Transformation3D
 from Cinema.Prompt.component import makeTrapezoidGuide
 from Cinema.Prompt.scorer import PSD
-from botorch.settings import validate_input_scaling
 import optuna
 import numpy as np
-
-
 
 class MySim(Prompt):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)
 
-    def makeWorld(self, x, y):
-        print('making world', x, y)
+    def makeWorld(self, par):
+        print('making world with paramters', par)
 
         # define scorers
         det = PSD()
@@ -48,7 +45,7 @@ class MySim(Prompt):
         det1.addScorer(self.scorer['PSD1'])
 
         world.placeChild('det1', det1, Transformation3D(0, 0, 1000))
-        world.placeChild('guide', makeTrapezoidGuide(500., x, x, y, y, 3.), Transformation3D(0, 0, 1600))
+        world.placeChild('guide', makeTrapezoidGuide(500., par.get('x'), par.get('x'), par.get('y'), par.get('y'), 3.), Transformation3D(0, 0, 1600))
      
         det2 = Volume("detector", Box(10, 10, 0.01))
         det2.addScorer(self.scorer['PSD2'] )
@@ -56,49 +53,32 @@ class MySim(Prompt):
 
         self.setWorld(world)
 
+
+class GuideOpt(Optimiser):
+    def __init__(self, sim, optunaNum=100000) -> None:
+        super().__init__(sim, optunaNum)
+        self.addParameter('x', lower = 5, upper = 50, promptval = 10)
+        self.addParameter('y', 5, 50, 10)
+
+    def objective(self, trial):
+        self.sim.clear() 
+        p=self.getParameters(trial)
+        self.sim.makeWorld(p)
+        self.sim.simulate(self.trailNeutronNum)
+        hist2 = self.sim.getScorerHist(self.sim.scorer['PSD2'])
+        return hist2.getWeight().sum() 
+
+
+
 sim = MySim()
-incident = 1e6
+gunCfg = "gun=UniModeratorGun;src_w=50;src_h=50;src_z=0;slit_w=50;slit_h=50;slit_z=1100;mean_wl=10.39"
+sim.setGun(gunCfg)
 
-def objective(trial) -> float:
-    sim.clear() 
-    
-    x = trial.suggest_float("x", 5, 50)
-    y = trial.suggest_float("y",  5, 50)
-   
-    sim.makeWorld(x, y)
-    # set gun
-    gunCfg = "gun=UniModeratorGun;src_w=50;src_h=50;src_z=0;slit_w=50;slit_h=50;slit_z=1100;mean_wl=10.39"
-    sim.setGun(gunCfg)
-    sim.simulate(incident)
-    # sim.show(100)
-    hist2 = sim.getScorerHist(sim.scorer['PSD2'])
-    return -hist2.getWeight().sum() # it is a minimisation optimiser
+opt = GuideOpt(sim)
+opt.trailNeutronNum=1e4
+opt.optimize_botorch(n_trials = 100)
+opt.analysis()
 
+# or we can see the initial geometry
+# opt.visInitialGeometry()
 
-if __name__ == "__main__":
-    # Show warnings from BoTorch such as unnormalized input data warnings.
-    validate_input_scaling(True)
-
-    sampler = optuna.integration.BoTorchSampler(
-        n_startup_trials=10,
-    )
-    study = optuna.create_study(
-        directions=["minimize"],
-        sampler=sampler,
-    )
-    study.optimize(objective, n_trials=32, timeout=600)
-
-    print("Number of finished trials: ", len(study.trials))
-
-    print("Pareto front:")
-
-    trials = sorted(study.best_trials, key=lambda t: t.values)
-
-    for trial in trials:
-        print("  Trial#{}".format(trial.number))
-        print(
-            "    Values: Values={}".format(
-                trial.values
-            )
-        )
-        print("    Params: {}".format(trial.params))
