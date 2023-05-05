@@ -76,7 +76,9 @@ sim.setGun(gunCfg)
 
 opt = GuideOpt(sim)
 opt.trailNeutronNum=1e4
-opt.optimize_botorch(n_trials = 100)
+# opt.optimize_botorch(n_trials = 100)
+opt.optimize(n_trials = 100)
+
 opt.analysis()
 
 # or we can see the initial geometry
