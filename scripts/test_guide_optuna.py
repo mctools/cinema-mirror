@@ -2,6 +2,7 @@
 # coding: utf-8
 
 from Cinema.Prompt import Prompt, PromptMPI, Optimiser
+from Cinema.Prompt import analysisdb
 from Cinema.Prompt.solid import Box, Tube, Trapezoid
 from Cinema.Prompt.geo import Volume, Transformation3D
 from Cinema.Prompt.component import makeTrapezoidGuide

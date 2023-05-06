@@ -76,6 +76,44 @@ class Parameter:
     def __repr__(self) -> str:
         return f'Parameter "{self.name}", [{self.lower_lim},{self.upper_lim}], Prompt value {self.promptval}\n'
      
+def analysisdb(name, storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna', study=None):
+    if study is None:
+        import optuna
+        study = optuna.load_study(study_name=name, storage=storage)
+    
+    # Visualize the optimization history.
+    from optuna.visualization import plot_contour
+    from optuna.visualization import plot_intermediate_values
+    from optuna.visualization import plot_optimization_history
+    from optuna.visualization import plot_parallel_coordinate
+    from optuna.visualization import plot_param_importances
+    from optuna.visualization import plot_slice
+    plot_optimization_history(study).show()
+
+    # Visualize the learning curves of the trials.
+    # plot_intermediate_values(study).show()
+
+    # Visualize high-dimensional parameter relationships.
+    plot_parallel_coordinate(study).show()
+
+    # # Select parameters to visualize.
+    # plot_parallel_coordinate(study, params=["x", "y"]).show()
+
+    # Visualize hyperparameter relationships.
+    plot_contour(study).show()
+
+    # # Select parameters to visualize.
+    # plot_contour(study, params=["x", "y"]).show()
+
+    # Visualize individual hyperparameters.
+    plot_slice(study).show()
+
+    # # Select parameters to visualize.
+    # plot_slice(study, params=["x", "y"]).show()
+
+    # Visualize parameter importances.
+
+
 
 class Optimiser:
     def __init__(self, sim, trailNeutronNum=1e5) -> None:
@@ -111,43 +149,8 @@ class Optimiser:
 
         return self.study
     
-    def analysis(self, study=None):
-        if study is None:
-            study = self.study
-
-        # Visualize the optimization history.
-        from optuna.visualization import plot_contour
-        from optuna.visualization import plot_intermediate_values
-        from optuna.visualization import plot_optimization_history
-        from optuna.visualization import plot_parallel_coordinate
-        from optuna.visualization import plot_param_importances
-        from optuna.visualization import plot_slice
-        plot_optimization_history(study).show()
-
-        # Visualize the learning curves of the trials.
-        # plot_intermediate_values(study).show()
-
-        # Visualize high-dimensional parameter relationships.
-        plot_parallel_coordinate(study).show()
-
-        # # Select parameters to visualize.
-        # plot_parallel_coordinate(study, params=["x", "y"]).show()
-
-        # Visualize hyperparameter relationships.
-        plot_contour(study).show()
-
-        # # Select parameters to visualize.
-        # plot_contour(study, params=["x", "y"]).show()
-
-        # Visualize individual hyperparameters.
-        plot_slice(study).show()
-
-        # # Select parameters to visualize.
-        # plot_slice(study, params=["x", "y"]).show()
-
-        # Visualize parameter importances.
-        plot_param_importances(study).show()
-
+    def analysis(self):
+        analysisdb(study = self.study)
     
 
     def optimize_botorch(self, n_trials):
