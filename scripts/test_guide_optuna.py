@@ -75,9 +75,10 @@ gunCfg = "gun=UniModeratorGun;src_w=50;src_h=50;src_z=0;slit_w=50;slit_h=50;slit
 sim.setGun(gunCfg)
 
 opt = GuideOpt(sim)
-opt.trailNeutronNum=1e4
-# opt.optimize_botorch(n_trials = 100)
-opt.optimize(n_trials = 100)
+opt.trailNeutronNum=1e6
+
+# for local database, set the storage paramter to e.g. mysql://root@localhost/example
+opt.optimize(name = 'distributed-guide', n_trials = 100)
 
 opt.analysis()
 

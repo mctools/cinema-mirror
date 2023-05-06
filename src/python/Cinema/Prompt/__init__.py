@@ -101,10 +101,14 @@ class Optimiser:
         self.sim.show(num)
 
 
-    def optimize(self, n_trials):
+    def optimize(self, name, n_trials , storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna'):
         import optuna
-        self.study = optuna.create_study(directions=["maximize"])
+        self.study = optuna.create_study(study_name=name, 
+                                         storage=storage, 
+                                         directions=["maximize"],
+                                         load_if_exists=True)
         self.study.optimize(self.objective, n_trials)
+
         return self.study
     
     def analysis(self, study=None):
