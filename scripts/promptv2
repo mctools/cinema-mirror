@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 from Cinema.Prompt import Prompt, PromptMPI
-from Cinema.Prompt.geo import Box, Volume, Transformation3D
+from Cinema.Prompt.geo import Volume, Transformation3D
+from Cinema.Prompt.solid import Box
 from Cinema.Prompt.gun import PythonGun
 import numpy as np
 
@@ -15,15 +16,18 @@ class MySim(PromptMPI):
         matCfg_sample = "physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=10;abs_bias=1"
 
         world = Volume("world", Box(210, 210, 210))
-        detector = Volume("Det", Box(400, 400, 0.0001), scorerCfg = [scorerCfg_detpsd, scorerCfg_detwl])
+        detector = Volume("Det", Box(400, 400, 0.0001))
+        detector.addScorer(scorerCfg_detpsd)
+        detector.addScorer(scorerCfg_detwl)
+
         sample = Volume("sample", Box(20,20,20))
         water = Volume('sbox', Box(2,2,2), matCfg = matCfg_sample)
 
         for i in range(10):
             sample.placeChild("ssample", water, Transformation3D(0,0,2.2*(i-5.0)), scorerGroup=i)
 
-        world.placeChild("physicalbox", detector, Transformation3D(0., 0., 50, sx=2, sy=2), 1)
-        world.placeChild("physicalbox2", sample, Transformation3D(z=-150, rx=45, ry=45))
+        world.placeChild("physicalbox", detector, Transformation3D(0., 0., 50), 1)
+        world.placeChild("physicalbox2", sample, Transformation3D(-150, 45, 45))
         self.l.setWorld(world)
 
 
@@ -36,6 +40,7 @@ class MyGun(PythonGun):
 
 
 sim = MySim(seed=1010)
+sim.makeWorld()
 
 # set gun
 if False: #could be in either old style or the python style
