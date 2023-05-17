@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from Cinema.Prompt import Prompt, PromptMPI, Optimiser
+from Cinema.Prompt import Prompt, PromptMPI, Optimiser, analysisdb
 from Cinema.Prompt import analysisdb
 from Cinema.Prompt.solid import Box, Tube, Trapezoid
 from Cinema.Prompt.geo import Volume, Transformation3D
@@ -56,9 +56,9 @@ class MySim(Prompt):
 
 
 class GuideOpt(Optimiser):
-    def __init__(self, sim, optunaNum=100000) -> None:
-        super().__init__(sim, optunaNum)
-        self.addParameter('x', lower = 5, upper = 50, promptval = 10)
+    def __init__(self, sim, optNNum=100000) -> None:
+        super().__init__(sim, optNNum)
+        self.addParameter('x', lower = 5, upper = 50, val = 10)
         self.addParameter('y', 5, 50, 10)
 
     def objective(self, trial):
@@ -66,9 +66,8 @@ class GuideOpt(Optimiser):
         p=self.getParameters(trial)
         self.sim.makeWorld(p)
         self.sim.simulate(self.trailNeutronNum)
-        hist2 = self.sim.getScorerHist(self.sim.scorer['PSD2'])
+        hist2 = self.sim.getScorerHist('PSD2')
         return hist2.getWeight().sum() 
-
 
 
 sim = MySim()
@@ -76,11 +75,8 @@ gunCfg = "gun=UniModeratorGun;src_w=50;src_h=50;src_z=0;slit_w=50;slit_h=50;slit
 sim.setGun(gunCfg)
 
 opt = GuideOpt(sim)
-opt.trailNeutronNum=1e6
 
-# for local database, set the storage paramter to e.g. mysql://root@localhost/example
-opt.optimize(name = 'distributed-guide', n_trials = 100)
-
+opt.optimize(name = 'distributed-guide', n_trials = 10 ,localhost=True)
 opt.analysis()
 
 # or we can see the initial geometry

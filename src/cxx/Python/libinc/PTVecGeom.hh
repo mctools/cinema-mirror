@@ -17,6 +17,9 @@ void pt_Box_delete(void* obj);
 // Tube
 void* pt_Tube_new(double rmin, double rmax, double z, double deltaphi, double startphi);
 
+// Sphere
+void* pt_Sphere_new(double rmin, double rmax, double startphi, double deltaphi , double starttheta, double deltatheta);
+
 //Trapezoid
 void* pt_Trapezoid_new(double x1, double x2, double y1, double y2, double z);
 

@@ -84,12 +84,11 @@ class Transformation3D:
         return input
         
 class Volume:
-    def __init__(self, volname, solid, matCfg=None, scorerCfg=None, surfaceCfg=None):
+    def __init__(self, volname, solid, matCfg=None, surfaceCfg=None):
         self.child = []
         self.cobj = _pt_Volume_new(volname.encode('utf-8'), solid.cobj)
         self.volid = self.getLogicalID(self.cobj)
         self.matCfg = matCfg
-        self.scorerCfg = scorerCfg
         self.surfaceCfg = surfaceCfg
 
         _pt_ResourceManager_addNewVolume(self.volid)
@@ -98,13 +97,6 @@ class Volume:
             self.setMaterial('freegas::H1/1e-26kgm3') # set as the universe
         else:
             self.setMaterial(matCfg) 
-
-        if scorerCfg is not None:
-            if isinstance(scorerCfg, list):
-                for cfg in scorerCfg:
-                    self.setScorer(cfg) 
-            else:
-                self.setScorer(scorerCfg) 
 
         if surfaceCfg is not None:
             self.setSurface(surfaceCfg) 

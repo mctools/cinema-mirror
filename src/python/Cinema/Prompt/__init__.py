@@ -76,7 +76,7 @@ class Parameter:
     def __repr__(self) -> str:
         return f'Parameter "{self.name}", [{self.lower_lim},{self.upper_lim}], Prompt value {self.promptval}\n'
      
-def analysisdb(name, storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna', study=None):
+def analysisdb(study=None, name=None, storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna' ):
     if study is None:
         import optuna
         study = optuna.load_study(study_name=name, storage=storage)
@@ -112,17 +112,21 @@ def analysisdb(name, storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.c
     # plot_slice(study, params=["x", "y"]).show()
 
     # Visualize parameter importances.
+    plot_param_importances(study).show()
 
 
 
 class Optimiser:
-    def __init__(self, sim, trailNeutronNum=1e5) -> None:
+    def __init__(self, sim, trailNeutronNum=1e5, directions= ["maximize"]) -> None:
         self.parameters = []
         self.sim = sim
         self.trailNeutronNum = trailNeutronNum
+        self.directions = directions
 
-    def addParameter(self, name, lower, upper, promptval):
-        self.parameters.append(Parameter(name, lower, upper, promptval))
+    def addParameter(self, name, lower, upper, val=None):
+        if val is None:
+            val = 0.5*(lower + upper)
+        self.parameters.append(Parameter(name, lower, upper, val))
 
     def getParameters(self, trail = None):
         l = {}
@@ -139,21 +143,29 @@ class Optimiser:
         self.sim.show(num)
 
 
-    def optimize(self, name, n_trials , storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna'):
+    def optimize(self, name, n_trials, localhost=False, storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna'):
         import optuna
-        self.study = optuna.create_study(study_name=name, 
-                                         storage=storage, 
-                                         directions=["maximize"],
-                                         load_if_exists=True)
+        if localhost:
+            self.study = optuna.create_study(study_name=name, 
+                                    directions=self.directions
+                                    )
+        else:
+            self.study = optuna.create_study(study_name=name, 
+                                            storage=storage, 
+                                            directions=self.directions,
+                                            load_if_exists=True
+                                            )
+        
+
         self.study.optimize(self.objective, n_trials)
 
         return self.study
     
     def analysis(self):
-        analysisdb(study = self.study)
+        analysisdb(self.study)
     
 
-    def optimize_botorch(self, n_trials):
+    def optimize_botorch(self, name, n_trials, localhost=False, storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna'):
         from botorch.settings import validate_input_scaling
         import optuna
 
@@ -164,10 +176,19 @@ class Optimiser:
             n_startup_trials=int(n_trials*0.5),
         )
 
-        self.study = optuna.create_study(
-            directions=["maximize"],
-            sampler=sampler,
-        )
+        if localhost:
+            self.study = optuna.create_study(study_name=name, 
+                                    directions=self.directions,
+                                    sampler=sampler
+                                    )
+        else:
+            self.study = optuna.create_study(
+                study_name=name, 
+                storage=storage, 
+                directions=self.directions,
+                sampler=sampler,
+                load_if_exists=True
+            )
 
         self.study.optimize(self.objective, n_trials=n_trials)
 
@@ -186,6 +207,7 @@ class Prompt:
     def clear(self):
         _pt_ResourceManager_clear()
         self.l.worldExist = False
+        self.scorer = {}
     
     def setWorld(self, world):
         self.l.setWorld(world)
@@ -202,9 +224,12 @@ class Prompt:
     def simulate(self, num : int = 0, timer=True, save2Disk=False):
         self.l.go(int(num), timer=timer, save2Dis=save2Disk)
 
-    def getScorerHist(self, cfg):
-        return self.l.getHist(cfg)
-    
+    def getScorerHist(self, cfg, raw=False):
+        if raw:
+            return self.l.getHist(cfg)
+        else:
+            return self.l.getHist(self.scorer[cfg])
+        
 
 class PromptMPI(Prompt):
     def __init__(self, seed=4096) -> None:

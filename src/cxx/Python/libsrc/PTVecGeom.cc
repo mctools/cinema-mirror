@@ -3,8 +3,11 @@
 
 #include "VecGeom/management/GeoManager.h"
 #include "VecGeom/volumes/UnplacedBox.h"
+#include "VecGeom/volumes/UnplacedSphere.h"
 #include "VecGeom/volumes/UnplacedTube.h"
 #include "VecGeom/volumes/UnplacedTrapezoid.h"
+
+
 #include "VecGeom/volumes/UnplacedVolume.h"
 #include "VecGeom/volumes/SpecializedTessellated.h"
 #include "VecGeom/volumes/UnplacedTessellated.h"
@@ -78,6 +81,11 @@ void* pt_Box_new(double hx, double hy, double hz)
 void* pt_Tube_new(double rmin, double rmax, double z, double startphi, double deltaphi)
 {
     return static_cast<void *>(new vg::SUnplacedTube<>(rmin, rmax, z, startphi, deltaphi));
+}
+
+void* pt_Sphere_new(double rmin, double rmax, double startphi, double deltaphi , double starttheta, double deltatheta)
+{
+  return static_cast<void *>(new vg::UnplacedSphere(rmin, rmax, startphi, deltaphi , starttheta, deltatheta));
 }
 
 //Trapezoid

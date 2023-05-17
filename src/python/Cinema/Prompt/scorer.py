@@ -50,4 +50,7 @@ class PSD(Scorer):
     def makeCfg(self):
         cfg = 'Scorer=PSD;'
         return cfg + super().makeCfg()
+    
+    def makeFlatPDF(self):
+        raise NotImplementedError()
         

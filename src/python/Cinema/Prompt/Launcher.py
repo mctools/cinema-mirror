@@ -44,7 +44,7 @@ _pt_setWorld = importFunc('pt_setWorld', None, [type_voidp])
 class Launcher():
     def __init__(self):
         self.cobj = _pt_Launcher_getInstance()
-        self.worldExist = False
+        self.worldExist = False        
 
     def setSeed(self, seed):
         _pt_Launcher_setSeed(self.cobj, seed)

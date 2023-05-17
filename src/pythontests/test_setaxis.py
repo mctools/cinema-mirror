@@ -38,10 +38,8 @@ class MySim(Prompt):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)
 
-    def setScorer(self):
-        self.scorer['wl'] = "Scorer=WlSpectrum; name=detector; min=0.0; max=10; numbin=100;ptstate=ENTRY"
-
     def makeWorld(self, anyUserParameters=np.zeros(2)):
+        self.scorer['wl'] = "Scorer=WlSpectrum; name=detector; min=0.0; max=10; numbin=100;ptstate=ENTRY"
 
         worldsize = 200.
         world = Volume("world", Box(worldsize*0.5, worldsize*0.5, worldsize*0.5))
@@ -51,16 +49,18 @@ class MySim(Prompt):
         r=Transformation3D(0, 1)
         world.placeChild('guide', guide, r.rotAxis(30, np.array([0,0,1])))
 
-        det1 = Volume("detector", Box(10, 10, 0.01), scorerCfg=self.scorer['wl'] )
+        det1 = Volume("detector", Box(10, 10, 0.01) )
+        det1.addScorer(self.scorer['wl'])
         world.placeChild('det1', det1, Transformation3D(0, 0, 60))
+        self.setWorld(world)
 
-        return world
 
 
 sim = MySim()
 # set gun
 gunCfg = "gun=MaxwellianGun;src_w=5;src_h=5;src_z=-80;slit_w=50;slit_h=50;slit_z=100"
 sim.setGun(gunCfg)
+sim.makeWorld()
 # vis or production
 if False:
     sim.show(110)
@@ -68,7 +68,7 @@ else:
     sim.simulate(1e4)
 
 
-hist1 = sim.getScorerHist(sim.scorer['wl'])
+hist1 = sim.getScorerHist('wl')
 w=hist1.getWeight().sum()
 x=hist1.getCentre().sum()
 wx=(hist1.getWeight()*hist1.getCentre()).sum()

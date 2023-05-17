@@ -25,6 +25,7 @@ _pt_Box_new = importFunc('pt_Box_new', type_voidp, [type_dbl, type_dbl, type_dbl
 _pt_Box_delete = importFunc('pt_Box_delete', None, [type_voidp] )
 _pt_Tube_new = importFunc('pt_Tube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 _pt_Trapezoid_new = importFunc('pt_Trapezoid_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
+_pt_Sphere_new = importFunc('pt_Sphere_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 
 
 #Tessellated
@@ -45,10 +46,12 @@ class Tube:
     def __init__(self, rmin, rmax, z, startphi, deltaphi):
         self.cobj = _pt_Tube_new(rmin, rmax, z, startphi, deltaphi)
 
+class Sphere:
+    def __init__(self, rmin, rmax, startphi=0., deltaphi=2*np.pi, starttheta=0., deltatheta=np.pi):
+        self.cobj = _pt_Sphere_new(rmin, rmax, startphi, deltaphi, starttheta, deltatheta)
 class Trapezoid:
     def __init__(self, x1, x2, y1, y2, z) -> None:
         self.cobj = _pt_Trapezoid_new(x1, x2, y1, y2, z)
-
 
 class Tessellated: #this one is not working
     def __init__(self, faces, points, tranMat=None) -> None:

@@ -83,7 +83,7 @@ class MySim(PromptMPI):
         self.l.setWorld(world)
 
     def makePSD(self, name, xmin, xmax, ymin, ymax, numbin_x, numbin_y):
-
+        # Fixme : ziyi, move this function into det.makeFlatPSD()
         det = PSD()
         det.cfg_name = name
         det.cfg_xmin = xmin
