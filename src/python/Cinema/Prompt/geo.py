@@ -42,46 +42,101 @@ _pt_ResourceManager_addScorer = importFunc('pt_ResourceManager_addScorer', None,
 _pt_ResourceManager_addSurface = importFunc('pt_ResourceManager_addSurface', None, [type_uint, type_cstr])
 _pt_ResourceManager_addPhysics = importFunc('pt_ResourceManager_addPhysics', None, [type_uint, type_cstr])
 
-
 class Transformation3D:
-    def __init__(self, x=0., y=0., z=0., rot_z=0., rot_new_x=0., rot_new_z=0.):
-        # RScale followed by rotation followed by translation.
-        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, rot_z, rot_new_x, rot_new_z, 1.,1.,1.)
+    def __init__(self, x=0., y=0., z=0., rot_z=0., rot_new_x=0., rot_new_z=0., degrees = True):
+        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, 0, 0, 0, 1.,1.,1.)
+        self.sciRot = scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees)
 
 
     def __del__(self):
         _pt_Transformation3D_delete(self.cobj)
-
-    def _setRot(self, rot : scipyRot):
-        mat = rot.as_matrix()
+    
+    def py2cppConv(self):
+        mat = self.sciRot.as_matrix()
+        print(mat)
         _pt_Transformlation3D_setRotation(self.cobj, mat[0,0], mat[0,1], mat[0,2],
                                           mat[1,0], mat[1,1], mat[1,2],
                                           mat[2,0], mat[2,1], mat[2,2])
         
-    def rotAxis(self, angle, axis, degrees=True):
-        self._setRot(scipyRot.from_rotvec(angle * axis/np.linalg.norm(axis), degrees=degrees))
+    def appplyRotAxis(self, angle, axis, degrees=True):
+        rot = scipyRot.from_rotvec(angle * axis/np.linalg.norm(axis), degrees=degrees)
+        self.sciRot *= rot
+        self.py2cppConv()
         return self
     
-    def rotX(self, angle, degrees=True):
-        self._setRot(scipyRot.from_rotvec(angle * np.array([1,0,0.]), degrees=degrees))
+    def appplyRotX(self, angle, degrees=True):
+        rot = scipyRot.from_rotvec(angle * np.array([1,0,0.]), degrees=degrees)
+        self.sciRot *= rot
+        self.py2cppConv()
         return self
     
-    def rotY(self, angle, degrees=True):
-        self._setRot(scipyRot.from_rotvec(angle * np.array([0,1.,0.]), degrees=degrees))
+    def appplyRotY(self, angle, degrees=True):
+        rot = scipyRot.from_rotvec(angle * np.array([0,1,0.]), degrees=degrees)
+        self.sciRot *= rot
+        self.py2cppConv()
         return self
     
-    def rotZ(self, angle, degrees=True):
-        self._setRot(scipyRot.from_rotvec(angle * np.array([0,0.,1.]), degrees=degrees))
+    def appplyRotZ(self, angle, degrees=True):
+        rot = scipyRot.from_rotvec(angle * np.array([0,0,1.]), degrees=degrees)
+        self.sciRot *= rot
+        self.py2cppConv()
         return self
+    
+    def setRotByAlignement(self, rotated, original) :  # rotated, original are with shape (N, 3)
+        self.sciRot, rssd = scipyRot.align_vectors(original, rotated)
+        self.py2cppConv()
+        return self
+
         
     #  a wrapper of scipy.spatial.transform.Rotation    
     def setRot(self, rot_z=0., rot_new_x=0., rot_new_z=0., degrees = True):
-        self._setRot(scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees=degrees))
+        self.py2cppConv(scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees=degrees))
         return self
 
     def transformInplace(self, input):
         _pt_Transformation3D_transform(self.cobj, input.shape[0], input, input)
         return input
+
+
+# class Transformation3D:
+#     def __init__(self, x=0., y=0., z=0., rot_z=0., rot_new_x=0., rot_new_z=0.):
+#         # RScale followed by rotation followed by translation.
+#         self.cobj = _pt_Transformation3D_newfromdata(x, y, z, rot_z, rot_new_x, rot_new_z, 1.,1.,1.)
+
+
+#     def __del__(self):
+#         _pt_Transformation3D_delete(self.cobj)
+
+#     def _setRot(self, rot : scipyRot):
+#         mat = rot.as_matrix()
+#         _pt_Transformlation3D_setRotation(self.cobj, mat[0,0], mat[0,1], mat[0,2],
+#                                           mat[1,0], mat[1,1], mat[1,2],
+#                                           mat[2,0], mat[2,1], mat[2,2])
+        
+#     def rotAxis(self, angle, axis, degrees=True):
+#         self._setRot(scipyRot.from_rotvec(angle * axis/np.linalg.norm(axis), degrees=degrees))
+#         return self
+    
+#     def rotX(self, angle, degrees=True):
+#         self._setRot(scipyRot.from_rotvec(angle * np.array([1,0,0.]), degrees=degrees))
+#         return self
+    
+#     def rotY(self, angle, degrees=True):
+#         self._setRot(scipyRot.from_rotvec(angle * np.array([0,1.,0.]), degrees=degrees))
+#         return self
+    
+#     def rotZ(self, angle, degrees=True):
+#         self._setRot(scipyRot.from_rotvec(angle * np.array([0,0.,1.]), degrees=degrees))
+#         return self
+        
+#     #  a wrapper of scipy.spatial.transform.Rotation    
+#     def setRot(self, rot_z=0., rot_new_x=0., rot_new_z=0., degrees = True):
+#         self._setRot(scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees=degrees))
+#         return self
+
+#     def transformInplace(self, input):
+#         _pt_Transformation3D_transform(self.cobj, input.shape[0], input, input)
+#         return input
         
 class Volume:
     def __init__(self, volname, solid, matCfg=None, surfaceCfg=None):
@@ -120,6 +175,7 @@ class Volume:
     def placeChild(self, name, logVolume, transf=Transformation3D(0,0,0), scorerGroup=0):
         self.child.append(logVolume)
         _pt_Volume_placeChild(self.cobj, name.encode('utf-8'), logVolume.cobj, transf.cobj, scorerGroup)
+        return self
 
     def getLogicalID(self, cobj=None):
         if cobj is None: # reutrn the ID of this volume

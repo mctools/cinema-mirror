@@ -176,6 +176,9 @@ class Hist1D(HistBase):
     def plot(self, show=False, label=None):
         try:
             import matplotlib.pyplot as plt
+            from Cinema.Interface import plotStyle
+            plotStyle()
+            fig=plt.figure()
             center = self.getCentre()
             w = self.getWeight()
             uncet = np.sqrt(self.getHit()/10.)
@@ -260,6 +263,8 @@ class Hist2D(HistBase):
         try:
             import matplotlib.pyplot as plt
             import matplotlib.colors as colors
+            from Cinema.Interface import plotStyle
+            plotStyle()
             fig=plt.figure()
             ax = fig.add_subplot(111)
             H = self.getWeight().T
