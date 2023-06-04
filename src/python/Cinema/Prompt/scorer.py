@@ -19,6 +19,9 @@
 ##                                                                            ##
 ################################################################################
 
+from .solid import Box
+from .geo import Volume
+
 class Scorer():
     def __init__(self) -> None:
         self.para = {}
@@ -51,6 +54,23 @@ class PSD(Scorer):
         cfg = 'Scorer=PSD;'
         return cfg + super().makeCfg()
     
-    def makeFlatPDF(self):
-        raise NotImplementedError()
+def makeFlatPSD(name, x, y, numbin_x, numbin_y):
+    xmin = - x * 0.5
+    xmax = x * 0.5
+    ymin = - y * 0.5
+    ymax = y * 0.5
+
+    det = PSD()
+    det.cfg_name = name
+    det.cfg_xmin = xmin
+    det.cfg_xmax = xmax
+    det.cfg_numbin_x = numbin_x
+
+    det.cfg_ymin = ymin
+    det.cfg_ymax = ymax
+    det.cfg_numbin_y = numbin_y
+    cfg = det.makeCfg()
+    vol = Volume(name, Box(x,y,1e-3))
+    vol.addScorer(cfg)
+    return cfg, vol
         
