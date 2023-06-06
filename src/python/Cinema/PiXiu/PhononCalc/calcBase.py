@@ -74,6 +74,10 @@ class CalcBase:
         if eigv.shape!=(self.numQpoint, self.nAtom*3, self.nAtom, 3):
             raise ValueError('Expected shape of the eigenvector is {}, but it is {}'.format( (self.numQpoint, self.nAtom*3, self.nAtom, 3), (eigv.shape)))
 
+        self.vol=np.dot(np.cross(lattice[0],lattice[1]), lattice[2])
+        # print('cell volume', self.vol)
+        self.xsvolfact = (2*np.pi)**3/self.vol
+
         self.lattice=lattice
         self.lattice_reci=np.linalg.inv(lattice)*2*np.pi
         self.mass=mass*umass
@@ -153,7 +157,7 @@ class CalcBase:
 
     def calcFormFact(self, Q, eigvecs):
         Qmag=np.linalg.norm(Q)
-        F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1)
+        F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
         #fixme isotropic approximation at the moment
         #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
         return F
@@ -176,10 +180,11 @@ class CalcPowder(CalcBase):
 
 
     def calcHKL(self, latpnt):
-        #S=np.array([self.nAtom*3*self.numQpoint, 3])
+        # modeWeight = 1./(self.nAtom) 
+        # NB: So the xs is in the unit of per atom. Since the eigv from phonopy is already weighted by atom number, so this factor should not be used
         print(f'processing lattice point {latpnt}')
         tau=np.dot(latpnt['hkl'], self.lattice_reci)
-        modeWeight = 1./(self.nAtom) #fixme: So the xs is in the unit of per atom? but the  eigv is already weighted
+        
         for i in range(self.numQpoint):
             if np.allclose(self.qpoint[i], np.zeros(3)):
                 #skip gamma point
@@ -189,7 +194,8 @@ class CalcPowder(CalcBase):
             if Qmag > self.hist.xmax:
                 continue
             F = self.calcFormFact(Q, self.eigv[i])
-            Smag=modeWeight*(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar/self.en[i]
+            # not devided by the reciprocal volume so the unit is per atoms in the cell
+            Smag=0.5*(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar/self.en[i]
             self.hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i]/hbar, Smag*latpnt['mult']*hbar) #negative energy for downscattering, fill in angular frequency instead of energy
         return self.hist.getWeight()
 
