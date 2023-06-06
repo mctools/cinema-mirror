@@ -140,7 +140,7 @@ class Optimiser:
     def visInitialGeometry(self, num=100):
         self.sim.clear() 
         self.sim.makeWorld(self.getParameters())
-        self.sim.show(num)
+        self.sim.show(int(num))
 
 
     def optimize(self, name, n_trials, localhost=False, storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna'):

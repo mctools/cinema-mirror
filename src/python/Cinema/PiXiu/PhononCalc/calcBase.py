@@ -191,7 +191,7 @@ class CalcPowder(CalcBase):
             F = self.calcFormFact(Q, self.eigv[i])
             Smag=modeWeight*(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar/self.en[i]
             self.hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i]/hbar, Smag*latpnt['mult']*hbar) #negative energy for downscattering, fill in angular frequency instead of energy
-        return self.hist.getHistVal()
+        return self.hist.getWeight()
 
 class CalcBand(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):

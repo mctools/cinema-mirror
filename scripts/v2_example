@@ -32,10 +32,10 @@ class MySim(Prompt):
                                min=0.0; max=8; numbin=100; ptstate=SURFACE"""
 
 
-        det = Volume('thinbox', Box(5, 5,1e-3))
+        det = Volume('thinbox', Box(8, 8,1e-3))
         det.addScorer(self.scorer['psd'] )
         det.addScorer(self.scorer['wl'] )
-        world.placeChild('psd', det, Transformation3D(0., 0., 7),)
+        world.placeChild('psd', det, Transformation3D(0., 0., 7.5),)
 
         trs = Transformation3D(0,0,0,0,0)
         rotated = np.array([[1,1,1],[0,1,0]])
@@ -71,9 +71,9 @@ from Cinema.Prompt import Optimiser
 class PosOpt(Optimiser):
     def __init__(self, sim):
         super().__init__(sim, 1e5, ['minimize'])
-        self.addParameter('x', lower = -5, upper = 5)
-        self.addParameter('y', lower = -5, upper = 5)
-        self.addParameter('z', lower = -5, upper = 5)
+        self.addParameter('x', lower = -8, upper = 8)
+        self.addParameter('y', lower = -8, upper = 8)
+        self.addParameter('z', lower = -8, upper = 7)
 
     def objective(self, trial):
         p = self.getParameters(trial)    
@@ -90,9 +90,13 @@ class PosOpt(Optimiser):
             return self.trailNeutronNum
 
 
+# opt = PosOpt(sim)
+# opt.visInitialGeometry()
+# hist = sim.getScorerHist('wl')
+# hist.plot(show=True)
+
 opt = PosOpt(sim)
 # opt.visInitialGeometry()
 opt.optimize(name = 'pos_opt', n_trials = 1000, localhost=True)
 print(opt.study.best_params, opt.study.best_value)
 opt.analysis()
-

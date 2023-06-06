@@ -2,7 +2,7 @@
 
 from re import T
 import numpy as np
-from Cinema.PiXiu.PhononCalc import MeshCell, MeshQE
+from Cinema.PiXiu.PhononCalc.task import MeshCell, MeshQE
 from Cinema.Interface.Utils import findData
 import argparse
 
