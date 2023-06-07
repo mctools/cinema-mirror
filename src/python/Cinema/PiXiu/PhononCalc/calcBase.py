@@ -204,7 +204,7 @@ class CalcPowder(CalcBase):
         self.histparas['extraHistQranage']=extraHistQranage
         self.histparas['extraHistEnrange']=extraHistEnrange
 
-        q, en_neg, sqw = self.calcPowder(maxQ, enSize, QSize, extraHistQranage, extraHistEnrange)
+        q, en_neg, sqw = self.calcPowder(maxQ)
         # print(q, type(q))
         
         import h5py

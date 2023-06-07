@@ -26,10 +26,13 @@ parser.add_argument('-q', '--Q-bin-size', action='store', type=int, default=300,
                     dest='QSize', help='Q bin size for the histogram')
 parser.add_argument('-o', '--output-file-name', action='store', default='qehist.h5',
                     dest='output', help='output file name')
+parser.add_argument('-p', '--partitions', action='store', default=4,
+                    dest='partitions', help='number of partitions')
+
 args=parser.parse_args()
 
 ph = ParallelHelper()
-ph.partitions = 8
+ph.partitions = args.partitions
 ph.sparkContext = SparkContext(master=f'local[{ph.partitions}]')
 
 
