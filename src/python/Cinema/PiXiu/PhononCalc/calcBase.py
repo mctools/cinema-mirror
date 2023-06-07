@@ -253,7 +253,7 @@ class CalcPowder(CalcBase):
         f0.close()
             
 
-    def calcPowder(self, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001):
+    def calcPowder(self, maxQ):
         it_hkl = PowderHKLIter(self.lattice_reci, maxQ)
         biglist = ParallelHelper().mapReduce(self.calcHKL, it_hkl)
 
