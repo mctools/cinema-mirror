@@ -24,14 +24,12 @@ parser.add_argument('-f', '--frequency-bin-size', action='store', type=int, defa
                     dest='freSize', help='frequency bin size for the histogram')
 parser.add_argument('-q', '--Q-bin-size', action='store', type=int, default=300,
                     dest='QSize', help='Q bin size for the histogram')
-parser.add_argument('-s', '--step', action='store', type=int, default=1,
-                    dest='step', help='stepping for the hkl')
 parser.add_argument('-o', '--output-file-name', action='store', default='qehist.h5',
                     dest='output', help='output file name')
 args=parser.parse_args()
 
 ph = ParallelHelper()
-ph.partitions = 4
+ph.partitions = 8
 ph.sparkContext = SparkContext(master=f'local[{ph.partitions}]')
 
 
@@ -39,18 +37,11 @@ temp = args.temp #temperature in kelvin
 maxQ = args.maxQ
 freSize = args.freSize
 QSize = args.QSize
-step = args.step
 output = args.output
 
 # calc = MeshCell(findData('Al/mesh.hdf5'), findData('Al/cell.json'), kt)
 calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp)
-# import profile
-hist = calc.calcPowder(maxQ, freSize, QSize, step)
 
-hist.save(output)
-#save info?
+calc.savePowerSqw(output, maxQ, freSize, QSize)
 
-hist.plot()
 
-import matplotlib.pyplot as plt
-plt.show()

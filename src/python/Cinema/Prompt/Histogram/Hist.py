@@ -284,13 +284,10 @@ class Hist2D(HistBase):
     def save(self, fn):
         import h5py
         f0=h5py.File(fn,"w")
-        f0.create_dataset("q", data=self.xcenter, compression="gzip")
-        f0.create_dataset("omega", data=self.ycenter, compression="gzip")
-        X, Y = np.meshgrid(np.diff(self.yedge), np.diff(self.xedge))
-        f0.create_dataset("s", data=self.getWeight()/(X*Y), compression="gzip")
-        mtd = f0.create_group('metadata')
-        for key, value in self.metadata.items():
-            mtd.create_dataset(key, data = value)
+        f0.create_dataset("xcenter", data=self.xcenter, compression="gzip")
+        f0.create_dataset("ycenter", data=self.ycenter, compression="gzip")
+        f0.create_dataset("weight", data=self.getWeight(), compression="gzip")
+        f0.create_dataset("hit", data=self.getHit(), compression="gzip")
         f0.close()
 
     def merge(self, hist2):

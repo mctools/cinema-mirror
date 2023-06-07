@@ -90,31 +90,44 @@ class CalcBase:
             self.fullMess=True
         self.qpoint=np.dot(qpoint, self.lattice_reci)
         self.en=energy
+        self.en[self.en<0] = -self.en[self.en<0] #fixme: make sure no negtive energy
         self.maxEn = self.en.max()
         self.eigv=eigv
         self.qweight=qweight
         self.temperature=temperature
         self.kt=temperature*boltzmann
-        self.bose=self.nplus1(self.en)
+        self.detlbal=self.nplus1_down(-self.en)
         self.msd=self.isoMsd() #fixme: calmsd method returns unequal msd even for cubic lattice, bug to be fixed use isotropic model for now.
+        print('MSD is ' , self.msd)
 
         if not math.isclose(self.qweight.sum(), 1.0, rel_tol=1e-10):
             raise ValueError('phonon total qweight is not unity {}'.format( self.qweight.sum() ) )
+        
 
-        self.baseMetadataDict = {
+        self.metadata = {
             'lattice': self.lattice,
             'molarMass': self.molarMass,
             'position': self.pos,
             'temperature': self.temperature
             }    #future: may provide API to customize
 
-    #<n+1>, omega >0, downscattering
-    def nplus1(self, en): #fixme: nan
-        return 1./(1- np.exp(-en/self.kt))
+    def bose(self, en):
+        if (en==0.).any():
+            raise RuntimeError('input for bose number contains zero')
+        n = 1./(np.exp(en/self.kt)-1.)
+        return n 
+    
+    #<n+1>, omega >0, downscattering, good for lowTemp materials where phonons are fewer.
+    def nplus1_down(self, en): #fixme: nan
+        if (en>0.).any():
+            print(en)
+            raise RuntimeError('energy for down scattering should be less than zero')
+        return self.bose(-en)+1
 
-    def oneplus2n(self, en):#fixme: nan
-        invkt = 1./self.kt
-        return 1/np.tanh(0.5*en*invkt)
+    def oneplus2n_up(self, en):#fixme: nan
+        if (en<0.).any():
+            raise RuntimeError('energy for up scattering should be greater than zero')
+        return 2*self.bose(en)+1
 
 
     def calmsd2(self):
@@ -137,12 +150,12 @@ class CalcBase:
         msd*=0.5/self.mass*hbar*hbar
         return msd.T
 
-    def dos(self):
+    def dos(self, bins=100):
         hist=None
         edges=None
         maxEn = self.en.max()
         for i in range(3*self.nAtom):
-            h, edges = np.histogram(self.en[:,i], bins=100, range=[0, maxEn], weights=self.qweight, density=True)
+            h, edges = np.histogram(self.en[:,i], bins=bins, range=[0, maxEn], weights=self.qweight, density=True)
             if hist is not None:
                 hist += h
             else:
@@ -154,6 +167,21 @@ class CalcBase:
     def isoMsd(self):
         en, rho = self.dos()
         return np.trapz( (1./(np.tanh(en/(2*self.kt) ) * en )* rho), en)*0.5*hbar*hbar/self.mass[0]
+    
+    def incoherentAppr(self, Q, bins):
+        #squires red book 3.136
+        # print(f'incoherent msd {self.msd}')
+        en, dos = self.dos(bins)
+        #for down scattering, en is negtive
+        en = -np.flip(en)
+        dos = np.flip(dos)
+        if isinstance(Q, np.ndarray):
+            Q = np.reshape(Q, [Q.size, 1])
+     
+        common = -1/(4*self.mass[0])*self.bc[0]**2 * Q**2* np.exp(-self.msd*Q**2 )*dos/en*hbar*hbar
+        downScat =  common*self.nplus1_down(en)
+        return en, downScat
+
 
     def calcFormFact(self, Q, eigvecs):
         Qmag=np.linalg.norm(Q)
@@ -161,27 +189,100 @@ class CalcBase:
         #fixme isotropic approximation at the moment
         #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
         return F
+    
 
 class CalcPowder(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
         super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature)
 
-    def calcPowder(self, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001, step=1):
-        qmin1d=np.min([np.linalg.norm(self.lattice_reci[0]),np.linalg.norm(self.lattice_reci[1]),np.linalg.norm(self.lattice_reci[2])])
-        maxhkl = np.int(maxQ/np.ceil(qmin1d))
+
+    def savePowerSqw(self, fn, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001):
+        self.histparas = {}
+        self.histparas['maxQ']=maxQ
+        self.histparas['enSize']=enSize
+        self.histparas['QSize']=QSize
+        self.histparas['extraHistQranage']=extraHistQranage
+        self.histparas['extraHistEnrange']=extraHistEnrange
+
+        q, en_neg, sqw = self.calcPowder(maxQ, enSize, QSize, extraHistQranage, extraHistEnrange)
+        # print(q, type(q))
+        
+        import h5py
+        f0=h5py.File(fn,"w")
+
+        #metadata
+        mtd = f0.create_group('metadata')
+        for key, value in self.metadata.items():
+            mtd.create_dataset(key, data = value)
 
 
-        self.hist=Hist2D(0, maxQ + extraHistQranage, QSize, -(self.en.max()+extraHistEnrange)/hbar, 0, enSize, self.baseMetadataDict ) #note negtive energy, for  downscattering, y-axis is in THz
+        ## coherent 
+        f0.create_dataset("q", data=q, compression="gzip")
+        f0.create_dataset("en", data=en_neg, compression="gzip")
+
+        # per reciprocal space
+        qbinmean = np.diff(q).mean() *0.5
+        q_edge = np.concatenate(([0], q+qbinmean) )
+        q_volume = q_edge**3*np.pi*4/3. # spher volumes
+        q_volume_diff = np.diff(q_volume)
+        sqw=((sqw.T)/q_volume_diff).T
+        # per energy
+        sqw/=np.diff(en_neg).mean()
+        f0.create_dataset("s", data=sqw, compression="gzip")
+
+
+        ## incoherent
+        en, inco = self.incoherentAppr(q, en_neg.size)
+        f0.create_dataset("s_inco", data=inco, compression="gzip")
+
+        ## expanded sqw
+
+        def expandFromNegtiveAxis(input, axis=0, factor=1.):
+            pos = np.flip(input, axis=axis)
+            return  np.concatenate((input, pos*factor),axis=axis)
+
+        en_full = expandFromNegtiveAxis(en_neg,factor=-1)
+        f0.create_dataset("en_full", data=en_full, compression="gzip")
+
+        en_pos = np.flip(en_neg)*-1
+        sqw_full = expandFromNegtiveAxis(sqw, axis=1, factor=np.exp(-np.flip(en_pos)/self.kt))
+        f0.create_dataset("sqw_full", data=sqw_full, compression="gzip")
+
+        sqw_full_inco = expandFromNegtiveAxis(inco, axis=1, factor=np.exp(-np.flip(en_pos)/self.kt))
+        f0.create_dataset("sqw_full_inco", data=sqw_full_inco, compression="gzip")
+        f0.close()
+            
+
+    def calcPowder(self, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001):
         it_hkl = PowderHKLIter(self.lattice_reci, maxQ)
+        biglist = ParallelHelper().mapReduce(self.calcHKL, it_hkl)
 
-        ParallelHelper().mapReduce(self.calcHKL, it_hkl)
-
-        return self.hist
+        if len(biglist)==1:
+            return biglist[0], biglist[1], biglist[2]
+        else:
+            q = biglist[0][0]
+            en = biglist[0][1]
+            sqw = biglist[0][2]
+            for i in range(1, len(biglist)):
+                sqw += biglist[i][2]        
+            return  q, en, sqw
 
 
     def calcHKL(self, latpnt):
+        maxQ = self.histparas['maxQ']
+        enSize = self.histparas['enSize']
+        QSize = self.histparas['QSize']
+        extraHistQranage = self.histparas['extraHistQranage']
+        extraHistEnrange = self.histparas['extraHistEnrange']
+
+
         # modeWeight = 1./(self.nAtom) 
         # NB: So the xs is in the unit of per atom. Since the eigv from phonopy is already weighted by atom number, so this factor should not be used
+
+        #note negtive energy, for downscattering
+        self.hist=Hist2D(0, maxQ + extraHistQranage, QSize, -(self.en.max()+extraHistEnrange), 0, enSize, self.metadata ) 
+
+
         print(f'processing lattice point {latpnt}')
         tau=np.dot(latpnt['hkl'], self.lattice_reci)
         
@@ -195,9 +296,10 @@ class CalcPowder(CalcBase):
                 continue
             F = self.calcFormFact(Q, self.eigv[i])
             # not devided by the reciprocal volume so the unit is per atoms in the cell
-            Smag=0.5*(np.linalg.norm(F)**2)*self.bose[i]*self.qweight[i]*hbar/self.en[i]
-            self.hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i]/hbar, Smag*latpnt['mult']*hbar) #negative energy for downscattering, fill in angular frequency instead of energy
-        return self.hist.getWeight()
+            Smag=0.5*(np.linalg.norm(F)**2)*self.detlbal[i]*self.qweight[i]*hbar*hbar/self.en[i]
+            self.hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i], Smag*latpnt['mult']) #negative energy for downscattering, fill in angular frequency instead of energy
+       
+        return self.hist.xcenter, self.hist.ycenter, self.hist.getWeight()
 
 class CalcBand(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
