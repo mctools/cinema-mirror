@@ -54,6 +54,7 @@ parser.add_argument('-c', '--mongo-url', action='store', type=str, default=None,
         dest='mongo_url', help='the MongoDB connection string. mongodb://user:pass@localhost:27017/ for example.')
 parser.add_argument('-s', '--use-spark', action='store_true', dest='use_spark', help='run in spark')
 parser.add_argument('-v', '--vdW', action='store_true', dest='vdW', help='consider Van Der Waals forces in DFT')
+parser.add_argument('-d', '--phonmeshdensity', action='store', dest='phonmeshdensity', type=float, default=200., help='Est phonon mesh density per atom per 1/Aa')
 
 args = parser.parse_args()
 inputfile=args.input
@@ -61,6 +62,8 @@ cores=args.numcpu
 rundft=args.rundft
 mpid = args.mpid
 vdW = args.vdW
+phonmeshdensity = args.phonmeshdensity
+
 use_spark = args.use_spark
 mongo_url = args.mongo_url
 
@@ -144,7 +147,7 @@ relexed_cell = QeXmlCell('out_relax.xml')
 dim = relexed_cell.estSupercellDim()
 kpt = relexed_cell.estSupercellKpoint()
 cell = relexed_cell.getCell()
-mesh =  relexed_cell.estMesh()
+mesh =  relexed_cell.estPhonMesh(phonmeshdensity)
 
 logger.info(f'cell after relax {cell}, total magnetisation {relexed_cell.totmagn}')
 

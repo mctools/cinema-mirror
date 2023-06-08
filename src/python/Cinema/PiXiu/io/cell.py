@@ -30,8 +30,8 @@ class CellBase():
             res[np.where(res%2==0)]+=1
         return res
 
-    def estMesh(self, size=200.):
-        res = (size//self.abc).astype(int)
+    def estPhonMesh(self, size=200.):
+        res = (size/self.abc/len(self.position)).astype(int)
         res[np.where(res==0)]=1
         return res
 
