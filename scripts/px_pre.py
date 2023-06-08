@@ -54,7 +54,7 @@ parser.add_argument('-c', '--mongo-url', action='store', type=str, default=None,
         dest='mongo_url', help='the MongoDB connection string. mongodb://user:pass@localhost:27017/ for example.')
 parser.add_argument('-s', '--use-spark', action='store_true', dest='use_spark', help='run in spark')
 parser.add_argument('-v', '--vdW', action='store_true', dest='vdW', help='consider Van Der Waals forces in DFT')
-parser.add_argument('-d', '--phonmeshdensity', action='store', dest='phonmeshdensity', type=float, default=200., help='Est phonon mesh density per atom per 1/Aa')
+parser.add_argument('-d', '--phonmeshdensity', action='store', dest='phonmeshdensity', type=float, default=400., help='Est phonon mesh density per atom per 1/Aa')
 
 args = parser.parse_args()
 inputfile=args.input
@@ -184,15 +184,10 @@ if os.system(f'phonopy --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(
     logger.info(f'band fail')
     raise IOError("band fail")
 
-#density of states
-if os.system(f'phonopy -v --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}  --nowritemesh {plotflag} -s'):
-    logger.info(f'dos fail')
-    raise IOError("dos fail")
-
 #mesh
-if os.system(f'phonopy --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym'):
-    logger.info(f'mesh fail')
-    raise IOError("mesh fail")
+if os.system(f'phonopy --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym --pdos AUTO  {plotflag} -s'):
+    logger.info(f'dos and mesh fail')
+    raise IOError("dos and mesh fail")
 
 logger.info(f'Calculation completed!')
 
