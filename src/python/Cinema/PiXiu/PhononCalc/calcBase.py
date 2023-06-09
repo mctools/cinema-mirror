@@ -100,8 +100,9 @@ class CalcBase:
         self.msd=self.isoMsd() #fixme: calmsd method returns unequal msd even for cubic lattice, bug to be fixed use isotropic model for now.
         print('MSD is ' , self.msd)
 
-        if not math.isclose(self.qweight.sum(), 1.0, rel_tol=1e-10):
-            raise ValueError('phonon total qweight is not unity {}'.format( self.qweight.sum() ) )
+        # it should move to hight
+        # if not math.isclose(self.qweight.sum(), 1.0, rel_tol=1e-10):
+        #     raise ValueError('phonon total qweight is not unity {}'.format( self.qweight.sum() ) )
         
 
         self.metadata = {
@@ -195,8 +196,8 @@ class CalcPowder(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
         super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature)
 
-
-    def savePowerSqw(self, fn, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001):
+    
+    def configHistgrame(self, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001):
         self.histparas = {}
         self.histparas['maxQ']=maxQ
         self.histparas['enSize']=enSize
@@ -204,7 +205,12 @@ class CalcPowder(CalcBase):
         self.histparas['extraHistQranage']=extraHistQranage
         self.histparas['extraHistEnrange']=extraHistEnrange
 
-        q, en_neg, sqw = self.calcPowder(maxQ)
+
+    def savePowerSqw(self, fn):
+        if not hasattr(self, 'histparas'):
+            raise RuntimeError('configHistgrame() is not called')
+        
+        q, en_neg, sqw = self.calcPowder(self.histparas['maxQ'])
         # print(q, type(q))
         
         import h5py
@@ -219,15 +225,6 @@ class CalcPowder(CalcBase):
         ## coherent 
         f0.create_dataset("q", data=q, compression="gzip")
         f0.create_dataset("en", data=en_neg, compression="gzip")
-
-        # per reciprocal space
-        qbinmean = np.diff(q).mean() *0.5
-        q_edge = np.concatenate(([0], q+qbinmean) )
-        q_volume = q_edge**3*np.pi*4/3. # spher volumes
-        q_volume_diff = np.diff(q_volume)
-        sqw=((sqw.T)/q_volume_diff).T
-        # per energy
-        sqw/=np.diff(en_neg).mean()
         f0.create_dataset("s", data=sqw, compression="gzip")
 
 
@@ -255,17 +252,42 @@ class CalcPowder(CalcBase):
 
     def calcPowder(self, maxQ):
         it_hkl = PowderHKLIter(self.lattice_reci, maxQ)
-        biglist = ParallelHelper().mapReduce(self.calcHKL, it_hkl)
 
-        if len(biglist)==1:
-            return biglist[0], biglist[1], biglist[2]
-        else:
-            q = biglist[0][0]
-            en = biglist[0][1]
-            sqw = biglist[0][2]
-            for i in range(1, len(biglist)):
-                sqw += biglist[i][2]        
-            return  q, en, sqw
+        q = None
+        en = None
+        sqw = None 
+        for hkl in it_hkl:
+            q_temp, en_temp, sqw_temp = self.calcHKL(hkl)
+            if q is None:
+                q = q_temp
+                en = en_temp
+                sqw = sqw_temp
+            else:
+                sqw += sqw_temp
+            
+        # per reciprocal space
+        qbinmean = np.diff(q).mean() *0.5
+        q_edge = np.concatenate(([0], q+qbinmean) )
+        q_volume = q_edge**3*np.pi*4/3. # spher volumes
+        q_volume_diff = np.diff(q_volume)
+        sqw=((sqw.T)/q_volume_diff).T
+        # per energy
+        sqw/=np.diff(en).mean()
+
+        return  q, en, sqw
+
+
+        # biglist = ParallelHelper().mapReduce(self.calcHKL, it_hkl)
+
+        # if len(biglist)==1:
+        #     return biglist[0], biglist[1], biglist[2]
+        # else:
+        #     q = biglist[0][0]
+        #     en = biglist[0][1]
+        #     sqw = biglist[0][2]
+        #     for i in range(1, len(biglist)):
+        #         sqw += biglist[i][2]        
+        #     return  q, en, sqw
 
 
     def calcHKL(self, latpnt):
@@ -283,7 +305,7 @@ class CalcPowder(CalcBase):
         self.hist=Hist2D(0, maxQ + extraHistQranage, QSize, -(self.en.max()+extraHistEnrange), 0, enSize, self.metadata ) 
 
 
-        print(f'processing lattice point {latpnt}')
+        # print(f'processing lattice point {latpnt}')
         tau=np.dot(latpnt['hkl'], self.lattice_reci)
         
         for i in range(self.numQpoint):

@@ -31,9 +31,9 @@ parser.add_argument('-p', '--partitions', action='store', default=4,
 
 args=parser.parse_args()
 
-ph = ParallelHelper()
-ph.partitions = args.partitions
-ph.sparkContext = SparkContext(master=f'local[{ph.partitions}]')
+# ph = ParallelHelper()
+# ph.partitions = args.partitions
+# ph.sparkContext = SparkContext(master=f'local[{ph.partitions}]')
 
 
 temp = args.temp #temperature in kelvin
@@ -42,9 +42,35 @@ freSize = args.freSize
 QSize = args.QSize
 output = args.output
 
-# calc = MeshCell(findData('Al/mesh.hdf5'), findData('Al/cell.json'), kt)
-calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp)
+class PhononInspect:
+    def __init__(self, fn):
+        import h5py
+        import matplotlib.pyplot as plt
+        from Cinema.Interface.units import THz, hbar
+        hf = h5py.File(fn,'r')
+        self.en=hf['frequency'][()]*THz*2*np.pi*hbar
+        self.w=hf['weight'][()]
+        self.phonnum = self.en.shape[0]
+        for i in range(6):
+            h, edges = np.histogram(self.en[:, i], bins=100, range=[0, self.en.max()], weights=self.w.reshape(-1), density=True)
+            plt.plot(np.diff(edges)*0.5+edges[:-1], h)
+        plt.show()
+        print(self.en[:100,:])
+        hf.close()
 
-calc.savePowerSqw(output, maxQ, freSize, QSize)
+    def acoustic(self):
+        pass
+
+
+pi = PhononInspect('mesh.hdf5')
+num_loop = 100
+phonEachLoop = pi.phonnum//num_loop
+
+
+for i in range(num_loop):
+    # calc = MeshCell(findData('Al/mesh.hdf5'), findData('Al/cell.json'), kt)
+    calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, slice(phonEachLoop*i,phonEachLoop*(i+1)))
+    calc.configHistgrame(maxQ, freSize, QSize)
+    calc.savePowerSqw(output)
 
 
