@@ -19,6 +19,8 @@
 ################################################################################
 
 import numpy as np
+
+from Cinema.Prompt.geo import Transformation3D
 from .solid import Trapezoid, Tube, Box
 from .geo import Volume, Transformation3D
 from copy import deepcopy
@@ -57,10 +59,12 @@ class DiskChopper(SurfaceProcess):
 
 class Anchor:
     
-    def __init__(self, refFrame = Transformation3D(), marker = '') -> None:
+    def __init__(self, refFrame = None, marker = '') -> None:
         '''
         An anchor is a point with spacial coordinates and reference frame.
         '''
+        if refFrame == None:
+            refFrame = Transformation3D()
         self.refFrame = refFrame
         self.marker = marker
 
@@ -69,6 +73,16 @@ class Anchor:
 
     def setRefFrame(self, refFrame : Transformation3D):
         self.refFrame = deepcopy(refFrame)
+
+    def getTrs2Transf(self, transf: Transformation3D):
+        '''
+        Get transformation from Anchor reference frame to transf.
+        '''
+        return self.refFrame.inv() * transf 
+    # fixme: add inverse of Transformation 
+    # fixme: add refresh of all members' anchor
+    # def transform(self, frame: Transformation3D):
+    #     self.refFrame = self.refFrame * frame
 
 class Array(Anchor):
 
@@ -83,13 +97,26 @@ class Array(Anchor):
     def get_member_abs_frame(self, anchor : Anchor) -> Transformation3D:
         return self.refFrame * anchor.refFrame
     
+    def setAnchor(self, refFrame : Transformation3D):
+        self.refFrame = refFrame
+        for mem in self.members:
+            mem.refFrame = self.refFrame * mem.refFrame
+    # def refresh(self):
+    #     for i_anc in self.members:
+    #         i_anc.refFrame = self.refFrame * i_anc.refFrame
+        
+    # def transform(self, frame: Transformation3D):
+    #     super().transform(frame)
+    #     self.refresh()
+
+
 class EntityArray(Array):
 
     def __init__(self, element, 
                  array_size = None, spacings = None, refFrame = Transformation3D(), marker = 'Arr') -> None:
         super().__init__(refFrame, marker)
-        if isinstance(element, EntityArray):
-            element.refFrame = refFrame * element.refFrame # making all EntityArray refFrame as absolute frame
+        # if isinstance(element, EntityArray):
+        #     element.refFrame = refFrame * element.refFrame # making all EntityArray refFrame as absolute frame
         self.element = element
         if hasattr(self.element, 'marker'):
             self.marker = self.marker + '|' + self.element.marker
@@ -99,14 +126,23 @@ class EntityArray(Array):
         self.eleAncs = []
         # self.__check()
 
+    # @property
+    # def absTransformation(self):
+    #     return self
+
     def __check(self):
         if not isinstance(self.element, Volume):
             raise TypeError("Object type f{self.element.__class__.__name__} do not match type 'Volume'!")
-    
+        
+    def setAnchor(self, refFrame : Transformation3D):
+        super().setAnchor(refFrame)
+        for eleAnc in self.eleAncs:
+            eleAnc[1].refFrame = self.refFrame * eleAnc[1].refFrame
+
     def make(self):
         if self.size == None:
             anc = Anchor()
-            anc.setRefFrame(self.element.refFrame)
+            anc.setRefFrame(self.refFrame * self.element.refFrame)
             self.eleAncs.append((self.element, anc))
             self.members.append(anc)
         else:
@@ -130,40 +166,115 @@ class EntityArray(Array):
         self.setMemberMarker()
 
     def repeat(self, direction = [0, 0, 1], gap = 1000., num = 1):
-        origin_transf = deepcopy(self.element.refFrame)
-        for i_num in np.arange(1, num):
-            gap = gap * i_num
-            transf = Transformation3D(direction[0] * gap, direction[1] * gap, direction[2] * gap) * origin_transf 
-            self.create(transf)
+        new_anchors = []
+        for i_anc in self.members:
+            origin_transf = deepcopy(i_anc.refFrame)
+            for i_num in np.arange(1, num):
+                gap = gap * i_num
+                new_anc = Transformation3D(direction[0] * gap, direction[1] * gap, direction[2] * gap) * origin_transf 
+                new_anchors.append(new_anc)
+        for i_new_anc in new_anchors:
+            self.create(i_new_anc)
 
-    def reflect(self, plane = 'YZ'):
+    def reflect(self, plane = 'XY', plane_location = 0.):
         new_anchors = []
         for i_anc in self.members:
             transl = deepcopy(i_anc.refFrame.translation)
-            transl[0] = - transl[0]
+            matrix = i_anc.refFrame.sciRotMatrix
+            if plane == 'YZ':
+                transl[0] = 2 * plane_location - transl[0]
+                # rotvec[0] = - rotvec[0]
+            elif plane == 'XY':
+                transl[2] = 2 * plane_location - transl[2]
+                refMatrix = scipyRot.identity().as_matrix() - 2 * np.outer(np.array([0,0,-1]), np.array([0,0,-1]))
+                # rotvec[2] = - rotvec[2]
+            elif plane == 'XZ':
+                transl[1] = 2 * plane_location - transl[1]
+                # rotvec[1] = - rotvec[1]
+            else:
+                raise ValueError(f'plane should be XY, YZ or XZ, but got {plane}.')
+            # if plane == 'YZ':
+            #     transl[0] = 2 * plane_location - transl[0]
+            #     rotvec[0] = - rotvec[0]
+            # elif plane == 'XY':
+            #     transl[2] = 2 * plane_location - transl[2]
+            #     rotvec[2] = - rotvec[2]
+            # elif plane == 'XZ':
+            #     transl[1] = 2 * plane_location - transl[1]
+            #     rotvec[1] = - rotvec[1]
+            # else:
+            #     raise ValueError(f'plane should be XY, YZ or XZ, but got {plane}.')
             new_anc = Anchor()
             new_anc.setRefFrame(Transformation3D(transl[0], transl[1], transl[2]))
-            euler_rot = i_anc.refFrame.sciRot.as_euler('xyz', True)
-            euler_rot[1] = - euler_rot[1]
-            new_anc.refFrame.applyRotxyz(euler_rot[0], euler_rot[1], euler_rot[2], True)
+            yy = matrix * refMatrix
+            new_anc.refFrame.applyTrans(matrix.dot(refMatrix))
             new_anchors.append(new_anc)
         for i_new_anc in new_anchors:
             self.create(i_new_anc.refFrame)
             
 
-    def make_plane(self, cur_h, cur_v):
+    def rotate_z(self, x, y, angle):
+        self.setAnchor(Transformation3D(x, y, 0).applyRotZ(angle) * self.refFrame)
+
+
+    def make_rotate_z(self, x, y, angle, num):
+        for mem in self.members:
+            # trs2transf = ele[1].refFrame.getTransformationTo(origin)
+            new_anchors = []
+            for i_num in np.arange(1, num + 1):
+                temp_anc = Anchor()
+                transl = mem.refFrame.translation
+                angle_in = angle * i_num / 180 * np.pi
+                temp_anc.refFrame = Transformation3D().applyRotZ(angle, degrees=False)
+                v = transl
+                u = np.array([x,y,1.])
+                v_para = (v * u) * u
+                vt = v - v_para
+                asin = np.sin(angle_in)
+                acons = np.cos(angle_in)
+                transl = v_para + np.sin(angle_in) * np.cross(u, vt) + np.cos(angle_in) * vt
+                # transl = np.cos(angle) * v + (1-np.cos(angle)) * (v.dot(u)) * u + np.sin(angle) * np.cross(u, (v-(v*u)*u))
+                # transl = transl.dot(temp_anc.refFrame.sciRotMatrix)
+                # temp_anc.refFrame.applyTrans(ele[1].refFrame.sciRotMatrix)
+                # temp_anc.refFrame.sciRotMatrix = temp_anc.refFrame.sciRotMatrix.dot(transl)
+                skew_u = [[0, - u[2], u[1]],
+                          [u[2], 0, - u[0]],
+                          [- u[1], u[0], 0]]
+                skew_u = np.array(skew_u)
+                transl_mat = np.cos(angle_in) * scipyRot.identity().as_matrix() + (1-np.cos(angle_in)) * np.outer(u, u) + np.sin(angle_in) * skew_u
+                new_anc = Anchor()
+                new_anc.refFrame = Transformation3D(transl[0], transl[1], transl[2])
+                new_anc.refFrame.applyTrans(transl_mat.dot(mem.refFrame.sciRotMatrix))
+                new_anchors.append(new_anc)
+        for i_new_anc in new_anchors:
+            self.create(i_new_anc.refFrame)
+        
+    # def reflect_z(self, z):
+        
+
+
+    def make_plane(self, cur_h, cur_v, points):
         '''
         Make a plane double curve analyser component.
         '''
-        loc_x, loc_y = self.set_plane_location()
-        # self.anchor = Volume("Analyser", Box(loc_x[-1], loc_y[-1], 20))
-        for ix in loc_x:
-            for iy in loc_y:
-                marker = f'{self.element}_r{ix}c{iy}'
+        ir = 0
+        ys = [row[0][1] for row in points]
+        height = max(ys)
+        for row in points:
+            ir += 1
+            xs = [point[0] for point in row]
+            length = max(xs)
+        # self.anchor = Volume("Analyser", Box(length, height, 20))
+            ic = 0
+            for col in row:
+                ic += 1
+                ix = col[0]
+                iy = col[1]
+                marker = f'{self.element}_r{ir}c{ic}'
                 vol = Volume(f'{marker}', self.element.solid, self.element.matCfg, self.element.surfaceCfg)
-                # if abs((iy - loc_y[-1] * 0.5) / cur_v) > 1.:
+                # if abs((iy - height * 0.5) / cur_v) > 1.:
                 #     raise ValueError(f'Too small cur_v: {cur_v}')
-                # if abs((ix - loc_x[-1] * 0.5) / cur_h) > 1.:
+                # if abs((ix - length * 0.5) / cur_h) > 1.:
                 #     raise ValueError(f'Too small cur_v: {cur_h}')
                 if cur_h == 0 and cur_v == 0:
                     # print('Using plane array!')
@@ -173,31 +284,51 @@ class EntityArray(Array):
                 elif cur_h == 0:
                     # print('Using vertical single curved surface')
                     tilt_h = 0
-                    tilt_v = - np.arcsin((iy - loc_y[-1] * 0.5) / cur_v) * np.rad2deg(1)
+                    tilt_v = - np.arcsin((iy - height * 0.5) / cur_v) * np.rad2deg(1)
                 elif cur_v == 0:
                     # print('Using horizontal single curved surface')
-                    tilt_h = np.arcsin((ix - loc_x[-1] * 0.5) / cur_h) * np.rad2deg(1)
+                    tilt_h = np.arcsin((ix - length * 0.5) / cur_h) * np.rad2deg(1)
                     tilt_v = 0
                 else:
                     # print('Using double curved surface')
-                    tilt_h = np.arcsin((ix - loc_x[-1] * 0.5) / cur_h) * np.rad2deg(1)
-                    tilt_v = - np.arcsin((iy - loc_y[-1] * 0.5) / cur_v) * np.rad2deg(1)
-                transf = Transformation3D(ix - loc_x[-1] * 0.5, iy - loc_y[-1] * 0.5, 0,).applyRotxyz(tilt_v, tilt_h, 0)
+                    tilt_h = np.arcsin((ix - length * 0.5) / cur_h) * np.rad2deg(1)
+                    tilt_v = - np.arcsin((iy - height * 0.5) / cur_v) * np.rad2deg(1)
+                transf = Transformation3D(ix - length * 0.5, iy - height * 0.5, 0,).applyRotxyz(tilt_v, tilt_h, 0)
                 anc = Anchor()
                 anc.setRefFrame(transf)
                 anc.setMarker(f'{marker}')
                 self.eleAncs.append((vol,anc))
                 self.members.append(anc)
                 # self.parent.placeChild(f"Arr_{marker}", vol, 
-                #                        self.transformation * Transformation3D(ix - loc_x[-1] * 0.5, iy - loc_y[-1] * 0.5, 0,).applyRotxyz(tilt_v, tilt_h, 0))
+                #                        self.transformation * Transformation3D(ix - length * 0.5, iy - loc_y[-1] * 0.5, 0,).applyRotxyz(tilt_v, tilt_h, 0))
         # self.parent.placeChild('Phy_Analyser', self.anchor, Transformation3D(500,0,17100,90,-90,-90))
                 # print(f'Transformation is {Transformation3D(ix, iy, 18000, 0, 90, 0)}')
+
+    def make_trape_plane(self, upper_l, lower_l, height, cur_h, cur_v):
+        points = self.set_trape_position(upper_l, lower_l, height)
+        self.make_plane(cur_h, cur_v, points)
 
     def set_plane_location(self):
         xx = np.arange(0., self.size[0]) * self.spacing[0]
         yy = np.arange(0., self.size[1]) * self.spacing[1]
         return xx, yy
     
+    def set_trape_position(self, upper_l, lower_l, height):
+        positions = []
+        num_y = height // self.spacing[1]
+        for row in np.arange(num_y):
+            height_r = row * self.spacing[1]
+            length_r = height_r / height * ((lower_l - upper_l)) + upper_l
+            num_x = length_r // self.spacing[0]
+            origin_x = (length_r - upper_l) * 0.5 // self.spacing[0]
+            xx = np.arange(- origin_x, num_x) * self.spacing[0]
+            positions_r = []
+            for x in xx:
+                y = row * self.spacing[1]
+                positions_r.append((x, y))
+            positions.append(positions_r)
+        return positions
+
     # def set_global_transf(self, local_transf : Transformation3D):
     #     # raise ValueError('Stop')
     #     local_rot = self.rotation * local_transf.sciRot 

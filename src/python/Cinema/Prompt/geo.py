@@ -49,6 +49,10 @@ class Transformation3D:
         self.sciRot = scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees)
         self.translation = np.array([x, y, z])
         self.sciRotMatrix = self.sciRot.as_matrix()
+    
+    @property
+    def euler(self):
+        return self.sciRot.as_euler('xyz', True)
 
     def __deepcopy__(self, memo):
         copy = type(self)()
@@ -58,6 +62,7 @@ class Transformation3D:
         copy.sciRot = scipyRot.from_matrix(self.sciRotMatrix)
         copy.py2cppConv()
         copy.translation = self.translation
+        copy.sciRotMatrix = self.sciRotMatrix
         return copy
 
     def __del__(self):
@@ -67,12 +72,23 @@ class Transformation3D:
         '''
         Transformation following another parent transformation.
         '''
-        rot = self.getRot() * other.getRot()
-        transl = self.translation + self.getRot().apply(other.getTranslation()) 
+        rot = self.getRotMatrix().dot(other.getRotMatrix())
+        transl = self.translation + other.getTranslation().dot(self.getRotMatrix())
         transf = Transformation3D(transl[0], transl[1], transl[2])
-        transf.sciRot = rot
-        transf.setSciRot()
+        transf.sciRot = self.sciRot * other.sciRot
+        transf.applyTrans(rot)
         return transf
+
+    def inv(self):
+        inversion = type(self)()
+        inversion.translation = - self.translation
+        inversion.cobj = _pt_Transformation3D_newfromdata(inversion.translation[0], 
+                                                          inversion.translation[1], 
+                                                          inversion.translation[2], 
+                                                          0, 0, 0, 1.,1.,1.)
+        inversion.sciRot = self.sciRot.inv()
+        inversion.py2cppConv()
+        return inversion
 
     def py2cppConv(self):
         mat = self.sciRot.as_matrix()
@@ -83,6 +99,7 @@ class Transformation3D:
                                           mat[2,0], mat[2,1], mat[2,2])
         
     def applyRotAxis(self, angle, axis, degrees=True):
+        axis = np.array(axis)
         rot = scipyRot.from_rotvec(angle * axis/np.linalg.norm(axis), degrees=degrees)
         self.sciRot *= rot
         self.py2cppConv()
@@ -112,20 +129,32 @@ class Transformation3D:
         self.py2cppConv()
         return self
 
+    def applyTrans(self, refMatrix):
+        # self.sciRotMatrix = self.sciRot.as_matrix()
+        self.sciRotMatrix = mat = self.sciRotMatrix.dot(refMatrix)
+        _pt_Transformlation3D_setRotation(self.cobj, mat[0,0], mat[0,1], mat[0,2],
+                                          mat[1,0], mat[1,1], mat[1,2],
+                                          mat[2,0], mat[2,1], mat[2,2])
+
     def setRotByAlignement(self, rotated, original) :  # rotated, original are with shape (N, 3)
         self.sciRot, rssd = scipyRot.align_vectors(original, rotated)
         self.py2cppConv()
         return self
 
-    def setSciRot(self):
+    def setSciRot(self, sciRot):
+        self.sciRot = deepcopy(sciRot)
         self.py2cppConv()
         return self
     
-    def getRot(self):
-        return self.sciRot
+    def getRotMatrix(self):
+        return self.sciRotMatrix
         
     def getTranslation(self):
         return self.translation
+
+    def getTransformationTo(self, other):
+        return self.inv() * other
+
 
     #  a wrapper of scipy.spatial.transform.Rotation    
     def setRot(self, rot_z=0., rot_new_x=0., rot_new_z=0., degrees = True):
@@ -237,7 +266,10 @@ class Volume:
         print(transf.sciRot.as_matrix())
         for i_mem in array.eleAncs:
             if isinstance(i_mem[0], Volume):
-                self.placeChild(f'phyvol_{marker}_{i_mem[0].volname}', i_mem[0], transf * i_mem[1].refFrame)
+                transf_t = transf * i_mem[1].refFrame
+                # transf_t.sciRot = deepcopy(transf.sciRot)
+                # transf_t.applyTrans(i_mem[1].refFrame.sciRotMatrix)
+                self.placeChild(f'phyvol_{marker}_{i_mem[0].volname}', i_mem[0], transf_t)
             else:
                 count = count + 1
                 self.placeArray(i_mem[0], i_mem[1].refFrame, i_mem[1].marker, count = count)
