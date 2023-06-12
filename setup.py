@@ -1,3 +1,8 @@
+from distutils import extension
+from glob import glob
+import imp
+import pathlib
+from pkg_resources import parse_requirements
 from setuptools import setup, find_packages
 
 # https://github.com/pybind/cmake_example/blob/master/setup.py
@@ -9,6 +14,7 @@ import subprocess
 import sys
 
 from setuptools import Extension, setup
+from distutils.command.build import build as _build
 from setuptools.command.build_ext import build_ext
 
 # Convert distutils Windows platform specifiers to CMake -A arguments
@@ -23,16 +29,24 @@ PLAT_TO_CMAKE = {
 # The name must be the _single_ output extension from the CMake build.
 # If you need multiple extensions, see scikit-build.
 class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir='', git=None, build_args_extra=''):
+    def __init__(self, name, sourcedir='', git=None, branch='master', build_args_extra=''):
         Extension.__init__(self, name, sources=[])
         self.build_args_extra = build_args_extra
+        self.branch = branch
         if git:
             self.git = git
         else:
             self.sourcedir = os.path.abspath(sourcedir)
 
 class CMakeBuild(build_ext):
-    def build_extension(self, ext):
+
+    def run(self):     
+        for ext in self.extensions:
+            self.build_cmake_extension(ext)
+        extensions = ['libprompt_core']
+        self.copy_precompiled_files(extensions)
+
+    def build_cmake_extension(self, ext):
         temp = vars(ext)
         for item in temp:
             print(item, ':', temp[item])
@@ -41,88 +55,111 @@ class CMakeBuild(build_ext):
         if not os.path.exists(build_temp):
             os.makedirs(build_temp)
             
-
         build_temp = os.path.abspath(build_temp)
         print(f'build_temp {build_temp}')
 
         numcpu = os.cpu_count()//2
-
-        try:
-
-            if hasattr(ext,'git'):
-                subprocess.check_call(['git', 'clone', ext.git, 'src'] , cwd=build_temp)
-                subprocess.check_call(['mkdir', 'build'], cwd=build_temp)
-                subprocess.check_call(['cmake', '-DCMAKE_INSTALL_PREFIX='+build_temp+'/install' , ext.build_args_extra, '../src'] , cwd=build_temp+'/build')
-                subprocess.check_call(['make', '-j'+str(numcpu)], cwd=build_temp+'/build' )
-                subprocess.check_call(['make', 'install'] , cwd=build_temp+'/build')
-                os.environ.setdefault(ext.name, build_temp+'/install')
-                print(f'{ext.name} is install into {build_temp+"/install"}')
-
-            else:
-                extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-
-                # required for auto-detection & inclusion of auxiliary "native" libs
-                if not extdir.endswith(os.path.sep):
-                    extdir += os.path.sep
-
-                subprocess.check_call(['mkdir', 'install'] , cwd=build_temp)
-                subprocess.check_call(["cmake", ext.sourcedir] , cwd=build_temp+'/install')
-                subprocess.check_call(['make', '-j'+str(numcpu)] , cwd=build_temp+'/install')
                 
-        except:
-            shutil.rmtree(build_temp)
+        if hasattr(ext,'git'):
+            # avoid repeatively git clone as gitlab connection not being stable
+            if not os.path.exists(os.path.join(build_temp, 'src')):
+                subprocess.check_call(['git', 'clone', '-b', ext.branch, ext.git, 'src'] , cwd=build_temp)
+            if not os.path.exists(os.path.join(build_temp, 'build')):
+                subprocess.check_call(['mkdir', 'build'], cwd=build_temp)
+            subprocess.check_call(['cmake', '-DCMAKE_INSTALL_PREFIX='+build_temp+'/install' , ext.build_args_extra, '../src'] , cwd=build_temp+'/build')
+            subprocess.check_call(['make', '-j'+str(numcpu)], cwd=build_temp+'/build' )
+            subprocess.check_call(['make', 'install'] , cwd=build_temp+'/build')
+            os.environ.setdefault(ext.name, build_temp+'/install')
+            print(f'{ext.name} is install into {build_temp+"/install"}')
 
+        else:
+            extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+
+            # required for auto-detection & inclusion of auxiliary "native" libs
+            if not extdir.endswith(os.path.sep):
+                extdir += os.path.sep
+
+            # #return current python3 devel directory
+            # cmake_config = f"-DPYTHON_INCLUDE_DIR=$(python -c 'from distutils.sysconfig import get_python_inc; print(get_python_inc())') "
+            # #cmake findPYTHON seems not require PYTHON_LIBRARY, see https://github.com/pypa/cibuildwheel/issues/639
+            # cmake_config += f"-DPYTHON_LIBRARY='/usr/lib64/'"
+            if not os.path.exists(os.path.join(build_temp, 'install')):
+                subprocess.check_call(['mkdir', 'install'] , cwd=build_temp)
+            subprocess.check_call(["cmake",  ext.sourcedir] , cwd=build_temp+'/install')
+            subprocess.check_call(['make', '-j'+str(numcpu)] , cwd=build_temp+'/install')
+                
+    def copy_precompiled_files(self, file_list, orig = None):
+        
+        import os
+        import shutil
+        from setuptools import find_packages
+
+        if not orig:
+            orig = self.build_temp
+
+        pkg = find_packages(where = os.path.join("src", "python"))[0]
+
+        for dir, subdirs, filenames in os.walk(os.path.join(orig)):
+            for files in filenames:
+                if files.split('.')[0] in file_list:
+                    dest = os.path.join(os.path.abspath('.'), self.build_lib, pkg, files)
+                    shutil.copyfile(os.path.join(dir, files), dest)
+
+class Recorder(_build):
+    def run(self):
+        self.record_commit_hash()
+        super().run()
+
+    def record_commit_hash(self):
+        import subprocess
+        hash_value = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+        with open('hash.txt', 'w') as f:
+            f.write(hash_value)
 
 #template from https://zhuanlan.zhihu.com/p/276461821
 setup(
-    python_requires='>=3.8',
-
-    classifiers = [
-        # 发展时期,常见的如下
-        #   3 - Alpha
-        #   4 - Beta
-        #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
-
-        # 开发的目标用户
-        'Intended Audience :: Developers',
-
-        # 属于什么类型
-        'Topic :: Software Development :: Build Tools',
-
-        # 许可证信息
-        'License :: OSI Approved :: MIT License',
-
-        # 目标 Python 版本
-        'Programming Language :: Python :: 3.8',
-    ],
-    name="Ncinema",
-    version="0.1",
-    author="x.x. cai",
-    author_email="wongbingming@163.com",
-    description="China Spallation Neutron Source Monte Carlo System",
-    url="",
     
-    packages=find_packages(
-        where = os.path.join("src", "python")),
+    # #Packaging Prompt and supporting packages
+    packages=['Cinema', 'Cinema.Interface', 'Cinema.Prompt', 'Cinema.Prompt.Math'],
 
-    package_dir=dict(
-        zip(
-            find_packages(where = os.path.join("src", "python")), 
-            [
-                os.path.join('.','src','python') + os.path.sep + str(i_dir).replace('.', os.path.sep) \
-                for i_dir in find_packages(where = os.path.join("src", "python"))
+    package_dir={
+        'Cinema': os.path.join('.','src','python') + os.path.sep + 'Cinema',
+        'Cinema.Interface': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Interface'),
+        'Cinema.Prompt': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt'),
+        'Cinema.Prompt.Math': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt', 'Math'),
+        },
+
+    # #Packaging all python packages.
+    # packages=find_packages(
+    #     where = os.path.join("src", "python")),
+    
+    # package_dir=dict(
+    #     zip(
+    #         find_packages(where = os.path.join("src", "python")), 
+    #         [
+    #             os.path.join('.','src','python') + os.path.sep + str(i_dir).replace('.', os.path.sep) \
+    #             for i_dir in find_packages(where = os.path.join("src", "python"))
                 
-                ]
-            )
-        ),
+    #             ]
+    #         )
+    #     ),
     
+    scripts=[os.path.join('.', 'scripts', 'prompt') ],
+
    #
    #  # 安装过程中，需要安装的静态文件，如配置文件、service文件、图片等
-   #  data_files=[
-   #      ('', ['conf/*.conf']),
-   #      ('/usr/lib/systemd/system/', ['bin/*.service']),
-   #             ],
+    # #data_files deprecated
+    # data_files=[
+    #     ('/Cinema/cinematest/cxxtests/unittest', glob('./src/cxxtests/unittest/*', recursive=True)),
+    #     ('/Cinema/cinematest', glob('./src/pythontests/*', recursive=True)),
+    #     ('/Cinema/cinematest/cxxtests', glob('./src/cxxtests/*.*', recursive=True)),
+    #            ],
+    data_files=[
+        ('/Cinema/gdml', glob('./gdml/guide*')),
+        ('/Cinema/ncmat', glob('./ncmat/*')),
+        ('/Cinema/ncmat', glob('./data_ncrystal/data/*')),
+        ('/Cinema', glob('./hash*')),
+        ],
    #
     # 希望被打包的文件
     # package_data={
@@ -133,8 +170,13 @@ setup(
    #      'bandwidth_reporter':['*.txt']
    #             }
    #
-   #     # 表明当前模块依赖哪些包，若环境中没有，则会从pypi中下载安装
-   #  install_requires=['docutils>=0.3'],
+    # 表明当前模块依赖哪些包，若环境中没有，则会从pypi中下载安装
+    # install_requires=[
+    #     # 'pyvista>=0.34.1',
+    #     # 'pyvistaqt>=0.9.0',
+    #     # 'matplotlib',
+    #     # 'pixiusssp @ https://gitlab.com/api/v4/projects/36093890/repository/archive.tar.gz',
+    # ],
    #
    #  # setup.py 本身要依赖的包，这通常是为一些setuptools的插件准备的配置
    #  # 这里列出的包，不会自动安装。
@@ -149,17 +191,19 @@ setup(
    #
    #  # 用于安装setup_requires或tests_require里的软件包
    #  # 这些信息会写入egg的 metadata 信息中
-   #  dependency_links=[
-   #      "http://example2.com/p/foobar-1.0.tar.gz",
-   #  ],
+    # #warnings : dependency_links support is deprecated
+    # dependency_links=[
+    #     'https://gitlab.com/xxcai1/pixiusssp.git',
+    # ],
    #
    #  # install_requires 在安装模块时会自动安装依赖包
    #  # 而 extras_require 不会，这里仅表示该模块会依赖这些包
    #  # 但是这些包通常不会使用到，只有当你深度使用模块时，才会用到，这里需要你手动安装
-   #  extras_require={
-   #      'PDF':  ["ReportLab>=1.2", "RXP"],
-   #      'reST': ["docutils>=0.3"],
-   #  }
+    extras_require={
+        'core':  ['mcpl'],
+        'basic': ['matplotlib', 'mcpl'],
+        'full': ['pyvista>=0.34.1', 'pyvistaqt>=0.9.0', 'matplotlib', 'vtk<=9.1.0', 'mcpl'],
+    },
    #
    # #  关于 install_requires， 有以下五种常用的表示方法：
    # # 1. 'argparse'，只包含包名。 这种形式只检查包的存在性，不检查版本。 方便，但不利于控制风险。
@@ -181,10 +225,10 @@ setup(
    #  # 会生成 如 /usr/bin/foo.sh 和 如 /usr/bin/bar.py
    #  scripts=['bin/foo.sh', 'bar.py']
 
-    ext_modules=[CMakeExtension(name='NCrystal_ext', git='https://gitlab.com/xxcai1/ncrystal.git'),
-                 CMakeExtension(name='Vecgeom_ext', git='https://gitlab.com/xxcai1/VecGeom.git', build_args_extra='-DGDML=On -DUSE_NAVINDEX=On'),
-                 CMakeExtension(name='cinema', sourcedir='')],
-    cmdclass={"build_ncrystal": CMakeBuild,
-            "build_vecgeo": CMakeBuild,
-            "build_cinema": CMakeBuild, },
+    ext_modules=[CMakeExtension(name='cinema', sourcedir='')],
+
+    cmdclass={
+        'build_ext': CMakeBuild,
+        'build': Recorder,
+        },
 )
