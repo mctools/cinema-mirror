@@ -28,7 +28,7 @@ set(NCrystal_DIR  "$ENV{NCrystal_ext}/lib/cmake")
 find_package(NCrystal 3.0.0 REQUIRED)
 
 # MCPL
-set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mcpl/install/")
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mcpl/install/lib/cmake/MCPL/")
 find_package(MCPL REQUIRED)
 
 if (NOT CMAKE_BUILD_TYPE)
