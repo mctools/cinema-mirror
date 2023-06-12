@@ -9,17 +9,19 @@ while getopts "hab:" option
      in
       h) echo "-a               gitee"
          echo "-b               customized git repo"
+         echo "-c               xxc"
          echo "other argument   gitlab"
          echo "no input         default (gitlab)"
          return 0;;
       a) PREFIX="https://ziyipan:cinema2022@gitee.com/ziyipan";;
       b) echo "Using repository from: "$1
          PREFIX=$1;;
-      *) PREFIX="https://gitlab.com/xxcai1";
+      c) PREFIX="https://gitlab.com/xxcai1";;
+      *) PREFIX="https://gitlab.com/cinema-developers";
     esac 
 done
 if (( $OPTIND == 1 )); then
-  PREFIX="https://gitlab.com/xxcai1"
+  PREFIX="https://gitlab.com/cinema-developers"
 fi 
 
 chmod +x make_whl_main.sh

@@ -23,6 +23,8 @@ make install
 
 
 # --install required development packages
+yum -y install centos-release-scl-rh
+yes | yum install rh-python38-python-devel
 yes | yum install python3-devel
 yes | yum install fftw-devel
 

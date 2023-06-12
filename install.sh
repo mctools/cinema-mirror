@@ -6,13 +6,12 @@ while getopts ":f" option
     case "${option}"
      in
       f) echo "Running: "${PREFIX};;
-      *) PREFIX="https://gitlab.com/xxcai1";;
+      *) PREFIX="https://gitlab.com/cinema-developers";;
     esac
 done
 if (( $OPTIND == 1 )); then
-  PREFIX="https://gitlab.com/xxcai1"
+  PREFIX="https://gitlab.com/cinema-developers"
 fi 
-
 NUMCPU=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
 
 #remove previously sourced env
@@ -32,7 +31,6 @@ fi
 unset cinema_prunepath
 
 export CINEMAPATH="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 #install ncrystal
 
 if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
@@ -143,7 +141,7 @@ fi
 if [ ! -d $CINEMAPATH/cinemabin ]; then
   mkdir $CINEMAPATH/cinemabin
   cd $CINEMAPATH/cinemabin
-  cmake ..
+  cmake .. 
   make -j${NUMCPU}
   cd -
 fi
@@ -167,10 +165,10 @@ else
     python3 -m venv $CINEMAPATH/cinemavirenv
     . $CINEMAPATH/cinemavirenv/bin/activate
     if [[ $DOCKER == false ]]; then
-      pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r $CINEMAPATH/requirement
+      pip install -r $CINEMAPATH/requirement
     else
       echo "Python with Docker enviorment"
-      pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r $CINEMAPATH/requirement.docker
+      pip install -r $CINEMAPATH/requirement
     fi
   fi
 fi
