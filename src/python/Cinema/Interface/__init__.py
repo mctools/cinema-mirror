@@ -24,6 +24,7 @@ import ctypes
 import numpy as np
 import glob
 import os
+import pathlib
 
 type_sizet, type_sizetp = (ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t))
 type_bool = ctypes.c_bool
@@ -51,9 +52,13 @@ type_npint641d=np.ctypeslib.ndpointer(dtype=np.int64,ndim=1,flags='C_CONTIGUOUS'
 
 def _getPromptLib():
     _ptpath = os.getenv('CINEMAPATH')
-    if _ptpath is None:
-        raise IOError('CINEMAPATH enviroment is not set')
-    libfile = glob.glob(_ptpath +'/cinemabin/src/cxx/libprompt_core.so')[0]
+    if _ptpath is not None:
+        libfile = glob.glob(_ptpath +'/cinemabin/src/cxx/libprompt_core.so')[0]
+    else:
+        _t = pathlib.Path(__file__).resolve().parent.parent
+        _ptpath = str(_t)
+        libfile= str(_t.joinpath('libprompt_core.so'))
+        
     return ctypes.CDLL(libfile), _ptpath
 
 _taklib, _ptpath = _getPromptLib()
