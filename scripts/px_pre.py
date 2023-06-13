@@ -180,12 +180,12 @@ if rundft and not os.path.isfile('FORCE_SETS'):
 #band
 pcor, label = getPath(path)
 logger.info(f'band {" ".join(map(str,pcor))}; {" ".join(map(str,label))}')
-if os.system(f'phonopy --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" --hdf5 --eigvecs {plotflag} -s'):
+if os.system(f'phonopy --fc-symmetry  --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" --hdf5 --eigvecs {plotflag} -s'):
     logger.info(f'band fail')
     raise IOError("band fail")
 
 #mesh
-if os.system(f'phonopy --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym --pdos AUTO  {plotflag} -s'):
+if os.system(f'phonopy --fc-symmetry --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym --pdos AUTO  {plotflag} -s'):
     logger.info(f'dos and mesh fail')
     raise IOError("dos and mesh fail")
 

@@ -90,6 +90,7 @@ class CalcBase:
             self.fullMess=True
         self.qpoint=np.dot(qpoint, self.lattice_reci)
         self.en=energy
+        print(f'negtive energy phonon {len(self.en[self.en<0])}')
         self.en[self.en<0] = -self.en[self.en<0] #fixme: make sure no negtive energy
         self.maxEn = self.en.max()
         self.eigv=eigv
@@ -97,8 +98,8 @@ class CalcBase:
         self.temperature=temperature
         self.kt=temperature*boltzmann
         self.detlbal=self.nplus1_down(-self.en)
-        self.msd=self.isoMsd() #fixme: calmsd method returns unequal msd even for cubic lattice, bug to be fixed use isotropic model for now.
-        print('MSD is ' , self.msd)
+        self.msd_iso=self.isoMsd() #fixme: calmsd method returns unequal msd even for cubic lattice, bug to be fixed use isotropic model for now.
+        print('MSD is ' , self.msd_iso)
 
         # it should move to hight
         # if not math.isclose(self.qweight.sum(), 1.0, rel_tol=1e-10):
@@ -119,13 +120,13 @@ class CalcBase:
         return n 
     
     #<n+1>, omega >0, downscattering, good for lowTemp materials where phonons are fewer.
-    def nplus1_down(self, en): #fixme: nan
+    def nplus1_down(self, en): 
         if (en>0.).any():
             print(en)
             raise RuntimeError('energy for down scattering should be less than zero')
         return self.bose(-en)+1
 
-    def oneplus2n_up(self, en):#fixme: nan
+    def oneplus2n_up(self, en):
         if (en<0.).any():
             raise RuntimeError('energy for up scattering should be greater than zero')
         return 2*self.bose(en)+1
@@ -133,7 +134,7 @@ class CalcBase:
 
     def calmsd2(self):
         msd=np.zeros([3,3])
-        oneplus2n=self.oneplus2n(self.en)
+        oneplus2n=self.oneplus2n_up(self.en)
         atom=0
         for i in range(self.numQpoint):
           for mode in range(self.nAtom*3):
@@ -143,13 +144,95 @@ class CalcBase:
         msd = msd*hbar*hbar*0.5/self.mass[atom]
         return msd
 
+    def isoMsd(self):
+        en, rho = self.dos()
+        kernel = self.oneplus2n_up(en)/en*rho
+        # coth = 1./ (np.tanh(en/(2*self.kt) ) * en )
+        return np.trapz(kernel, en)*0.5*hbar*hbar/self.mass[0]
+
     def calmsd(self):
+        msd=np.zeros([3, self.nAtom])
+        print(f'self.qweight.sum {self.qweight.sum()}, {self.eigv.shape}')
+        kernel=(self.oneplus2n_up(self.en)/self.en).T*self.qweight
+        kernel = kernel.T
+
+        # oneplus2n.shape (132650, 6)
+        # self.eigv.shape (132650, 6, 2, 3)
+
+        fixfac = 0.5*hbar*hbar/self.mass[0]
+        cutoff = 0.002
+        print(f'num of phonon below threshold {len(self.en[self.en<cutoff])}')
+
+        for i in range(132650):
+            for j in range(6):
+                # enj = np.dot((self.eigv[i,j,0]), [0,0,1])**2 
+                if self.en[i,j]<cutoff:
+                    continue
+                enj = self.eigv[i,j,0,2]**2 
+                enj = np.abs(enj)
+                msd [0,0] += enj * kernel[i, j] * fixfac
+                msd [1,0] += self.qweight[i]
+                msd [2,0] += enj /132650
+
+
+                # for a in range(2):
+
+        # msd*=0.5*hbar*hbar/self.mass
+        return msd[0,0]
+
+
+    def calmsd2(self):
         msd=np.zeros([3,self.nAtom])
-        oneplus2n=self.oneplus2n(self.en)
-        for i in range(self.numQpoint):
-           msd+=(np.abs(self.eigv[i,:]* np.conj(self.eigv[i, :]) ).T/self.en[i]*oneplus2n[i]*self.qweight[i]).sum(axis=2)
-        msd*=0.5/self.mass*hbar*hbar
-        return msd.T
+        proj = np.eye(3,3)
+
+        print(f'self.en {self.en.shape}')
+
+
+        oneplus2n=self.oneplus2n_up(self.en)
+        print(f'oneplus2n.sum {oneplus2n.sum()}')
+        print('self.eigv.shape', self.eigv.shape)
+        # self.eigv.shape (132650, 6, 2, 3)
+        fac = (oneplus2n/self.en).T*(self.qweight)
+        print (f'fac.shape {fac.shape}\n')
+        # fac.shape (6, 132650)
+
+
+        # for i in range(self.numQpoint):
+        #    msd+=((self.eigv[i,:]* np.conj(self.eigv[i, :])).real.T
+        #          /self.en[i]*oneplus2n[i]*self.qweight[i]).sum(axis=2)
+        # msd*=0.5/self.mass*hbar*hbar
+
+        data = np.copy(self.eigv)
+        # self.eigv.shape (132650, 6, 2, 3)
+
+        data = (data.T*fac).T
+
+        data = np.swapaxes(data, 0, 2)
+        data = data.reshape(self.nAtom, -1, 3)
+        # data.shape (2, 132650*6, 3)
+
+
+        res = np.zeros([2, 3, 3], dtype=complex)
+
+        for atom in range(2):
+            for phoidx in range(132650*6):
+                res[atom] += np.tensordot(data[atom, phoidx], np.conj(data[atom, phoidx]), 0)**2
+
+
+        a = res.T * 0.5/self.mass*hbar*hbar  
+        print (f'a shape {a.shape}\n' , np.abs(a.T), '\n\n\n', np.abs(a.real.T))
+
+
+        import sys
+        sys.exit()
+
+        # for i in range(self.numQpoint):
+        #    temp = np.dot(np.array([0,0,1]), self.eigv[i,:].T).T/self.en[i]
+        #    print(temp.shape)
+
+        #    msd+=(temp*oneplus2n[i]*self.qweight[i]).sum(axis=2)
+        # msd*=0.5/self.mass*hbar*hbar  
+        return 1
 
     def dos(self, bins=100):
         hist=None
@@ -165,10 +248,6 @@ class CalcBase:
         center=0.5*(edges[1:]+edges[:-1])
         return center, hist/np.trapz(hist,center)
 
-    def isoMsd(self):
-        en, rho = self.dos()
-        return np.trapz( (1./(np.tanh(en/(2*self.kt) ) * en )* rho), en)*0.5*hbar*hbar/self.mass[0]
-    
     def incoherentAppr(self, Q, bins):
         #squires red book 3.136
         # print(f'incoherent msd {self.msd}')
@@ -179,14 +258,15 @@ class CalcBase:
         if isinstance(Q, np.ndarray):
             Q = np.reshape(Q, [Q.size, 1])
      
-        common = -1/(4*self.mass[0])*self.bc[0]**2 * Q**2* np.exp(-self.msd*Q**2 )*dos/en*hbar*hbar
+        common = -1/(4*self.mass[0])*self.bc[0]**2 * Q**2* np.exp(-self.msd_iso*Q**2 )*dos/en*hbar*hbar
         downScat =  common*self.nplus1_down(en)
         return en, downScat
 
 
     def calcFormFact(self, Q, eigvecs):
         Qmag=np.linalg.norm(Q)
-        F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
+        # W = 0.5*Q*Q*u*u = 0.5*Q*Q*MSD
+        F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd_iso*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
         #fixme isotropic approximation at the moment
         #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
         return F
@@ -205,13 +285,20 @@ class CalcPowder(CalcBase):
         self.histparas['extraHistQranage']=extraHistQranage
         self.histparas['extraHistEnrange']=extraHistEnrange
 
-
-    def savePowerSqw(self, fn):
+    def getSqw(self):
         if not hasattr(self, 'histparas'):
             raise RuntimeError('configHistgrame() is not called')
         
         q, en_neg, sqw = self.calcPowder(self.histparas['maxQ'])
         # print(q, type(q))
+        en, sqw_inco = self.incoherentAppr(q, en_neg.size*3)
+        return q, en_neg, sqw, sqw_inco
+
+
+    def savePowerSqw(self, fn, q = None, en_neg = None, sqw= None, sqw_inco = None):
+        if not hasattr(self, 'histparas'):
+            raise RuntimeError('configHistgrame() is not called')
+        
         
         import h5py
         f0=h5py.File(fn,"w")
@@ -222,15 +309,19 @@ class CalcPowder(CalcBase):
             mtd.create_dataset(key, data = value)
 
 
+        if q and en_neg and sqw and sqw_inco is None:
+            q, en_neg, sqw = self.calcPowder(self.histparas['maxQ'])
+            en, sqw_inco = self.incoherentAppr(q, en_neg.size)
+        # print(q, type(q))
+
         ## coherent 
         f0.create_dataset("q", data=q, compression="gzip")
         f0.create_dataset("en", data=en_neg, compression="gzip")
         f0.create_dataset("s", data=sqw, compression="gzip")
 
 
-        ## incoherent
-        en, inco = self.incoherentAppr(q, en_neg.size)
-        f0.create_dataset("s_inco", data=inco, compression="gzip")
+        ## incoherent        
+        f0.create_dataset("s_inco", data=sqw_inco, compression="gzip")
 
         ## expanded sqw
 
@@ -245,7 +336,7 @@ class CalcPowder(CalcBase):
         sqw_full = expandFromNegtiveAxis(sqw, axis=1, factor=np.exp(-np.flip(en_pos)/self.kt))
         f0.create_dataset("sqw_full", data=sqw_full, compression="gzip")
 
-        sqw_full_inco = expandFromNegtiveAxis(inco, axis=1, factor=np.exp(-np.flip(en_pos)/self.kt))
+        sqw_full_inco = expandFromNegtiveAxis(sqw_inco, axis=1, factor=np.exp(-np.flip(en_pos)/self.kt))
         f0.create_dataset("sqw_full_inco", data=sqw_full_inco, compression="gzip")
         f0.close()
             

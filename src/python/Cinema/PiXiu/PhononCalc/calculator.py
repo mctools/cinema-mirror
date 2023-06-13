@@ -17,6 +17,7 @@ class Hdf5Powder(CalcPowder):
         eigv=eigv.reshape([eigvShape[0], nAtom*3, nAtom, 3]) #fixme: magnitude of each eigv is slight different
 
         mesh=hf['mesh'][()]
+        print(f'mesh {mesh}')
         qpoint=hf['qpoint'][phonIdx]
         weight=hf['weight'][phonIdx]/(mesh[0]*mesh[1]*mesh[2])
         hf.close()
