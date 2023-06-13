@@ -98,7 +98,7 @@ class MySim(Prompt):
         # sheild2 = self.makeChopperSheild()
         sample_mat = "physics=ncrystal;nccfg='Ge_sg227.ncmat;mos=0.267deg;incoh_elas=0;inelas=0;dir1=@crys_hkl:5,1,1@lab:0,0,1;dir2=@crys_hkl:0,1,-1@lab:1,0,0';scatter_bias=5.0;abs_bias=5.0"
         guide6 = makeTrapezoidGuide(5800.* 0.5, g6_in, g6_in, g6_out, g6_out, m6)
-        sample = Volume("sample_Al", Box(120, 120, 1), 'solid::Cd/8.65gcm3', surfaceCfg='physics=Mirror;m=2')
+        sample = Volume("sample_Al", Box(40, 40, 40), sample_mat)
         self.scorer['PSD2'], vol_PSD2 = makeFlatPSD('psd_before_sample', 200, 200, 100, 100)
         cry_mat = "physics=ncrystal;nccfg='C_sg194_pyrolytic_graphite.ncmat;mos=2.5deg;dir1=@crys_hkl:0,0,2@lab:0,-1,0;dir2=@crys_hkl:1,0,0@lab:1,0,0;lcaxis=0,0,1';scatter_bias=5.0;abs_bias=5.0"
         crystal_plate = Volume("cry", Box(6, 6, 1), 'solid::Cd/8.65gcm3', surfaceCfg='physics=Mirror;m=2')
@@ -116,20 +116,29 @@ class MySim(Prompt):
         # world.placeChild("tunnel2_", tunnel2, Transformation3D(0., - (300 - 67. * 0.5), 9070.)) # input != mcstas
         # world.placeChild("chopper2sheild", sheild2, Transformation3D(0., 0., 9070. + 1e-2 * 0.5))
         world.placeChild("guide6", guide6, self.translationZ(5800. * 0.5 + dist_z_g6))
-        world.placeChild("sample", sample, Transformation3D(0., 0., 17000.).applyRotY(135))
-        analyser = EntityArray(crystal_plate, [20,20], spacings = [12, 12], 
-                               refFrame=Transformation3D(0., 0., 17000.).applyRotxyz(0., 135., 0.))
-        analyser.make_plane(2000., 2000.)
+        world.placeChild("sample", sample, Transformation3D(0., 0., 18000.).applyRotY(0))
+        analyser = EntityArray(crystal_plate, [20,20], spacings = [13, 13], 
+                               refFrame=Transformation3D(0., 0., 0.).applyRotxyz(0., 180., 0.))
+        analyser.make_trape_plane(80, 280, 350, 500, 500)
+        # analyser.make_plane(500., 500.)
         # print(f'Anchors are : {analyser.volAncs}')
         
-        arrayAna = EntityArray(analyser, refFrame=Transformation3D(1500., 0., 0.))
+        arrayAna = EntityArray(analyser, refFrame=Transformation3D(0., -300., 17200.).applyRotZ(180))
         arrayAna.make()
-        arrayAna.repeat([1,0,0], 500, 3)
-        # print(analyser.refFrame.getRot().as_matrix())
-        arrayAna.reflect()
-        # print(f'Anchors are : {arrayAna.volAncs}')
-
+        arrayAna.make_rotate_z(0, 0, 45, 6)
+        # arrayAna.rotate_z(0, 0, 45)
+        # arrayAna.rotate_z(0, 0, -45, 3)
+        arrayAna.reflect('XY', 18000)
+        # arrayAna.repeat([0,1,0], 300, 2)
         world.placeArray(arrayAna)
+
+        # arrayAna.repeat([1,0,0], 300, 2)
+        # arrayAna_vert = EntityArray(analyser, refFrame=Transformation3D(180., 400., 17200.))
+        # arrayAna_vert.make()
+        # arrayAna_vert.repeat([0,1,0], 300, 2)
+        # arrayAna_vert.reflect()
+        # world.placeArray(arrayAna_vert)
+
         world.placeChild("monitor_sample", vol_PSD2, Transformation3D(1500., 0., 19000., 90., 90., 0.))
         self.l.setWorld(world)
 

@@ -1,0 +1,33 @@
+[project]
+name="neutron-cinema"
+version="1.0.0rc1"
+authors=[
+    {name="Xiao-Xiao Cai"},
+    {name="Ming Tang"},
+    {name="Zi-Yi Pan"},
+    {name="Ni Yang"},
+    {email="cinema-users@outlook.com"},
+    ]
+description="China Spallation Neutron Source Monte Carlo System"
+readme = "README.md"
+keywords = ["NCyrstal", "Neutron Scattering", "Spectroscopy"]
+requires-python = ">=3.7"
+classifiers = [
+    'Development Status :: 4 - Beta',
+
+    'Intended Audience :: Science/Research',
+
+    'Topic :: Scientific/Engineering :: Physics',
+
+    'License :: OSI Approved',
+
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+
+    'Operating System :: POSIX :: Linux',
+]
+
+[project.urls]
+repository = "https://gitlab.com/cinema-developers/prompt.git"

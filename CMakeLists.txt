@@ -22,17 +22,23 @@ if(NOT TARGET VecGeom::vgdml)
 endif()
 
 # NCrystal
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/ncrystal/install/")
 message(STATUS "NCrystal_DIR=$ENV{NCrystal_ext}/lib/cmake")
 set(NCrystal_DIR  "$ENV{NCrystal_ext}/lib/cmake")
 find_package(NCrystal 3.0.0 REQUIRED)
+message(STATUS "FOUND NCrystal: ${NCrystal_FOUND} ${NCrystal_DIR}")
 
 # MCPL
-set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mcpl/install/lib/cmake/MCPL/")
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mcpl/install/")
 find_package(MCPL REQUIRED)
+message(STATUS "FOUND MCPL: ${MCPL_FOUND} ${MCPL_DIR}")
 
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
+
+# set(Python_ROOT_DIR ${CMAKE_SOURCE_DIR}/cinemavirenv/bin/python)
+set(Python_FIND_STRATEGY LOCATION)
 
 add_subdirectory(src/cxx)
 add_subdirectory(bin)
@@ -42,9 +48,7 @@ enable_testing()
 add_subdirectory(src/cxxtests)
 
 
-set(Python_ROOT_DIR ${PROJECT_SOURCE_DIR}/cinemavirenv/bin/python)
-set(Python_FIND_STRATEGY LOCATION)
-find_package(Python REQUIRED COMPONENTS Interpreter)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 file(GLOB TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontests/*.py")
 foreach(TS ${TESTFILES})
