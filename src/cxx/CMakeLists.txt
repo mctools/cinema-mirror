@@ -44,10 +44,11 @@ file(GLOB MCPL_SRC "${PROJECT_SOURCE_DIR}/MCPL/libsrc/*.cc" "${PROJECT_SOURCE_DI
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${MCPL_SRC} ${COR_SRC} ${RAC_SRC} ${SUR_SRC} ${RND_SRC} ${UTL_SRC} ${RTR_SRC} ${ANA_SRC} ${PAR_SRC} ${BUK_SRC} ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC})
 
-find_package(Python REQUIRED COMPONENTS Interpreter Development)
+# find_package(Python REQUIRED COMPONENTS Interpreter Development)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml fftw3 ${HDF5_LIBRARIES} MCPL::mcpl OpenMP::OpenMP_CXX Python::Python)
+target_link_libraries(${PROJECT_NAME} PUBLIC NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml fftw3 ${HDF5_LIBRARIES} MCPL::mcpl OpenMP::OpenMP_CXX )
 #fixme remove openmp
+#fixme Python::Python
 
 target_include_directories( ${PROJECT_NAME}
     PUBLIC

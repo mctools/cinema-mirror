@@ -20,10 +20,14 @@
 
 from ..Interface import *
 
-_pt_PythonGun_new = importFunc('pt_PythonGun_new', type_voidp, [type_pyobject])
-_pt_PythonGun_delete = importFunc('pt_PythonGun_delete', None, [type_voidp])
-_pt_PythonGun_generate = importFunc('pt_PythonGun_generate', None, [type_voidp])
+# fixme: temp remove for manylinux
+# _pt_PythonGun_new = importFunc('pt_PythonGun_new', type_voidp, [type_pyobject])
+# _pt_PythonGun_delete = importFunc('pt_PythonGun_delete', None, [type_voidp])
+# _pt_PythonGun_generate = importFunc('pt_PythonGun_generate', None, [type_voidp])
 
+_pt_PythonGun_new = None
+_pt_PythonGun_delete = None
+_pt_PythonGun_generate = None
 
 class PythonGun():
     def __init__(self):

@@ -89,10 +89,10 @@ void Prompt::Launcher::setGun(const char* cfg)
   m_gun = Singleton<GunFactory>::getInstance().createGun(std::string(cfg));
 }
 
-void Prompt::Launcher::setPythonGun(PyObject *pyobj)
-{
-  m_gun = std::make_shared<PythonGun>(pyobj);
-}
+// void Prompt::Launcher::setPythonGun(PyObject *pyobj)
+// {
+//   m_gun = std::make_shared<PythonGun>(pyobj);
+// }
 
 
 void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj, bool timer, bool save)

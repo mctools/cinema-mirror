@@ -24,11 +24,11 @@
 #include "PromptCore.hh"
 
 #ifdef __cplusplus
-#include <Python.h>
+// #include <Python.h>
 extern "C" {
 #endif
 
-PyObject *pt_call_python_method(PyObject *obj, const char* method);
+// PyObject *pt_call_python_method(PyObject *obj, const char* method);
 
 // Converters
 double pt_eKin2k(double ekin);
@@ -49,7 +49,7 @@ size_t pt_Launcher_getTrajSize(void* obj);
 void pt_Launcher_getTrajectory(void* obj, double *trj);
 void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj, bool timer, bool save2Disk);
 void pt_Launcher_setGun(void *obj, const char* cfg);
-void pt_Launcher_setPythonGun(void *obj, PyObject* cfg);
+// void pt_Launcher_setPythonGun(void *obj, PyObject* cfg);
 
 // Prompt::HistBase
 void pt_HistBase_merge(void* obj, void* obj2);

@@ -26,7 +26,7 @@
 #include "PTPrimaryGun.hh"
 #include "PTActiveVolume.hh"
 #include "PTStackManager.hh"
-#include "Python.h"
+// #include "Python.h"
 namespace Prompt {
   class Launcher {
   public:
@@ -39,7 +39,7 @@ namespace Prompt {
     uint64_t getSeed() { return Singleton<SingletonPTRand>::getInstance().getSeed(); }
     void setGun(std::shared_ptr<PrimaryGun> gun) { m_gun=gun; }
     void setGun(const char* cfg);
-    void setPythonGun(PyObject *pyobj);
+    // void setPythonGun(PyObject *pyobj);
     const std::vector<Vector> &getTrajectory() { return m_trajectory; }
     size_t getTrajSize() { return m_trajectory.size(); }
 

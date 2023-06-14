@@ -47,8 +47,8 @@ add_subdirectory(bin)
 enable_testing()
 add_subdirectory(src/cxxtests)
 
-
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
+# fixme manylinux
+# find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 file(GLOB TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontests/*.py")
 foreach(TS ${TESTFILES})
