@@ -85,13 +85,19 @@ datalist = package_files('gdml')
 
 setup(
     
-    packages=['Cinema', 'Cinema.Interface', 'Cinema.Prompt', 'Cinema.Prompt.Histogram'],
+    packages=['Cinema', 'Cinema.Interface', 'Cinema.Prompt', 'Cinema.Prompt.Histogram', 'Cinema.PiXiu', 'Cinema.PiXiu.io', 'Cinema.PiXiu.PhononCalc', 'Cinema.Experiment', 'Cinema.Experiment.Analyser', 'Cinema.Tak'],
 
     package_dir={
         'Cinema': os.path.join('.','src','python') + os.path.sep + 'Cinema',
         'Cinema.Interface': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Interface'),
         'Cinema.Prompt': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt'),
         'Cinema.Prompt.Histogram': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt', 'Histogram'),
+        'Cinema.PiXiu': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'PiXiu'),
+        'Cinema.PiXiu.io': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'PiXiu', 'io'),
+        'Cinema.PiXiu.PhononCalc': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'PiXiu', 'PhononCalc'),
+        'Cinema.Experiment': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'Experiment'),
+        'Cinema.Experiment.Analyser': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'Experiment', 'Analyser'),
+        'Cinema.Tak': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'Tak'),
         },
     
     scripts=[os.path.join('.', 'scripts', 'prompt') ],
