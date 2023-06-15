@@ -27,7 +27,7 @@ class MeshCell(Hdf5Powder):
 
 
 class MeshQE(Hdf5Powder):
-    def __init__(self, h5FileName, qexml, temperature, phonIdx = slice(0)):
+    def __init__(self, h5FileName, qexml, temperature, phonIdx=None):
         qecell = QeXmlCell(qexml)
         self.name=qexml
         lattice=qecell.lattice

@@ -151,7 +151,7 @@ class CalcBase:
         return np.trapz(kernel, en)*0.5*hbar*hbar/self.mass[0]
 
     def calmsd(self):
-        msd=np.zeros([3, self.nAtom])
+        msd=np.zeros([self.nAtom, 3 ,3])
         print(f'self.qweight.sum {self.qweight.sum()}, {self.eigv.shape}')
         kernel=(self.oneplus2n_up(self.en)/self.en).T*self.qweight
         kernel = kernel.T
@@ -159,27 +159,23 @@ class CalcBase:
         # oneplus2n.shape (132650, 6)
         # self.eigv.shape (132650, 6, 2, 3)
 
-        fixfac = 0.5*hbar*hbar/self.mass[0]
-        cutoff = 0.002
-        print(f'num of phonon below threshold {len(self.en[self.en<cutoff])}')
-
-        for i in range(132650):
-            for j in range(6):
-                # enj = np.dot((self.eigv[i,j,0]), [0,0,1])**2 
+        cutoff = 0.0001
+        # cffidx = list(self.en<cutoff)
+        # print(cffidx)
+        # print(f'num of phonon below threshold {len(self.en[cffidx])}')
+    
+        for i in range(self.eigv.shape[0]):
+            for j in range(self.eigv.shape[1]):
                 if self.en[i,j]<cutoff:
+                    print('skiped q ', self.qpoint[i])
                     continue
-                enj = self.eigv[i,j,0,2]**2 
-                enj = np.abs(enj)
-                msd [0,0] += enj * kernel[i, j] * fixfac
-                msd [1,0] += self.qweight[i]
-                msd [2,0] += enj /132650
 
+                for a in range(self.nAtom):
+                    enj = np.outer( self.eigv[i,j,a], np.conj(self.eigv[i,j,a] ) )
+                    msd [a]+= enj.real * kernel[i, j] 
 
-                # for a in range(2):
-
-        # msd*=0.5*hbar*hbar/self.mass
-        return msd[0,0]
-
+        msd = (msd.T/self.mass*0.5*hbar*hbar).T
+        return msd
 
     def calmsd2(self):
         msd=np.zeros([3,self.nAtom])
@@ -264,9 +260,15 @@ class CalcBase:
 
 
     def calcFormFact(self, Q, eigvecs):
-        Qmag=np.linalg.norm(Q)
+        
         # W = 0.5*Q*Q*u*u = 0.5*Q*Q*MSD
-        F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd_iso*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
+        if self.histparas['msd'] is None:
+            Qmag=np.linalg.norm(Q)
+            F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd_iso*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
+        else:
+            w =  -0.5 * np.dot(np.dot(self.histparas['msd'], Q) ,Q)
+            F=(self.bc/self.sqMass*np.exp(w)*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
+
         #fixme isotropic approximation at the moment
         #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
         return F
@@ -277,21 +279,21 @@ class CalcPowder(CalcBase):
         super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature)
 
     
-    def configHistgrame(self, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001):
+    def configHistgrame(self, maxQ, enSize, QSize, extraHistQranage=1., extraHistEnrange = 0.001, msd=None):
         self.histparas = {}
         self.histparas['maxQ']=maxQ
         self.histparas['enSize']=enSize
         self.histparas['QSize']=QSize
         self.histparas['extraHistQranage']=extraHistQranage
         self.histparas['extraHistEnrange']=extraHistEnrange
+        self.histparas['msd']=msd
 
     def getSqw(self):
         if not hasattr(self, 'histparas'):
             raise RuntimeError('configHistgrame() is not called')
         
         q, en_neg, sqw = self.calcPowder(self.histparas['maxQ'])
-        # print(q, type(q))
-        en, sqw_inco = self.incoherentAppr(q, en_neg.size*3)
+        en, sqw_inco = self.incoherentAppr(q, en_neg.size)
         return q, en_neg, sqw, sqw_inco
 
 
@@ -303,13 +305,14 @@ class CalcPowder(CalcBase):
         import h5py
         f0=h5py.File(fn,"w")
 
+
         #metadata
         mtd = f0.create_group('metadata')
         for key, value in self.metadata.items():
             mtd.create_dataset(key, data = value)
 
 
-        if q and en_neg and sqw and sqw_inco is None:
+        if q is None and en_neg is None and sqw is None and sqw_inco is None:
             q, en_neg, sqw = self.calcPowder(self.histparas['maxQ'])
             en, sqw_inco = self.incoherentAppr(q, en_neg.size)
         # print(q, type(q))
@@ -320,7 +323,7 @@ class CalcPowder(CalcBase):
         f0.create_dataset("s", data=sqw, compression="gzip")
 
 
-        ## incoherent        
+        # ## incoherent        
         f0.create_dataset("s_inco", data=sqw_inco, compression="gzip")
 
         ## expanded sqw
@@ -335,6 +338,8 @@ class CalcPowder(CalcBase):
         en_pos = np.flip(en_neg)*-1
         sqw_full = expandFromNegtiveAxis(sqw, axis=1, factor=np.exp(-np.flip(en_pos)/self.kt))
         f0.create_dataset("sqw_full", data=sqw_full, compression="gzip")
+
+        print(f'sqw_inco {sqw_inco.shape}, en_neg {en_neg.shape}')
 
         sqw_full_inco = expandFromNegtiveAxis(sqw_inco, axis=1, factor=np.exp(-np.flip(en_pos)/self.kt))
         f0.create_dataset("sqw_full_inco", data=sqw_full_inco, compression="gzip")
@@ -367,20 +372,6 @@ class CalcPowder(CalcBase):
 
         return  q, en, sqw
 
-
-        # biglist = ParallelHelper().mapReduce(self.calcHKL, it_hkl)
-
-        # if len(biglist)==1:
-        #     return biglist[0], biglist[1], biglist[2]
-        # else:
-        #     q = biglist[0][0]
-        #     en = biglist[0][1]
-        #     sqw = biglist[0][2]
-        #     for i in range(1, len(biglist)):
-        #         sqw += biglist[i][2]        
-        #     return  q, en, sqw
-
-
     def calcHKL(self, latpnt):
         maxQ = self.histparas['maxQ']
         enSize = self.histparas['enSize']
@@ -401,7 +392,6 @@ class CalcPowder(CalcBase):
         
         for i in range(self.numQpoint):
             if np.allclose(self.qpoint[i], np.zeros(3)):
-                #skip gamma point
                 continue
             Q=self.qpoint[i]+tau
             Qmag=np.linalg.norm(Q)
@@ -410,8 +400,7 @@ class CalcPowder(CalcBase):
             F = self.calcFormFact(Q, self.eigv[i])
             # not devided by the reciprocal volume so the unit is per atoms in the cell
             Smag=0.5*(np.linalg.norm(F)**2)*self.detlbal[i]*self.qweight[i]*hbar*hbar/self.en[i]
-            self.hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i], Smag*latpnt['mult']) #negative energy for downscattering, fill in angular frequency instead of energy
-       
+            self.hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i], Smag*latpnt['mult']) #negative energy for downscattering, fill in angular frequency instead of energy       
         return self.hist.xcenter, self.hist.ycenter, self.hist.getWeight()
 
 class CalcBand(CalcBase):

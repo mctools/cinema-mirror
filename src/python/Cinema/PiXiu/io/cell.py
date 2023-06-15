@@ -31,7 +31,7 @@ class CellBase():
         return res
 
     def estPhonMesh(self, size=200.):
-        res = (size/self.abc/len(self.position)).astype(int)
+        res = (size/self.abc).astype(int)
         res[np.where(res==0)]=1
         return res
 

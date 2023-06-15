@@ -42,7 +42,7 @@ freSize = args.freSize
 QSize = args.QSize
 output = args.output
 
-class PhononInspect:
+class PhononInspect():
     def __init__(self, fn, plot=False):
         import h5py
         import matplotlib.pyplot as plt
@@ -50,6 +50,7 @@ class PhononInspect:
         hf = h5py.File(fn,'r')
         self.en=hf['frequency'][()]*THz*2*np.pi*hbar
         self.w=hf['weight'][()]
+        self.pmesh=hf['mesh'][()]
         self.phonnum = self.en.shape[0]
         if plot:
             for i in range(6):
@@ -62,41 +63,40 @@ class PhononInspect:
         pass
 
 
-pi = PhononInspect('mesh.hdf5')
-# num_loop = 100
-# phonEachLoop = pi.phonnum//num_loop
+pi = PhononInspect('mesh.hdf5', True)
+num_loop = 1 # this should be the number of available cpu
+phonEachLoop = pi.phonnum//num_loop
 
-print(pi.phonnum)
-
-calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, slice(0,-1))
-print('calc.isoMsd()', calc.isoMsd())
-
-thermal_disp =  calc.calmsd()
+# calculate the mean squared displacement
+thermal_disp = None
+for i in range(num_loop):
+    calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, slice(i*phonEachLoop, (i+1)*phonEachLoop))
+    print('calc.isoMsd()', calc.isoMsd())
+    if thermal_disp is not None:
+        thermal_disp +=  calc.calmsd()
+    else:
+        thermal_disp =  calc.calmsd()
 print('calc.calmsd()', thermal_disp)
-print('ratio', calc.isoMsd()/thermal_disp.sum())
 
 
+# calculate S(q, omega)
+q=None
+en_neg=None
+sqw=None
+sqw_inco=None
+for i in range(num_loop):
+    # calc = MeshCell(findData('Al/mesh.hdf5'), findData('Al/cell.json'), kt)
+    calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, slice(phonEachLoop*i,phonEachLoop*(i+1)))
+    calc.configHistgrame(maxQ, freSize, QSize, msd=thermal_disp)
+    _q, _en_neg, _sqw, _sqw_inco = calc.getSqw()
+    if q is None:
+        q = _q
+        en_neg = _en_neg
+        sqw = _sqw
+        sqw_inco = _sqw_inco
+    else:
+        sqw += _sqw
 
-
-
-
-# q=None
-# en_neg=None
-# sqw=None
-# sqw_inco=None
-# for i in range(num_loop):
-#     # calc = MeshCell(findData('Al/mesh.hdf5'), findData('Al/cell.json'), kt)
-#     calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, slice(phonEachLoop*i,phonEachLoop*(i+1)))
-#     calc.configHistgrame(maxQ, freSize, QSize)
-#     _q, _en_neg, _sqw, _sqw_inco = calc.getSqw()
-#     if q is None:
-#         q = _q
-#         en_neg = _en_neg
-#         sqw = _sqw
-#         sqw_inco = _sqw_inco
-#     else:
-#         sqw += _sqw
-
-# calc.savePowerSqw(output,  q, en_neg, sqw, sqw_inco)
+calc.savePowerSqw(output,  q, en_neg, sqw, sqw_inco)
 
 

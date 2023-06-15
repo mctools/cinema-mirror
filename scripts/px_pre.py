@@ -184,8 +184,14 @@ if os.system(f'phonopy --fc-symmetry  --dim "{dim[0]} {dim[1]} {dim[2]}" --band=
     logger.info(f'band fail')
     raise IOError("band fail")
 
+#tdm
+if os.system(f'phonopy --fc-symmetry --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --tdm --mesh {mesh[0]} {mesh[1]} {mesh[2]}'):
+    logger.info(f'dos and mesh fail')
+    raise IOError("dos and mesh fail")
+
+
 #mesh
-if os.system(f'phonopy --fc-symmetry --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym --pdos AUTO  {plotflag} -s'):
+if os.system(f'phonopy --fc-symmetry --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}   --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym --pdos AUTO  {plotflag} -s'):
     logger.info(f'dos and mesh fail')
     raise IOError("dos and mesh fail")
 
