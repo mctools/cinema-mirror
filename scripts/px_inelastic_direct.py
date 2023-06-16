@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
+import sys
+import os
 from re import T
 import numpy as np
 from Cinema.PiXiu.PhononCalc.task import MeshCell, MeshQE
 from Cinema.Interface.Utils import findData
 import argparse
+import operator
+#from Cinema.Interface.parallelutil import ParallelHelper
 
-from Cinema.Interface.parallelutil import ParallelHelper
-from pyspark import SparkContext
 
 #parameters
 #temperature in kelvin
@@ -31,11 +33,6 @@ parser.add_argument('-p', '--partitions', action='store', default=4,
 
 args=parser.parse_args()
 
-# ph = ParallelHelper()
-# ph.partitions = args.partitions
-# ph.sparkContext = SparkContext(master=f'local[{ph.partitions}]')
-
-
 temp = args.temp #temperature in kelvin
 maxQ = args.maxQ
 freSize = args.freSize
@@ -45,7 +42,6 @@ output = args.output
 class PhononInspect():
     def __init__(self, fn, plot=False):
         import h5py
-        import matplotlib.pyplot as plt
         from Cinema.Interface.units import THz, hbar
         hf = h5py.File(fn,'r')
         self.en=hf['frequency'][()]*THz*2*np.pi*hbar
@@ -53,6 +49,7 @@ class PhononInspect():
         self.pmesh=hf['mesh'][()]
         self.phonnum = self.en.shape[0]
         if plot:
+            import matplotlib.pyplot as plt
             for i in range(6):
                 h, edges = np.histogram(self.en[:, i], bins=100, range=[0, self.en.max()], weights=self.w.reshape(-1), density=True)
                 plt.plot(np.diff(edges)*0.5+edges[:-1], h)
@@ -62,41 +59,100 @@ class PhononInspect():
     def acoustic(self):
         pass
 
+def do_calc_msd(idx):  # idx: slice(start, end)
+    calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, idx)
+    return calc.calmsd()
 
 pi = PhononInspect('mesh.hdf5', True)
+print(f'Total phonon number: {pi.phonnum}')
 num_loop = 1 # this should be the number of available cpu
-phonEachLoop = pi.phonnum//num_loop
+
+USE_SPARK = False
+try:
+    import pyspark
+    USE_SPARK = True
+except ImportError:
+    print('Spark not found, run in degrade mode.')
+
+#USE_SPARK = False
+
+if USE_SPARK:
+    from pyspark import SparkContext
+    from pyspark.conf import SparkConf
+    from pyspark.sql import SparkSession
+
+    # ph = ParallelHelper()
+    # ph.partitions = args.partitions
+    # ph.sparkContext = SparkContext(master=f'local[{ph.partitions}]')
+    spark = SparkSession.builder.getOrCreate()
+    spark_context = spark.sparkContext
+    spark_conf = spark_context.getConf()
+    num_loop = spark_context.defaultParallelism  # for local spark
+    try:
+        num_loop = int(spark.sparkContext.getConf().get('spark.cores.max')) # for spark cluster
+    except:
+        pass
+    print(f'Using {num_loop} cores ...')
+else:
+    num_loop = len(os.sched_getaffinity(0))
+    print(f'Using {num_loop} cores ...')
+
+phonEachLoop = pi.phonnum // num_loop
+idx_list = [slice(i * phonEachLoop, (i + 1) * phonEachLoop) for i in range(num_loop)]
 
 # calculate the mean squared displacement
+print('Calculate MSD ...')
 thermal_disp = None
-for i in range(num_loop):
-    calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, slice(i*phonEachLoop, (i+1)*phonEachLoop))
-    print('calc.isoMsd()', calc.isoMsd())
-    if thermal_disp is not None:
-        thermal_disp +=  calc.calmsd()
-    else:
-        thermal_disp =  calc.calmsd()
-print('calc.calmsd()', thermal_disp)
+
+if USE_SPARK:
+    thermal_disp = spark.sparkContext.parallelize(idx_list, num_loop).map(do_calc_msd).reduce(operator.add)
+else:
+    for idx in idx_list:
+        calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, idx)
+        print(idx, 'calc.isoMsd()', calc.isoMsd())
+        if thermal_disp is not None:
+            thermal_disp +=  calc.calmsd()
+        else:
+            thermal_disp =  calc.calmsd()
+print('calc.calmsd()', thermal_disp)  # shape: (2, 3, 3)
 
 
 # calculate S(q, omega)
+print('Calculate S(q, w) ...')
+def do_calc_sqw(idx):
+    calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, idx)
+    calc.configHistgrame(maxQ, freSize, QSize, msd=thermal_disp)
+    _q, _en_neg, _sqw, _sqw_inco = calc.getSqw()
+
+    return [_q, _en_neg, _sqw, _sqw_inco]
+
+def do_reduce(x, y):
+    return x[0], x[1], x[2] + y[2], x[3]
+
+
 q=None
 en_neg=None
 sqw=None
 sqw_inco=None
-for i in range(num_loop):
-    # calc = MeshCell(findData('Al/mesh.hdf5'), findData('Al/cell.json'), kt)
-    calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, slice(phonEachLoop*i,phonEachLoop*(i+1)))
-    calc.configHistgrame(maxQ, freSize, QSize, msd=thermal_disp)
-    _q, _en_neg, _sqw, _sqw_inco = calc.getSqw()
-    if q is None:
-        q = _q
-        en_neg = _en_neg
-        sqw = _sqw
-        sqw_inco = _sqw_inco
-    else:
-        sqw += _sqw
+
+if USE_SPARK:
+    q, en_neg, sqw, sqw_inco = spark.sparkContext.parallelize(idx_list, num_loop).map(do_calc_sqw).reduce(do_reduce)
+else:
+    for idx in idx_list:
+        # calc = MeshCell(findData('Al/mesh.hdf5'), findData('Al/cell.json'), kt)
+        calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, idx)
+        calc.configHistgrame(maxQ, freSize, QSize, msd=thermal_disp)
+        _q, _en_neg, _sqw, _sqw_inco = calc.getSqw()
+        if q is None:
+            q = _q
+            en_neg = _en_neg
+            sqw = _sqw
+            sqw_inco = _sqw_inco
+        else:
+            sqw += _sqw
 
 calc.savePowerSqw(output,  q, en_neg, sqw, sqw_inco)
 
+if USE_SPARK:
+    spark.stop()
 
