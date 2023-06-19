@@ -177,59 +177,6 @@ class CalcBase:
         msd = (msd.T/self.mass*0.5*hbar*hbar).T
         return msd
 
-    def calmsd2(self):
-        msd=np.zeros([3,self.nAtom])
-        proj = np.eye(3,3)
-
-        print(f'self.en {self.en.shape}')
-
-
-        oneplus2n=self.oneplus2n_up(self.en)
-        print(f'oneplus2n.sum {oneplus2n.sum()}')
-        print('self.eigv.shape', self.eigv.shape)
-        # self.eigv.shape (132650, 6, 2, 3)
-        fac = (oneplus2n/self.en).T*(self.qweight)
-        print (f'fac.shape {fac.shape}\n')
-        # fac.shape (6, 132650)
-
-
-        # for i in range(self.numQpoint):
-        #    msd+=((self.eigv[i,:]* np.conj(self.eigv[i, :])).real.T
-        #          /self.en[i]*oneplus2n[i]*self.qweight[i]).sum(axis=2)
-        # msd*=0.5/self.mass*hbar*hbar
-
-        data = np.copy(self.eigv)
-        # self.eigv.shape (132650, 6, 2, 3)
-
-        data = (data.T*fac).T
-
-        data = np.swapaxes(data, 0, 2)
-        data = data.reshape(self.nAtom, -1, 3)
-        # data.shape (2, 132650*6, 3)
-
-
-        res = np.zeros([2, 3, 3], dtype=complex)
-
-        for atom in range(2):
-            for phoidx in range(132650*6):
-                res[atom] += np.tensordot(data[atom, phoidx], np.conj(data[atom, phoidx]), 0)**2
-
-
-        a = res.T * 0.5/self.mass*hbar*hbar  
-        print (f'a shape {a.shape}\n' , np.abs(a.T), '\n\n\n', np.abs(a.real.T))
-
-
-        import sys
-        sys.exit()
-
-        # for i in range(self.numQpoint):
-        #    temp = np.dot(np.array([0,0,1]), self.eigv[i,:].T).T/self.en[i]
-        #    print(temp.shape)
-
-        #    msd+=(temp*oneplus2n[i]*self.qweight[i]).sum(axis=2)
-        # msd*=0.5/self.mass*hbar*hbar  
-        return 1
-
     def dos(self, bins=100):
         hist=None
         edges=None
@@ -266,13 +213,36 @@ class CalcBase:
             Qmag=np.linalg.norm(Q)
             F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd_iso*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
         else:
-            w =  -0.5 * np.dot(np.dot(self.histparas['msd'], Q) ,Q)
-            F=(self.bc/self.sqMass*np.exp(w)*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
+            Qmag=np.linalg.norm(Q)
+            Q_unit = Q/Qmag
+            w =  -0.5 * np.dot(np.dot(self.histparas['msd'], Q_unit) ,Q_unit)
+            F=(self.bc/self.sqMass*np.exp(w + 1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
+            # F=(self.bc/self.sqMass*np.exp(w)*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
+            # F = F**(np.exp(Q_mag)
 
         #fixme isotropic approximation at the moment
         #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
         return F
     
+
+    def getSw(self, hkl, idx):
+        tau=np.dot( np.array(hkl), self.lattice_reci)
+
+        if idx >= self.numQpoint:
+            raise RuntimeError('idx >= self.numQpoint')
+        
+        i = idx        
+        if np.allclose(self.qpoint[i], np.zeros(3)):
+            raise RuntimeError('calculating sqw at the gamma point ')
+        
+        Q=self.qpoint[i]+tau
+        F = self.calcFormFact(Q, self.eigv[i])
+        Smag=0.5*(np.linalg.norm(F)**2)*self.detlbal[i]*hbar*hbar/self.en[i]
+
+        return Smag, np.linalg.norm(Q), self.en[i], 
+
+
+
 
 class CalcPowder(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
@@ -315,7 +285,6 @@ class CalcPowder(CalcBase):
         if q is None and en_neg is None and sqw is None and sqw_inco is None:
             q, en_neg, sqw = self.calcPowder(self.histparas['maxQ'])
             en, sqw_inco = self.incoherentAppr(q, en_neg.size)
-        # print(q, type(q))
 
         ## coherent 
         f0.create_dataset("q", data=q, compression="gzip")
