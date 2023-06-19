@@ -63,7 +63,7 @@ class PhononInspect():
         pass
 
 
-pi = PhononInspect('mesh.hdf5', True)
+pi = PhononInspect('mesh.hdf5')
 num_loop = 1 # this should be the number of available cpu
 phonEachLoop = pi.phonnum//num_loop
 
@@ -79,24 +79,33 @@ for i in range(num_loop):
 print('calc.calmsd()', thermal_disp)
 
 
-# calculate S(q, omega)
-q=None
-en_neg=None
-sqw=None
-sqw_inco=None
-for i in range(num_loop):
-    # calc = MeshCell(findData('Al/mesh.hdf5'), findData('Al/cell.json'), kt)
-    calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, slice(phonEachLoop*i,phonEachLoop*(i+1)))
-    calc.configHistgrame(maxQ, freSize, QSize, msd=thermal_disp)
-    _q, _en_neg, _sqw, _sqw_inco = calc.getSqw()
-    if q is None:
-        q = _q
-        en_neg = _en_neg
-        sqw = _sqw
-        sqw_inco = _sqw_inco
-    else:
-        sqw += _sqw
+calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, slice(phonEachLoop*i,phonEachLoop*(i+1)))
+calc.configHistgrame(maxQ, freSize, QSize, msd=thermal_disp)
+print('getSw', calc.getSw([0,0,0], 0 ) )
+print('getSw', calc.getSw([0,0,0], 1 ) )
+print('getSw', calc.getSw([0,0,0], 2 ) )
+print('getSw', calc.getSw([0,0,0], 3 ) )
 
-calc.savePowerSqw(output,  q, en_neg, sqw, sqw_inco)
+# # calculate S(q, omega)
+# q=None
+# en_neg=None
+# sqw=None
+# sqw_inco=None
+# for i in range(num_loop):
+#     # calc = MeshCell(findData('Al/mesh.hdf5'), findData('Al/cell.json'), kt)
+#     calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, slice(phonEachLoop*i,phonEachLoop*(i+1)))
+#     calc.configHistgrame(maxQ, freSize, QSize, msd=thermal_disp)
+#     _q, _en_neg, _sqw, _sqw_inco = calc.getSqw()
+#     if q is None:
+#         q = _q
+#         en_neg = _en_neg
+#         sqw = _sqw
+#         sqw_inco = _sqw_inco
+#     else:
+#         sqw += _sqw
+
+# print(sqw)
+
+# calc.savePowerSqw(output,  q, en_neg, sqw, sqw_inco)
 
 
