@@ -62,9 +62,22 @@ class PhononInspect():
 
 def get_core_count(spark_session=None):
     if spark_session is not None:
-        _sc = spark_session._jsc.sc()
-        _sc.statusTracker()
-        return
+        _sc = spark_session.sparkContext
+        _app_id = _sc.getConf().get('spark.app.id')
+
+        if _app_id.startswith('local-'):
+            return _sc.defaultParallelism   # local spark
+    
+        _n = _sc.defaultParallelism
+        try:
+            _n = int(spark.sparkContext.getConf().get('spark.cores.max')) # for spark cluster with core count specified
+            return _n
+        except:
+            pass
+        if _n == _sc.defaultParallelism:  # for spark cluster without core count specified
+            _sc.parallelize(np.random.randint(0, 100, size=(100, 3))).map(np.sum).reduce(operator.add)
+            _n = _sc.defaultParallelism
+        return _n
     else:
         try:
             return len(os.sched_getaffinity(0))  # only works on Linux
@@ -86,28 +99,17 @@ try:
 except ImportError:
     print('Spark not found, run in degrade mode.')
 
-#USE_SPARK = False
+spark = None
 
 if USE_SPARK:
-    from pyspark import SparkContext
-    from pyspark.conf import SparkConf
     from pyspark.sql import SparkSession
 
-    # ph = ParallelHelper()
-    # ph.partitions = args.partitions
-    # ph.sparkContext = SparkContext(master=f'local[{ph.partitions}]')
     spark = SparkSession.builder.getOrCreate()
-    spark_context = spark.sparkContext
-    spark_conf = spark_context.getConf()
-    num_loop = spark_context.defaultParallelism  # for local spark
-    try:
-        num_loop = int(spark.sparkContext.getConf().get('spark.cores.max')) # for spark cluster
-    except:
-        pass
-    print(f'Using {num_loop} cores ...')
+    num_loop = get_core_count(spark)
 else:
     num_loop = get_core_count()
-    print(f'Using {num_loop} cores ...')
+
+print('Total available cores: ', num_loop)
 
 phonEachLoop = pi.phonnum // num_loop
 idx_list = [slice(i * phonEachLoop, (i + 1) * phonEachLoop) for i in range(num_loop)]
