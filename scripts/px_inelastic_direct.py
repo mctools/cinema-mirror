@@ -59,6 +59,18 @@ class PhononInspect():
     def acoustic(self):
         pass
 
+
+def get_core_count(spark_session=None):
+    if spark_session is not None:
+        _sc = spark_session._jsc.sc()
+        _sc.statusTracker()
+        return
+    else:
+        try:
+            return len(os.sched_getaffinity(0))  # only works on Linux
+        except AttributeError:
+            return int(os.cpu_count()) # fallback
+
 def do_calc_msd(idx):  # idx: slice(start, end)
     calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, idx)
     return calc.calmsd()
@@ -94,7 +106,7 @@ if USE_SPARK:
         pass
     print(f'Using {num_loop} cores ...')
 else:
-    num_loop = len(os.sched_getaffinity(0))
+    num_loop = get_core_count()
     print(f'Using {num_loop} cores ...')
 
 phonEachLoop = pi.phonnum // num_loop
@@ -151,6 +163,8 @@ else:
         else:
             sqw += _sqw
 
+calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, idx_list[-1])
+calc.configHistgrame(maxQ, freSize, QSize, msd=thermal_disp)
 calc.savePowerSqw(output,  q, en_neg, sqw, sqw_inco)
 
 if USE_SPARK:
