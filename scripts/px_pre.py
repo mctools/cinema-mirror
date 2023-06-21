@@ -47,6 +47,7 @@ parser.add_argument('-i', '--input', action='store', type=str, default='mp-13_Fe
 parser.add_argument('-n', '--numcpu', action='store', type=int, default=lastGoodNumber(os.cpu_count()//2),
                     dest='numcpu', help='number of CPU')
 parser.add_argument('-r', '--rundft', action='store_true', dest='rundft', help='run DFT')
+parser.add_argument('-t', '--thermal', action='store_true', dest='thermal', help='calculate thermal displacement')
 parser.add_argument('-p', '--plotpdf', action='store_true', dest='plotpdf', help='generate pdf files')
 parser.add_argument('-m', '--mp-id', action='store', type=str, default=None,
                     dest='mpid', help='the Materials Project ID. This option will take precedence than --input. mp-149 for example.')
@@ -62,6 +63,7 @@ cores=args.numcpu
 rundft=args.rundft
 mpid = args.mpid
 vdW = args.vdW
+thermal = args.thermal
 phonmeshdensity = args.phonmeshdensity
 
 use_spark = args.use_spark
@@ -184,11 +186,11 @@ if os.system(f'phonopy --fc-symmetry  --dim "{dim[0]} {dim[1]} {dim[2]}" --band=
     logger.info(f'band fail')
     raise IOError("band fail")
 
-# #tdm
-# if os.system(f'phonopy --fc-symmetry --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --tdm --mesh {mesh[0]} {mesh[1]} {mesh[2]}'):
-#     logger.info(f'dos and mesh fail')
-#     raise IOError("dos and mesh fail")
-
+#tdm
+if thermal:
+    if os.system(f'phonopy --fc-symmetry --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --tdm --mesh {mesh[0]} {mesh[1]} {mesh[2]}'):
+        logger.info(f'dos and mesh fail')
+        raise IOError("dos and mesh fail")
 
 #mesh
 if os.system(f'phonopy --fc-symmetry --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}   --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym --pdos AUTO  {plotflag} -s'):
