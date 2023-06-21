@@ -16,13 +16,13 @@ class Hdf5Powder(CalcPowder):
         nAtom = mass.size
         if eigv.ndim != 3:
             raise RuntimeError('eigv.ndim != 3')
-        print(f'Hdf5Power eigv shape {eigv.shape}')
+        # print(f'Hdf5Power eigv shape {eigv.shape}')
         #num of Q points, num of modes, number of atom, vector of size three
         eigv=eigv.reshape([eigvShape[0], nAtom*3, nAtom, 3]) #fixme: magnitude of each eigv is slight different
 
         mesh=hf['mesh'][()]
         self.pmesh = mesh
-        print(f'mesh {mesh}')
+        # print(f'mesh {mesh}')
         if phonIdx is not None:
             qpoint=hf['qpoint'][phonIdx]
             weight=hf['weight'][phonIdx]/(mesh[0]*mesh[1]*mesh[2])
@@ -43,7 +43,7 @@ class Hdf5Band(CalcBand):
         nAtom = mass.size
         if eigv.ndim != 4:
             raise RuntimeError('eigv.ndim != 4')
-        print(f'Hdf5Band eigv shape {eigv.shape}')
+        # print(f'Hdf5Band eigv shape {eigv.shape}')
         #num of Q points, num of modes, number of atom, vector of size three
         eigv=eigv.reshape([eigvShape[0], eigvShape[0], nAtom*3, nAtom, 3]) #fixme: magnitude of each eigv is slight different
 

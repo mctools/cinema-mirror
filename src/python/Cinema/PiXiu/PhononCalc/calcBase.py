@@ -98,12 +98,9 @@ class CalcBase:
         self.temperature=temperature
         self.kt=temperature*boltzmann
         self.detlbal=self.nplus1_down(-self.en)
-        self.msd_iso=self.isoMsd() #fixme: calmsd method returns unequal msd even for cubic lattice, bug to be fixed use isotropic model for now.
-        print('MSD is ' , self.msd_iso)
+        self.msd_iso=self.isoMsd() 
+        # print('MSD is ' , self.msd_iso)
 
-        # it should move to hight
-        # if not math.isclose(self.qweight.sum(), 1.0, rel_tol=1e-10):
-        #     raise ValueError('phonon total qweight is not unity {}'.format( self.qweight.sum() ) )
         
 
         self.metadata = {
@@ -152,7 +149,7 @@ class CalcBase:
 
     def calmsd(self):
         msd=np.zeros([self.nAtom, 3 ,3])
-        print(f'self.qweight.sum {self.qweight.sum()}, {self.eigv.shape}')
+        # print(f'self.qweight.sum {self.qweight.sum()}, {self.eigv.shape}')
         kernel=(self.oneplus2n_up(self.en)/self.en).T*self.qweight
         kernel = kernel.T
 
@@ -308,7 +305,7 @@ class CalcPowder(CalcBase):
         sqw_full = expandFromNegtiveAxis(sqw, axis=1, factor=np.exp(-np.flip(en_pos)/self.kt))
         f0.create_dataset("sqw_full", data=sqw_full, compression="gzip")
 
-        print(f'sqw_inco {sqw_inco.shape}, en_neg {en_neg.shape}')
+        # print(f'sqw_inco {sqw_inco.shape}, en_neg {en_neg.shape}')
 
         sqw_full_inco = expandFromNegtiveAxis(sqw_inco, axis=1, factor=np.exp(-np.flip(en_pos)/self.kt))
         f0.create_dataset("sqw_full_inco", data=sqw_full_inco, compression="gzip")
