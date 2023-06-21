@@ -11,33 +11,35 @@ import operator
 #from Cinema.Interface.parallelutil import ParallelHelper
 
 
-#parameters
-#temperature in kelvin
-#upper limit for the Q, maxQ, float
-#frequency bin size for the histogram, freSize, int
-#Q bin size for the histogram, QSize, int
-#stepping for the hkl, int
-parser = argparse.ArgumentParser()
-parser.add_argument('-t', '--temperature', action='store', type=float,
-                    dest='temp', help='temperature in kelvin', required=True)
-parser.add_argument('-u', '--upper-limit-Q', action='store', type=float, default=10.0,
-                    dest='maxQ', help='upper limit for the Q')
-parser.add_argument('-f', '--frequency-bin-size', action='store', type=int, default=200,
-                    dest='freSize', help='frequency bin size for the histogram')
-parser.add_argument('-q', '--Q-bin-size', action='store', type=int, default=300,
-                    dest='QSize', help='Q bin size for the histogram')
-parser.add_argument('-o', '--output-file-name', action='store', default='qehist.h5',
-                    dest='output', help='output file name')
-parser.add_argument('-p', '--partitions', action='store', default=4,
-                    dest='partitions', help='number of partitions')
-
-args=parser.parse_args()
-
+def gen_parser():
+    #parameters
+    #temperature in kelvin
+    #upper limit for the Q, maxQ, float
+    #frequency bin size for the histogram, freSize, int
+    #Q bin size for the histogram, QSize, int
+    #stepping for the hkl, int
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', '--temperature', action='store', type=float,
+                        dest='temp', help='temperature in kelvin', required=True)
+    parser.add_argument('-u', '--upper-limit-Q', action='store', type=float, default=10.0,
+                        dest='maxQ', help='upper limit for the Q')
+    parser.add_argument('-f', '--frequency-bin-size', action='store', type=int, default=200,
+                        dest='freSize', help='frequency bin size for the histogram')
+    parser.add_argument('-q', '--Q-bin-size', action='store', type=int, default=300,
+                        dest='QSize', help='Q bin size for the histogram')
+    parser.add_argument('-o', '--output-file-name', action='store', default='qehist.h5',
+                        dest='output', help='output file name')
+    parser.add_argument('-p', '--partitions', action='store', type=int, default=0,
+                        dest='partitions', help='number of partitions. 0: automatic')
+    return parser
+    
+args=gen_parser().parse_args()
 temp = args.temp #temperature in kelvin
 maxQ = args.maxQ
 freSize = args.freSize
 QSize = args.QSize
 output = args.output
+partitions = args.partitions
 
 class PhononInspect():
     def __init__(self, fn, plot=False):
@@ -112,6 +114,8 @@ else:
 print('Total available cores: ', num_loop)
 
 phonEachLoop = pi.phonnum // num_loop
+if partitions <= 2:
+    partitions = num_loop
 idx_list = [slice(i * phonEachLoop, (i + 1) * phonEachLoop) for i in range(num_loop)]
 
 # calculate the mean squared displacement
@@ -119,7 +123,7 @@ print('Calculate MSD ...')
 thermal_disp = None
 
 if USE_SPARK:
-    thermal_disp = spark.sparkContext.parallelize(idx_list, num_loop).map(do_calc_msd).reduce(operator.add)
+    thermal_disp = spark.sparkContext.parallelize(idx_list, partitions).map(do_calc_msd).reduce(operator.add)
 else:
     for idx in idx_list:
         calc = MeshQE('mesh.hdf5', 'out_relax.xml', temp, idx)
@@ -151,7 +155,7 @@ sqw=None
 sqw_inco=None
 
 if USE_SPARK:
-    q, en_neg, sqw, sqw_inco = spark.sparkContext.parallelize(idx_list, num_loop).map(do_calc_sqw).reduce(do_reduce)
+    q, en_neg, sqw, sqw_inco = spark.sparkContext.parallelize(idx_list, partitions).map(do_calc_sqw).reduce(do_reduce)
 else:
     for idx in idx_list:
         # calc = MeshCell(findData('Al/mesh.hdf5'), findData('Al/cell.json'), kt)
