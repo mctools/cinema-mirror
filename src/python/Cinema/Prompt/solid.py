@@ -43,7 +43,7 @@ class Box:
         pass
 
 class Tube:
-    def __init__(self, rmin, rmax, z, startphi, deltaphi):
+    def __init__(self, rmin, rmax, z, startphi = 0, deltaphi = 360):
         self.cobj = _pt_Tube_new(rmin, rmax, z, startphi, deltaphi)
 
 class Sphere:
