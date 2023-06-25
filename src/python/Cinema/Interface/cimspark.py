@@ -25,6 +25,7 @@ def get_core_count(spark_session=None):
         except:
             pass
         if _n == _sc.defaultParallelism:  # for spark cluster without core count specified
+            import operator
             _sc.parallelize(np.random.randint(0, 100, size=(100, 3))).map(np.sum).reduce(operator.add)
             _n = _sc.defaultParallelism
         return _n
@@ -35,19 +36,19 @@ def get_core_count(spark_session=None):
             return int(os.cpu_count()) # fallback
 
 
-def parallelize(iteratable, operator, mode='auto'):
+def parallelize(iteratable, oper, mode='auto'):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             print(*args, **kwargs)
             if USE_SPARK == False or mode is None:
-                return functools.reduce(operator, map(func, iteratable))
+                return functools.reduce(oper, map(func, iteratable))
 
             elif USE_SPARK and mode== 'auto':
                 from pyspark.sql import SparkSession
                 spark = SparkSession.builder.getOrCreate()
                 p = get_core_count(spark)
-                return spark.sparkContext.parallelize(iteratable, p).map(func).reduce(operator)
+                return spark.sparkContext.parallelize(iteratable, p).map(func).reduce(oper)
         return wrapper
     return decorator
 

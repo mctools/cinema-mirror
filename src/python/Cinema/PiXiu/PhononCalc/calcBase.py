@@ -239,8 +239,6 @@ class CalcBase:
         return Smag, np.linalg.norm(Q), self.en[i], 
 
 
-
-
 class CalcPowder(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
         super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature)
@@ -265,10 +263,6 @@ class CalcPowder(CalcBase):
 
 
     def savePowerSqw(self, fn, q = None, en_neg = None, sqw= None, sqw_inco = None):
-        if not hasattr(self, 'histparas'):
-            raise RuntimeError('configHistgrame() is not called')
-        
-        
         import h5py
         f0=h5py.File(fn,"w")
 
@@ -280,6 +274,9 @@ class CalcPowder(CalcBase):
 
 
         if q is None and en_neg is None and sqw is None and sqw_inco is None:
+            if not hasattr(self, 'histparas'):
+                raise RuntimeError('configHistgrame() is not called')
+
             q, en_neg, sqw = self.calcPowder(self.histparas['maxQ'])
             en, sqw_inco = self.incoherentAppr(q, en_neg.size)
 
