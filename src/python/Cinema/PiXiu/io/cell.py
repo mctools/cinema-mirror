@@ -83,7 +83,8 @@ class QeXmlCell(CellBase):
         return q.dot(self.lattice_reci)
        
     def qabs2reduced(self, q):
-        return q.dot(self.lattice/(2*np.pi))
+        fac = 1./(2*np.pi)
+        return q.dot(self.lattice*fac)
 
 
 class MPCell(CellBase):
