@@ -5,8 +5,16 @@ import xml.etree.ElementTree as ET
 from ..AtomInfo import getAtomMassBC
 
 class CellBase():
-    def __init__(self):
-        pass
+    def __init__(self, lattice=None):
+        if lattice is not None:
+            if lattice.shape != (3,3):
+                raise RuntimeError('wrong lattice shape')
+            self.lattice = lattice
+            self.abc = np.linalg.norm(self.lattice, axis=1)
+        else:
+            self.lattice = np.zeros([3, 3])
+            self.abc = None
+
 
     def estSupercellDim(self, size=10.):
         res = (size//self.abc).astype(int)
@@ -95,6 +103,10 @@ class MPCell(CellBase):
         else:
             with open(filename, 'r') as fp:
                 mat_dict = json.load(fp)
+
+        self.reduced_pos=[]
+        self.num=[]
+        self.element=[]
 
         self.totMagn = mat_dict.get('total_magnetization')
         self.spacegroupnum =  mat_dict['spacegroup']['number']
