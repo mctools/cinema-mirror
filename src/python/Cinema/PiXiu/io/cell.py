@@ -5,18 +5,8 @@ import xml.etree.ElementTree as ET
 from ..AtomInfo import getAtomMassBC
 
 class CellBase():
-    def __init__(self, lattice=None):
-        if lattice is not None:
-            if lattice.shape != (3,3):
-                raise RuntimeError('wrong lattice shape')
-            self.lattice = lattice
-            self.abc = np.linalg.norm(self.lattice, axis=1)
-        else:
-            self.lattice = np.zeros([3, 3])
-            self.abc = None
-        self.position=[]
-        self.num=[]
-        self.element=[]
+    def __init__(self):
+        pass
 
     def estSupercellDim(self, size=10.):
         res = (size//self.abc).astype(int)
@@ -44,12 +34,17 @@ class CellBase():
         return res
 
     def getCell(self):
-        return (self.lattice, self.position, self.num)
-
+        return (self.lattice, self.reduced_pos, self.num)
+    
 
 class QeXmlCell(CellBase):
     def __init__(self, filename, au2Aa=0.529177248994098):
         super().__init__()
+        self.reduced_pos=[]
+        self.num=[]
+        self.element=[]
+        self.lattice=np.zeros((3,3))
+
         def internal(subtree):
             if list(subtree):
                 for child in list(subtree):
@@ -58,7 +53,7 @@ class QeXmlCell(CellBase):
                         atominfo=getAtomMassBC(ele)
                         self.element.append(ele)
                         self.num.append(atominfo[2])
-                        self.position.append(np.fromstring(child.text, sep=' '))
+                        self.reduced_pos.append(np.fromstring(child.text, sep=' '))
                     elif child.tag=='a1':
                         self.lattice[0] = np.fromstring(child.text, sep=' ')*au2Aa
                     elif child.tag=='a2':
@@ -74,15 +69,21 @@ class QeXmlCell(CellBase):
         internal(info[0])
         self.abc = np.linalg.norm(self.lattice, axis=1)
         invlatt = np.linalg.inv(self.lattice).T
-        self.position = np.array(self.position)*au2Aa
-        for i in range(self.position.shape[0]):
-            self.position[i] = invlatt.dot(self.position[i])
+        self.pos_abs = np.copy(self.reduced_pos)*au2Aa
+        self.reduced_pos = np.array(self.reduced_pos)*au2Aa
+        for i in range(self.reduced_pos.shape[0]):
+            self.reduced_pos[i] = invlatt.dot(self.reduced_pos[i])
 
         self.totmagn = float( (root.findall('./output/magnetization/total')[0]).text )
-        print(self.position, self.element)
+        self.lattice_reci = np.linalg.inv(self.lattice)*2*np.pi
 
+        print(self.lattice_reci, self.element)
 
-
+    def qreduced2abs(self, q):
+        return q.dot(self.lattice_reci)
+       
+    def qabs2reduced(self, q):
+        return q.dot(self.lattice/(2*np.pi))
 
 
 class MPCell(CellBase):
@@ -105,7 +106,7 @@ class MPCell(CellBase):
             if len(site['species'])!=1:
                 raise RuntimeError('occu is not unity')
             # self.sites[i]={site['species'][0]['element']: site['abc'] }
-            self.position.append(site['abc'])
+            self.reduced_pos.append(site['abc'])
             elename = site['species'][0]['element']
             atominfo=getAtomMassBC(elename)
             self.element.append(elename)
