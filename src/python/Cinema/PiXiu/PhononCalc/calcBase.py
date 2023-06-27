@@ -238,7 +238,7 @@ class CalcBase:
 
         return Smag, np.linalg.norm(Q), self.en[i], 
 
-
+ 
 class CalcPowder(CalcBase):
     def __init__(self, lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature ):
         super().__init__(lattice, mass, pos, bc, qpoint, energy, eigv, qweight, temperature)

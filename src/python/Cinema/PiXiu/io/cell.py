@@ -44,6 +44,26 @@ class CellBase():
     def getCell(self):
         return (self.lattice, self.reduced_pos, self.num)
     
+    def getAtomSymbols(self):
+        raise NotImplementedError()
+
+
+    def getAtomInfo(self):
+        symb = self.getAtomSymbols()
+
+        mass=[]
+        bc=[] #bound coherent scattering length
+        num=[]
+
+        for ele in symb:
+            m, b, n =getAtomMassBC(ele)
+            mass.append(m)
+            bc.append(b)
+            num.append(n)
+
+        return np.array(mass), np.array(bc), np.array(num)
+
+    
 
 class QeXmlCell(CellBase):
     def __init__(self, filename, au2Aa=0.529177248994098):
@@ -85,7 +105,7 @@ class QeXmlCell(CellBase):
         self.totmagn = float( (root.findall('./output/magnetization/total')[0]).text )
         self.lattice_reci = np.linalg.inv(self.lattice)*2*np.pi
 
-        print(self.lattice_reci, self.element)
+        # print(self.lattice_reci, self.element)
 
     def qreduced2abs(self, q):
         return q.dot(self.lattice_reci)
@@ -93,6 +113,11 @@ class QeXmlCell(CellBase):
     def qabs2reduced(self, q):
         fac = 1./(2*np.pi)
         return q.dot(self.lattice*fac)
+    
+    def getAtomSymbols(self):
+        return self.element
+
+
 
 
 class MPCell(CellBase):

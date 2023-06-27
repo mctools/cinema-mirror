@@ -32,12 +32,5 @@ class MeshQE(Hdf5Powder):
         self.name=qexml
         lattice=qecell.lattice
         pos = qecell.position
-        mass=[]
-        bc=[] #bound coherent scattering length
-        for ele in qecell.element:
-            m, b, _ =getAtomMassBC(ele)
-            mass.append(m)
-            bc.append(b)
-        mass=np.array(mass)
-        bc=np.array(bc)
+        mass, bc, _ = qecell.getAtomInfo()
         super().__init__(lattice, mass, pos, bc, temperature, h5FileName, phonIdx)
