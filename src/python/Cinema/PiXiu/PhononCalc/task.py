@@ -20,10 +20,10 @@ class MeshCell(Hdf5Powder):
                 mass.append(m)
                 bc.append(b)
                 pos.append(np.array(v))
-        pos=np.array(pos)
+        reduced_pos=np.array(pos)
         mass=np.array(mass)
         bc=np.array(bc)
-        super().__init__(lattice, mass, pos, bc, temperature, h5FileName )
+        super().__init__(lattice, mass, reduced_pos, bc, temperature, h5FileName )
 
 
 class MeshQE(Hdf5Powder):
@@ -31,6 +31,6 @@ class MeshQE(Hdf5Powder):
         qecell = QeXmlCell(qexml)
         self.name=qexml
         lattice=qecell.lattice
-        pos = qecell.position
+        reduced_pos = qecell.reduced_pos
         mass, bc, _ = qecell.getAtomInfo()
-        super().__init__(lattice, mass, pos, bc, temperature, h5FileName, phonIdx)
+        super().__init__(lattice, mass, reduced_pos, bc, temperature, h5FileName, phonIdx)

@@ -210,12 +210,9 @@ class CalcBase:
             Qmag=np.linalg.norm(Q)
             F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd_iso*Qmag*Qmag) )*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
         else:
-            Qmag=np.linalg.norm(Q)
-            Q_unit = Q/Qmag
-            w =  -0.5 * np.dot(np.dot(self.histparas['msd'], Q_unit) ,Q_unit)
+            w =  -0.5 * np.dot(np.dot(self.histparas['msd'], Q) ,Q)
             F=(self.bc/self.sqMass*np.exp(w + 1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
             # F=(self.bc/self.sqMass*np.exp(w)*np.exp(1j*self.pos.dot(Q))*eigvecs.dot(Q)).sum(axis=1) #summing for all atoms
-            # F = F**(np.exp(Q_mag)
 
         #fixme isotropic approximation at the moment
         #F=(self.bc/self.sqMass*np.exp(-0.5*(self.msd.dot(Q))**2 )*np.exp(1j*self.pos.dot(Q))*self.eigv[i].dot(Q)).sum(axis=1)
@@ -234,6 +231,7 @@ class CalcBase:
         
         Q=self.qpoint[i]+tau
         F = self.calcFormFact(Q, self.eigv[i])
+
         Smag=0.5*(np.linalg.norm(F)**2)*self.detlbal[i]*hbar*hbar/self.en[i]
 
         return Smag, np.linalg.norm(Q), self.en[i], 
