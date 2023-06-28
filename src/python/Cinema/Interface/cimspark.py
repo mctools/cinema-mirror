@@ -48,7 +48,9 @@ def parallelize(iteratable, oper, mode='auto'):
                 from pyspark.sql import SparkSession
                 spark = SparkSession.builder.getOrCreate()
                 p = get_core_count(spark)
-                return spark.sparkContext.parallelize(iteratable, p).map(func).reduce(oper)
+                res = spark.sparkContext.parallelize(iteratable, p).map(func).reduce(oper)
+                spark.stop()
+                return res
         return wrapper
     return decorator
 
