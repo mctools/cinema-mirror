@@ -113,9 +113,9 @@ class ErrorPropagator():
 
 
 class DataLoader():
-    def __init__(self, fname, moduleName, tofcut=30, printCentent=False):
+    def __init__(self, fname, moduleName, tofcut=30, printContent=False):
         hf=h5py.File(fname,'r')
-        if printCentent:
+        if printContent:
             keys=[]
             readKeys(keys, hf)
             print(keys)
@@ -124,7 +124,7 @@ class DataLoader():
         pid = hf[f'/csns/instrument/{moduleName}/pixel_id'][()].flatten() #vector
         tofpidMat = hf[f'/csns/instrument/{moduleName}/histogram_data'][()] #matrix
         tofpidMat[:, :tofcut] = 0
-        self.tofCentre = tof[:-1]+np.diff(tof) #vector
+        self.tofCentre = tof[:-1]+np.diff(tof)*0.5 #vector
 
         self.detErrPro = ErrorPropagator(tofpidMat, pid, tof, tofpidMat)
 
