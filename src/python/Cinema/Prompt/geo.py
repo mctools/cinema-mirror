@@ -68,12 +68,21 @@ class Transformation3D:
     def __del__(self):
         _pt_Transformation3D_delete(self.cobj)
         
+    # def __mul__(self, other):
+    #     '''
+    #     Transformation following another parent transformation.
+    #     a dot B: a project in B, successive add up
+    #     '''
+    #     rot = self.getRotMatrix().dot(other.getRotMatrix())
+    #     transl = self.translation + other.getTranslation().dot(self.getRotMatrix())
+    #     transf = Transformation3D(transl[0], transl[1], transl[2])
+    #     transf.sciRot = self.sciRot * other.sciRot
+    #     transf.applyTrans(rot)
+    #     return transf
+
     def __mul__(self, other):
-        '''
-        Transformation following another parent transformation.
-        '''
         rot = self.getRotMatrix().dot(other.getRotMatrix())
-        transl = self.translation + other.getTranslation().dot(self.getRotMatrix())
+        transl = self.translation + self.getRotMatrix().dot(other.getTranslation())
         transf = Transformation3D(transl[0], transl[1], transl[2])
         transf.sciRot = self.sciRot * other.sciRot
         transf.applyTrans(rot)
@@ -132,6 +141,7 @@ class Transformation3D:
     def applyTrans(self, refMatrix):
         # self.sciRotMatrix = self.sciRot.as_matrix()
         self.sciRotMatrix = mat = self.sciRotMatrix.dot(refMatrix)
+        self.sciRot = scipyRot.from_matrix(self.sciRotMatrix)
         _pt_Transformlation3D_setRotation(self.cobj, mat[0,0], mat[0,1], mat[0,2],
                                           mat[1,0], mat[1,1], mat[1,2],
                                           mat[2,0], mat[2,1], mat[2,2])
@@ -261,18 +271,19 @@ class Volume:
         _pt_Volume_placeChild(self.cobj, name.encode('utf-8'), logVolume.cobj, transf.cobj, scorerGroup)
         return self
     
-    def placeArray(self, array, transf = Transformation3D(), marker = '', count = 0):
+    def placeArray(self, array, transf = None, marker = '', count = 0):
+        if transf == None:
+            transf = array.refFrame
         marker = f'{marker}{count}'
-        print(transf.sciRot.as_matrix())
-        for i_mem in array.eleAncs:
-            if isinstance(i_mem[0], Volume):
-                transf_t = transf * i_mem[1].refFrame
+        for i_mem in array.members:
+            if isinstance(array.element, Volume):
+                transf_t = transf * i_mem.refFrame 
                 # transf_t.sciRot = deepcopy(transf.sciRot)
-                # transf_t.applyTrans(i_mem[1].refFrame.sciRotMatrix)
-                self.placeChild(f'phyvol_{marker}_{i_mem[0].volname}', i_mem[0], transf_t)
+                # transf_t.applyTrans(i_mem.refFrame.sciRotMatrix)
+                self.placeChild(f'phyvol_{marker}_{array.element.volname}', array.element, transf_t)
             else:
                 count = count + 1
-                self.placeArray(i_mem[0], i_mem[1].refFrame, i_mem[1].marker, count = count)
+                self.placeArray(array.element, transf * i_mem.refFrame, i_mem.marker, count = count)
 
 
 
