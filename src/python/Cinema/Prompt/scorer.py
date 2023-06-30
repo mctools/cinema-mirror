@@ -47,18 +47,31 @@ class PSD(Scorer):
         self.cfg_ymax = 1.
         self.cfg_numbin_y = 10 
         self.cfg_ptstate = 'SURFACE' 
-        self.cfg_type = 'XY'
+        self.cfg_type = 'XZ'
 
 
     def makeCfg(self):
         cfg = 'Scorer=PSD;'
         return cfg + super().makeCfg()
     
-def makeFlatPSD(name, x, y, numbin_x, numbin_y):
-    xmin = - x * 0.5
-    xmax = x * 0.5
-    ymin = - y * 0.5
-    ymax = y * 0.5
+def makeFlatPSD(name, x, y, z, numbin_x, numbin_y):
+    """Make a PSD scorer of Volume BOX.
+
+    Args:
+        name (str): name of scorer
+        x (float): half length of horizontal dimension
+        y (float): half length of vertical dimension
+        z (float): half length of depth dimension
+        numbin_x (int): number of bins of horizontal dimension
+        numbin_y (int): number of bins of vertical dimension
+
+    Returns:
+        cfg, vol: config string of scorer, Volume instance with PSD attached to
+    """
+    xmin = - x 
+    xmax = x 
+    ymin = - y
+    ymax = y
 
     det = PSD()
     det.cfg_name = name
@@ -70,7 +83,7 @@ def makeFlatPSD(name, x, y, numbin_x, numbin_y):
     det.cfg_ymax = ymax
     det.cfg_numbin_y = numbin_y
     cfg = det.makeCfg()
-    vol = Volume(name, Box(x,y,1e-3))
+    vol = Volume(name, Box(x,y,z))
     vol.addScorer(cfg)
     return cfg, vol
         
