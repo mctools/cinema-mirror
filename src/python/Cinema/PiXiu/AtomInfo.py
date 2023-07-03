@@ -1,4 +1,5 @@
 
+from Cinema.Interface.units import umass
 
 # z number, atomic mass, bound coherent scl, incoherent xs, absorption xs
 _ncrystalSCLv0_9_18={"H": [ 1, 1.00794, -0.37409, 80.26, 0.3326],
@@ -90,4 +91,4 @@ _ncrystalSCLv0_9_18={"H": [ 1, 1.00794, -0.37409, 80.26, 0.3326],
 
 def getAtomMassBC(element):
     info = _ncrystalSCLv0_9_18[element]
-    return info[1], info[2], info[0]
+    return info[1]*umass, info[2], info[0]

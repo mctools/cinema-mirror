@@ -30,7 +30,6 @@ radpfs2meV = radpsec2meV*1e15
 
 deg2rad = np.pi/180.
 eV2kk = 1/2.072124652399821e-3
-c  = 299792458e10 # speed of light in Aa/s
 dalton2kg =  1.660539040e-27  # amu to kg (source: NIST/CODATA 2018)
 dalton2eVc2 =  931494095.17  # amu to eV/c^2 (source: NIST/CODATA 2018)
 avogadro = 6.022140857e23  # mol^-1 (source: NIST/CODATA 2018)

@@ -80,8 +80,8 @@ class CalcBase:
 
         self.lattice=lattice
         self.lattice_reci=np.linalg.inv(lattice)*2*np.pi
-        self.mass=mass*umass
-        self.molarMass=mass
+        self.mass=mass
+        self.molarMass=mass/umass
         self.sqMass=np.sqrt(self.mass)
         self.pos=lattice.dot(pos.T).T
         self.bc=bc
@@ -361,6 +361,7 @@ class CalcPowder(CalcBase):
             F = self.calcFormFact(Q, self.eigv[i])
             # not devided by the reciprocal volume so the unit is per atoms in the cell
             Smag=0.5*(np.linalg.norm(F)**2)*self.detlbal[i]*self.qweight[i]*hbar*hbar/self.en[i]
+
             self.hist.fillmany(np.repeat(Qmag,self.nAtom*3), -self.en[i], Smag*latpnt['mult']) #negative energy for downscattering, fill in angular frequency instead of energy       
         return self.hist.xcenter, self.hist.ycenter, self.hist.getWeight()
 
