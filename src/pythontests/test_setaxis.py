@@ -47,7 +47,7 @@ class MySim(Prompt):
         guide = makeTrapezoidGuide(50., 8, 8, 5, 5, m=10)
 
         r=Transformation3D(0, 1)
-        world.placeChild('guide', guide, r.appplyRotAxis(30, np.array([0,0,1])))
+        world.placeChild('guide', guide, r.applyRotAxis(30, np.array([0,0,1])))
 
         det1 = Volume("detector", Box(10, 10, 0.01) )
         det1.addScorer(self.scorer['wl'])
