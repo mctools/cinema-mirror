@@ -79,6 +79,17 @@ class Anchor:
         Get transformation from Anchor reference frame to transf.
         '''
         return self.refFrame.inv() * transf 
+    
+    def getRelTransf(self, other):
+        transf = Anchor()
+        transl = (other.refFrame.translation - self.refFrame.translation).dot(self.refFrame.sciRotMatrix)
+        transl_ins = Transformation3D(transl[0], transl[1], transl[2])
+        # transl_ins.sciRot =self.refFrame.sciRot.inv() *  other.refFrame.sciRot
+        refMatrix = np.linalg.inv(self.refFrame.sciRotMatrix).dot(other.refFrame.sciRotMatrix)
+        transl_ins.applyTrans(refMatrix)
+        transf.setRefFrame(transl_ins)
+        return transf
+    
     # fixme: add inverse of Transformation 
     # fixme: add refresh of all members' anchor
     # def transform(self, frame: Transformation3D):
@@ -93,43 +104,40 @@ class Array(Anchor):
     def setMemberMarker(self):
         for i_mem in self.members:
             i_mem.setMarker(f'{self.marker}|{i_mem.marker}')
-
-    def get_member_abs_frame(self, anchor : Anchor) -> Transformation3D:
-        return self.refFrame * anchor.refFrame
     
     def setAnchor(self, refFrame : Transformation3D):
         self.refFrame = refFrame
         for mem in self.members:
             mem.refFrame = self.refFrame * mem.refFrame
-    # def refresh(self):
-    #     for i_anc in self.members:
-    #         i_anc.refFrame = self.refFrame * i_anc.refFrame
-        
-    # def transform(self, frame: Transformation3D):
-    #     super().transform(frame)
-    #     self.refresh()
 
+    # @property
+    # def membersInWorld(self):
+    #     ancList = []
+    #     for mem in self.members:
+    #         anc = deepcopy(mem)
+    #         anc.refFrame = self.refFrame * mem.refFrame
+    #         ancList.append(anc)
+    #     return ancList
+
+    def getRelativeRefFrame(self):
+        ancList = []
+        for mem in self.members:
+            anc = self.getRelTransf(mem)
+            ancList.append(anc)
+        return ancList    
 
 class EntityArray(Array):
 
     def __init__(self, element, 
-                 array_size = None, spacings = None, refFrame = Transformation3D(), marker = 'Arr') -> None:
+                 array_size = None, spacings = None, refFrame = Transformation3D(), marker = 'Entity') -> None:
         super().__init__(refFrame, marker)
-        # if isinstance(element, EntityArray):
-        #     element.refFrame = refFrame * element.refFrame # making all EntityArray refFrame as absolute frame
         self.element = element
         if hasattr(self.element, 'marker'):
             self.marker = self.marker + '|' + self.element.marker
         self.size = array_size
         self.spacing = spacings
-        # self.vols = []
         self.eleAncs = []
-        # self.__check()
-
-    # @property
-    # def absTransformation(self):
-    #     return self
-
+        
     def __check(self):
         if not isinstance(self.element, Volume):
             raise TypeError("Object type f{self.element.__class__.__name__} do not match type 'Volume'!")
@@ -142,7 +150,11 @@ class EntityArray(Array):
     def make(self):
         if self.size == None:
             anc = Anchor()
-            anc.setRefFrame(self.refFrame * self.element.refFrame)
+            if isinstance(self.element, Volume):
+                anc.setRefFrame(Transformation3D())
+            else:
+                anc.setRefFrame(self.element.refFrame)
+            # anc.setRefFrame(self.refFrame * self.element.refFrame)
             self.eleAncs.append((self.element, anc))
             self.members.append(anc)
         else:
@@ -178,9 +190,9 @@ class EntityArray(Array):
 
     def reflect(self, plane = 'XY', plane_location = 0.):
         new_anchors = []
-        for i_anc in self.members:
-            transl = deepcopy(i_anc.refFrame.translation)
-            matrix = i_anc.refFrame.sciRotMatrix
+        for mem in self.members:
+            absTrans = self.refFrame * mem.refFrame
+            transl = absTrans.translation
             if plane == 'YZ':
                 transl[0] = 2 * plane_location - transl[0]
                 # rotvec[0] = - rotvec[0]
@@ -193,65 +205,51 @@ class EntityArray(Array):
                 # rotvec[1] = - rotvec[1]
             else:
                 raise ValueError(f'plane should be XY, YZ or XZ, but got {plane}.')
-            # if plane == 'YZ':
-            #     transl[0] = 2 * plane_location - transl[0]
-            #     rotvec[0] = - rotvec[0]
-            # elif plane == 'XY':
-            #     transl[2] = 2 * plane_location - transl[2]
-            #     rotvec[2] = - rotvec[2]
-            # elif plane == 'XZ':
-            #     transl[1] = 2 * plane_location - transl[1]
-            #     rotvec[1] = - rotvec[1]
-            # else:
-            #     raise ValueError(f'plane should be XY, YZ or XZ, but got {plane}.')
             new_anc = Anchor()
-            new_anc.setRefFrame(Transformation3D(transl[0], transl[1], transl[2]))
-            yy = matrix * refMatrix
-            new_anc.refFrame.applyTrans(matrix.dot(refMatrix))
-            new_anchors.append(new_anc)
+            new_anc.refFrame.translation = transl
+            new_anc.refFrame.applyTrans(refMatrix.dot(absTrans.sciRotMatrix))
+            # new_anc.setRefFrame(absTrans * new_anc.refFrame)
+            relAnc = self.getRelTransf(new_anc)
+            new_anchors.append(relAnc)
         for i_new_anc in new_anchors:
             self.create(i_new_anc.refFrame)
             
 
-    def rotate_z(self, x, y, angle):
-        self.setAnchor(Transformation3D(x, y, 0).applyRotZ(angle) * self.refFrame)
+    def rotate_z(self, angle):
+        self.setRefFrame(Transformation3D().applyRotZ(angle) * self.refFrame)
 
 
-    def make_rotate_z(self, x, y, angle, num):
+    def make_rotate_z(self, angle, num, x= 0, y = 0):
         for mem in self.members:
-            # trs2transf = ele[1].refFrame.getTransformationTo(origin)
             new_anchors = []
+            absTrans = self.refFrame * mem.refFrame
             for i_num in np.arange(1, num + 1):
                 temp_anc = Anchor()
-                transl = mem.refFrame.translation
+                transl = absTrans.translation
                 angle_in = angle * i_num / 180 * np.pi
-                temp_anc.refFrame = Transformation3D().applyRotZ(angle, degrees=False)
-                v = transl
-                u = np.array([x,y,1.])
+                temp_anc.refFrame = Transformation3D().applyRotZ(angle)
+                u = np.array([0,0,1.])
+                originTrans = np.array([x,y,0])
+                v = transl - originTrans
                 v_para = (v * u) * u
                 vt = v - v_para
                 asin = np.sin(angle_in)
                 acons = np.cos(angle_in)
                 transl = v_para + np.sin(angle_in) * np.cross(u, vt) + np.cos(angle_in) * vt
-                # transl = np.cos(angle) * v + (1-np.cos(angle)) * (v.dot(u)) * u + np.sin(angle) * np.cross(u, (v-(v*u)*u))
-                # transl = transl.dot(temp_anc.refFrame.sciRotMatrix)
-                # temp_anc.refFrame.applyTrans(ele[1].refFrame.sciRotMatrix)
-                # temp_anc.refFrame.sciRotMatrix = temp_anc.refFrame.sciRotMatrix.dot(transl)
+                transl = originTrans + transl
                 skew_u = [[0, - u[2], u[1]],
                           [u[2], 0, - u[0]],
                           [- u[1], u[0], 0]]
                 skew_u = np.array(skew_u)
                 transl_mat = np.cos(angle_in) * scipyRot.identity().as_matrix() + (1-np.cos(angle_in)) * np.outer(u, u) + np.sin(angle_in) * skew_u
-                new_anc = Anchor()
-                new_anc.refFrame = Transformation3D(transl[0], transl[1], transl[2])
-                new_anc.refFrame.applyTrans(transl_mat.dot(mem.refFrame.sciRotMatrix))
-                new_anchors.append(new_anc)
+                absAnc = Anchor()
+                absAnc.refFrame = Transformation3D(transl[0], transl[1], transl[2])
+                absAnc.refFrame.applyTrans(transl_mat.dot(absTrans.sciRotMatrix))
+                relAnc = self.getRelTransf(absAnc)
+                new_anchors.append(relAnc)
         for i_new_anc in new_anchors:
             self.create(i_new_anc.refFrame)
         
-    # def reflect_z(self, z):
-        
-
 
     def make_plane(self, cur_h, cur_v, points):
         '''
@@ -304,7 +302,7 @@ class EntityArray(Array):
         # self.parent.placeChild('Phy_Analyser', self.anchor, Transformation3D(500,0,17100,90,-90,-90))
                 # print(f'Transformation is {Transformation3D(ix, iy, 18000, 0, 90, 0)}')
 
-    def make_trape_plane(self, upper_l, lower_l, height, cur_h, cur_v):
+    def make_trape_plane(self, upper_l, lower_l, height, cur_h=0, cur_v=0):
         points = self.set_trape_position(upper_l, lower_l, height)
         self.make_plane(cur_h, cur_v, points)
 

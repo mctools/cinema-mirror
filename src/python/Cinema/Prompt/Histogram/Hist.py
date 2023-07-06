@@ -173,7 +173,7 @@ class Hist1D(HistBase):
             raise RunTimeError('fillnamy different size')
         _pt_Hist1D_fill_many(self.cobj, x.size, x, weight )
 
-    def plot(self, show=False, label=None):
+    def plot(self, show=False, label=None, title='Histogram'):
         try:
             import matplotlib.pyplot as plt
             from Cinema.Interface import plotStyle
@@ -186,13 +186,19 @@ class Hist1D(HistBase):
             if label is None:
                 label = f'Weight {w.sum()}'
             plt.errorbar(center, w, yerr=err, fmt='o', label=label)
+            plt.title(title)
 
             if show:
                 plt.legend(loc=0)
                 plt.show()
+            else: 
+                return plt
         except Exception as e:
             print (e)
-        
+    
+    def savefig(self, fname, title="Histogram"):
+        plt = self.plot(title=title)
+        plt.savefig(fname=fname)
 
 class Hist2D(HistBase):
     def __init__(self, xmin=None, xmax=None, xnum=None, ymin=None, ymax=None, ynum=None, metadata=None, cobj=None):
@@ -259,7 +265,7 @@ class Hist2D(HistBase):
             raise RunTimeError('fillnamy different size')
         _pt_Hist2D_fill_many(self.cobj, x.size, x, y, weight )
 
-    def plot(self, show=False):
+    def plot(self, show=False, title='Histogram'):
         try:
             import matplotlib.pyplot as plt
             import matplotlib.colors as colors
@@ -273,13 +279,20 @@ class Hist2D(HistBase):
             pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
             fig.colorbar(pcm, ax=ax)
             plt.grid()
-            plt.title(f'Weight {H.sum()}')
+            plt.title(f'{title}\nWeight {H.sum()}')
             if show:
                 plt.show()
+            else:
+                return plt
                 
 
         except Exception as e:
             print(e)
+
+    def savefig(self, fname, title="Histogram"):
+        plt = self.plot(title=title)
+        plt.savefig(fname=fname)
+
 
     def save(self, fn):
         import h5py
