@@ -84,8 +84,10 @@ void pt_Transformation3D_transform(void *obj, size_t numPt, double *in, double *
   auto mat = static_cast<vecgeom::Transformation3D *>(obj);
   for(size_t i=0;i<numPt;i++)
   {
-    vecgeom::Vector3D<Precision> vert(in[i*3], in[i*3+1], in[i*3+2]);
-    mat->InverseTransform(vert);
+    // vecgeom::Vector3D<Precision> vert(in[i*3], in[i*3+1], in[i*3+2]);
+    auto vert = *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(in+i*3);
+    auto vertTransformed = *reinterpret_cast<vecgeom::Vector3D<vecgeom::Precision>*>(out+i*3);
+    vertTransformed = mat->Transform(vert);
   }
 }
 
