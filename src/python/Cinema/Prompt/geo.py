@@ -168,8 +168,8 @@ class Transformation3D:
 
     #  a wrapper of scipy.spatial.transform.Rotation    
     def setRot(self, rot_z=0., rot_new_x=0., rot_new_z=0., degrees = True):
-        self.py2cppConv(scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees=degrees))
-        return self
+        self.sciRot = scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees)
+        self.py2cppConv()
 
     def transformInplace(self, input):
         _pt_Transformation3D_transform(self.cobj, input.shape[0], input, input)
