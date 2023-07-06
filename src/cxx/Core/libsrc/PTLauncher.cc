@@ -160,7 +160,8 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
           if(recordTrj)
             m_trajectory.push_back(particle.getPosition());
         }
-        m_activeVolume.scoreExit(particle);
+        if(particle.isAlive())
+          m_activeVolume.scoreExit(particle);
       }
 
       if(!particle.isAlive())
