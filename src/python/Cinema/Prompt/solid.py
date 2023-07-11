@@ -44,7 +44,7 @@ class Box:
 
 class Tube:
     def __init__(self, rmin, rmax, z, startphi = 0, deltaphi = 360):
-        self.cobj = _pt_Tube_new(rmin, rmax, z, startphi, deltaphi)
+        self.cobj = _pt_Tube_new(rmin, rmax, z, np.deg2rad(startphi), np.deg2rad(deltaphi))
 
 class Sphere:
     def __init__(self, rmin, rmax, startphi=0., deltaphi=2*np.pi, starttheta=0., deltatheta=np.pi):
