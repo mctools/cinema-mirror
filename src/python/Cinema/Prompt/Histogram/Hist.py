@@ -173,7 +173,7 @@ class Hist1D(HistBase):
             raise RunTimeError('fillnamy different size')
         _pt_Hist1D_fill_many(self.cobj, x.size, x, weight )
 
-    def plot(self, show=False, label=None, title='Histogram'):
+    def plot(self, show=False, label=None, title='Histogram', log=False):
         try:
             import matplotlib.pyplot as plt
             from Cinema.Interface import plotStyle
@@ -185,7 +185,9 @@ class Hist1D(HistBase):
             err = np.divide(w, uncet, where=(uncet!=0.))
             if label is None:
                 label = f'Weight {w.sum()}'
-            plt.errorbar(center, w, yerr=err, fmt='o', label=label)
+            plt.errorbar(center, w, yerr=err, fmt='-', label=label)
+            if log:
+                plt.yscale('log')
             plt.title(title)
 
             if show:
@@ -196,9 +198,17 @@ class Hist1D(HistBase):
         except Exception as e:
             print (e)
     
-    def savefig(self, fname, title="Histogram"):
-        plt = self.plot(title=title)
+    def savefig(self, fname, title="Histogram", log = False):
+        plt = self.plot(title=title, log = log)
         plt.savefig(fname=fname)
+
+    def savedata(self, fn):
+        import h5py
+        f0=h5py.File(fn,"w")
+        f0.create_dataset("center", data=self.getCentre(), compression="gzip")
+        f0.create_dataset("weight", data=self.getWeight(), compression="gzip")
+        f0.create_dataset("hit", data=self.getHit(), compression="gzip")
+        f0.close()
 
 class Hist2D(HistBase):
     def __init__(self, xmin=None, xmax=None, xnum=None, ymin=None, ymax=None, ynum=None, metadata=None, cobj=None):
