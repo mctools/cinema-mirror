@@ -145,7 +145,7 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkMateria
 
     else if(physDef == "idealElaScat")
     {
-      int parCount = 4; 
+      int parCount = 5; 
 
       double scatter_bias = 1.;
       if(!cfg.getDoubleIfExist("scatter_bias", scatter_bias))
@@ -173,6 +173,9 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkMateria
         PROMPT_THROW2(BadInput, "\"density_per_aa3\" should be non-zero" );
       }
 
+      double ekin_transfer = 0.;
+      if(!cfg.getDoubleIfExist("energy_transfer_eV", ekin_transfer))
+        parCount--;
 
       if(parCount!=cfg.size())
       {
@@ -180,7 +183,7 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkMateria
       }
 
       compmod = std::make_unique<CompoundModel> (2112);
-      compmod->addPhysicsModel(std::make_shared<IdealElaScat>(xs, density_per_aa3, scatter_bias));
+      compmod->addPhysicsModel(std::make_shared<IdealElaScat>(xs, density_per_aa3, scatter_bias, ekin_transfer));
       return compmod;   
     }
     

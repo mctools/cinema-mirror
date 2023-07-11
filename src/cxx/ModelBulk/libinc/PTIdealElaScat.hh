@@ -33,7 +33,8 @@ namespace Prompt {
 
   class IdealElaScat  : public DiscreteModel {
   public:
-    IdealElaScat(double xs_barn, double density_per_aa3, double bias);
+    IdealElaScat(double xs_barn, double density_per_aa3, double bias, 
+                        double ekin_transfer);
     virtual ~IdealElaScat();
 
     virtual double getCrossSection(double ekin) const override;
@@ -43,7 +44,8 @@ namespace Prompt {
   private:
     double m_xs;
     double m_density;
-
+    double m_ekin_t;
+    
   };
 
 }
