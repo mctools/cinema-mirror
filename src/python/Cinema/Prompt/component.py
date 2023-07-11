@@ -293,7 +293,7 @@ class EntityArray(Array):
                     tilt_v = - np.arcsin((iy - height * 0.5) / cur_v) * np.rad2deg(1)
                 transf = Transformation3D(ix - length * 0.5, iy - height * 0.5, 0,).applyRotxyz(tilt_v, tilt_h, 0)
                 anc = Anchor()
-                anc.setRefFrame(transf)
+                anc.setRefFrame(transf * self.refFrame)
                 anc.setMarker(f'{marker}')
                 self.eleAncs.append((vol,anc))
                 self.members.append(anc)
