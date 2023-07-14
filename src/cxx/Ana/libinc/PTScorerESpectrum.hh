@@ -28,9 +28,11 @@ namespace Prompt {
 
   class ScorerESpectrum  : public Scorer1D {
   public:
-    ScorerESpectrum(const std::string &name, double xmin, double xmax, unsigned nxbins, ScorerType stype=Scorer::ScorerType::ENTRY);
+    ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, ScorerType stype=Scorer::ScorerType::ENTRY);
     virtual ~ScorerESpectrum();
     virtual void score(Particle &particle) override;
+  private:
+    bool m_scoreTransfer;
   };
 }
 

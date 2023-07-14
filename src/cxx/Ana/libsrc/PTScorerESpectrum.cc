@@ -21,13 +21,19 @@
 #include "PTScorerESpectrum.hh"
 
 
-Prompt::ScorerESpectrum::ScorerESpectrum(const std::string &name, double xmin, double xmax, unsigned nxbins, ScorerType stype)
-:Scorer1D("ScorerESpectrum_"+name, stype, std::make_unique<Hist1D>("ScorerESpectrum_"+name, xmin, xmax, nxbins))
+Prompt::ScorerESpectrum::ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, ScorerType stype)
+:Scorer1D("ScorerESpectrum_"+name, stype, std::make_unique<Hist1D>("ScorerESpectrum_"+name, xmin, xmax, nxbins)),
+m_scoreTransfer(scoreTransfer)
 {}
 
 Prompt::ScorerESpectrum::~ScorerESpectrum() {}
 
 void Prompt::ScorerESpectrum::score(Prompt::Particle &particle)
 {
-  m_hist->fill(particle.getEKin(),  particle.getWeight() );
+  if (!m_scoreTransfer)
+    m_hist->fill(particle.getEKin(),  particle.getWeight() );
+  else if (particle.getEKin0()!=particle.getEKin()) 
+  // FIXME: neither elastic scattered or transmitted neutrons are recorded. 
+  // Should better score elastic scattered neutrons, with ENTRY2EXIT scorer?
+    m_hist->fill(particle.getEKin0()-particle.getEKin(),  particle.getWeight() );
 }

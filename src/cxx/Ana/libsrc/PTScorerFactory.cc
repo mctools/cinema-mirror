@@ -287,13 +287,25 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       // example cfg
       // "Scorer=ESD; name=detector; min=0.0; max=0.0253; numbin=100; ptstate=ENTRY"
 
-      int parCount = 6;
+      int parCount = 7;
 
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
       double minE = ptstod(cfg.find("min", force));
       double maxE = ptstod(cfg.find("max", force));
+
+      bool scoreTransfer = false;
+      std::string scoreTransferStr = cfg.find("scoreTransfer");
+      if (scoreTransferStr=="1" || scoreTransferStr=="true")
+        scoreTransfer = true;
+      else if (scoreTransferStr=="0" || scoreTransferStr=="false");
+      else if (scoreTransferStr.empty())
+        parCount--;
+      else
+        {
+          PROMPT_THROW2(BadInput, "Not recognized scoreTransfer input " << scoreTransferStr << ".");
+        }
 
       int numBin = 100;
       if(cfg.find("numbin")=="") 
@@ -303,13 +315,23 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         numBin = ptstoi(cfg.find("numbin"));
       }
 
+      // if is an energy transfer scorer, force pts to EXIT
       Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
       std::string ptstateInStr = cfg.find("ptstate");
       if(ptstateInStr.empty())
+      {
+        if(scoreTransfer)
+          ptstate = Scorer::ScorerType::EXIT;
         parCount--;
+      }
       else
       {
         ptstate = getPTS (ptstateInStr);
+        if(scoreTransfer && ptstate != Scorer::ScorerType::EXIT)
+        {
+          ptstate = Scorer::ScorerType::EXIT;
+          printf("WARNING: input particle tracing state forced to EXIT when scoring energy transfer!\n");
+        }
       }
 
       if(parCount!=cfg.size())
@@ -317,7 +339,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type ESpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerESpectrum>(name, minE, maxE, numBin, ptstate);
+      return std::make_shared<ScorerESpectrum>(name, scoreTransfer, minE, maxE, numBin, ptstate);
     }
     else if(ScorDef == "WlSpectrum")
     {
