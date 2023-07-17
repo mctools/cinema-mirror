@@ -21,49 +21,48 @@
 #include "PTPythonGun.hh"
 #include "PTNeutron.hh"
 #include "PTPython.hh"
-// fixme: temp remove for manylinux
 
-// Prompt::PythonGun::PythonGun(PyObject *obj)
-//     : PrimaryGun(Neutron()),  m_pyobj(obj)
-// {  
-//     Py_INCREF(m_pyobj);
-// }
+Prompt::PythonGun::PythonGun(PyObject *obj)
+    : PrimaryGun(Neutron()),  m_pyobj(obj)
+{  
+    Py_INCREF(m_pyobj);
+}
 
-// Prompt::PythonGun::~PythonGun()
-// { 
-//     Py_DECREF(m_pyobj); 
-// }
+Prompt::PythonGun::~PythonGun()
+{ 
+    Py_DECREF(m_pyobj); 
+}
 
-// std::unique_ptr<Prompt::Particle> Prompt::PythonGun::generate()
-// {
-//     auto ret = pt_call_python_method(m_pyobj, "generate");
+std::unique_ptr<Prompt::Particle> Prompt::PythonGun::generate()
+{
+    auto ret = pt_call_python_method(m_pyobj, "generate");
 
-//     if (! PyArg_ParseTuple(ret, "ddddddddd", &m_ekin, &m_weight, &m_time,
-//             &m_pos.x(), &m_pos.y(), &m_pos.z(),
-//             &m_dir.x(), &m_dir.y(), &m_dir.z()))
-//     {
-//         PROMPT_THROW(BadInput, "PyArg_ParseTuple failed\n");
-//     }
-//     Py_DECREF(ret);
+    if (! PyArg_ParseTuple(ret, "ddddddddd", &m_ekin, &m_weight, &m_time,
+            &m_pos.x(), &m_pos.y(), &m_pos.z(),
+            &m_dir.x(), &m_dir.y(), &m_dir.z()))
+    {
+        PROMPT_THROW(BadInput, "PyArg_ParseTuple failed\n");
+    }
+    Py_DECREF(ret);
 
-//     m_ekin0=m_ekin;
-//     m_eventid++;
-//     m_alive = true;
-//     auto p = std::make_unique<Particle>(*this);
-//     return std::move(p);
-// }
+    m_ekin0=m_ekin;
+    m_eventid++;
+    m_alive = true;
+    auto p = std::make_unique<Particle>(*this);
+    return std::move(p);
+}
 
-// void* pt_PythonGun_new(PyObject *pyobj)
-// {
-//     return static_cast<void *> (new Prompt::PythonGun(pyobj)) ;
-// }
+void* pt_PythonGun_new(PyObject *pyobj)
+{
+    return static_cast<void *> (new Prompt::PythonGun(pyobj)) ;
+}
 
-// void pt_PythonGun_delete(void *obj)
-// {
-//     delete static_cast<Prompt::PythonGun *> (obj);
-// }
+void pt_PythonGun_delete(void *obj)
+{
+    delete static_cast<Prompt::PythonGun *> (obj);
+}
 
-// void pt_PythonGun_generate(void *obj)
-// {
-//     static_cast<Prompt::PythonGun *> (obj)->generate();
-// }
+void pt_PythonGun_generate(void *obj)
+{
+    static_cast<Prompt::PythonGun *> (obj)->generate();
+}

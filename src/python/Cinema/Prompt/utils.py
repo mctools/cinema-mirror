@@ -21,8 +21,8 @@
 
 from ..Interface import *
 
-# _pt_call_python_method = importFunc('pt_call_python_method', type_pyobject, [type_pyobject, type_cstr])
+_pt_call_python_method = importFunc('pt_call_python_method', type_pyobject, [type_pyobject, type_cstr])
 
-# def call_python_method(obj, name):
-#     return _pt_call_python_method(obj, name.encode('utf-8'))
+def call_python_method(obj, name):
+    return _pt_call_python_method(obj, name.encode('utf-8'))
 

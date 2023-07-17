@@ -69,6 +69,9 @@ class CohPhon:
         self.ph.run_thermal_displacement_matrices(self.temperature, self.temperature+1, 2, freq_min=0.002)
         # get_thermal_displacement_matrices returns the temperatures and thermal_displacement_matrices
         self.disp = self.ph.get_thermal_displacement_matrices()[1][0]
+        omega = self.ph.get_mesh_dict()['frequencies']
+        self.maxEn = omega.max()*THz*2*np.pi*hbar
+
         # print(self.disp)
 
     def calcMesh(self, meshsize):
@@ -92,12 +95,6 @@ class CohPhon:
 
         en = res[0]*THz*2*np.pi*hbar
         eigv = res[1].reshape((-1, nAtom*3, nAtom, 3)) # en, eigenvector
-
-        if (en<=0).any():
-            idx = en<=0
-            print(f'_calcPhonon(k={k}) error')
-            print(en[idx], reducedK[0], reducedK[1], reducedK[2])
-            raise RuntimeError('en<=0')
 
         return en, eigv
 
@@ -141,19 +138,136 @@ class CohPhon:
         if np.allclose(Q, np.zeros(3)):
             print('hit gamma')
             return None
-        
+
+    
         F = self._calcFormFact(Q, eigvec)
     
         # not devided by the reciprocal volume so the unit is per atoms in the cell
         n = 1./(np.exp(en/(self.temperature*boltzmann))-1.)
 
         Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
+        
+        if (en<=0).any():
+            idx = en<=0
+            Smag[idx] = 0.
+            import warnings
+            warnings.warn(f'en<=0, Q: {en<=0}, en: {en}', RuntimeWarning) 
+
         return np.linalg.norm(Q, axis=1) , en, Smag
 
 
 from time import time
+import vegas
+
+class kernel():
+    def __init__(self, omegaBin=30) -> None:
+        self.calc =  CohPhon()
+        self.omegaRange = [0, self.calc.maxEn] 
+        self.bin = omegaBin
+
+    def setR(self, rmin, rmax):
+        self.rmin = rmin
+        self.rDelta = rmax-rmin
+        print('rmin, rmax', rmin, rmax)
+
+    def __call__(self, x):
+        # x: rho, theta(0, 2pi), phi (0, pi)
+        # print(x)
+        r=x[0]*self.rDelta + self.rmin
+        print(r)
+        theta=x[1]
+        phi=x[2]
+
+        sin_theta=np.sin(theta)
+        cos_theta=np.cos(theta)
+        sin_phi=np.sin(phi)
+        cos_phi=np.cos(phi)
+        pos = np.array([sin_theta*cos_phi, sin_theta*sin_phi, cos_theta])*r
+
+        Q, en, S = self.calc.s(pos)
+        if (S<0.).any():
+            print('S<0.', pos, S)
+            raise RuntimeError()
+        
+        factor = r*r*sin_phi
+
+        I = S.sum()*factor
+        # return I
+        dI, bin_edges = np.histogram(en, bins=self.bin, range=self.omegaRange, weights=S*factor)
+        return dict(I=I, dI=dI)
 
 
+qSize = 100
+maxQ = 20
+enSize = 80
+qEdge=np.linspace(0, maxQ, qSize+1)
+Q = qEdge[:-1]+np.diff(qEdge)*0.5
+
+# per reciprocal space
+q_volume = qEdge**3*np.pi*4/3. # spher volumes
+q_volume_diff = np.diff(q_volume)
+
+
+k = kernel(enSize)
+enEdge = np.linspace(0, k.calc.maxEn, enSize+1 )
+en = enEdge[:-1]+np.diff(enEdge)*0.5
+# per energy
+en_diff = np.diff(en).mean()
+
+
+sqw = np.zeros([qSize, enSize])
+
+for i in range(qSize-1):
+    integ =  vegas.Integrator([[0, 1], [0, 2*np.pi], [0, np.pi]], nproc = 8)
+    k.setR(qEdge[i], qEdge[i+1])
+    integ(k, nitn=10, neval=10000)
+    result = integ(k, nitn=10, neval=100000)
+    for j in range(enSize):
+        sqw[i,j] = (result['dI'][j] / result['I']).mean
+
+    sqw[i] *= 1./(q_volume_diff[i]*en_diff)
+
+
+    print(result.summary())
+    print('   Q =', Q[i])
+    print('   I =', result['I'])
+    print('sqw[i] =', sqw[i])
+    print('sum(dI/I) =', sum(result['dI']) / result['I'])
+
+
+
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+from Cinema.Interface import plotStyle
+plotStyle()
+fig=plt.figure()
+ax = fig.add_subplot(111)
+H = sqw.T
+
+X, Y = np.meshgrid(Q, en)
+pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
+fig.colorbar(pcm, ax=ax)
+plt.grid()
+plt.show()
+
+
+from sklearn.neighbors import KernelDensity
+from sklearn.model_selection import GridSearchCV
+
+
+# use grid search cross-validation to optimize the bandwidth
+params = {"bandwidth": np.logspace(-5, -3, 5)}
+grid = GridSearchCV(KernelDensity(), params, n_jobs=8)
+
+# use the best estimator to compute the kernel density estimate
+kde = grid.best_estimator_
+
+den = kde.score_samples(xen)
+
+
+
+
+### debug
 # Q, en, S = calc.s([-0.03460482,  0.03460482,  0.03460482], reduced=False)
 # print('s', S[0] )
 
@@ -167,59 +281,62 @@ from time import time
 # t2 = time()
 # print(f'Function  executed in {(time()-t1):.4f}s')
 
-from Cinema.Interface.Utils import findData
 
-def getQ(Qmag):
-    lev = findData('lebedev/lebedev_041.txt')
-    data = np.loadtxt(lev)
-    deg = np.pi/180.
-    sin_theta = np.sin(data[::2,0]*deg)
-    cos_theta = np.cos(data[::2,0]*deg)
-    sin_phi = np.sin(data[::2,1]*deg)
-    cos_phi = np.cos(data[::2,1]*deg)
-    weight = data[::2, 2]*2
+# ## Lebedev rule
+# from Cinema.Interface.Utils import findData
 
-    # https://people.sc.fsu.edu/~jburkardt/cpp_src/sphere_lebedev_rule/sphere_lebedev_rule.html
-    # integral f(x,y,z) = 4 * pi * sum ( 1 <= i <= N ) f(xi,yi,zi) * w(xi,yi,zi)
+# def getQ(Qmag):
+#     lev = findData('lebedev/lebedev_041.txt')
+#     data = np.loadtxt(lev)
+#     deg = np.pi/180.
+#     sin_theta = np.sin(data[::2,0]*deg)
+#     cos_theta = np.cos(data[::2,0]*deg)
+#     sin_phi = np.sin(data[::2,1]*deg)
+#     cos_phi = np.cos(data[::2,1]*deg)
+#     weight = data[::2, 2]*2
 
-    cor = np.zeros((weight.size, 3))
-    cor[:,0] = cos_theta*sin_phi
-    cor[:,1] = sin_theta* sin_phi
-    cor[:,2] = cos_phi
-    cor[np.abs(cor)<1e-14] = 0. # truncate small numbers to zero
-    return cor*Qmag, weight
+#     # https://people.sc.fsu.edu/~jburkardt/cpp_src/sphere_lebedev_rule/sphere_lebedev_rule.html
+#     # integral f(x,y,z) = 4 * pi * sum ( 1 <= i <= N ) f(xi,yi,zi) * w(xi,yi,zi)
 
-numPoints = len(getQ(1)[0])
+#     cor = np.zeros((weight.size, 3))
+#     cor[:,0] = cos_theta*sin_phi
+#     cor[:,1] = sin_theta* sin_phi
+#     cor[:,2] = cos_phi
+#     cor[np.abs(cor)<1e-14] = 0. # truncate small numbers to zero
+#     return cor*Qmag, weight
 
-batchSize = 500
-calc = CohPhon()
-Q=np.zeros(numPoints)
-en=np.zeros((batchSize, numPoints, calc.nAtom*3))
-S=np.zeros_like(en)
+# numPoints = len(getQ(1)[0])
 
-# qabs = np.array([0.1, 0.,  0. ])
-# Q, en, S = calc.s( qabs, reduced=False)
-# print(qabs, en, S )
-# Q, en, S = calc.s( -qabs, reduced=False)
-# print(-qabs, en, S )
+# batchSize = 500
+# calc = CohPhon()
+# Q=np.zeros(numPoints)
+# en=np.zeros((batchSize, numPoints, calc.nAtom*3))
+# S=np.zeros_like(en)
+
+# print(print(calc._calcPhonon([0,0,0])))
 
 
-t1 = time()
-Qvec = np.linspace(0.1, 30.1, batchSize)
-for i, Qmag in enumerate(Qvec):
-    qv, w = getQ(Qmag)
-    Q, en[i], S[i] = calc.s(qv)
-    surfArea = Qmag*Qmag # 4pi is reduced
-    S[i] = (S[i].T*w).T/surfArea
+# # SQ
+# t1 = time()
+# Qvec = np.linspace(0.1, 30.1, batchSize)
+# for i, Qmag in enumerate(Qvec):
+#     qv, w = getQ(Qmag)
+#     Q, en[i], S[i] = calc.s(qv)
+#     surfArea = Qmag*Qmag # 4pi is reduced
+#     S[i] = (S[i].T*w).T/surfArea
     
-print(f'Function  executed in {(time()-t1):.4f}s')
+# print(f'Function  executed in {(time()-t1):.4f}s')
 
-plt.plot(Qvec, S.sum(axis=1).sum(axis=1))
-plt.plot(Qvec, S[:,:,3:].sum(axis=1).sum(axis=1))
-plt.grid()
-plt.show()
+# plt.plot(Qvec, S.sum(axis=1).sum(axis=1))
+# plt.plot(Qvec, S[:,:,3:].sum(axis=1).sum(axis=1))
+# plt.grid()
+# plt.show()
+
+# import vegas
 
 
+
+## SQE by optuna
 # enmax = en.max()+0.01
 
 # enarr=en.flatten()
@@ -256,7 +373,7 @@ plt.show()
 # plt.plot(xen, den/den.sum()/(xen[1]-xen[0]), label='normalization')
 # plt.plot(xen, den, label='not nor')
 
-
+## Seq by sklearn kerneldensity
 # # from sklearn.neighbors import KernelDensity
 # # from sklearn.model_selection import GridSearchCV
 
