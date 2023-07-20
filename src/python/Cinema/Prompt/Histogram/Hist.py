@@ -171,7 +171,8 @@ class Hist1D(HistBase):
             weight = np.ones(x.size)
         if(x.size !=weight.size):
             raise RunTimeError('fillnamy different size')
-        _pt_Hist1D_fill_many(self.cobj, x.size, x, weight )
+        
+        _pt_Hist1D_fill_many(self.cobj, x.size, np.ascontiguousarray(x), np.ascontiguousarray(weight) )
 
     def plot(self, show=False, label=None, title='Histogram', log=False):
         try:
@@ -188,6 +189,7 @@ class Hist1D(HistBase):
             plt.errorbar(center, w, yerr=err, fmt='-', label=label)
             if log:
                 plt.yscale('log')
+                plt.xscale('log')
             plt.title(title)
 
             if show:

@@ -138,14 +138,17 @@ class CohPhon:
         if np.allclose(Q, np.zeros(3)):
             print('hit gamma')
             return None
+        
+        Qmag = np.linalg.norm(Q, axis=1) 
 
     
         F = self._calcFormFact(Q, eigvec)
     
         # not devided by the reciprocal volume so the unit is per atoms in the cell
         n = 1./(np.exp(en/(self.temperature*boltzmann))-1.)
-
         Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
+
+        # Smag = ((0.5*(F*F)*hbar*hbar).T/Qmag).T*0.0253
         
         if (en<=0).any():
             idx = en<=0
@@ -153,11 +156,22 @@ class CohPhon:
             import warnings
             warnings.warn(f'en<=0, Q: {en<=0}, en: {en}', RuntimeWarning) 
 
-        return np.linalg.norm(Q, axis=1) , en, Smag
+        return Qmag, en, Smag
 
 
 from time import time
 import vegas
+
+def toSpherical(x, y, z):
+    r = np.sqrt(x*x+y*y+z*z)
+    theta = np.arctan(y/x)
+    phi = np.arccos(z/r)
+
+    res = np.zeros([x.size,3])
+    res[:, 0] = r
+    res[:, 1] = theta
+    res[:, 2] = phi
+    return res
 
 class kernel():
     def __init__(self, omegaBin=30) -> None:
@@ -172,18 +186,35 @@ class kernel():
 
     def __call__(self, x):
         # x: rho, theta(0, 2pi), phi (0, pi)
-        # print(x)
-        r=x[0]*self.rDelta + self.rmin
-        print(r)
-        theta=x[1]
-        phi=x[2]
-
+        if x.ndim==1:
+            r=x[0]#*self.rDelta + self.rmin
+            theta=x[1]
+            phi=x[2]
+        elif x.ndim==2:
+            r=x[:,0]#*self.rDelta + self.rmin
+            theta=x[:,1]
+            phi=x[:,2]
+        else:
+            raise RuntimeError()
+        
+        # https://mathworld.wolfram.com/SphericalCoordinates.html
         sin_theta=np.sin(theta)
         cos_theta=np.cos(theta)
         sin_phi=np.sin(phi)
         cos_phi=np.cos(phi)
-        pos = np.array([sin_theta*cos_phi, sin_theta*sin_phi, cos_theta])*r
 
+        if x.ndim==1:
+            r=x[0]#*self.rDelta + self.rmin
+            theta=x[1]
+            phi=x[2]
+            pos = np.array([cos_theta*sin_phi, sin_theta*sin_phi, cos_phi])*r
+        elif x.ndim==2:
+            pos = np.zeros_like(x)
+            pos[:, 0] = cos_theta*sin_phi
+            pos[:, 1] = sin_theta*sin_phi
+            pos[:, 2] = cos_phi
+            pos = (pos.T*r).T
+        
         Q, en, S = self.calc.s(pos)
         if (S<0.).any():
             print('S<0.', pos, S)
@@ -192,15 +223,21 @@ class kernel():
         factor = r*r*sin_phi
 
         I = S.sum()*factor
+        
         # return I
-        dI, bin_edges = np.histogram(en, bins=self.bin, range=self.omegaRange, weights=S*factor)
-        return dict(I=I, dI=dI)
+        if x.ndim==1:
+            dI, bin_edges = np.histogram(en[0], bins=self.bin, range=self.omegaRange, weights=(S.T*factor).T[0])
+            return dict(I=I, dI=dI)
+        elif x.ndim==2:
+            return I
+
+        
 
 
-qSize = 100
+qSize = 300
 maxQ = 20
 enSize = 80
-qEdge=np.linspace(0, maxQ, qSize+1)
+qEdge=np.linspace(0.0, maxQ, qSize+1)
 Q = qEdge[:-1]+np.diff(qEdge)*0.5
 
 # per reciprocal space
@@ -217,11 +254,20 @@ en_diff = np.diff(en).mean()
 
 sqw = np.zeros([qSize, enSize])
 
+#map = vegas.AdaptiveMap([[0, 1], [0, 2*np.pi], [0, np.pi]])     # uniform map
+#x = np.random.normal(loc=0, scale=(qEdge[1]-qEdge[0])/5, size=(10000, 3))
+#sph = toSpherical(x[:,0], x[:,1], x[:,2])
+#map.adapt_to_samples(sph, k(sph), nitn=5)       # precondition map
+#integ = vegas.Integrator(map, alpha=0.5, nproc = 10)
+
 for i in range(qSize-1):
-    integ =  vegas.Integrator([[0, 1], [0, 2*np.pi], [0, np.pi]], nproc = 8)
-    k.setR(qEdge[i], qEdge[i+1])
-    integ(k, nitn=10, neval=10000)
-    result = integ(k, nitn=10, neval=100000)
+    t1 = time()
+    # k.setR(qEdge[i], qEdge[i+1])   
+
+    integ =  vegas.Integrator([[qEdge[i], qEdge[i+1]], [0, np.pi], [0, np.pi]], nproc = 4)
+
+    integ(k, nitn=10, neval=5000)
+    result = integ(k, nitn=10, neval=10000, adapt = False)
     for j in range(enSize):
         sqw[i,j] = (result['dI'][j] / result['I']).mean
 
@@ -232,7 +278,11 @@ for i in range(qSize-1):
     print('   Q =', Q[i])
     print('   I =', result['I'])
     print('sqw[i] =', sqw[i])
+    print('dI/I =', result['dI'] / result['I'])
     print('sum(dI/I) =', sum(result['dI']) / result['I'])
+    t2 = time()
+    print(f'Function  executed in {(time()-t1):.4f}s\n')
+
 
 
 
@@ -248,21 +298,15 @@ X, Y = np.meshgrid(Q, en)
 pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
 fig.colorbar(pcm, ax=ax)
 plt.grid()
-plt.show()
+plt.savefig(fname='lin.pdf')
 
+fig=plt.figure()
+ax = fig.add_subplot(111)
+pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*1e-10, vmax=H.max()), shading='auto')
+plt.grid()
+plt.savefig(fname='log.pdf')
 
-from sklearn.neighbors import KernelDensity
-from sklearn.model_selection import GridSearchCV
-
-
-# use grid search cross-validation to optimize the bandwidth
-params = {"bandwidth": np.logspace(-5, -3, 5)}
-grid = GridSearchCV(KernelDensity(), params, n_jobs=8)
-
-# use the best estimator to compute the kernel density estimate
-kde = grid.best_estimator_
-
-den = kde.score_samples(xen)
+# plt.show()
 
 
 

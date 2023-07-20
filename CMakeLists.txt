@@ -48,10 +48,11 @@ enable_testing()
 add_subdirectory(src/cxxtests)
 
 
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
+find_package(Python REQUIRED COMPONENTS Interpreter )
 
 file(GLOB TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontests/*.py")
 foreach(TS ${TESTFILES})
+	message(STATUS "Running ${Python_EXECUTABLE} ${TS}")
 	get_filename_component(EXCNAME  ${TS}  NAME_WE)
 	add_test (NAME python-${EXCNAME}
 	  COMMAND ${Python_EXECUTABLE} ${TS}
