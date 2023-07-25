@@ -4,6 +4,7 @@ import numpy as np
 from Cinema.PiXiu.io.cell import QeXmlCell
 import phonopy
 import matplotlib.pyplot as plt
+import pickle
 
 np.set_printoptions(suppress=True)
 
@@ -71,6 +72,7 @@ class CohPhon:
         self.disp = self.ph.get_thermal_displacement_matrices()[1][0]
         omega = self.ph.get_mesh_dict()['frequencies']
         self.maxEn = omega.max()*THz*2*np.pi*hbar
+
 
         # print(self.disp)
 
@@ -227,7 +229,7 @@ class kernel(vegas.BatchIntegrand):
         
 
 
-qSize = 500
+qSize = 80
 maxQ = 30
 enSize = 200
 qEdge=np.linspace(0.0, maxQ, qSize+1)
@@ -243,9 +245,9 @@ enEdge = np.linspace(0, k.calc.maxEn, enSize+1 )
 en = enEdge[:-1]+np.diff(enEdge)*0.5
 # per energy
 en_diff = np.diff(en).mean()
-
-
 sqw = np.zeros([qSize, enSize])
+
+
 
 #map = vegas.AdaptiveMap([[0, 1], [0, 2*np.pi], [0, np.pi]])     # uniform map
 #x = np.random.normal(loc=0, scale=(qEdge[1]-qEdge[0])/5, size=(10000, 3))
@@ -253,31 +255,88 @@ sqw = np.zeros([qSize, enSize])
 #map.adapt_to_samples(sph, k(sph), nitn=5)       # precondition map
 #integ = vegas.Integrator(map, alpha=0.5, nproc = 10)
 
-for i in range(qSize):
+import multiprocessing
+
+def run(i):
+    print('running ', i)
     t1 = time()
+    sqw = np.zeros(enSize)
+
     # k.setR(qEdge[i], qEdge[i+1])   
 
-    integ =  vegas.Integrator([[qEdge[i], qEdge[i+1]], [0, np.pi], [0, np.pi]], nproc = 4)
+    integ =  vegas.Integrator([[qEdge[i], qEdge[i+1]], [0, np.pi], [0, np.pi]])
 
     integ(k, nitn=10, neval=500)
     result = integ(k, nitn=10, neval=1000, adapt = False)
+    f = open (f'result_{i}.pkl', 'wb')
+    pickle.dump(result, f)
+    f.close()
+
+
     for j in range(enSize):
-        sqw[i,j] = (result['dI'][j]).mean
+        sqw[j] = (result['dI'][j]).mean
 
-    sqw[i] *= 1./(q_volume_diff[i]*en_diff)
+    sqw *= 1./(q_volume_diff[i]*en_diff)
+    sqw *= 2. # theata is only for half of the sphere
 
-
-    print(result.summary())
-    print('   Q =', Q[i])
-    print('   I =', result['I'])
-    print('sqw[i] =', sqw[i])
-    print('sum(dI/I) =', sum(result['dI']) / result['I'])
-    print('density /Q/energy', result['I']/(q_volume_diff[i]*en_diff))
+    # print(result.summary())
+    # print('   Q =', Q[i])
+    # print('   I =', result['I'])
+    # print('sqw =', sqw)
+    # print('sum(dI/I) =', sum(result['dI']) / result['I'])
+    # print('density /Q/energy', result['I']/(q_volume_diff[i]*en_diff))
+    # print('nstrat shape', np.array(integ.nstrat) )
     t2 = time()
-    print(f'Function  executed in {(time()-t1):.4f}s\n')
+    print(f'Run{i} Q={np.mean([qEdge[i], qEdge[i+1]])}  executed in {(time()-t1):.2f}s, I=', result['I'], f', chi2={result.chi2/result.dof:.2f}, Q={result.Q} \n')
+    return sqw
 
 
-import pickle
+from multiprocessing import Pool
+p = Pool(1)
+start_time = time()
+
+with p:
+    res = p.map(run, range(qSize))
+    for i, p in enumerate(res):
+        sqw[i] = p
+
+
+# pool = multiprocessing.Pool(8)
+# processes = [pool.apply_async(run, args=(i,)) for i in range(qSize)]
+# # result = [p.get() for p in processes]
+# for i, p in enumerate(processes):
+#     sqw[i] = p.get()
+
+finish_time = time()
+print(f"Program finished in {finish_time-start_time} seconds")
+
+
+# for i in range(qSize):
+#     t1 = time()
+#     # k.setR(qEdge[i], qEdge[i+1])   
+
+#     integ =  vegas.Integrator([[qEdge[i], qEdge[i+1]], [0, np.pi], [0, np.pi]])
+
+#     integ(k, nitn=10, neval=500)
+#     result = integ(k, nitn=10, neval=1000, adapt = False)
+#     for j in range(enSize):
+#         sqw[i,j] = (result['dI'][j]).mean
+
+#     sqw[i] *= 1./(q_volume_diff[i]*en_diff)
+#     sqw[i] *= 2. # theata is only for half of the sphere
+
+
+#     print(result.summary())
+#     print('   Q =', Q[i])
+#     print('   I =', result['I'])
+#     print('sqw[i] =', sqw[i])
+#     print('sum(dI/I) =', sum(result['dI']) / result['I'])
+#     print('density /Q/energy', result['I']/(q_volume_diff[i]*en_diff))
+#     t2 = time()
+#     print('nstrat shape', np.array(integ.nstrat) )
+#     print(f'Function  executed in {(time()-t1):.4f}s\n')
+
+
 f = open ('Sqw.pkl', 'wb')
 pickle.dump(sqw, f)
 f.close()
@@ -311,7 +370,7 @@ pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*1
 plt.grid()
 plt.savefig(fname='log.pdf')
 
-plt.show()
+# plt.show()
 
 
 
