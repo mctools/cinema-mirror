@@ -136,6 +136,7 @@ class CohPhon:
         en, eigvec = self._calcPhonon(Q)
 
         if np.allclose(Q, np.zeros(3)):
+            print(Q)
             print('hit gamma')
             return None
         
@@ -173,29 +174,24 @@ def toSpherical(x, y, z):
     res[:, 2] = phi
     return res
 
-class kernel():
+class kernel(vegas.BatchIntegrand):
     def __init__(self, omegaBin=30) -> None:
         self.calc =  CohPhon()
         self.omegaRange = [0, self.calc.maxEn] 
         self.bin = omegaBin
 
-    def setR(self, rmin, rmax):
-        self.rmin = rmin
-        self.rDelta = rmax-rmin
-        print('rmin, rmax', rmin, rmax)
+    # def setR(self, rmin, rmax):
+    #     self.rmin = rmin
+    #     self.rDelta = rmax-rmin
+    #     print('rmin, rmax', rmin, rmax)
 
-    def __call__(self, x):
+    def __call__(self, input):
         # x: rho, theta(0, 2pi), phi (0, pi)
-        if x.ndim==1:
-            r=x[0]#*self.rDelta + self.rmin
-            theta=x[1]
-            phi=x[2]
-        elif x.ndim==2:
-            r=x[:,0]#*self.rDelta + self.rmin
-            theta=x[:,1]
-            phi=x[:,2]
-        else:
-            raise RuntimeError()
+        x=np.atleast_2d(input)
+        r=x[:,0]#*self.rDelta + self.rmin
+        theta=x[:,1]
+        phi=x[:,2]
+        
         
         # https://mathworld.wolfram.com/SphericalCoordinates.html
         sin_theta=np.sin(theta)
@@ -203,17 +199,11 @@ class kernel():
         sin_phi=np.sin(phi)
         cos_phi=np.cos(phi)
 
-        if x.ndim==1:
-            r=x[0]#*self.rDelta + self.rmin
-            theta=x[1]
-            phi=x[2]
-            pos = np.array([cos_theta*sin_phi, sin_theta*sin_phi, cos_phi])*r
-        elif x.ndim==2:
-            pos = np.zeros_like(x)
-            pos[:, 0] = cos_theta*sin_phi
-            pos[:, 1] = sin_theta*sin_phi
-            pos[:, 2] = cos_phi
-            pos = (pos.T*r).T
+        pos = np.zeros_like(x)
+        pos[:, 0] = cos_theta*sin_phi
+        pos[:, 1] = sin_theta*sin_phi
+        pos[:, 2] = cos_phi
+        pos = (pos.T*r).T
         
         Q, en, S = self.calc.s(pos)
         if (S<0.).any():
@@ -222,21 +212,24 @@ class kernel():
         
         factor = r*r*sin_phi
 
-        I = S.sum()*factor
+        contr = (S.T*factor).T
+
+        I = contr.sum(axis=1)
         
         # return I
-        if x.ndim==1:
-            dI, bin_edges = np.histogram(en[0], bins=self.bin, range=self.omegaRange, weights=(S.T*factor).T[0])
-            return dict(I=I, dI=dI)
-        elif x.ndim==2:
-            return I
+        
+        dI = np.zeros((I.size, self.bin))
+        for i in range(I.size):
+            dI[i], _ = np.histogram(en[i], bins=self.bin, range=self.omegaRange, weights=contr[i])
+
+        return dict(I=I, dI=dI)
 
         
 
 
-qSize = 300
-maxQ = 20
-enSize = 80
+qSize = 500
+maxQ = 30
+enSize = 200
 qEdge=np.linspace(0.0, maxQ, qSize+1)
 Q = qEdge[:-1]+np.diff(qEdge)*0.5
 
@@ -260,16 +253,16 @@ sqw = np.zeros([qSize, enSize])
 #map.adapt_to_samples(sph, k(sph), nitn=5)       # precondition map
 #integ = vegas.Integrator(map, alpha=0.5, nproc = 10)
 
-for i in range(qSize-1):
+for i in range(qSize):
     t1 = time()
     # k.setR(qEdge[i], qEdge[i+1])   
 
     integ =  vegas.Integrator([[qEdge[i], qEdge[i+1]], [0, np.pi], [0, np.pi]], nproc = 4)
 
-    integ(k, nitn=10, neval=5000)
-    result = integ(k, nitn=10, neval=10000, adapt = False)
+    integ(k, nitn=10, neval=500)
+    result = integ(k, nitn=10, neval=1000, adapt = False)
     for j in range(enSize):
-        sqw[i,j] = (result['dI'][j] / result['I']).mean
+        sqw[i,j] = (result['dI'][j]).mean
 
     sqw[i] *= 1./(q_volume_diff[i]*en_diff)
 
@@ -278,12 +271,24 @@ for i in range(qSize-1):
     print('   Q =', Q[i])
     print('   I =', result['I'])
     print('sqw[i] =', sqw[i])
-    print('dI/I =', result['dI'] / result['I'])
     print('sum(dI/I) =', sum(result['dI']) / result['I'])
+    print('density /Q/energy', result['I']/(q_volume_diff[i]*en_diff))
     t2 = time()
     print(f'Function  executed in {(time()-t1):.4f}s\n')
 
 
+import pickle
+f = open ('Sqw.pkl', 'wb')
+pickle.dump(sqw, f)
+f.close()
+
+f = open ('Q.pkl', 'wb')
+pickle.dump(Q, f)
+f.close()
+
+f = open ('en.pkl', 'wb')
+pickle.dump(en, f)
+f.close()
 
 
 import matplotlib.pyplot as plt
@@ -306,7 +311,7 @@ pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*1
 plt.grid()
 plt.savefig(fname='log.pdf')
 
-# plt.show()
+plt.show()
 
 
 

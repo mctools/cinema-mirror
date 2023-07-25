@@ -160,6 +160,7 @@ print(f'train {time.time()-t1}s')
 
 attr = ['en', 't', 'theta', 'phi']
 idx = [0, 1, 2, 3]
+plotlog=[True, True, False, False]
 hist={}
 
 for d in attr:
@@ -189,17 +190,23 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 pp = PdfPages('summary.pdf')
 
-for d in attr:
+for d, log in zip(attr, plotlog):
     plt.figure()
     obj = getattr(s, d)
     en, den = obj.getDist(w=s.w)
-    plt.loglog(en, den, label='raw')
+    if log:
+        plt.loglog(en, den, label='raw')
+    else:
+        plt.semilogy(en, den, label='raw')
 
     hist_kd = hist[d]
     x = hist_kd.getCentre()
     y = hist_kd.getWeight()/np.diff(hist_kd.getEdge())
 
-    plt.loglog(x, y/np.trapz(y,x), label='sampled')
+    if log:
+        plt.loglog(x, y/np.trapz(y,x), label='sampled')
+    else:
+        plt.semilogy(en, den, label='raw')
     plt.legend(loc=0)
     plt.title(d+' density')
     pp.savefig()
@@ -208,13 +215,19 @@ for d in attr:
 
     ## Hist
     plt.figure()
-    plt.semilogx(en, den*en, label='raw')
+    if log:
+        plt.semilogx(en, den*en, label='raw')
+    else:
+        plt.plot(en, den*en, label='raw')
 
     hist_kd = hist[d]
     x = hist_kd.getCentre()
     y = hist_kd.getWeight()/np.diff(hist_kd.getEdge())
 
-    plt.semilogx(x, y/np.trapz(y,x)*x, label='sampled')
+    if log:
+        plt.semilogx(x, y/np.trapz(y,x)*x, label='sampled')
+    else:
+        plt.plot(x, y/np.trapz(y,x)*x, label='sampled')
     plt.legend(loc=0)
     plt.title(d+f' hist {hist_kd.getWeight().sum()}')
     pp.savefig()
