@@ -19,7 +19,7 @@
 ##  limitations under the License.                                            ##
 ##                                                                            ##
 ################################################################################
-
+import warnings
 
 from . import Launcher
 from .Launcher import *
@@ -38,6 +38,7 @@ from .Histogram import *
 
 from .geo import *
 
+from .scorer import *
 
 # __all__ = Launcher.__all__
 # __all__ += PromptFileReader.__all__
@@ -204,6 +205,33 @@ class Prompt:
     def makeWorld(self):
         raise NotImplementedError('') 
     
+    def addPSD(self, volume : Volume, psdName, xMin = -100, xMax = 100, 
+               yMin = -100, yMax = 100, xBins = None, yBins = None, 
+               ptstate = 'ENTRY', type='XY'):
+        if xBins is None:
+            xBins = int((xMax - xMin) * 0.2)
+        if yBins is None:
+            yBins = int((yMax - yMin) * 0.2)
+        psd = PSD()
+        psd.cfg_name = psdName
+        psd.cfg_xmin = xMin     # TODO: auto dimension
+        psd.cfg_xmax = xMax
+        psd.cfg_ymin = yMin
+        psd.cfg_ymax = yMax
+        psd.cfg_numbin_x = xBins
+        psd.cfg_numbin_y = yBins
+        psd.cfg_ptstate = ptstate
+        psd.cfg_type = type
+        psdCfg = psd.makeCfg()
+        volume.addScorer(psdCfg)
+        self.scorer[psdName] = psdCfg
+
+    def scorerNameConfig(self, name):
+        if name in self.scorer.keys():
+            newName = name + '`'
+            warnings.warn(f"Dupicated scorer name {name}. Changed to {newName}")
+            return newName
+
     def clear(self):
         _pt_ResourceManager_clear()
         self.l.worldExist = False
@@ -229,7 +257,7 @@ class Prompt:
             return self.l.getHist(cfg)
         else:
             return self.l.getHist(self.scorer[cfg])
-        
+    
 
 class PromptMPI(Prompt):
     def __init__(self, seed=4096) -> None:
@@ -248,7 +276,7 @@ class PromptMPI(Prompt):
 
     def show(self, num : int = 0):
         if self.rank==0:
-            self.l.showWorld(num)
+            self.l.showWorld(num, True)
             self.comm.Barrier()
         else:
             self.comm.Barrier()

@@ -203,6 +203,7 @@ class Hist1D(HistBase):
     def savefig(self, fname, title="Histogram", log = False):
         plt = self.plot(title=title, log = log)
         plt.savefig(fname=fname)
+        plt.close()
 
     def savedata(self, fn):
         import h5py
@@ -304,6 +305,7 @@ class Hist2D(HistBase):
     def savefig(self, fname, title="Histogram"):
         plt = self.plot(title=title)
         plt.savefig(fname=fname)
+        plt.close()
 
 
     def save(self, fn):
