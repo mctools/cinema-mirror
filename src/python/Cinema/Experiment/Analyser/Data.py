@@ -43,8 +43,8 @@ class Normalise(Enum):
     byProtonCharge = 3
 
 class RunData(DataLoader):
-    def __init__(self, fname, moduleName, normMethod = Normalise.byMonitor):
-        super().__init__(fname, moduleName)
+    def __init__(self, fname, moduleName, tofcut=30, normMethod = Normalise.byMonitor):
+        super().__init__(fname, moduleName, tofcut)
         self.normalise(normMethod)
 
     # += operator
