@@ -95,6 +95,12 @@ def q2Alpha(Q, kt):
 def alpha2Q(alpha,kt):
     return np.sqrt(alpha*kt*eV2kk)
 
+def angleCosine2Q(angleCosine, enin_eV, enout_eV):
+    ratio = enout_eV/enin_eV
+    k0=eKin2k(enin_eV)
+    scale = np.sqrt(1.+ ratio - 2*angleCosine*np.sqrt(ratio) )
+    return k0*scale
+    
 def angle2Q(angle_deg, enin_eV, enout_eV):
     ratio = enout_eV/enin_eV
     k0=eKin2k(enin_eV)
