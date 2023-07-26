@@ -83,10 +83,10 @@ class ErrorPropagator():
         selferr = np.divide(self.error, self.weight, where=(self.weight!=0.))
         otherw = weight
         othererr = np.divide(error, otherw, where=(otherw!=0.))
-        self.error = np.sqrt( selferr*selferr + othererr*othererr)
         self.weight = np.divide(self.weight, otherw, where=(otherw!=0.))
+        self.error = np.sqrt(selferr*selferr + othererr*othererr)*self.weight
 
-    def __idiv__(self, other):
+    def __itruediv__(self, other):
         if hasattr(other, 'ycentre'):
             self.divide(other.weight, other.error, other.xcentre, other.ycentre)
         else:
