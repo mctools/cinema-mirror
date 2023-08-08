@@ -4,7 +4,7 @@ from Cinema.Prompt import Prompt, PromptMPI, Optimiser
 from Cinema.Prompt.solid import Box, Tube, Trapezoid, Sphere
 from Cinema.Prompt.geo import Volume, Transformation3D
 from Cinema.Prompt.scorer import makeFlatPSD
-from Cinema.Prompt.component import EntityArray, makeTrapezoidGuide, makeDiskChopper, make2CurveAnalyser
+from Cinema.Prompt.component import EntityArray, FlatAnalyser, makeTrapezoidGuide, makeDiskChopper, make2CurveAnalyser
 
 
 from Cinema.Prompt.gun import PythonGun
@@ -61,10 +61,10 @@ class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)
         
-    def makeWorld(self,pos_ana, pos_det):
+    def makeWorld(self,pos_ana, pos_det, curve_h, curve_v):
 
         # gunCfg = "gun=MaxwellianGun;src_w=40;src_h=40;src_z=0;slit_w=40;slit_h=40;slit_z=1e99;temperature=293;"
-        gunCfg = "gun=UniModeratorGun;mean_wl=0.9;range_wl=0.6;src_w=2;src_h=2;src_z=0;slit_w=2;slit_h=2;slit_z=1e99"
+        gunCfg = "gun=UniModeratorGun;mean_wl=1.1;range_wl=1.0;src_w=2;src_h=2;src_z=0;slit_w=2;slit_h=2;slit_z=1e99"
         # gunCfg = "gun=SimpleThermalGun;energy=0.000002045105;position=0,0,-1500;direction=0,0,1"
         # gunCfg = "gun=IsotropicGun;energy=0.1;position=0,0,17000"
         self.setGun(gunCfg)
@@ -106,8 +106,10 @@ class MySim(PromptMPI):
         self.scorer['GUIDE_P'], vol_a_guide = makeFlatPSD('GUIDE_P', 100, 100, 1e-3, 100, 100)
         vol_a_guide.addScorer("Scorer=WlSpectrum; name=wlAfterGuide; min=0.0; max=7.2; numbin=100")
         vol_a_guide.addScorer("Scorer=TOF; name=tofAfterGuide; min=0.0025; max=0.008; numbin=500")
+        vol_a_guide.addScorer("Scorer=ESpectrum; name=EnBfSample; min=0.0; max=0.25; numbin=100")
         self.scorer['NORM_TOF'] = "Scorer=TOF; name=tofAfterGuide; min=0.0025; max=0.008; numbin=500"
         self.scorer['GUIDE_WL'] = "Scorer=WlSpectrum; name=wlAfterGuide; min=0.0; max=7.2; numbin=100"
+        self.scorer['GUIDE_EN'] = "Scorer=ESpectrum; name=EnBfSample; min=0.0; max=0.25; numbin=100"
         self.scorer['GUIDE_M'], vol_b_guide = makeFlatPSD('GUIDE_M', 200, 200, 1e-3, 100, 100)
         world.placeChild("monitor_bf", vol_b_guide, self.translationZ(2300.))
         world.placeChild("monitor_af", vol_a_guide, self.translationZ(16500.))
@@ -129,17 +131,20 @@ class MySim(PromptMPI):
 
         # --------------- sample --------------------
         # sample_mat = "physics=ncrystal;nccfg='Polyethylene_CH2.ncmat;temp=30'"
-        sample_mat = "physics=idealElaScat;xs_barn=5;density_per_aa3=0.5;energy_transfer_eV=0.22"
-        sample = Volume("sample_Al", Box(2, 2, 2), sample_mat)
-        split = "Scorer=Split;name=split_hist;split=500"
+        sample_mat = "physics=idealElaScat;xs_barn=5;density_per_aa3=0.5;energy_transfer_eV=0.038"
+        sample = Volume("sample", Box(2, 2, 2), sample_mat)
+        hwCfg = "Scorer=ESpectrum; scoreTransfer=1; name=sampleHW; min=0.0; max=0.25; numbin=500"
+        split = "Scorer=Split;name=split_hist;split=250"
         sample.addScorer(split)
-        world.placeChild("sample", sample, Transformation3D(0., 0., 17000.).applyRotY(0))
+        sample.addScorer(hwCfg)
+        self.scorer["hw"] = hwCfg
+        world.placeChild("sample", sample, Transformation3D(0., 0., 17000.))
 
         # ----------adding a sphere around sample--------------
         sphere = Volume("Mon_af_sample", Sphere(80,85, starttheta=45/180*np.pi, deltatheta=90/180*np.pi))
-        sphereCfgEn = "Scorer=ESpectrum; name=sphereEn; min=0.0; max=0.2; numbin=100"
-        sphereCfgWl = "Scorer=WlSpectrum; name=spherewl; min=0.0; max=7.2; numbin=100"
-        sphereCfgTof = f"Scorer=TOF; name=spheretof; min=0.0025; max=0.005; numbin=1000"
+        sphereCfgEn = "Scorer=ESpectrum; name=sphereEn; min=0.0; max=0.25; numbin=100"
+        sphereCfgWl = "Scorer=WlSpectrum; name=spherewl; min=0.0; max=10; numbin=100"
+        sphereCfgTof = f"Scorer=TOF; name=spheretof; min=0.0025; max=0.008; numbin=1000"
         sphere.addScorer(sphereCfgEn)
         sphere.addScorer(sphereCfgWl)
         sphere.addScorer(sphereCfgTof)
@@ -149,34 +154,31 @@ class MySim(PromptMPI):
         world.placeChild("spheres", sphere, Transformation3D(0., 0., 17000.))
 
         # ----------adding sheilding between sample and detecters--------------
-        sheild_mat = "physics=ncrystal;nccfg='Cd.ncmat;temp=35'"
-        # surfacecfg = "physics=DiskChopper;rotFreq=1;r=10;theta0=0.1;n=1;phase=0"
+        sheild_mat = "physics=ncrystal;nccfg='Cd.ncmat;inelas=0'"
         sheild = Volume("sheild", Box(45, 80, 30), sheild_mat)
-        sheild2 = Volume("sheild2", Box(45, 80, 30), sheild_mat)
-        sheildExitCfg = "Scorer=PSD;name=sheildExit;xmin=-50;xmax=50;numbin_x=100;ymin=-100;ymax=100;numbin_y=200;ptstate=EXIT;type=XY"
-        sheild.addScorer(sheildExitCfg)
-        self.scorer['sheildExit'] = sheildExitCfg
-        sheildArray = EntityArray(sheild, refFrame=Transformation3D(0., - (pos_det-25), 17000.).applyRotxyz(90,90,0))
+        self.addPSD(sheild, "sheild_sam_det", -50, 50, -100, 100, ptstate='EXIT')
+        sheildArray = EntityArray(sheild, refFrame=Transformation3D(0., - (pos_det-140), 17000.).applyRotxyz(90,90,0))
         sheildArray.make()
         sheildArray.make_rotate_z(45,6)
         sheildArray.rotate_z(-135)
         world.placeArray(sheildArray)
 
         # ----------- analyser -----------
-        cry_mat = "physics=ncrystal;nccfg='C_sg194_pyrolytic_graphite.ncmat;mos=2.5deg;dir1=@crys_hkl:0,0,2@lab:0,0,1;dir2=@crys_hkl:1,0,0@lab:1,0,0;lcaxis=0,0,1;dcutoff=3;temp=35';scatter_bias=1.0;abs_bias=1.0"
+        cry_mat = "physics=ncrystal;nccfg='C_sg194_pyrolytic_graphite.ncmat;mos=2.5deg;dir1=@crys_hkl:0,0,2@lab:0,0,1;dir2=@crys_hkl:1,0,0@lab:1,0,0;lcaxis=0,0,1;dcutoff=3;inelas=false'"
         crystal_plate = Volume("cry", Box(6, 6, 1), cry_mat)
-        split2 = "Scorer=Split;name=split_hist;split=1"    
-        crystal_plate.addScorer(split2)
-
         # crystal_plate = Volume("cry", Box(6, 6, 1), 'solid::Cd/8.65gcm3', surfaceCfg='physics=Mirror;m=2')
-        analyser = EntityArray(crystal_plate, [20,20], spacings = [13, 13], 
-                               refFrame=Transformation3D(0., 0., 0.).applyRotxyz(0., 180., 0.))
-        analyser.make_trape_plane(80, 280, 350)
+        # split2 = "Scorer=Split;name=split_hist;split=1"    
+        # crystal_plate.addScorer(split2)
+
+        analyser = FlatAnalyser(crystal_plate, spacings = [13, 13], 
+                               refFrame=Transformation3D())
+        analyser.make_trape_plane(80, 280, 350, curve_h, curve_v)
         arrayAna = EntityArray(analyser, refFrame=Transformation3D(0., - pos_ana, 16740.).applyRotZ(180))
         arrayAna.make()
         arrayAna.make_rotate_z(45, 6, 0, 0)
         arrayAna.rotate_z(-135)
         arrayAna.reflect('XY', 17000)
+        # arrayAna.selectByZ(17000, np.inf)
         world.placeArray(arrayAna)
 
         # ----------- filter -----------
@@ -198,22 +200,16 @@ class MySim(PromptMPI):
         self.makeScorerArray(7,world, pos_det, 17000+12.7+13)
 
         # ----------- sheild between forward and back detectors -----------
-        midSheildMat = "physics=ncrystal;nccfg='Cd.ncmat;temp=35'"
-        midSheild = Volume("sheild", Box(150, 100, 12.5), midSheildMat)
-        midSheildExitCfg = "Scorer=PSD;name=midSheildExit;xmin=-65;xmax=65;numbin_x=100;ymin=-100;ymax=100;numbin_y=100;ptstate=EXIT;type=XY"
-        midSheild.addScorer(midSheildExitCfg)
-        self.scorer['midSheildExit'] = midSheildExitCfg
-        midSheildArray = EntityArray(midSheild, refFrame=Transformation3D(0., - (pos_det+100), 17000.))
-        midSheildArray.make()
-        midSheildArray.make_rotate_z(45,6)
-        midSheildArray.rotate_z(-135)
-        world.placeArray(midSheildArray)
+        midSheildMat = "physics=ncrystal;nccfg='Cd.ncmat;inelas=0'"
+        midSheild = Volume("sheild", Tube(pos_det-400, pos_det+300, 12.5), midSheildMat)
+        self.addPSD(midSheild, 'sheild_forw_backw', -1000, 1000, -1000, 1000, ptstate='ABSORB')
+        world.placeChild("midSheild", midSheild, Transformation3D(0, 0, 17000))
 
         self.l.setWorld(world)
 
     def makeScorerArray(self,  num, world : Volume, pos_det, zloc):
         for i_scor in np.arange(num):
-            loc = Transformation3D(0., - (pos_det + 100), zloc)
+            loc = Transformation3D(0., - pos_det, zloc)
             loc = Transformation3D().applyRotZ(45 * i_scor) * loc
             loc_world = Transformation3D().applyRotZ(-135) * loc
             location = [f'{x: .2f}' for x in loc_world.translation]
@@ -225,24 +221,22 @@ class MySim(PromptMPI):
     def makeDetBank(self, name):
         vol_bank = Volume('vol_bank', Box(63.5, 100, 12.7))
         bankname = f'BankPSD@{name}'
-        bankCfg = f"Scorer=PSD;name={bankname};xmin=-70;xmax=70;numbin_x=70;ymin=-110;ymax=110;numbin_y=150;ptstate=ENTRY;type=XY"
-        vol_bank.addScorer(bankCfg)
-        self.scorer[bankname] = bankCfg
+        self.addPSD(vol_bank, bankname, -70, 70, -110, 110)
 
         for i_tube in np.arange(1, 6):
-            vol_in = Volume('internal', Tube(0, 12.2, 100))
+            vol_in = Volume('internal', Tube(0, 12.2, 100),"physics=ncrystal;nccfg='He3_Gas_10bar.ncmat;inelas=false'")
             vol_out = Volume('external', Tube(0, 12.7, 100))
             psdname = f'PSD@{name}_TubeNo.{i_tube}'
-            psdCfg = f"Scorer=PSD;name={psdname};xmin=-12.2;xmax=12.2;numbin_x=10;ymin=-100;ymax=100;numbin_y=150;ptstate=ENTRY;type=YZ"
+            psdCfg = f"Scorer=PSD;name={psdname};xmin=-12.2;xmax=12.2;numbin_x=10;ymin=-100;ymax=100;numbin_y=150; ptstate=ABSORB;type=YZ"
             vol_in.addScorer(psdCfg)
             enname = f'EN@{name}_TubeNo.{i_tube}'
-            encfg = f"Scorer=ESpectrum; name={enname}; min=0.0; max=0.2; numbin=100"
+            encfg = f"Scorer=ESpectrum; name={enname}; min=0.0; max=0.13; numbin=100; ptstate=ABSORB"
             vol_in.addScorer(encfg)
             wlname = f'WL@{name}_TubeNo.{i_tube}'
-            wlcfg = f"Scorer=WlSpectrum; name={wlname}; min=0.0; max=7.2; numbin=100"
+            wlcfg = f"Scorer=WlSpectrum; name={wlname}; min=0.0; max=7.2; numbin=100; ptstate=ABSORB"
             vol_in.addScorer(wlcfg)
             tofname = f'TOF@{name}_TubeNo.{i_tube}'
-            tofCfg = f"Scorer=TOF; name={tofname}; min=0.0025; max=0.005; numbin=1000"
+            tofCfg = f"Scorer=TOF; name={tofname}; min=0.0025; max=0.008; numbin=1000; ptstate=ABSORB"
             vol_in.addScorer(tofCfg)
             self.scorer[enname] = encfg
             self.scorer[wlname] = wlcfg
@@ -297,11 +291,11 @@ class MySim(PromptMPI):
 # control paras
 OPT = False
 VIZ = False
-num_neutrons = 1e6
+num_neutrons = 100
 viz_num_neutrons = 100
 
 if not OPT:
-    sim = MySim(seed=1010)
+    sim = MySim(seed=1050)
     sim.makeWorld(
         # ww1, hh1,
         # ww2, hh2,
@@ -309,7 +303,7 @@ if not OPT:
         # ww4, hh4,
         # ww5, hh5,
         # ww6, hh6
-        300, 500 #372.8
+        300, 600, 0, 0 #372.8
 
     )
     # vis or production
@@ -345,6 +339,7 @@ if not OPT:
     normTof = None
     midSheildHist = None
     sheildHist = None
+    hw = None
 
     for scor in sim.scorer.keys():
         hist = sim.getScorerHist(scor)
@@ -394,6 +389,8 @@ if not OPT:
             out = hist.getWeight().sum()
         if scor == 'GUIDE_WL':
             guideWl = hist
+        if scor == 'GUIDE_EN':
+            guideEN = hist
         if scor == 'NORM_TOF':
             normTof = hist
         if scor == 'sphereEn':
@@ -402,11 +399,12 @@ if not OPT:
             sphereWlHist = hist
         if scor == 'spheretof':
             sphereTofHist = hist
-        if scor == 'sheildExit':
+        if scor == 'sheild_sam_det':
             sheildHist = hist
-        if scor == 'midSheildExit':
+        if scor == 'sheild_forw_backw':
             midSheildHist = hist
-
+        if scor == 'hw':
+            hw = hist
 
     if sim.rank == 0:
         # print(f'Guide system efficiency: {out/inc*100: .4f}%')
@@ -414,7 +412,6 @@ if not OPT:
         # print(f'Total weight in detectors: {totweight: .2f}')
         # print(f'Total hit in detectors: {tothit: .2f}')
         # print(f'Efficiency: {totweight/n_num*100: .4f}%\n')
-        import matplotlib.pyplot as plt
         # fig = plt.figure()
         # plt.plot(wlx, wly)
         # plt.savefig(fname="totWL.png")
@@ -427,30 +424,36 @@ if not OPT:
         # blankHist.savefig("totPSD.png")
         # bankHist.plot(title=scor)
         log = False
+        print(f'Total hit: {tofHist.getHit().sum()}')
+        print(f'Total weight: {tofHist.getWeight().sum()}')
+        hw.savefig('energyTransfer.png', 'Energy transfer exit sample')
         normTof.savefig('normTof.png', 'Normalization tof before sample', log)
-        normTof.save('normTof')
+        normTof.savedata('normTof')
         tofHist.savefig('totTof.png', 'Total tof at detector array', log)
-        tofHist.save('totTof')
+        tofHist.savedata('totTof')
         sphereEnHist.savefig('SphereEN.png', 'Energy Exit sample', log)
-        sphereEnHist.save('SphereEN')
+        sphereEnHist.savedata('SphereEN')
         sphereWlHist.savefig('SphereWl.png', 'Wl Exit sample', log)
-        sphereWlHist.save('SphereWl')
+        sphereWlHist.savedata('SphereWl')
         sphereTofHist.savefig('SphereTof.png', 'Tof Exit sample', log)
-        sphereTofHist.save('SphereTof')
+        sphereTofHist.savedata('SphereTof')
         guideWl.savefig('OutWL.png', 'Wavelength@guideOut', log)
-        guideWl.save('OutWL')
+        guideWl.savedata('OutWL')
+        guideEN.savefig('OutEN.png', 'Energy@guideOut', log)
         enHist.savefig("totEn.png", "Energy at detector array", log)
-        enHist.save('totEn')
+        enHist.savedata('totEn')
         wlHist.savefig("totWL.png", "Wavelength at detector array", log)
-        wlHist.save('totWL')
+        wlHist.savedata('totWL')
         sheildHist.savefig("sheild.png", "Exit sheild count")
         midSheildHist.savefig("midSheild.png", "Mid sheild count")
   
 else: # optimization
     from Cinema.Prompt import Optimiser
+    from Cinema.Prompt.dataReduction import tof2hw_INS, getPeakReso
     class CurveOpt(Optimiser):
         def __init__(self, sim):
             super().__init__(sim, 1e6)
+            self.directions = ['maximize', 'minimize']
             # self.addParameter('cv', lower = 350*0.7, upper = 5000)
             # self.addParameter('ch', lower = 280*0.7, upper = 5000)
             # self.addParameter('pos_det', lower = 300, upper = 1000)
@@ -463,19 +466,33 @@ else: # optimization
                 if scor.startswith('WL'):
                     totweight += hist.getWeight().sum()
             return totweight
+        
+        def getResolution(self, r2, z2 = 260.):
+            tofHist = None
+            for scor in sim.scorer.keys():
+                if scor.startswith('TOF'):
+                    hist = sim.getScorerHist(scor)
+                    if tofHist is None:
+                        tofHist = hist
+                    else:
+                        tofHist.merge(hist)
+            x,y = tof2hw_INS(z2, r2, tofHist.getCentre(), tofHist.getWeight())
+            return getPeakReso(x, y)
 
             
         def objective(self, trial):
             self.sim.clear() 
-            pos_ana = trial.suggest_float('pos_ana', 300, 1000)
-            pos_det = trial.suggest_float('pos_det', 300, 1000)
+            # pos_ana = trial.suggest_float('pos_ana', 300, 1000)
+            pos_det = trial.suggest_float('pos_det', 550, 700)
+            cur_h = trial.suggest_float('cur_h', 150, 800)
+            cur_v = trial.suggest_float('cur_v', 180, 800)
             # trial.set_user_attr('constraint', (c))
 
             if True: # allowed space
                 self.sim.clear()             
-                self.sim.makeWorld(pos_ana, pos_det)
+                self.sim.makeWorld(260, pos_det, cur_h, cur_v)
                 self.sim.simulate(self.trailNeutronNum)
-                return self.getTotalWeight()
+                return self.getTotalWeight(), self.getResolution().min()
             else:
                 return self.trailNeutronNum
             
@@ -483,7 +500,7 @@ else: # optimization
 
     opt = CurveOpt(sim)
     # opt.visInitialGeometry()
-    opt.optimize(name = 'BL6_curvature_plane2', n_trials = 2, localhost=False)
+    opt.optimize(name = 'BL6_detPos_anaCuv', n_trials = 2, localhost=False)
     # print(opt.study.best_params, opt.study.best_value)
     # opt.analysis()
 
