@@ -32,3 +32,4 @@ pymongo  #synchronous
 
 # optimization
 optuna
+# mysqlclient
