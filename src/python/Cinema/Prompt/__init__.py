@@ -77,7 +77,7 @@ class Parameter:
     def __repr__(self) -> str:
         return f'Parameter "{self.name}", [{self.lower_lim},{self.upper_lim}], Prompt value {self.promptval}\n'
      
-def analysisdb(study=None, name=None, storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna' ):
+def analysisdb(study=None, name=None, target=None, storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna' ):
     if study is None:
         import optuna
         study = optuna.load_study(study_name=name, storage=storage)
@@ -89,31 +89,31 @@ def analysisdb(study=None, name=None, storage='mysql://prompt:csnsPrompt_2023@da
     from optuna.visualization import plot_parallel_coordinate
     from optuna.visualization import plot_param_importances
     from optuna.visualization import plot_slice
-    plot_optimization_history(study).show()
+    plot_optimization_history(study, target=target).show()
 
     # Visualize the learning curves of the trials.
     # plot_intermediate_values(study).show()
 
     # Visualize high-dimensional parameter relationships.
-    plot_parallel_coordinate(study).show()
+    plot_parallel_coordinate(study, target=target).show()
 
     # # Select parameters to visualize.
     # plot_parallel_coordinate(study, params=["x", "y"]).show()
 
     # Visualize hyperparameter relationships.
-    plot_contour(study).show()
+    plot_contour(study, target=target).show()
 
     # # Select parameters to visualize.
     # plot_contour(study, params=["x", "y"]).show()
 
     # Visualize individual hyperparameters.
-    plot_slice(study).show()
+    plot_slice(study, target=target).show()
 
     # # Select parameters to visualize.
     # plot_slice(study, params=["x", "y"]).show()
 
     # Visualize parameter importances.
-    plot_param_importances(study).show()
+    plot_param_importances(study, target=target).show()
 
 
 
