@@ -6,6 +6,11 @@ import phonopy
 import matplotlib.pyplot as plt
 import pickle
 
+def dumpObj2File(fn, obj):
+    f = open (fn, 'wb')
+    pickle.dump(obj, f)
+    f.close()
+
 np.set_printoptions(suppress=True)
 
 # # cell = QeXmlCell('out_relax.xml')
@@ -268,10 +273,8 @@ def run(i):
 
     integ(k, nitn=10, neval=500)
     result = integ(k, nitn=10, neval=1000, adapt = False)
-    f = open (f'result_{i}.pkl', 'wb')
-    pickle.dump(result, f)
-    f.close()
 
+    dumpObj2File(f'result_{i}.pkl', result)
 
     for j in range(enSize):
         sqw[j] = (result['dI'][j]).mean
@@ -336,19 +339,9 @@ print(f"Program finished in {finish_time-start_time} seconds")
 #     print('nstrat shape', np.array(integ.nstrat) )
 #     print(f'Function  executed in {(time()-t1):.4f}s\n')
 
-
-f = open ('Sqw.pkl', 'wb')
-pickle.dump(sqw, f)
-f.close()
-
-f = open ('Q.pkl', 'wb')
-pickle.dump(Q, f)
-f.close()
-
-f = open ('en.pkl', 'wb')
-pickle.dump(en, f)
-f.close()
-
+dumpObj2File(f'Sqw.pkl', sqw)
+dumpObj2File(f'Q.pkl', Q)
+dumpObj2File(f'en.pkl', en)
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
