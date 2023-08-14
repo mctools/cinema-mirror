@@ -134,8 +134,8 @@ class CohPhon:
 
 
 class kernel(vegas.BatchIntegrand):
-    def __init__(self, omegaBin=30) -> None:
-        self.calc =  CohPhon()
+    def __init__(self, omegaBin=30, temp=300.) -> None:
+        self.calc =  CohPhon(temperature=temp)
         self.omegaRange = [0, self.calc.maxEn] 
         self.bin = omegaBin
 
@@ -202,6 +202,8 @@ def gen_parser():
                         dest='enSize', help='energy bin size for the histogram')
     parser.add_argument('-o', '--output-file-name', action='store', default='qehist.h5',
                         dest='output', help='output file name')
+    parser.add_argument('-n', '--neval', action='store', type=float, default=10000,
+                    dest='neval', help='number of evaluation for the 20 iterations')
     parser.add_argument('-p', '--partitions', action='store', type=int, default=1,
                     dest='partitions', help='number of partitions.')
     return parser
@@ -213,7 +215,7 @@ enSize = args.enSize
 qSize = args.QSize
 output = args.output
 partitions = args.partitions
-
+neval=int(args.neval)
    
 
 qEdge=np.linspace(0.0, maxQ, qSize+1)
@@ -224,7 +226,7 @@ q_volume = qEdge**3*np.pi*4/3. # spher volumes
 q_volume_diff = np.diff(q_volume)
 
 
-k = kernel(enSize)
+k = kernel(enSize, temp)
 enEdge = np.linspace(0, k.calc.maxEn, enSize+1 )
 en = enEdge[:-1]+np.diff(enEdge)*0.5
 # per energy
@@ -241,8 +243,8 @@ def run(i):
 
     integ =  vegas.Integrator([[qEdge[i], qEdge[i+1]], [0, np.pi], [0, np.pi]])
 
-    integ(k, nitn=10, neval=500)
-    result = integ(k, nitn=10, neval=1000, adapt = False)
+    integ(k, nitn=10, neval=neval//2)
+    result = integ(k, nitn=10, neval=neval, adapt = False)
 
     dumpObj2File(f'result_{i}.pkl', result)
 
@@ -260,7 +262,7 @@ def run(i):
     # print('density /Q/energy', result['I']/(q_volume_diff[i]*en_diff))
     # print('nstrat shape', np.array(integ.nstrat) )
     t2 = time()
-    print(f'Run{i} Q={np.mean([qEdge[i], qEdge[i+1]])}  executed in {(time()-t1):.2f}s, I=', result['I'], f', chi2={result.chi2/result.dof:.2f}, Q={result.Q} \n')
+    print(f'Run {i}: Q={np.mean([qEdge[i], qEdge[i+1]])}  executed in {(time()-t1):.2f}s, I=', result['I'], f', chi2={result.chi2/result.dof:.2f}, Q={result.Q} \n')
     return sqw
 
 
