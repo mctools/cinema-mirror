@@ -122,16 +122,13 @@ class CohPhon:
         n = 1./(np.exp(en/(self.temperature*boltzmann))-1.)
         Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
 
-        # Smag = ((0.5*(F*F)*hbar*hbar).T/Qmag).T*0.0253
-        
-        if (en<=0).any():
-            idx = en<=0
+        idx = en < 1e-5
+        if idx.any():
             Smag[idx] = 0.
-            import warnings
-            warnings.warn(f'en<=0, Q: {en<=0}, en: {en}', RuntimeWarning) 
+            # import warnings
+            # warnings.warn(f'en<=0, Q: {en<=0}, en: {en}', RuntimeWarning) 
 
         return Qmag, en, Smag
-
 
 class kernel(vegas.BatchIntegrand):
     def __init__(self, omegaBin=30, temp=300.) -> None:
