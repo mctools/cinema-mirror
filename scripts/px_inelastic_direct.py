@@ -243,7 +243,7 @@ def run(i):
 
     integ =  vegas.Integrator([[qEdge[i], qEdge[i+1]], [0, np.pi], [0, np.pi]])
 
-    integ(k, nitn=10, neval=neval//2)
+    integ(k, nitn=10, neval=neval)
     result = integ(k, nitn=10, neval=neval, adapt = False)
 
     dumpObj2File(f'result_{i}.pkl', result)
