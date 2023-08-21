@@ -44,7 +44,6 @@ class CohPhon:
         omega = self.ph.get_mesh_dict()['frequencies']
         self.maxEn = omega.max()*THz*2*np.pi*hbar
 
-
         # print(self.disp)
 
     def calcMesh(self, meshsize):
@@ -120,13 +119,18 @@ class CohPhon:
     
         # not devided by the reciprocal volume so the unit is per atoms in the cell
         n = 1./(np.exp(en/(self.temperature*boltzmann))-1.)
-        Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
+        
 
         idx = en < 1e-5
+        Smag = np.zeros_like(F)
         if idx.any():
-            Smag[idx] = 0.
+            valid = np.logical_not(idx)
             # import warnings
             # warnings.warn(f'en<=0, Q: {en<=0}, en: {en}', RuntimeWarning) 
+            Smag = 0.5*(F[valid]*F[valid])*hbar*hbar/en[valid]* (n + 1)
+        else:
+            Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
+        
 
         return Qmag, en, Smag
 
@@ -166,9 +170,11 @@ class kernel(vegas.BatchIntegrand):
             print('S<0.', pos, S)
             raise RuntimeError()
         
-        factor = r*r*sin_phi
 
-        contr = (S.T*factor).T
+        factor = r*r*sin_phi
+        qvec2q = 1./(4.*np.pi)
+
+        contr = (S.T*factor).T*qvec2q
 
         I = contr.sum(axis=1)
         
@@ -259,7 +265,7 @@ def run(i):
     # print('density /Q/energy', result['I']/(q_volume_diff[i]*en_diff))
     # print('nstrat shape', np.array(integ.nstrat) )
     t2 = time()
-    print(f'Run {i}: Q={np.mean([qEdge[i], qEdge[i+1]])}  executed in {(time()-t1):.2f}s, I=', result['I'], f', chi2={result.chi2/result.dof:.2f}, Q={result.Q} \n')
+    print(f'Run {i}: Q={qEdge[i]}, {qEdge[i+1]}: {np.mean([qEdge[i], qEdge[i+1]])}  executed in {(time()-t1):.2f}s, I=', result['I'], f', chi2={result.chi2/result.dof:.2f}, Q={result.Q} \n')
     return sqw
 
 
