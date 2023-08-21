@@ -120,14 +120,11 @@ class CohPhon:
         # not devided by the reciprocal volume so the unit is per atoms in the cell
         n = 1./(np.exp(en/(self.temperature*boltzmann))-1.)
         
-
-        idx = en < 1e-5
-        Smag = np.zeros_like(F)
-        if idx.any():
-            valid = np.logical_not(idx)
-            # import warnings
-            # warnings.warn(f'en<=0, Q: {en<=0}, en: {en}', RuntimeWarning) 
-            Smag = 0.5*(F[valid]*F[valid])*hbar*hbar/en[valid]* (n + 1)
+        smallIdx = en < 1e-5
+        if smallIdx.any():
+            en[smallIdx] = 1.
+            Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
+            Smag[smallIdx] = 1.
         else:
             Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
         
