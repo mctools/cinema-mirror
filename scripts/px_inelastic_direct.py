@@ -343,7 +343,8 @@ plt.savefig(fname='lin.pdf')
 
 fig=plt.figure()
 ax = fig.add_subplot(111)
-pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*1e-10, vmax=H.max()), shading='auto')
+pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*1e-3, vmax=H.max()), shading='auto')
+fig.colorbar(pcm, ax=ax)
 plt.grid()
 plt.savefig(fname='log.pdf')
 
