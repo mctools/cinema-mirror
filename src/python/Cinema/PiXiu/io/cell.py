@@ -95,9 +95,9 @@ class QeXmlCell(CellBase):
         if len(info)!=1:
             raise RuntimeError('./output/atomic_structure is not unique')
         internal(info[0])
+        
         self.abc = np.linalg.norm(self.lattice, axis=1)
         invlatt = np.linalg.inv(self.lattice).T
-        self.pos_abs = np.copy(self.reduced_pos)*au2Aa
         self.reduced_pos = np.array(self.reduced_pos)*au2Aa
         for i in range(self.reduced_pos.shape[0]):
             self.reduced_pos[i] = invlatt.dot(self.reduced_pos[i])
