@@ -40,9 +40,11 @@ class CohPhon:
         self.ph.run_mesh(meshsize, is_mesh_symmetry=False, with_eigenvectors=True)
         self.ph.run_thermal_displacement_matrices(self.temperature, self.temperature+1, 2, freq_min=0.002)
         # get_thermal_displacement_matrices returns the temperatures and thermal_displacement_matrices
-        self.disp = self.ph.get_thermal_displacement_matrices()[1][0]
-        omega = self.ph.get_mesh_dict()['frequencies']
-        self.maxEn = omega.max()*THz*2*np.pi*hbar
+        self.disp = np.copy(self.ph.get_thermal_displacement_matrices()[1][0])
+        omega = np.copy(self.ph.get_mesh_dict()['frequencies'])
+        self.maxHistEn = omega.max()*THz*2*np.pi*hbar + 0.005 #add 5meV as the energy margin
+        del self.ph
+        self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=0, symmetrize_fc=True)
 
         # print(self.disp)
 
@@ -107,34 +109,27 @@ class CohPhon:
 
         en, eigvec = self._calcPhonon(Q)
 
-        if np.allclose(Q, np.zeros(3)):
-            print(Q)
-            print('hit gamma')
-            return None
+        tinyphon = en < 1e-5 # in eV, cufoof small phonons
+        en[tinyphon] = 1. # replease small phonon energy to 1eV to avoid diveded by zero RuntimeWarning
         
-        Qmag = np.linalg.norm(Q, axis=1) 
-
-    
+        Qmag = np.linalg.norm(Q, axis=1)  
         F = self._calcFormFact(Q, eigvec)
-    
-        # not devided by the reciprocal volume so the unit is per atoms in the cell
+
+        # the unit is per atoms by not per reciprocal volume
         n = 1./(np.exp(en/(self.temperature*boltzmann))-1.)
-        
-        smallIdx = en < 1e-5
-        if smallIdx.any():
-            en[smallIdx] = 1.
-            Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
-            Smag[smallIdx] = 1.
-        else:
-            Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
-        
+
+        Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
+        if tinyphon.any(): # fill zero for small phonons
+            Smag[tinyphon] = 0.   
+
+        self.ph.set_partial_DOS                
 
         return Qmag, en, Smag
 
 class kernel(vegas.BatchIntegrand):
     def __init__(self, omegaBin=30, temp=300.) -> None:
         self.calc =  CohPhon(temperature=temp)
-        self.omegaRange = [0, self.calc.maxEn] 
+        self.omegaRange = [0, self.calc.maxHistEn] 
         self.bin = omegaBin
 
     # def setR(self, rmin, rmax):
@@ -227,7 +222,7 @@ q_volume_diff = np.diff(q_volume)
 
 
 k = kernel(enSize, temp)
-enEdge = np.linspace(0, k.calc.maxEn, enSize+1 )
+enEdge = np.linspace(0, k.calc.maxHistEn, enSize+1 )
 en = enEdge[:-1]+np.diff(enEdge)*0.5
 # per energy
 en_diff = np.diff(en).mean()
@@ -267,11 +262,11 @@ def run(i):
 
 
 from multiprocessing import Pool
-p = Pool(partitions)
+pool = Pool(partitions)
 start_time = time()
 
-with p:
-    res = p.map(run, range(qSize))
+with pool:
+    res = pool.map(run, range(qSize))
     for i, p in enumerate(res):
         sqw[i] = p
 
