@@ -48,6 +48,42 @@ class CohPhon:
 
         # print(self.disp)
 
+    def getGammaPoint(self, Qin):
+        Q = np.atleast_2d(Qin)
+        # print('Q', Q)
+        Qred = self.cell.qabs2reduced(Q)
+        # print('rudu', Qred)
+
+        ceil = np.ceil(Qred)
+        floor = np.floor(Qred)
+
+        gamma = np.zeros((len(Q), 3))
+
+        for i, (low, up) in enumerate(zip(floor, ceil)):
+            gpoints_reduced = np.array([[low[0], low[1], low[2]],
+                                [low[0], low[1], up[2]],
+                                [low[0], up[1], low[2]],
+                                [low[0], up[1], up[2]],
+                                [up[0], low[1], low[2]],
+                                [up[0], low[1], up[2]],
+                                [up[0], up[1], low[2]],
+                                [up[0], up[1], up[2]]])
+            gpoints = self.cell.qreduced2abs(gpoints_reduced)
+            dist = gpoints-Q[i]
+            dist = (dist*dist).sum(axis=1)
+            # print('dist', dist, np.argmin(dist) )
+            gamma[i] = gpoints[np.argmin(dist)]
+
+        return gamma
+
+        # print('gamma', gamma, self.cell.qabs2reduced(gamma))
+        # print('Qback', self.cell.qreduced2abs(Qred))
+
+        # # raise RuntimeError()
+        # if len(Q) > 1:
+        #     raise RuntimeError()
+
+
     def calcMesh(self, meshsize):
         # # using iterator 
         # ph.init_mesh(10., is_mesh_symmetry=False, with_eigenvectors=True, use_iter_mesh=True)
@@ -82,8 +118,10 @@ class CohPhon:
 
         F = np.zeros((Qarr.shape[0], self.nAtom*3))
 
-        for i, (Q, eigvec) in enumerate(zip(Qarr, eigvecss)):
-            w =  -0.5 * np.dot(np.dot(self.disp, Q), Q)
+        gamma = self.getGammaPoint(Qarr)
+
+        for i, (g, Q, eigvec) in enumerate(zip(gamma, Qarr, eigvecss)):
+            w =  -0.5 * np.dot(np.dot(self.disp, g), g)
 
             # for testing
             # print('w', w, -0.5*self.disp[0,0,0]*np.linalg.norm(Q)**2)
