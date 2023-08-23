@@ -22,7 +22,7 @@ def dumpObj2File(fn, obj):
 
 
 class CohPhon:
-    def __init__(self, yamlfile = 'phonopy.yaml', cellQeRelaxXml='out_relax.xml', temperature=300.) -> None:
+    def __init__(self, yamlfile = 'phonopy.yaml', cellQeRelaxXml='out_relax.xml', temperature=300., en_cut = 1e-4) -> None:
         self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=0, symmetrize_fc=True)
         self.cell = QeXmlCell(cellQeRelaxXml) # this should be changed to the experimental crystal size for production runs
         # self.pos=self.cell.lattice.dot(self.cell.reduced_pos.T).T
@@ -36,6 +36,7 @@ class CohPhon:
             raise RuntimeError('Different unitcell in the DFT and phonon calculation ')
 
         self.temperature = temperature
+        self.en_cut=1e-4
         meshsize = 100.
         self.ph.run_mesh(meshsize, is_mesh_symmetry=False, with_eigenvectors=True)
         self.ph.run_thermal_displacement_matrices(self.temperature, self.temperature+1, 2, freq_min=0.002)
@@ -147,7 +148,7 @@ class CohPhon:
 
         en, eigvec = self._calcPhonon(Q)
 
-        tinyphon = en < 1e-5 # in eV, cufoof small phonons
+        tinyphon = en < self.en_cut # in eV, cufoof small or negtive phonons
         en[tinyphon] = 1. # replease small phonon energy to 1eV to avoid diveded by zero RuntimeWarning
         
         Qmag = np.linalg.norm(Q, axis=1)  
