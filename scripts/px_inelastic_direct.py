@@ -136,10 +136,10 @@ class CohPhon:
             #               np.linalg.norm((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(Q)) *eigvec.dot(Q)).sum(axis=1)) )
             
             #summing for all atoms, F for each mode
-            F[i]=np.abs((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(g)) *eigvec.dot(Q)).sum(axis=1))/self.nAtom
+            F[i]=np.abs((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(g)) *eigvec.dot(Q)).sum(axis=1))
 
         # print('eigvec', eigvec[1])
-        return F    
+        return F/self.nAtom # per atom    
     
     def s(self, Qin, reduced=False):
         if reduced:
