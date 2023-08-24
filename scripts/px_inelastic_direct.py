@@ -25,9 +25,7 @@ class CohPhon:
     def __init__(self, yamlfile = 'phonopy.yaml', cellQeRelaxXml='out_relax.xml', temperature=300., en_cut = 1e-4) -> None:
         self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=0, symmetrize_fc=True)
         self.cell = QeXmlCell(cellQeRelaxXml) # this should be changed to the experimental crystal size for production runs
-        # self.pos=self.cell.lattice.dot(self.cell.reduced_pos.T).T
         self.pos=self.cell.reduced_pos.dot(self.cell.lattice)
-
         self.mass, self.bc, num = self.cell.getAtomInfo()
         self.sqMass = np.sqrt(self.mass)
         self.nAtom = len(self.sqMass)
@@ -203,9 +201,8 @@ class kernel(vegas.BatchIntegrand):
         
 
         factor = r*r*sin_phi
-        qvec2q = 1./(4.*np.pi)
-
-        contr = (S.T*factor).T*qvec2q
+        
+        contr = (S.T*factor).T
 
         I = contr.sum(axis=1)
         
@@ -286,7 +283,8 @@ def run(i):
         sqw[j] = (result['dI'][j]).mean
 
     sqw *= 1./(q_volume_diff[i]*en_diff)
-    sqw *= 2. # theata is only for half of the sphere
+
+    sqw *= 2 # theata is only for half of the sphere, so the q_volume_diff should be halved 
 
     # print(result.summary())
     # print('   Q =', Q[i])
