@@ -139,7 +139,7 @@ class CohPhon:
             F[i]=np.abs((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(g)) *eigvec.dot(Q)).sum(axis=1))
 
         # print('eigvec', eigvec[1])
-        return F/self.nAtom # per atom    
+        return F  
     
     def s(self, Qin, reduced=False):
         if reduced:
@@ -167,7 +167,7 @@ class CohPhon:
 
         self.ph.set_partial_DOS                
 
-        return Qmag, en, Smag
+        return Qmag, en, Smag/self.nAtom # per atom  
 
 class kernel(vegas.BatchIntegrand):
     def __init__(self, omegaBin=30, temp=300.) -> None:
