@@ -118,8 +118,14 @@ class CohPhon:
         F = np.zeros((Qarr.shape[0], self.nAtom*3))
 
         gamma = self.getGammaPoint(Qarr)
+        
 
         for i, (g, Q, eigvec) in enumerate(zip(gamma, Qarr, eigvecss)):
+            # print('mag', eigvec.shape, np.linalg.norm(eigvecss, axis=-1)**2)
+            norm = np.linalg.norm(eigvec, axis=-1)
+            eigvec = (eigvec.T/norm.T).T
+            # print('mag', eigvec.shape, np.linalg.norm(eigvec, axis=-1)**2)
+            # raise RuntimeError()
             w =  -0.5 * np.dot(np.dot(self.disp, Q), Q)
 
             # for testing
@@ -130,7 +136,7 @@ class CohPhon:
             #               np.linalg.norm((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(Q)) *eigvec.dot(Q)).sum(axis=1)) )
             
             #summing for all atoms, F for each mode
-            F[i]=np.abs((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(g)) *eigvec.dot(Q)).sum(axis=1))
+            F[i]=np.abs((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(g)) *eigvec.dot(Q)).sum(axis=1))/self.nAtom
 
         # print('eigvec', eigvec[1])
         return F    
