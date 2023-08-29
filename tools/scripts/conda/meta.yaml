@@ -1,0 +1,37 @@
+{% set version = "1.0.1" %}
+
+package:
+  name: cinema
+  version: {{ version }}
+
+source:
+  # git_url: https://gitlab.com/xxcai1/cinema.git
+  # git_rev: 1.0.0
+  # git_depth: 1 # (Defaults to -1/not shallow)
+  path: ../../../
+
+build:
+  noarch: python
+  number: 0
+  # script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  build:
+    - git
+    - cmake
+  host:
+    - python
+    - pip
+    - python-devtools
+  run:
+    - python
+
+test:
+  imports:
+    - cinema
+
+about:
+  home: https://gitlab.com/cinema-developers/prompt.git
+  license: Apache License, Version 2.0
+  summary: 'China Spallation Neutron Source Monte Carlo System'
+  description: China Spallation Neutron Source Monte Carlo System.
