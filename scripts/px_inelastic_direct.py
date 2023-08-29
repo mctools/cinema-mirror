@@ -23,7 +23,7 @@ def dumpObj2File(fn, obj):
 
 class CohPhon:
     def __init__(self, yamlfile = 'phonopy.yaml', cellQeRelaxXml='out_relax.xml', temperature=300., en_cut = 1e-4) -> None:
-        self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=0, symmetrize_fc=True)
+        self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=1, symmetrize_fc=True)
         self.cell = QeXmlCell(cellQeRelaxXml) # this should be changed to the experimental crystal size for production runs
         self.pos=self.cell.reduced_pos.dot(self.cell.lattice)
         self.mass, self.bc, num = self.cell.getAtomInfo()
@@ -34,7 +34,7 @@ class CohPhon:
             raise RuntimeError('Different unitcell in the DFT and phonon calculation ')
 
         self.temperature = temperature
-        self.en_cut=1e-4
+        self.en_cut=en_cut
         meshsize = 100.
         self.ph.run_mesh(meshsize, is_mesh_symmetry=False, with_eigenvectors=True)
         self.ph.run_thermal_displacement_matrices(self.temperature, self.temperature+1, 2, freq_min=0.002)
@@ -42,8 +42,11 @@ class CohPhon:
         self.disp = np.copy(self.ph.get_thermal_displacement_matrices()[1][0])
         omega = np.copy(self.ph.get_mesh_dict()['frequencies'])
         self.maxHistEn = omega.max()*THz*2*np.pi*hbar + 0.005 #add 5meV as the energy margin
-        del self.ph
-        self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=0, symmetrize_fc=True)
+        # del self.ph
+        # self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=0, symmetrize_fc=True)
+
+        import euphonic as eu
+        self.eu = eu.ForceConstants.from_phonopy(summary_name='phonopy.yaml')
 
         # print(self.disp)
 
@@ -96,16 +99,20 @@ class CohPhon:
        
     def _calcPhonon(self, k):
         reducedK=self.cell.qabs2reduced(np.asarray(k))
-        self.ph.run_qpoints(reducedK, with_eigenvectors=True)  
+        p = self.eu.calculate_qpoint_phonon_modes(reducedK)
 
-        res = self.ph.get_qpoints_phonon()
-        # self.ph.write_hdf5_qpoints_phonon()
-        nAtom = len(self.cell.element)
+        return p.frequencies.magnitude*1e-3, p.eigenvectors
 
-        en = res[0]*THz*2*np.pi*hbar
-        eigv = res[1].reshape((-1, nAtom*3, nAtom, 3)) # en, eigenvector
+        # self.ph.run_qpoints(reducedK, with_eigenvectors=True)  
 
-        return en, eigv
+        # res = self.ph.get_qpoints_phonon()
+        # # self.ph.write_hdf5_qpoints_phonon()
+        # nAtom = len(self.cell.element)
+
+        # en = res[0]*THz*2*np.pi*hbar
+        # eigv = res[1].reshape((-1, nAtom*3, nAtom, 3)) # en, eigenvector
+
+        # return en, eigv
 
     
     def _calcFormFact(self, Qarr, eigvecss, tau=None):
@@ -121,11 +128,6 @@ class CohPhon:
         
 
         for i, (g, Q, eigvec) in enumerate(zip(gamma, Qarr, eigvecss)):
-            # print('mag', eigvec.shape, np.linalg.norm(eigvecss, axis=-1)**2)
-            norm = np.linalg.norm(eigvec, axis=-1)
-            eigvec = (eigvec.T/norm.T).T
-            # print('mag', eigvec.shape, np.linalg.norm(eigvec, axis=-1)**2)
-            # raise RuntimeError()
             w =  -0.5 * np.dot(np.dot(self.disp, Q), Q)
 
             # for testing
@@ -136,7 +138,9 @@ class CohPhon:
             #               np.linalg.norm((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(Q)) *eigvec.dot(Q)).sum(axis=1)) )
             
             #summing for all atoms, F for each mode
-            F[i]=np.abs((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(g)) *eigvec.dot(Q)).sum(axis=1))
+            F[i]=np.abs((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(Q)) *eigvec.dot(Q)).sum(axis=1))
+
+             
 
         # print('eigvec', eigvec[1])
         return F  
@@ -163,9 +167,7 @@ class CohPhon:
 
         Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
         if tinyphon.any(): # fill zero for small phonons
-            Smag[tinyphon] = 0.   
-
-        self.ph.set_partial_DOS                
+            Smag[tinyphon] = 0.                   
 
         return Qmag, en, Smag/self.nAtom # per atom  
 
@@ -273,6 +275,8 @@ sqw = np.zeros([qSize, enSize])
 
 def run(i):
     print('running ', i)
+    print(i, k, k.calc)
+    
     t1 = time()
     sqw = np.zeros(enSize)
 
@@ -290,7 +294,7 @@ def run(i):
 
     sqw *= 1./(q_volume_diff[i]*en_diff)
 
-    sqw *= 2 # theata is only for half of the sphere, so the q_volume_diff should be halved 
+    sqw *= 4 # theata is only in the range between 0 and pi 
 
     # print(result.summary())
     # print('   Q =', Q[i])
