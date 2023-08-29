@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 # This script test whether single crystal placed inside subvolume (or sub-subvolume ...)
-# produces correct responses.
+# produces correct responses. 
+# It shows that the reflection direction does not depend on subvolume orientation. 
 
 from Cinema.Prompt import Prompt, PromptMPI, Optimiser
 from Cinema.Prompt.solid import Box, Tube, Trapezoid, Sphere
@@ -27,8 +28,9 @@ class Sim(PromptMPI):
         if False:
             world.placeChild("phyCrystal", crystal, Transformation3D(0, 0, 12).applyRotX(45))
         else:
-            subvol.placeChild("phyCrystal", crystal, Transformation3D().applyRotX(-5))
-            world.placeChild("phySubvol", subvol, Transformation3D(0, 0, 12).applyRotX(45))
+            angle = -30
+            subvol.placeChild("phyCrystal", crystal, Transformation3D().applyRotX(45-angle))
+            world.placeChild("phySubvol", subvol, Transformation3D(0, 0, 12).applyRotX(angle))
 
         self.setWorld(world)
 
