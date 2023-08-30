@@ -28,7 +28,7 @@ def dumpObj2File(fn, obj):
 
 
 class CohPhon:
-    def __init__(self, yamlfile = 'phonopy.yaml', cellQeRelaxXml='out_relax.xml', temperature=300., en_cut = 1e-4) -> None:
+    def __init__(self, yamlfile = 'phonopy.yaml', cellQeRelaxXml='out_relax.xml', temperature=300., en_cut = 1e-3) -> None:
         self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=1, symmetrize_fc=True)
         self.cell = QeXmlCell(cellQeRelaxXml) # this should be changed to the experimental crystal size for production runs
         self.pos=self.cell.reduced_pos.dot(self.cell.lattice)
@@ -48,11 +48,12 @@ class CohPhon:
         self.disp = np.copy(self.ph.get_thermal_displacement_matrices()[1][0])
         omega = np.copy(self.ph.get_mesh_dict()['frequencies'])
         self.maxHistEn = omega.max()*THz*2*np.pi*hbar + 0.005 #add 5meV as the energy margin
-        # del self.ph
+        del self.ph
         # self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=0, symmetrize_fc=True)
 
         import euphonic as eu
         self.eu = eu.ForceConstants.from_phonopy(summary_name='phonopy.yaml')
+        self.eu.cal
 
         # print(self.disp)
 
