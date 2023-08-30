@@ -10,6 +10,12 @@ import argparse
 from Cinema.Interface.units import *
 from Cinema.PiXiu.AtomInfo import getAtomMassBC
 
+import os
+
+# Set environment variables
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['EUPHONIC_NUM_THREADS'] = '1'
 
 from time import time
 import vegas
@@ -100,18 +106,13 @@ class CohPhon:
     def _calcPhonon(self, k):
         reducedK=self.cell.qabs2reduced(np.asarray(k))
         p = self.eu.calculate_qpoint_phonon_modes(reducedK)
-
         return p.frequencies.magnitude*1e-3, p.eigenvectors
 
         # self.ph.run_qpoints(reducedK, with_eigenvectors=True)  
-
         # res = self.ph.get_qpoints_phonon()
-        # # self.ph.write_hdf5_qpoints_phonon()
         # nAtom = len(self.cell.element)
-
         # en = res[0]*THz*2*np.pi*hbar
         # eigv = res[1].reshape((-1, nAtom*3, nAtom, 3)) # en, eigenvector
-
         # return en, eigv
 
     
@@ -158,6 +159,7 @@ class CohPhon:
 
         tinyphon = en < self.en_cut # in eV, cufoof small or negtive phonons
         en[tinyphon] = 1. # replease small phonon energy to 1eV to avoid diveded by zero RuntimeWarning
+        eigvec[tinyphon] = 1.
         
         Qmag = np.linalg.norm(Q, axis=1)  
         F = self._calcFormFact(Q, eigvec)
@@ -167,7 +169,7 @@ class CohPhon:
 
         Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
         if tinyphon.any(): # fill zero for small phonons
-            Smag[tinyphon] = 0.                   
+            Smag[tinyphon] = 0.               
 
         return Qmag, en, Smag/self.nAtom # per atom  
 
