@@ -98,7 +98,7 @@ class QeXmlCell(CellBase):
         
         self.abc = np.linalg.norm(self.lattice, axis=1)
         invlatt = np.linalg.inv(self.lattice).T
-        self.reduced_pos = np.array(self.reduced_pos)*au2Aa
+        self.reduced_pos = np.array(self.reduced_pos)*au2Aa # it is in the abs unit
         for i in range(self.reduced_pos.shape[0]):
             self.reduced_pos[i] = invlatt.dot(self.reduced_pos[i])
 
