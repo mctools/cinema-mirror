@@ -103,16 +103,16 @@ class QeXmlCell(CellBase):
             self.reduced_pos[i] = invlatt.dot(self.reduced_pos[i])
 
         self.totmagn = float( (root.findall('./output/magnetization/total')[0]).text )
-        self.lattice_reci = np.linalg.inv(self.lattice)*2*np.pi
+        self.lattice_reci = np.linalg.inv(self.lattice.T)*2*np.pi
 
         # print(self.lattice_reci, self.element)
 
-    def qreduced2abs(self, q):
-        return q.dot(self.lattice_reci)
+    def qreduced2abs(self, r):
+        return r.dot(self.lattice_reci)
        
     def qabs2reduced(self, q):
         fac = 1./(2*np.pi)
-        return q.dot(self.lattice*fac)
+        return q.dot(self.lattice.T)*fac
     
     def getAtomSymbols(self):
         return self.element

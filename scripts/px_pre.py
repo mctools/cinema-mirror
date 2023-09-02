@@ -182,7 +182,7 @@ if rundft and not os.path.isfile('FORCE_SETS'):
 #band
 pcor, label = getPath(path)
 logger.info(f'band {" ".join(map(str,pcor))}; {" ".join(map(str,label))}')
-if os.system(f'phonopy --fc-symmetry  --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" --hdf5 --eigvecs {plotflag} -s'):
+if os.system(f'phonopy --fc-symmetry  --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" --hdf5 --eigvecs {plotflag} -s --writefc'):
     logger.info(f'band fail')
     raise IOError("band fail")
 

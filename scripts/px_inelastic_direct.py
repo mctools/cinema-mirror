@@ -9,6 +9,7 @@ import pickle
 import argparse
 from Cinema.Interface.units import *
 from Cinema.PiXiu.AtomInfo import getAtomMassBC
+from phonopy.structure.brillouin_zone import BrillouinZone, get_qpoints_in_Brillouin_zone
 
 import os
 
@@ -35,6 +36,8 @@ class CohPhon:
         self.mass, self.bc, num = self.cell.getAtomInfo()
         self.sqMass = np.sqrt(self.mass)
         self.nAtom = len(self.sqMass)
+        print('lattice', self.cell.lattice)
+        print('lattice_reci', self.cell.lattice_reci)
 
         if any(self.ph.get_unitcell().get_atomic_numbers() != num):
             raise RuntimeError('Different unitcell in the DFT and phonon calculation ')
@@ -48,16 +51,32 @@ class CohPhon:
         self.disp = np.copy(self.ph.get_thermal_displacement_matrices()[1][0])
         omega = np.copy(self.ph.get_mesh_dict()['frequencies'])
         self.maxHistEn = omega.max()*THz*2*np.pi*hbar + 0.005 #add 5meV as the energy margin
-        del self.ph
+        # del self.ph
         # self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=0, symmetrize_fc=True)
 
         import euphonic as eu
         self.eu = eu.ForceConstants.from_phonopy(summary_name='phonopy.yaml')
-        self.eu.cal
+        # from euphonic.brille import BrilleInterpolator
+        # self.eu = BrilleInterpolator.from_force_constants(self.eu)
 
-        # print(self.disp)
+        print(f'displacement matrix at {temperature}k', self.disp)
+        self.bz = BrillouinZone(self.cell.lattice_reci)
+
+        # for i in range(100):
+        #     self.getGammaPoint(np.random.random(3)*10)
+        # raise RuntimeError()
+
+
 
     def getGammaPoint(self, Qin):
+        Q = np.atleast_2d(Qin)
+        self.bz.run(self.cell.qabs2reduced(Q))
+        # shortestq = np.array(self.bz.shortest_qpoints)
+        shortestq = np.array(
+            [pts[0] for pts in self.bz.shortest_qpoints], dtype="double", order="C"
+        )
+        return Q-self.cell.qreduced2abs(shortestq)
+
         Q = np.atleast_2d(Qin)
         # print('Q', Q)
         Qred = self.cell.qabs2reduced(Q)
@@ -82,6 +101,12 @@ class CohPhon:
             dist = (dist*dist).sum(axis=1)
             # print('dist', dist, np.argmin(dist) )
             gamma[i] = gpoints[np.argmin(dist)]
+
+        print('Q', Q)
+        print('py gamma', Q-self.cell.qreduced2abs(shortestq))
+        print('my gamma', gamma)
+        if len(Q)>1:
+            raise RuntimeError()
 
         return gamma
 
@@ -109,12 +134,12 @@ class CohPhon:
         p = self.eu.calculate_qpoint_phonon_modes(reducedK)
         return p.frequencies.magnitude*1e-3, p.eigenvectors
 
-        # self.ph.run_qpoints(reducedK, with_eigenvectors=True)  
-        # res = self.ph.get_qpoints_phonon()
-        # nAtom = len(self.cell.element)
-        # en = res[0]*THz*2*np.pi*hbar
-        # eigv = res[1].reshape((-1, nAtom*3, nAtom, 3)) # en, eigenvector
-        # return en, eigv
+        self.ph.run_qpoints(reducedK, with_eigenvectors=True)  
+        res = self.ph.get_qpoints_phonon()
+        nAtom = len(self.cell.element)
+        en = res[0]*THz*2*np.pi*hbar
+        eigv = res[1].reshape((-1, nAtom*3, nAtom, 3)) # en, eigenvector
+        return en, eigv
 
     
     def _calcFormFact(self, Qarr, eigvecss, tau=None):
@@ -236,6 +261,8 @@ def gen_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', '--temperature', action='store', type=float,
                         dest='temp', help='temperature in kelvin', required=True)
+    parser.add_argument('-l', '--lower-limit-Q', action='store', type=float, default=0.0,
+                        dest='minQ', help='lower limit for the Q')
     parser.add_argument('-u', '--upper-limit-Q', action='store', type=float, default=10.0,
                         dest='maxQ', help='upper limit for the Q')
     parser.add_argument('-q', '--Q-bin-size', action='store', type=int, default=300,
@@ -248,10 +275,13 @@ def gen_parser():
                     dest='neval', help='number of evaluation for the 20 iterations')
     parser.add_argument('-p', '--partitions', action='store', type=int, default=1,
                     dest='partitions', help='number of partitions.')
+    parser.add_argument('-s', '--save', action='store_true', dest='save', help='save vegas pickles')
+
     return parser
     
 args=gen_parser().parse_args()
 temp = args.temp #temperature in kelvin
+minQ = args.minQ
 maxQ = args.maxQ
 enSize = args.enSize
 qSize = args.QSize
@@ -260,7 +290,7 @@ partitions = args.partitions
 neval=int(args.neval)
    
 
-qEdge=np.linspace(0.0, maxQ, qSize+1)
+qEdge=np.linspace(minQ, maxQ, qSize+1)
 Q = qEdge[:-1]+np.diff(qEdge)*0.5
 
 # per reciprocal space
@@ -276,7 +306,7 @@ en_diff = np.diff(en).mean()
 sqw = np.zeros([qSize, enSize])
 
 
-def run(i):
+def run(i, save=False):
     print('running ', i)
     print(i, k, k.calc)
     
@@ -290,7 +320,8 @@ def run(i):
     integ(k, nitn=10, neval=neval)
     result = integ(k, nitn=10, neval=neval, adapt = False)
 
-    dumpObj2File(f'result_{i}.pkl', result)
+    if save:
+        dumpObj2File(f'result_{i}.pkl', result)
 
     for j in range(enSize):
         sqw[j] = (result['dI'][j]).mean
