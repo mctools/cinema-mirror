@@ -181,6 +181,7 @@ class kernel(vegas.BatchIntegrand):
 
         factor = r*r*sin_phi        
         contr = (S.T*factor).T
+        contr[np.isnan(contr)]=0.
         I = contr.sum(axis=1)
         
         # return I        
