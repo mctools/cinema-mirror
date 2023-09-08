@@ -2,7 +2,8 @@
 
 import os
 import logging
-
+logging.basicConfig(filename='px_inel_dir.log', level=logging.INFO, format='%(asctime)s %(message)s')
+logging.info('Starting a new calculation')
     
 # Set environment variables
 os.environ['OMP_NUM_THREADS'] = '1'
@@ -39,8 +40,8 @@ class CohPhon:
         self.mass, self.bc, num = self.cell.getAtomInfo()
         self.sqMass = np.sqrt(self.mass)
         self.nAtom = len(self.sqMass)
-        logging.info('lattice', self.cell.lattice)
-        logging.info('reciprocal lattice', self.cell.lattice_reci)
+        logging.info(f'lattice: {self.cell.lattice}')
+        logging.info(f'reciprocal lattice: {self.cell.lattice_reci}')
 
         if any(self.ph.get_unitcell().get_atomic_numbers() != num):
             raise RuntimeError('Different unitcell in the DFT and phonon calculation ')
@@ -137,7 +138,7 @@ class CohPhon:
         en, eigvec = self._calcPhonon(Q)
 
         tinyphon = en < self.en_cut # in eV, cufoof small or negtive phonons
-        en[tinyphon] = 1. # replease small phonon energy to 1eV to avoid diveded by zero RuntimeWarning
+        en[tinyphon] = self.temperature*boltzmann # replease small phonon energy to a sensible value to avoid diveded by zero RuntimeWarning
         eigvec[tinyphon] = 1.
         
         Qmag = np.linalg.norm(Q, axis=1)  
@@ -248,14 +249,16 @@ en = enEdge[:-1]+np.diff(enEdge)*0.5
 # per energy
 en_diff = np.diff(en).mean()
 sqw = np.zeros([qSize, enSize])
+sdev = np.zeros_like(sqw)
 
 
 def run(i, save=False):
-    logging.info(f'Launching {i}th calculation ')
-    logging.debug(i, k, k.calc)
+    logging.info(f'Launching the {i}th integration in the Q range of ({qEdge[i]:.3f}, {qEdge[i+1]:.3f}) ')
+    logging.debug('run', i, k, k.calc)
     
     t1 = time()
-    sqw = np.zeros(enSize)
+    sqw_at_q = np.zeros(enSize)
+    sdev_at_q = np.zeros_like(sqw_at_q)
     integ =  vegas.Integrator([[qEdge[i], qEdge[i+1]], [0, np.pi], [0, np.pi]])
 
     integ(k, nitn=10, neval=neval)
@@ -265,27 +268,29 @@ def run(i, save=False):
         dumpObj2File(f'result_{i}.pkl', result)
 
     for j in range(enSize):
-        sqw[j] = (result['dI'][j]).mean
+        sqw_at_q[j] = (result['dI'][j]).mean
+        sdev_at_q[j] = (result['dI'][j]).sdev
 
-    sqw *= 1./(q_volume_diff[i]*en_diff)
-    sqw *= 4 # theata is only in the range between 0 and pi 
+    scale = 4./(q_volume_diff[i]*en_diff) # factor 4 is because of the theata is only in the range between 0 and pi 
+    sqw_at_q *= scale
+    sdev_at_q *= scale 
 
     s=f'Run {i}: Q range ({qEdge[i]:.3f}, {qEdge[i+1]:.3f}), mean {np.mean([qEdge[i], qEdge[i+1]]):.3f},  executed in {(time()-t1):.2f}s, I=', result['I'], f', chi2={result.chi2/result.dof:.2f}, Q={result.Q:.4f} \n'
     logging.info(s)
-    return sqw
+    return sqw_at_q, sdev_at_q
 
 
 from multiprocessing import Pool
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='px_inel_dir.log', level=logging.INFO, format='%(asctime)s %(relativeCreated)6d %(threadName)s %(message)s')
 
     pool = Pool(partitions)
     start_time = time()
 
     with pool:        
         for i, res in enumerate(tqdm.tqdm(pool.imap(run, range(qSize)), total=qSize)):
-            sqw[i] = res
+            sqw[i] = res[0]
+            sdev[i] = res[1]
 
     finish_time = time()
     logging.info(f"Program finished in {finish_time-start_time} seconds")
@@ -300,6 +305,7 @@ if __name__ == '__main__':
     f0.create_dataset("q", data=Q, compression="gzip")
     f0.create_dataset("en", data=en, compression="gzip")
     f0.create_dataset("s", data=sqw, compression="gzip")
+    f0.create_dataset("sdev", data=sdev, compression="gzip")
     f0.close()
 
 
