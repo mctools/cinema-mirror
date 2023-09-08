@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import os
+import logging
 
+    
 # Set environment variables
 os.environ['OMP_NUM_THREADS'] = '1'
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
@@ -19,6 +21,7 @@ from Cinema.Interface.units import *
 from Cinema.PiXiu.AtomInfo import getAtomMassBC
 from phonopy.structure.brillouin_zone import BrillouinZone, get_qpoints_in_Brillouin_zone
 
+import tqdm
 
 from time import time
 import vegas
@@ -36,8 +39,8 @@ class CohPhon:
         self.mass, self.bc, num = self.cell.getAtomInfo()
         self.sqMass = np.sqrt(self.mass)
         self.nAtom = len(self.sqMass)
-        print('lattice', self.cell.lattice)
-        print('lattice_reci', self.cell.lattice_reci)
+        logging.info('lattice', self.cell.lattice)
+        logging.info('reciprocal lattice', self.cell.lattice_reci)
 
         if any(self.ph.get_unitcell().get_atomic_numbers() != num):
             raise RuntimeError('Different unitcell in the DFT and phonon calculation ')
@@ -248,8 +251,8 @@ sqw = np.zeros([qSize, enSize])
 
 
 def run(i, save=False):
-    print('running ', i)
-    print(i, k, k.calc)
+    logging.info(f'Launching {i}th calculation ')
+    logging.debug(i, k, k.calc)
     
     t1 = time()
     sqw = np.zeros(enSize)
@@ -267,55 +270,58 @@ def run(i, save=False):
     sqw *= 1./(q_volume_diff[i]*en_diff)
     sqw *= 4 # theata is only in the range between 0 and pi 
 
-    print(f'Run {i}: range(Q={qEdge[i]:.3f}, {qEdge[i+1]:.3f}), mean {np.mean([qEdge[i], qEdge[i+1]]):.3f},  executed in {(time()-t1):.2f}s, I=', result['I'], f', chi2={result.chi2/result.dof:.2f}, Q={result.Q:.4f} \n')
+    s=f'Run {i}: Q range ({qEdge[i]:.3f}, {qEdge[i+1]:.3f}), mean {np.mean([qEdge[i], qEdge[i+1]]):.3f},  executed in {(time()-t1):.2f}s, I=', result['I'], f', chi2={result.chi2/result.dof:.2f}, Q={result.Q:.4f} \n'
+    logging.info(s)
     return sqw
 
 
 from multiprocessing import Pool
-pool = Pool(partitions)
-start_time = time()
 
-with pool:
-    res = pool.map(run, range(qSize))
-    for i, p in enumerate(res):
-        sqw[i] = p
+if __name__ == '__main__':
+    logging.basicConfig(filename='px_inel_dir.log', level=logging.INFO, format='%(asctime)s %(relativeCreated)6d %(threadName)s %(message)s')
 
+    pool = Pool(partitions)
+    start_time = time()
 
-finish_time = time()
-print(f"Program finished in {finish_time-start_time} seconds")
+    with pool:        
+        for i, res in enumerate(tqdm.tqdm(pool.imap(run, range(qSize)), total=qSize)):
+            sqw[i] = res
 
-
-
-# save data 
-import h5py
-f0=h5py.File(output,"w")
-
-## coherent 
-f0.create_dataset("q", data=Q, compression="gzip")
-f0.create_dataset("en", data=en, compression="gzip")
-f0.create_dataset("s", data=sqw, compression="gzip")
-f0.close()
+    finish_time = time()
+    logging.info(f"Program finished in {finish_time-start_time} seconds")
 
 
-import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-from Cinema.Interface import plotStyle
-plotStyle()
-fig=plt.figure()
-ax = fig.add_subplot(111)
-H = sqw.T
 
-X, Y = np.meshgrid(Q, en)
-pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
-fig.colorbar(pcm, ax=ax)
-plt.grid()
-plt.savefig(fname='lin.pdf')
+    # save data 
+    import h5py
+    f0=h5py.File(output,"w")
 
-fig=plt.figure()
-ax = fig.add_subplot(111)
-pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*1e-3, vmax=H.max()), shading='auto')
-fig.colorbar(pcm, ax=ax)
-plt.grid()
-plt.savefig(fname='log.pdf')
+    ## coherent 
+    f0.create_dataset("q", data=Q, compression="gzip")
+    f0.create_dataset("en", data=en, compression="gzip")
+    f0.create_dataset("s", data=sqw, compression="gzip")
+    f0.close()
 
-# plt.show()
+
+    import matplotlib.pyplot as plt
+    import matplotlib.colors as colors
+    from Cinema.Interface import plotStyle
+    plotStyle()
+    fig=plt.figure()
+    ax = fig.add_subplot(111)
+    H = sqw.T
+
+    X, Y = np.meshgrid(Q, en)
+    pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
+    fig.colorbar(pcm, ax=ax)
+    plt.grid()
+    plt.savefig(fname='lin.pdf')
+
+    fig=plt.figure()
+    ax = fig.add_subplot(111)
+    pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*1e-3, vmax=H.max()), shading='auto')
+    fig.colorbar(pcm, ax=ax)
+    plt.grid()
+    plt.savefig(fname='log.pdf')
+
+    # plt.show()
