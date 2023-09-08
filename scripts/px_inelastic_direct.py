@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+import os
+
+# Set environment variables
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['EUPHONIC_NUM_THREADS'] = '1'
+
+
 import numpy as np
 np.set_printoptions(suppress=True)
 from Cinema.PiXiu.io.cell import QeXmlCell
@@ -11,12 +19,6 @@ from Cinema.Interface.units import *
 from Cinema.PiXiu.AtomInfo import getAtomMassBC
 from phonopy.structure.brillouin_zone import BrillouinZone, get_qpoints_in_Brillouin_zone
 
-import os
-
-# Set environment variables
-os.environ['OMP_NUM_THREADS'] = '1'
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-os.environ['EUPHONIC_NUM_THREADS'] = '1'
 
 from time import time
 import vegas
@@ -25,8 +27,6 @@ def dumpObj2File(fn, obj):
     f = open (fn, 'wb')
     pickle.dump(obj, f)
     f.close()
-
-
 
 class CohPhon:
     def __init__(self, yamlfile = 'phonopy.yaml', cellQeRelaxXml='out_relax.xml', temperature=300., en_cut = 1e-4) -> None:
@@ -51,42 +51,15 @@ class CohPhon:
         self.disp = np.copy(self.ph.get_thermal_displacement_matrices()[1][0])
         omega = np.copy(self.ph.get_mesh_dict()['frequencies'])
         self.maxHistEn = omega.max()*THz*2*np.pi*hbar + 0.005 #add 5meV as the energy margin
-        # del self.ph
-        # self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=0, symmetrize_fc=True)
 
         import euphonic as eu
         self.eu = eu.ForceConstants.from_phonopy(summary_name='phonopy.yaml')
-        # from euphonic.brille import BrilleInterpolator
-        # self.eu = BrilleInterpolator.from_force_constants(self.eu)
-
-        # print(f'displacement matrix at {temperature}k', self.disp)
-        # self.bz = BrillouinZone(self.cell.lattice_reci)
-
-        # for i in range(100):
-        #     self.getGammaPoint(np.random.random(3)*10)
-        # raise RuntimeError()
-
-        # def test(reducedK):
-        #     p = self.eu.calculate_qpoint_phonon_modes(reducedK)#, useparallel=False)
-        #     return p.frequencies.magnitude*1e-3, (p.eigenvectors)
-        # raise RuntimeError()
 
 
 
     def getGammaPoint(self, Qin):
         Q = np.atleast_2d(Qin)
-        # self.bz.run(self.cell.qabs2reduced(Q))
-        # # shortestq = np.array(self.bz.shortest_qpoints)
-        # shortestq = np.array(
-        #     [pts[0] for pts in self.bz.shortest_qpoints], dtype="double", order="C"
-        # )
-        # return Q-self.cell.qreduced2abs(shortestq)
-
-        Q = np.atleast_2d(Qin)
-        # print('Q', Q)
         Qred = self.cell.qabs2reduced(Q)
-        # print('rudu', Qred)
-
         ceil = np.ceil(Qred)
         floor = np.floor(Qred)
 
@@ -106,15 +79,8 @@ class CohPhon:
             dist = (dist*dist).sum(axis=1)
             # print('dist', dist, np.argmin(dist) )
             gamma[i] = gpoints[np.argmin(dist)]
-
         return gamma
 
-        # print('gamma', gamma, self.cell.qabs2reduced(gamma))
-        # print('Qback', self.cell.qreduced2abs(Qred))
-
-        # # raise RuntimeError()
-        # if len(Q) > 1:
-        #     raise RuntimeError()
 
 
     def calcMesh(self, meshsize):
@@ -130,33 +96,19 @@ class CohPhon:
        
     def _calcPhonon(self, k):
         reducedK=self.cell.qabs2reduced(np.asarray(k))
-        p = self.eu.calculate_qpoint_phonon_modes(reducedK)#, useparallel=False)
-        
-        # return p.frequencies.magnitude*1e-3, p.eigenvectors
-
-        self.ph.run_qpoints(reducedK, with_eigenvectors=True, with_dynamical_matrices=True)  
-        dynm = self.ph._dynamical_matrix._dynamical_matrix
-        res = self.ph.get_qpoints_phonon()
-        nAtom = len(self.cell.element)
-        en = res[0]*THz*2*np.pi*hbar
-        eigv = res[1].reshape((-1, nAtom*3, nAtom, 3)) # en, eigenvector
-        print('dynm shape', dynm.shape)
-        raise RuntimeError()
-        return en, eigv
+        p = self.eu.calculate_qpoint_phonon_modes(reducedK, use_c=True, asr='reciprocal', n_threads=1)#, useparallel=False)
+        return p.frequencies.magnitude*1e-3, p.eigenvectors
 
     
     def _calcFormFact(self, Qarr, eigvecss, tau=None):
         # note, W = 0.5*Q*Q*u*u = 0.5*Q*Q*MSD
 
-
         # w =  -0.5 * Q.dot(np.swapaxes( Q.dot(self.disp), 1,2 ) )
         # print(w)
 
         F = np.zeros((Qarr.shape[0], self.nAtom*3))
-
         gamma = self.getGammaPoint(Qarr)
         
-
         for i, (g, Q, eigvec) in enumerate(zip(gamma, Qarr, eigvecss)):
             w =  -0.5 * np.dot(np.dot(self.disp, Q), Q)
 
@@ -164,13 +116,8 @@ class CohPhon:
             # print('w', w, -0.5*self.disp[0,0,0]*np.linalg.norm(Q)**2)
             # print(self.disp[0])
 
-            # print('Diff of using Q or tau', np.linalg.norm((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(tau)) *eigvec.dot(Q)).sum(axis=1)) /
-            #               np.linalg.norm((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(Q)) *eigvec.dot(Q)).sum(axis=1)) )
-            
             #summing for all atoms, F for each mode
             F[i]=np.abs((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(Q)) *eigvec.dot(Q)).sum(axis=1))
-
-             
 
         # print('eigvec', eigvec[1])
         return F  
@@ -208,18 +155,12 @@ class kernel(vegas.BatchIntegrand):
         self.omegaRange = [0, self.calc.maxHistEn] 
         self.bin = omegaBin
 
-    # def setR(self, rmin, rmax):
-    #     self.rmin = rmin
-    #     self.rDelta = rmax-rmin
-    #     print('rmin, rmax', rmin, rmax)
-
     def __call__(self, input):
         # x: rho, theta(0, 2pi), phi (0, pi)
         x=np.atleast_2d(input)
         r=x[:,0]#*self.rDelta + self.rmin
         theta=x[:,1]
         phi=x[:,2]
-        
         
         # https://mathworld.wolfram.com/SphericalCoordinates.html
         sin_theta=np.sin(theta)
@@ -237,16 +178,12 @@ class kernel(vegas.BatchIntegrand):
         if (S<0.).any():
             print('S<0.', pos, S)
             raise RuntimeError()
-        
 
-        factor = r*r*sin_phi
-        
+        factor = r*r*sin_phi        
         contr = (S.T*factor).T
-
         I = contr.sum(axis=1)
         
-        # return I
-        
+        # return I        
         dI = np.zeros((I.size, self.bin))
         for i in range(I.size):
             dI[i], _ = np.histogram(en[i], bins=self.bin, range=self.omegaRange, weights=contr[i])
@@ -315,9 +252,6 @@ def run(i, save=False):
     
     t1 = time()
     sqw = np.zeros(enSize)
-
-    # k.setR(qEdge[i], qEdge[i+1])   
-
     integ =  vegas.Integrator([[qEdge[i], qEdge[i+1]], [0, np.pi], [0, np.pi]])
 
     integ(k, nitn=10, neval=neval)
@@ -330,18 +264,9 @@ def run(i, save=False):
         sqw[j] = (result['dI'][j]).mean
 
     sqw *= 1./(q_volume_diff[i]*en_diff)
-
     sqw *= 4 # theata is only in the range between 0 and pi 
 
-    # print(result.summary())
-    # print('   Q =', Q[i])
-    # print('   I =', result['I'])
-    # print('sqw =', sqw)
-    # print('sum(dI/I) =', sum(result['dI']) / result['I'])
-    # print('density /Q/energy', result['I']/(q_volume_diff[i]*en_diff))
-    # print('nstrat shape', np.array(integ.nstrat) )
-    t2 = time()
-    print(f'Run {i}: Q={qEdge[i]}, {qEdge[i+1]}: {np.mean([qEdge[i], qEdge[i+1]])}  executed in {(time()-t1):.2f}s, I=', result['I'], f', chi2={result.chi2/result.dof:.2f}, Q={result.Q} \n')
+    print(f'Run {i}: range(Q={qEdge[i]:.3f}, {qEdge[i+1]:.3f}), mean {np.mean([qEdge[i], qEdge[i+1]]):.3f},  executed in {(time()-t1):.2f}s, I=', result['I'], f', chi2={result.chi2/result.dof:.2f}, Q={result.Q:.4f} \n')
     return sqw
 
 
@@ -368,7 +293,6 @@ f0=h5py.File(output,"w")
 f0.create_dataset("q", data=Q, compression="gzip")
 f0.create_dataset("en", data=en, compression="gzip")
 f0.create_dataset("s", data=sqw, compression="gzip")
-
 f0.close()
 
 
