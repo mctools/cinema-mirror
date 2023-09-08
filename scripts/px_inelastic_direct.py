@@ -29,7 +29,7 @@ def dumpObj2File(fn, obj):
 
 
 class CohPhon:
-    def __init__(self, yamlfile = 'phonopy.yaml', cellQeRelaxXml='out_relax.xml', temperature=300., en_cut = 1e-3) -> None:
+    def __init__(self, yamlfile = 'phonopy.yaml', cellQeRelaxXml='out_relax.xml', temperature=300., en_cut = 1e-4) -> None:
         self.ph = phonopy.load(phonopy_yaml=yamlfile, log_level=1, symmetrize_fc=True)
         self.cell = QeXmlCell(cellQeRelaxXml) # this should be changed to the experimental crystal size for production runs
         self.pos=self.cell.reduced_pos.dot(self.cell.lattice)
@@ -59,23 +59,28 @@ class CohPhon:
         # from euphonic.brille import BrilleInterpolator
         # self.eu = BrilleInterpolator.from_force_constants(self.eu)
 
-        print(f'displacement matrix at {temperature}k', self.disp)
-        self.bz = BrillouinZone(self.cell.lattice_reci)
+        # print(f'displacement matrix at {temperature}k', self.disp)
+        # self.bz = BrillouinZone(self.cell.lattice_reci)
 
         # for i in range(100):
         #     self.getGammaPoint(np.random.random(3)*10)
+        # raise RuntimeError()
+
+        # def test(reducedK):
+        #     p = self.eu.calculate_qpoint_phonon_modes(reducedK)#, useparallel=False)
+        #     return p.frequencies.magnitude*1e-3, (p.eigenvectors)
         # raise RuntimeError()
 
 
 
     def getGammaPoint(self, Qin):
         Q = np.atleast_2d(Qin)
-        self.bz.run(self.cell.qabs2reduced(Q))
-        # shortestq = np.array(self.bz.shortest_qpoints)
-        shortestq = np.array(
-            [pts[0] for pts in self.bz.shortest_qpoints], dtype="double", order="C"
-        )
-        return Q-self.cell.qreduced2abs(shortestq)
+        # self.bz.run(self.cell.qabs2reduced(Q))
+        # # shortestq = np.array(self.bz.shortest_qpoints)
+        # shortestq = np.array(
+        #     [pts[0] for pts in self.bz.shortest_qpoints], dtype="double", order="C"
+        # )
+        # return Q-self.cell.qreduced2abs(shortestq)
 
         Q = np.atleast_2d(Qin)
         # print('Q', Q)
@@ -102,12 +107,6 @@ class CohPhon:
             # print('dist', dist, np.argmin(dist) )
             gamma[i] = gpoints[np.argmin(dist)]
 
-        print('Q', Q)
-        print('py gamma', Q-self.cell.qreduced2abs(shortestq))
-        print('my gamma', gamma)
-        if len(Q)>1:
-            raise RuntimeError()
-
         return gamma
 
         # print('gamma', gamma, self.cell.qabs2reduced(gamma))
@@ -131,14 +130,18 @@ class CohPhon:
        
     def _calcPhonon(self, k):
         reducedK=self.cell.qabs2reduced(np.asarray(k))
-        p = self.eu.calculate_qpoint_phonon_modes(reducedK)
-        return p.frequencies.magnitude*1e-3, p.eigenvectors
+        p = self.eu.calculate_qpoint_phonon_modes(reducedK)#, useparallel=False)
+        
+        # return p.frequencies.magnitude*1e-3, p.eigenvectors
 
-        self.ph.run_qpoints(reducedK, with_eigenvectors=True)  
+        self.ph.run_qpoints(reducedK, with_eigenvectors=True, with_dynamical_matrices=True)  
+        dynm = self.ph._dynamical_matrix._dynamical_matrix
         res = self.ph.get_qpoints_phonon()
         nAtom = len(self.cell.element)
         en = res[0]*THz*2*np.pi*hbar
         eigv = res[1].reshape((-1, nAtom*3, nAtom, 3)) # en, eigenvector
+        print('dynm shape', dynm.shape)
+        raise RuntimeError()
         return en, eigv
 
     
