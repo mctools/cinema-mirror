@@ -9,6 +9,12 @@ from Cinema.Experiment.Analyser import ErrorPropagator, IDFLoader, DataLoader, R
 from Cinema.Prompt.Histogram import *
 from Cinema.Prompt import PromptFileReader
 
+def atomNumLW_Stick(h2o_r, h2o_h): # mm
+    h2o_density = 0.100104/np.power(1/mm, 3) # atoms/mm^3 
+    h2o_volume=np.pi*np.square(h2o_r)*h2o_h
+    h2o_atomNum=h2o_volume*h2o_density
+    return h2o_atomNum
+
 def atomNum_Stick(d2o_r, d2o_h, v_r, v_h): # mm
     d2o_density = 0.0997033/np.power(1/mm, 3) # atoms/mm^3
     v_density = 0.0723244/np.power(1/mm, 3) # atoms/mm^3
