@@ -40,9 +40,6 @@ Prompt::HistBase::~HistBase()
 
 void Prompt::HistBase::merge(const Prompt::HistBase &hist)
 {
-  if(m_name!=hist.m_name)
-    PROMPT_THROW2(CalcError, "m_name " << m_xmin << " is different with the m_xmin of another histogram " << hist.m_name);
-
   if(m_xmin!=hist.m_xmin)
     PROMPT_THROW2(CalcError, "m_xmin " << m_xmin << " is different with the m_xmin of another histogram " << hist.m_xmin);
 
