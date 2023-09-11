@@ -57,7 +57,7 @@ def _getPromptLib():
     else:
         _t = pathlib.Path(__file__).resolve().parent.parent
         _ptpath = str(_t)
-        libfile= str(_t.joinpath('libprompt_core.so'))
+        libfile = str(sorted(_t.rglob('libprompt_core.so'))[0])
         
     return ctypes.CDLL(libfile), _ptpath
 
