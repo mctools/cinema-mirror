@@ -1,5 +1,6 @@
 {% set version = "1.0.1" %}
 
+
 package:
   name: cinema
   version: {{ version }}
@@ -11,24 +12,45 @@ source:
   path: ../../../
 
 build:
-  noarch: python
+  # noarch: generic
+  skip: 
   number: 0
   # script: python -m pip install --no-deps --ignore-installed .
+
+channel:
+  - conda-forge
 
 requirements:
   build:
     - git
     - cmake
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - python                                 # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+    - cython                                # [build_platform != target_platform]
+    - numpy                                 # [build_platform != target_platform]
   host:
     - python
     - pip
     - python-devtools
+    - hdf5 ==1.12.2
+    - fftw
+    - zlib
+    - icu
   run:
+    - openmpi
+    - mpi4py
+    - h5py
+    - scipy
+    - mcpl
     - python
+    - pyvista
+    - matplotlib
 
 test:
   imports:
-    - cinema
+    - Cinema
 
 about:
   home: https://gitlab.com/cinema-developers/prompt.git
