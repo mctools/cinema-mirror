@@ -85,8 +85,6 @@ class CohPhon:
             gamma[i] = gpoints[np.argmin(dist)]
         return gamma
 
-
-
     def calcMesh(self, meshsize):
         # # using iterator 
         # ph.init_mesh(10., is_mesh_symmetry=False, with_eigenvectors=True, use_iter_mesh=True)
@@ -104,7 +102,7 @@ class CohPhon:
         return p.frequencies.magnitude*1e-3, p.eigenvectors
 
     
-    def _calcFormFact(self, Qarr, eigvecss, tau=None):
+    def _calcFormFact(self, Qarr, eigvecss, en, tau=None):
         # note, W = 0.5*Q*Q*u*u = 0.5*Q*Q*MSD
 
         # w =  -0.5 * Q.dot(np.swapaxes( Q.dot(self.disp), 1,2 ) )
@@ -124,7 +122,8 @@ class CohPhon:
             F[i]=np.abs((self.bc/self.sqMass * np.exp(w + 1j*self.pos.dot(Q)) *eigvec.dot(Q)).sum(axis=1))
 
         # print('eigvec', eigvec[1])
-        return F  
+        n = 1./(np.exp(en/(self.temperature*boltzmann))-1.)
+        return F*hbar*np.sqrt( (n+1)/en )
     
     def s(self, Qin, reduced=False):
         if reduced:
@@ -142,12 +141,10 @@ class CohPhon:
         eigvec[tinyphon] = 1.
         
         Qmag = np.linalg.norm(Q, axis=1)  
-        F = self._calcFormFact(Q, eigvec)
+        F = self._calcFormFact(Q, eigvec, en)
 
         # the unit is per atoms by not per reciprocal volume
-        n = 1./(np.exp(en/(self.temperature*boltzmann))-1.)
-
-        Smag = 0.5*(F*F)*hbar*hbar/en* (n + 1)
+        Smag = 0.5*F*F
         if tinyphon.any(): # fill zero for small phonons
             Smag[tinyphon] = 0.               
 
@@ -156,6 +153,11 @@ class CohPhon:
 class kernel(vegas.BatchIntegrand):
     def __init__(self, omegaBin=30, temp=300.) -> None:
         self.calc =  CohPhon(temperature=temp)
+        print(self.calc.s([1,1,1]))
+        print(self.calc.s([1,2,4]))
+        raise RuntimeError()
+
+
         self.omegaRange = [0, self.calc.maxHistEn] 
         self.bin = omegaBin
 
