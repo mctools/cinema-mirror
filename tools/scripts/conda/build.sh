@@ -6,7 +6,8 @@ set -x
 # CMAKE_ARGS="-DCMAKE_LINKER=$BUILD_PREFIX/bin/x86_64-apple-darwin13.4.0-ld"
 GITREPOPREFIX="https://gitlab.com/cinema-developers"
 NUMCPU=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
-if "${target_platform}"!="${build_platform}"; then
+if [ "${target_platform}" != "${build_platform}" ]
+then
     CMAKE_PLATFORM_FLAGS="-DCMAKE_TOOLCHAIN_FILE=${RECIPE_DIR}/cross-linux.cmake"
 else
     CMAKE_PLATFORM_FLAGS=""
@@ -48,7 +49,7 @@ cd -
 
 cd ${SRC_DIR}
 python -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv 
-cmake -DHDF5_DIR=${PREFIX}/lib \
+cmake -DHDF5_DIR=${PREFIX} \
     -DCMAKE_INSTALL_PREFIX=${SP_DIR}/Cinema \
     -DCMAKE_PREFIX_PATH=${PREFIX} \
     ${CMAKE_PLATFORM_FLAGS} \
