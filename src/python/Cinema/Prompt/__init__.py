@@ -281,8 +281,8 @@ class PromptMPI(Prompt):
         else:
             self.comm.Barrier()
 
-    def getScorerHist(self, cfg, dst=0):
-        hist = super().getScorerHist(cfg)
+    def getScorerHist(self, cfg, raw=False, dst=0):
+        hist = super().getScorerHist(cfg, raw)
         weight = hist.getWeight()
         hit = hist.getHit()
         print(f'rank {self.rank} hist info: {hist.getWeight().sum()} {hist.getHit().sum()}')
