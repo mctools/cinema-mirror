@@ -109,9 +109,8 @@ class CohPhon:
         # print(w)
 
         F = np.zeros((Qarr.shape[0], self.nAtom*3))
-        gamma = self.getGammaPoint(Qarr)
         
-        for i, (g, Q, eigvec) in enumerate(zip(gamma, Qarr, eigvecss)):
+        for i, (Q, eigvec) in enumerate(zip(Qarr, eigvecss)):
             w =  -0.5 * np.dot(np.dot(self.disp, Q), Q)
 
             # for testing
@@ -153,11 +152,6 @@ class CohPhon:
 class kernel(vegas.BatchIntegrand):
     def __init__(self, omegaBin=30, temp=300.) -> None:
         self.calc =  CohPhon(temperature=temp)
-        print(self.calc.s([1,1,1]))
-        print(self.calc.s([1,2,4]))
-        raise RuntimeError()
-
-
         self.omegaRange = [0, self.calc.maxHistEn] 
         self.bin = omegaBin
 
