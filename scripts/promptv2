@@ -56,7 +56,7 @@ if False:
 else:
     sim.simulate(1e6)
 
-wlhist = sim.getScorerHist('Scorer=WlSpectrum; name=detector; min=0.0; max=5; numbin=200')
+wlhist = sim.getScorerHist('Scorer=WlSpectrum; name=detector; min=0.0; max=5; numbin=200', raw=True)
 np.allclose(wlhist.getWeight().sum(), 817540.6738638073)
 np.allclose(wlhist.getHit().sum(), 201053.0)
 

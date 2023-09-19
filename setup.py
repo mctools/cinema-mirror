@@ -110,7 +110,7 @@ setup(
 
     install_requires=['pyvista', 'matplotlib', 'mcpl'],
 
-    ext_modules=[CMakeExtension(name='cinema', sourcedir='')],
+    # ext_modules=[CMakeExtension(name='cinema', sourcedir='')],
 
     cmdclass={
         'build_ext': CMakeBuild,
