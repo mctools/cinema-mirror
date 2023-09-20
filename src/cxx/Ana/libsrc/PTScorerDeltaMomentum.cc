@@ -19,14 +19,20 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTScorerDeltaMomentum.hh"
+#include "PromptCore.hh"
+#include "PTSingleton.hh"
+#include "PTRandCanonical.hh"
 
 Prompt::ScorerDeltaMomentum::ScorerDeltaMomentum(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, int method, int scatnum, bool linear)
 :Scorer1D("ScorerDeltaMomentum_" + name, stype, std::make_unique<Hist1D>("ScorerDeltaMomentum_" + name, qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir), 
-m_sourceSampleDist(sourceSampleDist), m_method(method), m_scatnum(scatnum)
-{}
+m_sourceSampleDist(sourceSampleDist), m_method(method), m_scatnum(scatnum), m_file()
+{
+  std::string s = std::__cxx11::to_string(Singleton<SingletonPTRand>::getInstance().getSeed());
+  m_file.open(m_name+"_"+s +".txt", std::ios::out);
+}
 
-Prompt::ScorerDeltaMomentum::~ScorerDeltaMomentum(){}
+Prompt::ScorerDeltaMomentum::~ScorerDeltaMomentum(){m_file.close();}
 
 void Prompt::ScorerDeltaMomentum::score(Prompt::Particle &particle)
 {
@@ -36,6 +42,25 @@ void Prompt::ScorerDeltaMomentum::score(Prompt::Particle &particle)
   if(m_scatnum==-1||particle.getNumScat()==m_scatnum)
   {
     double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
+    {
+      double time = particle.getTime();
+      double qt = neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin());
+     
+      double dist = m_sourceSampleDist+(particle.getPosition()-m_samplePos).mag();
+      double v = dist/particle.getTime();
+      double ekin = 0.5*const_neutron_mass_evc2*v*v;
+      double q = neutronAngleCosine2Q(angle_cos, ekin, ekin);
+
+      m_file << time << " "
+             << angle_cos << " "
+             << particle.getEKin0() - particle.getEKin() << " "
+             << particle.getWeight() << " "
+             << q << " "
+             << qt << "\n";
+
+    // std::cout << , particle.getEKin()) << " "
+    // <<q << std::endl;
+    } 
     if(m_method==0)
     {
       double qt = neutronAngleCosine2Q(angle_cos, particle.getEKin0(), particle.getEKin());
@@ -48,7 +73,7 @@ void Prompt::ScorerDeltaMomentum::score(Prompt::Particle &particle)
       double v = dist/particle.getTime();
       double ekin = 0.5*const_neutron_mass_evc2*v*v;
       double q = neutronAngleCosine2Q(angle_cos, ekin, ekin);
-      m_hist->fill(q, particle.getWeight());
+      m_hist->fill(q, particle.getWeight()/q);
     }
   }
 }

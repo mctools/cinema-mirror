@@ -23,7 +23,9 @@
 
 #include "PromptCore.hh"
 #include "PTScorer.hh"
-
+#include <iostream>
+#include <fstream>
+	
 namespace Prompt {
 
   class ScorerDeltaMomentum : public Scorer1D {
@@ -38,6 +40,7 @@ namespace Prompt {
     const double m_sourceSampleDist;
     int m_method;
     int m_scatnum;
+    std::fstream m_file;
 
   };
 }
