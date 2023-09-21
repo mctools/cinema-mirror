@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Cover also the scorer list
 
 from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.geo import Volume, Transformation3D
@@ -19,12 +20,10 @@ class MySim(PromptMPI):
         world = Volume("world", Box(200, 200, 500))
 
         detector = Volume("Det", Box(180, 180, 0.0001))
-        scorerCfg_detpsd = "Scorer=PSD;name=NeutronHistMap;xmin=-180;xmax=180;numbin_x=10;ymin=-180;ymax=180;numbin_y=10;ptstate=SURFACE;type=XY"
+        scorerCfg_detpsd = "Scorer= PSD ;name =  NeutronHistMap  ;xmin=-180;xmax=180;numbin_x=10;ymin=-180;ymax=180;numbin_y=10;ptstate=SURFACE;type=XY"
         scorerCfg_detwl = "Scorer=WlSpectrum; name=detector; min=1.6; max=2.1; numbin=20"
         detector.addScorer(scorerCfg_detpsd)
         detector.addScorer(scorerCfg_detwl)
-        self.scorer["cfgPSD"] = scorerCfg_detpsd
-        self.scorer["cfgWl"] = scorerCfg_detwl
 
         world.placeChild("physicalbox", detector, Transformation3D(0., 0., 190), 1)
         self.l.setWorld(world)
@@ -59,8 +58,8 @@ sim.setGun(gun)
 
 # vis or production
 sim.simulate(1e5)
-wlhist = sim.getScorerHist("cfgWl")
-PSDhist = sim.getScorerHist("cfgPSD")
+wlhist = sim.getScorerHist("detector")
+PSDhist = sim.getScorerHist("NeutronHistMap")
 np.testing.assert_allclose(PSDhist.getHit().sum(), 64840.0)
 np.testing.assert_allclose(wlhist.getHit(), expected_wl)
 
