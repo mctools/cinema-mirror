@@ -199,8 +199,11 @@ class Optimiser:
 class Prompt:
     def __init__(self, seed : int = 4096) -> None:
         self.l = Launcher()
-        self.scorer = {}
         self.l.setSeed(seed)
+
+    @property
+    def scorer(self):
+        return Volume.scorerDict
 
     def makeWorld(self):
         raise NotImplementedError('') 
