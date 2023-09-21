@@ -22,6 +22,7 @@ from scipy.spatial.transform import Rotation as scipyRot
 from ..Interface import *
 from .Mesh import _pt_Transformation3D_transform
 from copy import deepcopy
+from .scorer import Scorer
 
 __all__ = ['Volume', 'Transformation3D']
 
@@ -262,16 +263,17 @@ class Volume:
     def setMaterial(self, cfg : str):
         _pt_ResourceManager_addPhysics(self.volid, cfg.encode('utf-8')) # set as the universe
 
-    def addScorer(self, cfg):
+    def addScorer(self, scorer : Scorer or str):
         import re
-        if isinstance(cfg, str):
-            name = re.search(r'\s*name\s*=\s*\w*\s*;', cfg)
+        if isinstance(scorer, str):
+            name = re.search(r'\s*name\s*=\s*\w*\s*;', scorer)
             name = re.search(r'=.*;', name.group())
             name = re.sub(r'[^\w]', '', name.group())
-            self.__class__.scorerDict[name] = cfg
-            _pt_ResourceManager_addScorer(self.volid, cfg.encode('utf-8')) 
+            self.__class__.scorerDict[name] = scorer
+            _pt_ResourceManager_addScorer(self.volid, scorer.encode('utf-8')) 
         else:
-            cfg = cfg.cfg
+            cfg = scorer.cfg
+            self.__class__.scorerDict[scorer.cfg_name] = cfg
             _pt_ResourceManager_addScorer(self.volid, cfg.encode('utf-8')) 
 
     def setSurface(self, cfg : str):
