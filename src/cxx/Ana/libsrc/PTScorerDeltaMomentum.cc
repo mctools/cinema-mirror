@@ -48,7 +48,7 @@ void Prompt::ScorerDeltaMomentum::score(Prompt::Particle &particle)
       double v = dist/particle.getTime();
       double ekin = 0.5*const_neutron_mass_evc2*v*v;
       double q = neutronAngleCosine2Q(angle_cos, ekin, ekin);
-      m_hist->fill(q, particle.getWeight());
+      m_hist->fill(q, particle.getWeight()/q);
     }
   }
 }
