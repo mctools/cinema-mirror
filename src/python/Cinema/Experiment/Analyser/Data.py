@@ -46,6 +46,7 @@ class RunData(DataLoader):
     def __init__(self, fname, moduleName, tofcut=30, normMethod = Normalise.byMonitor):
         super().__init__(fname, moduleName, tofcut)
         self.normalise(normMethod)
+        self.moduleName = moduleName
 
     # += operator
     def __iadd__(self, other):
@@ -68,6 +69,30 @@ class RunData(DataLoader):
 
         else:
             raise RunTimeError('Unknown normalise method')
+        
+    def plot(self, show=False, logscale=False):
+        try:
+            import matplotlib.pyplot as plt
+            import matplotlib.colors as colors
+            fig=plt.figure()
+            ax = fig.add_subplot(111)
+            H = self.detErrPro.weight
+            pidNum = self.detErrPro.xcentre.shape[0]
+            pidIdx = np.linspace(1, pidNum, num=pidNum, endpoint=True)
+
+            X, Y = np.meshgrid(self.tofCentre, pidIdx)
+            if logscale:
+                pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*1e-10, vmax=H.max()), shading='auto')
+            else:
+                pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
+            fig.colorbar(pcm, ax=ax)
+            plt.grid()
+            plt.title(f'{self.moduleName} integral {H.sum()}')
+            if show:
+                plt.show()
+
+        except Exception as e:
+            print(e)
 
 
 
