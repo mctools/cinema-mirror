@@ -222,7 +222,7 @@ class Hist2D():
             raise RunTimeError('fillnamy different size')
         _pt_Hist2D_fill_many(self.mcobj.cobj, x.size, x, y, weight )
 
-    def plot(self, show=False):
+    def plot(self, show=False, logscale=False):
         try:
             import matplotlib.pyplot as plt
             import matplotlib.colors as colors
@@ -231,9 +231,13 @@ class Hist2D():
             H = self.getWeight().T
 
             X, Y = np.meshgrid(self.xcenter, self.ycenter)
-            pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
+            if logscale:
+                pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*1e-10, vmax=H.max()), shading='auto')
+            else:
+                pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
             fig.colorbar(pcm, ax=ax)
             plt.grid()
+            plt.title(f'integral {H.sum()}')
             if show:
                 plt.show()
 
