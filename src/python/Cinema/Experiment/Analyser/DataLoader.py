@@ -46,6 +46,9 @@ class ErrorPropagator():
             self.error = np.divide(weight, uncet, where=(uncet!=0.))
         if ycentre is not None:
             self.ycentre = np.copy(ycentre)
+    
+    def sum(self, axisIdx):
+        return self.weight.sum(axis=axisIdx)
 
     def compatible(self, xcentre, ycentre):
         np.testing.assert_almost_equal(self.xcentre, xcentre)
