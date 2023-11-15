@@ -88,7 +88,6 @@ class ErrorPropagator():
         othererr = np.divide(error, otherw, where=(otherw!=0.))
         self.weight = np.divide(self.weight, otherw, where=(otherw!=0.))
         self.error = np.sqrt(selferr*selferr + othererr*othererr)*np.abs(self.weight)
-        self.error = np.sqrt(selferr*selferr + othererr*othererr)*np.abs(self.weight)
 
     def __itruediv__(self, other):
         if hasattr(other, 'ycentre'):
@@ -99,7 +98,6 @@ class ErrorPropagator():
 
     def scale(self, factor):
         self.weight = self.weight*factor
-        self.error = self.error*np.abs(factor)
         self.error = self.error*np.abs(factor)
 
 
