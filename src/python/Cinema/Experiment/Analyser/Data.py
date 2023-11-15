@@ -47,6 +47,7 @@ class RunData(DataLoader):
         super().__init__(fname, moduleName, tofcut)
         self.normalise(normMethod)
         self.moduleName = moduleName
+        self.moduleName = moduleName
 
     # += operator
     def __iadd__(self, other):
