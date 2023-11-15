@@ -59,6 +59,11 @@ class RunData(DataLoader):
         self.detErrPro -= other.detErrPro
         self.moniErrPro += other.moniErrPro
         return self
+    
+     # /= operator
+    def __itruediv__(self, other):
+        self.detErrPro /= other.detErrPro
+        return self
 
     def normalise(self, normMethod):
         if normMethod == Normalise.skip:
