@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <gdml>
   <userinfo>
-    <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=10;range_wl=1e-10;src_w=200;src_h=200;src_z=0.0;slit_w=200;slit_h=200;slit_z=1e100"/>
+    <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=2;range_wl=1e-10;src_w=200;src_h=200;src_z=0.0;slit_w=200;slit_h=200;slit_z=1e100"/>
   </userinfo>
   <materials>
     <material name="Vacuum">
@@ -12956,7 +12956,7 @@
     <volume name="vol_detector_o">
       <solidref ref="detector_o"/>
       <materialref ref="Vacuum"/>
-      <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=bias0p1;xmin=-100;xmax=100;numbin_x=500;ymin=-100;ymax=100;numbin_y=500;ptstate=ENTRY;type=XY"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=bias0p1;xmin=-100;xmax=100;numbin_x=250;ymin=-100;ymax=100;numbin_y=250;ptstate=ENTRY;type=XY"/>
     </volume>
     <volume name="vol_sol_world">
       <solidref ref="sol_world"/>
