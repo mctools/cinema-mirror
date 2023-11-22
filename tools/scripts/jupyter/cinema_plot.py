@@ -17,6 +17,10 @@ def tutorial_run(fn, numNeu = 100, showInJupyter = True):
         # panel is the only jupyter backend working good
         # a new backend might be avaible in the future,
         # see https://github.com/pyvista/pyvista/issues/3348#issuecomment-1255282449
+
+        # Update in 11/22/2023: a fully-featured backend is ready but still not good enough 
+        # for large size data, track https://github.com/pyvista/pyvista/issues/4652
+        # TODO
         pyvista.set_jupyter_backend('server')
         # from pyvista.trame.jupyter import elegantly_launch, launch_server
         # host_server = '127.0.0.1'
