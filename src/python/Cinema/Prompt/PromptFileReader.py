@@ -3,7 +3,11 @@ __all__ = ['PromptFileReader']
 
 import mcpl
 from io import BytesIO
+from glob import glob
+import os
+import re
 import numpy as np
+from Cinema.Experiment.Analyser import ErrorPropagator
 
 _recodedict = {}
 _recodedict['ekin'] = 'ekin'
@@ -54,3 +58,37 @@ class PromptFileReader:
     def getRecordData(self, pb, recordkey):
         value = getattr(pb, _recodedict[recordkey])
         return value
+    
+class McplAnalysor(PromptFileReader):
+    def __init__(self,filePath):
+        self.filePath = filePath
+        
+    def filesMany(self):
+        path = os.path.join(self.filePath)
+        files = glob(path)
+        files.sort(key=lambda l: int(re.findall('\d+', l)[-1]))
+        return files
+
+    def getHist(self):
+        super().__init__(self.filePath)
+        content = self.getData('content')
+        hit = self.getData('hit')
+        if content.ndim == 1:
+            edge = self.getData('edge')
+            hist = ErrorPropagator(weight=content,  xcentre=edge, count=hit, error=None)
+        elif content.ndim == 2:
+            xedge = self.getData('xedge')
+            yedge = self.getData('yedge')
+            hist = ErrorPropagator(weight=content,  xcentre=xedge, ycentre=yedge,  count=hit, error=None)
+        
+        return hist
+    
+    def getHistMany(self, seedStart, seedEnd):
+        files = self.filesMany()
+        self.filePath = files[seedStart-1]
+        histMany = self.getHist()
+        for i in range(seedStart, seedEnd):
+            self.filePath = files[i]
+            print(self.filePath)
+            histMany += self.getHist()
+        return histMany
