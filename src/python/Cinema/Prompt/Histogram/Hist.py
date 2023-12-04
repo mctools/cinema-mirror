@@ -179,7 +179,6 @@ class Hist1D(HistBase):
             import matplotlib.pyplot as plt
             from Cinema.Interface import plotStyle
             plotStyle()
-            fig=plt.figure()
             center = self.getCentre()
             w = self.getWeight()
             uncet = np.sqrt(self.getHit()/10.)
@@ -278,7 +277,7 @@ class Hist2D(HistBase):
             raise RunTimeError('fillnamy different size')
         _pt_Hist2D_fill_many(self.cobj, x.size, x, y, weight )
 
-    def plot(self, show=False, title='Histogram'):
+    def plot(self, show=False, title='Histogram', log=True):
         try:
             import matplotlib.pyplot as plt
             import matplotlib.colors as colors
@@ -289,10 +288,14 @@ class Hist2D(HistBase):
             H = self.getWeight().T
 
             X, Y = np.meshgrid(self.xcenter, self.ycenter)
-            pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
+            if log:
+                pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*1e-3, vmax=H.max()), shading='auto')
+            else:
+                pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
+
             fig.colorbar(pcm, ax=ax)
             plt.grid()
-            plt.title(f'{title}\nWeight {H.sum()}')
+            # plt.title(f'{title}) \nWeight {H.sum()}')
             if show:
                 plt.show()
             else:

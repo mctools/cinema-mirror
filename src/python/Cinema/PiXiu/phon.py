@@ -3,6 +3,9 @@ import phonopy
 from Cinema.PiXiu.io.cell import QeXmlCell
 from Cinema.Interface.units import *
 import logging
+import vegas
+import h5py
+import multiprocessing as mp
 
 class CohPhon:
     def __init__(self, yamlfile = 'phonopy.yaml', cellQeRelaxXml='out_relax.xml', temperature=300., en_cut = 1e-4) -> None:
@@ -120,3 +123,67 @@ class CohPhon:
             Smag[tinyphon] = 0.               
 
         return Qmag, en, Smag/self.nAtom # per atom  
+
+class kernel(vegas.BatchIntegrand):
+    def __init__(self, omegaBin=30, temp=300.) -> None:
+        self.calc =  CohPhon(temperature=temp)
+        self.omegaRange = [0, self.calc.maxHistEn] 
+        self.bin = omegaBin
+        self.eventCount=0
+        self.recordEvant = False
+        self.h5file = None
+    
+    def enableRecord(self, fn):
+        self.recordEvant = True
+        id = mp.current_process()
+        self.h5file = h5py.File(fn+str(id)+'.h5',"w")
+
+    def disableRecord(self):
+        self.recordEvant = False
+        self.h5file.close()
+        self.h5file = None
+
+    def __call__(self, input):
+        # x: rho, theta(0, 2pi), phi (0, pi)
+        x=np.atleast_2d(input)
+        r=x[:,0]#*self.rDelta + self.rmin
+        theta=x[:,1]
+        phi=x[:,2]
+        
+        # https://mathworld.wolfram.com/SphericalCoordinates.html
+        sin_theta=np.sin(theta)
+        cos_theta=np.cos(theta)
+        sin_phi=np.sin(phi)
+        cos_phi=np.cos(phi)
+
+        Q = np.zeros_like(x)
+        Q[:, 0] = cos_theta*sin_phi
+        Q[:, 1] = sin_theta*sin_phi
+        Q[:, 2] = cos_phi
+        Q = (Q.T*r).T
+        
+        Qmag, en, S = self.calc.s(Q)
+        if (S<0.).any():
+            print('S<0.', Q, S)
+            raise RuntimeError()
+
+        factor = r*r*sin_phi        
+        contr = (S.T*factor).T
+        contr[np.isnan(contr)]=0.
+        I = contr.sum(axis=1)
+        
+        # return I        
+        dI = np.zeros((I.size, self.bin))
+        for i in range(I.size):
+            dI[i], _ = np.histogram(en[i], bins=self.bin, range=self.omegaRange, weights=contr[i])
+
+        if self.recordEvant:
+            QFlatten = np.repeat(Q, 6, axis=0)
+            enFlatten = np.atleast_2d(en.flatten()).T
+            SFlaten = np.atleast_2d(contr.flatten()).T
+
+            self.h5file.create_dataset(f'event_{self.eventCount}', data=np.concatenate((SFlaten, QFlatten, enFlatten), axis=1), compression="gzip")
+
+        self.eventCount += r.size  
+        return dict(I=I, dI=dI)
+

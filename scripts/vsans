@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+
+from Cinema.Prompt import Prompt, PromptMPI
+from Cinema.Prompt.geo import Volume, Transformation3D
+from Cinema.Prompt.solid import Box,Tube
+from Cinema.Prompt.gun import PythonGun
+from Cinema.Prompt.Histogram import wl2ekin
+import numpy as np
+
+class MySim(PromptMPI):
+    def __init__(self, seed=4096) -> None:
+        super().__init__(seed)
+        self.scorer['wl'] = "Scorer=WlSpectrum; name=detector; min=0.0; max=12; numbin=200"
+        self.scorer['multi'] ='Scorer=MultiScat; name=D2O; min=1; max=10; linear=yes'
+      
+        self.scorer['qe' ] = f'Scorer=DeltaMomentum;name=SofQ_300;sample_pos=0,0,0;method=1;beam_dir=0,0,1;dist=12000;ptstate=ENTRY;linear=no;min=0.0001; max=1; numbin=100;scatnum=1'
+        self.scorer['q' ]  = f'Scorer=DeltaMomentum;name=SofQ_300;sample_pos=0,0,0;method=0;beam_dir=0,0,1;dist=12000;ptstate=ENTRY;linear=no;min=0.0001; max=1; numbin=100;scatnum=1'
+
+        self.scorer['qe2' ] = f'Scorer=DeltaMomentum;name=SofQ_300;sample_pos=0,0,0;method=1;beam_dir=0,0,1;dist=12000;ptstate=ENTRY;linear=no;min=0.0001; max=1; numbin=100;scatnum=2'
+        self.scorer['q2' ]  = f'Scorer=DeltaMomentum;name=SofQ_300;sample_pos=0,0,0;method=0;beam_dir=0,0,1;dist=12000;ptstate=ENTRY;linear=no;min=0.0001; max=1; numbin=100;scatnum=2'
+
+    def makeWorld(self):
+        matCfg_sample = "physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=10;abs_bias=1"
+
+        world = Volume("world", Box(10000, 10000, 25000))
+
+        water = Volume('sample', Box(10,10,1.5), matCfg = matCfg_sample)
+        water.addScorer(self.scorer['multi'])
+        world.placeChild("sample", water, Transformation3D(0., 0., 0), 1)
+
+        detector = Volume("det", Tube(0, 410, 0.0001))
+        detector.addScorer(self.scorer['wl'])
+        detector.addScorer(self.scorer['q'])
+        detector.addScorer(self.scorer['qe'])
+        detector.addScorer(self.scorer['q2'])
+        detector.addScorer(self.scorer['qe2'])
+
+        world.placeChild("det", detector, Transformation3D(0., 0., 9000), 1)
+
+        self.setWorld(world)
+
+
+class MyGun(PythonGun):
+    def __init__(self):
+        super().__init__()
+
+    def sampleEnergy(self):
+        return wl2ekin(6)
+
+    def samplePosition(self):
+        return 0, 0, -12000
+
+
+sim = MySim(seed=1010)
+sim.makeWorld()
+
+# set gun
+if True: #could be in either old style or the python style
+    ekin = wl2ekin(8)
+    gunCfg = f'gun=SimpleThermalGun;position=0,0,-12000;direction=0,0,1;energy={ekin}'
+    sim.setGun(gunCfg)
+else:
+    gun = MyGun()
+    sim.setGun(gun)
+
+# vis or production
+if False:
+    sim.show(100)
+else:
+    sim.simulate(1e8)
+
+q = sim.getScorerHist('q', raw=False)
+qe = sim.getScorerHist('qe', raw=False)
+
+q2 = sim.getScorerHist('q2', raw=False)
+qe2 = sim.getScorerHist('qe2', raw=False)
+
+if sim.rank==0:
+    print(f'total {q.getWeight().sum()} {q.getHit().sum()}')
+    qe2.plot(log=True, label='double scat, inelstic')
+    q2.plot(log=True, label='double scat, elastic')
+
+    qe.plot(log=True, label='single scat, inelstic')
+    q.plot(show=True, log=True, label='single scat, elastic')
+
