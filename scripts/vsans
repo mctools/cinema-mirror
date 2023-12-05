@@ -6,6 +6,8 @@ from Cinema.Prompt.solid import Box,Tube
 from Cinema.Prompt.scorer import makePSD, ESpectrumHelper, WlSpectrumHelper, TOFHelper, VolFluenceHelper
 from Cinema.Prompt.gun import PythonGun
 from Cinema.Prompt.Histogram import wl2ekin
+from Cinema.Prompt.physics import Material, Mirror
+
 import numpy as np
 
 class MySim(PromptMPI):
@@ -15,10 +17,19 @@ class MySim(PromptMPI):
       
 
     def makeWorld(self):
-        matCfg_sample = "physics=ncrystal;nccfg='LiquidWaterH2O_T293.6K.ncmat';scatter_bias=1;abs_bias=1"
+        matCfg_sample = Material('LiquidWaterH2O_T293.6K.ncmat')
+
+        air = Material('freegas::N78O22/1.225kgm3')
+        air.setBiasScat(10)
+        air.setBiasAbsp(0)
+
+        enriched = Material('solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11')
+        cd = Material('solid::Cd/8.65gcm3')
+
+
 
         world = Volume("world", Box(10000, 10000, 25000))
-        water = Volume('sample', Box(10,10,1.5), matCfg = matCfg_sample)
+        water = Volume('sample', Box(10,10,1.5), matCfg = matCfg_sample.cfg)
         water.addScorer(self.scorer['multi'])
         world.placeChild("sample", water, Transformation3D(0., 0., 0), 1)
 
