@@ -25,23 +25,7 @@ from .solid import Trapezoid, Tube, Box
 from .geo import Volume, Transformation3D
 from copy import deepcopy
 from scipy.spatial.transform import Rotation as scipyRot
-
-
-class ConfigString(dict):
-    __getattr__ = dict.__getitem__
-    __setattr__ = dict.__setitem__
-    __delattr__ = dict.__delitem__
-
-    def makeCfg(self):     
-        cfg = ''
-        for k, v in self.items():
-            if k.__contains__('cfg_'):
-                cfg += k.replace('cfg_','') 
-                cfg += '='
-                cfg += str(v)
-                cfg += ';'
-        return cfg
-
+from .configstr import ConfigString
 
 class DiskChopper(ConfigString):
     def __init__(self) -> None:

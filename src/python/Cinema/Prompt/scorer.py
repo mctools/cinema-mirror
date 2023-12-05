@@ -19,28 +19,16 @@
 ##                                                                            ##
 ################################################################################
 
-class Scorer():
-    def __init__(self) -> None:
-        self.para = {}
+from .configstr import ConfigString
 
-    def makeCfg(self):     
-        cfg = ''
-        for k, v in self.__dict__.items():
-            if k.__contains__('cfg_'):
-                cfg += k.replace('cfg_','') 
-                cfg += '='
-                cfg += str(v)
-                cfg += ';'
-        return cfg
-    
-    @property
-    def cfg(self) -> str: 
-        return self.makeCfg()
+class Scorer(ConfigString):
+    pass
 
-class PSD(Scorer):
+class PSD(ConfigString):
     def __init__(self) -> None:
         super().__init__()
-        self.cfg_name = 'PSD'
+        self.cfg_Scorer='PSD'
+        self.cfg_name = 'PSD_1'
         self.cfg_xmin = -1.
         self.cfg_xmax = 1.
         self.cfg_numbin_x = 10 
@@ -50,63 +38,47 @@ class PSD(Scorer):
         self.cfg_ptstate = 'ENTRY' 
         self.cfg_type = 'XZ'
 
-    def makeCfg(self):
-        cfg = 'Scorer=PSD;'
-        return cfg + super().makeCfg()
-
-class WlSpectrum(Scorer):
+class WlSpectrum(ConfigString):
     def __init__(self) -> None:
         super().__init__()
-        self.cfg_name = 'WlSpectrum'
+        self.cfg_Scorer='WlSpectrum'
+        self.cfg_name = 'WlSpectrum_1'
         self.cfg_min = 0.0
         self.cfg_max = 5
         self.cfg_numbin = 100
         self.cfg_ptstate = 'ENTRY'
 
-    def makeCfg(self):
-        cfg = 'Scorer=WlSpectrum;'
-        return cfg + super().makeCfg()
-    
-class ESpectrum(Scorer):
+class ESpectrum(ConfigString):
     def __init__(self) -> None:
         super().__init__()
-        self.cfg_name = 'ESpectrum'
+        self.cfg_Scorer='ESpectrum'
+        self.cfg_name = 'ESpectrum_1'
         self.cfg_scoreTransfer = 1
         self.cfg_min = 0.0
         self.cfg_max = 0.25
         self.cfg_numbin = 100
         self.cfg_ptstate = 'ENTRY'
 
-    def makeCfg(self):
-        cfg = 'Scorer=ESpectrum;'
-        return cfg + super().makeCfg()
-    
-class TOF(Scorer):
+class TOF(ConfigString):
     def __init__(self) -> None:
         super().__init__()
-        self.cfg_name = 'TOF'
+        self.cfg_Scorer='TOF'
+        self.cfg_name = 'TOF_1'
         self.cfg_min = 0.0025
         self.cfg_max = 0.008
         self.cfg_numbin = 100
         self.cfg_ptstate = 'ENTRY'
-
-    def makeCfg(self):
-        cfg = 'Scorer=TOF;'
-        return cfg + super().makeCfg()
-    
-class VolFluence(Scorer):
+class VolFluence(ConfigString):
     def __init__(self) -> None:
         super().__init__()
-        self.cfg_name = 'VolFluence'
+        self.cfg_Scorer='VolFluence'
+        self.cfg_name = 'VolFluence_1'
         self.cfg_min = 0
         self.cfg_max = 1
         self.cfg_numbin = 100
         self.cfg_ptstate = 'ENTRY'
         self.cfg_linear = 'yes'
 
-    def makeCfg(self):
-        cfg = 'Scorer=VolFluence;'
-        return cfg + super().makeCfg()
 # def makeFlatPSD(name, x, y, z, numbin_x, numbin_y):
 #     """Make a PSD scorer of Volume BOX.
 

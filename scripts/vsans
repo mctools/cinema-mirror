@@ -20,7 +20,7 @@ class MySim(PromptMPI):
         self.scorer['q2' ]  = f'Scorer=DeltaMomentum;name=SofQ_300;sample_pos=0,0,0;method=0;beam_dir=0,0,1;dist=12000;ptstate=ENTRY;linear=no;min=0.0001; max=1; numbin=100;scatnum=2'
 
     def makeWorld(self):
-        matCfg_sample = "physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=10;abs_bias=1"
+        matCfg_sample = "physics=ncrystal;nccfg='LiquidWaterH2O_T293.6K.ncmat';scatter_bias=10;abs_bias=1"
 
         world = Volume("world", Box(10000, 10000, 25000))
 
@@ -69,11 +69,11 @@ if False:
 else:
     sim.simulate(1e8)
 
-q = sim.getScorerHist('q', raw=False)
-qe = sim.getScorerHist('qe', raw=False)
+q = sim.getScorerHist('q')
+qe = sim.getScorerHist('qe')
 
-q2 = sim.getScorerHist('q2', raw=False)
-qe2 = sim.getScorerHist('qe2', raw=False)
+q2 = sim.getScorerHist('q2')
+qe2 = sim.getScorerHist('qe2')
 
 if sim.rank==0:
     print(f'total {q.getWeight().sum()} {q.getHit().sum()}')
