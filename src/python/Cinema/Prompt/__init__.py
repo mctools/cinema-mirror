@@ -255,7 +255,7 @@ class Prompt:
     def simulate(self, num : int = 0, timer=True, save2Disk=False):
         self.l.go(int(num), timer=timer, save2Dis=save2Disk)
 
-    def getScorerHist(self, cfg, raw=False):
+    def gatherHistData(self, cfg, raw=False):
         if raw:
             return self.l.getHist(cfg)
         else:
@@ -284,11 +284,11 @@ class PromptMPI(Prompt):
         else:
             self.comm.Barrier()
 
-    def getScorerHist(self, cfg, raw=False, dst=0):
-        hist = super().getScorerHist(cfg, raw)
+    def gatherHistData(self, cfg, raw=False, dst=0):
+        hist = super().gatherHistData(cfg, raw)
         weight = hist.getWeight()
         hit = hist.getHit()
-        print(f'rank {self.rank} hist info: {hist.getWeight().sum()} {hist.getHit().sum()}')
+        print(f'rank {self.rank} hist info: weight {hist.getWeight().sum()}, hit {hist.getHit().sum()}')
 
         recvw = None
         recvh = None

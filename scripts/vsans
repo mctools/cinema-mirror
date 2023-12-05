@@ -62,7 +62,7 @@ sim = MySim(seed=1010)
 sim.makeWorld()
 
 # set gun
-if True: #could be in either old style or the python style
+if False: #could be in either old style or the python style
     ekin = wl2ekin(8)*0
     gunCfg = f'gun=SimpleThermalGun;position=0,0,-12000;direction=0,0,1;energy={ekin}'
     sim.setGun(gunCfg)
@@ -74,7 +74,7 @@ else:
 if False:
     sim.show(100)
 else:
-    sim.simulate(1e4)
+    sim.simulate(1e10)
 
 psd = sim.getScorerHist('psd')
 espec = sim.getScorerHist('espec')

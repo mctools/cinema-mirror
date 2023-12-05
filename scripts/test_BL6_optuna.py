@@ -342,7 +342,7 @@ if not OPT:
     hw = None
 
     for scor in sim.scorer.keys():
-        hist = sim.getScorerHist(scor)
+        hist = sim.gatherHistData(scor)
         if scor.startswith('WL'):
             # wlx = hist.getCentre()
             # wly += hist.getWeight()
@@ -462,7 +462,7 @@ else: # optimization
             totweight = 0
             # print(f'# printing total weigth: {totweight}')
             for scor in sim.scorer.keys():
-                hist = sim.getScorerHist(scor)
+                hist = sim.gatherHistData(scor)
                 if scor.startswith('WL'):
                     totweight += hist.getWeight().sum()
             return totweight
@@ -471,7 +471,7 @@ else: # optimization
             tofHist = None
             for scor in sim.scorer.keys():
                 if scor.startswith('TOF'):
-                    hist = sim.getScorerHist(scor)
+                    hist = sim.gatherHistData(scor)
                     if tofHist is None:
                         tofHist = hist
                     else:

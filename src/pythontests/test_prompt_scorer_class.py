@@ -87,8 +87,8 @@ sim.setGun(gun)
 
 # vis or production
 sim.simulate(1e5)
-wlhist = sim.getScorerHist("WavelengthSp")
-PSDhist = sim.getScorerHist("PSDMap")
+wlhist = sim.gatherHistData("WavelengthSp")
+PSDhist = sim.gatherHistData("PSDMap")
 print(sim.scorer, expected_dict)
 np.testing.assert_equal(sim.scorer, expected_dict)
 np.testing.assert_allclose(PSDhist.getHit().sum(), 64840.0)

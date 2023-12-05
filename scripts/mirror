@@ -48,9 +48,10 @@ if False:
 else:
     sim.simulate(1e6)
 
-psd1 = sim.getScorerHist('psd1')
-psd2 = sim.getScorerHist('psd2')
+destination = 0
+psd1 = sim.gatherHistData('psd1', dst=destination)
+psd2 = sim.gatherHistData('psd2', dst=destination)
 
-if sim.rank==0:
+if sim.rank==destination:
     psd1.plot(show=False, log=False)
     psd2.plot(show=True, log=False)

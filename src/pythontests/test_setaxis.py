@@ -68,7 +68,7 @@ else:
     sim.simulate(1e4)
 
 
-hist1 = sim.getScorerHist('wl')
+hist1 = sim.gatherHistData('wl')
 w=hist1.getWeight().sum()
 x=hist1.getCentre().sum()
 wx=(hist1.getWeight()*hist1.getCentre()).sum()
