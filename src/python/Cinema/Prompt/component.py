@@ -35,10 +35,11 @@ class ConfigString(dict):
     def makeCfg(self):     
         cfg = ''
         for k, v in self.items():
-            cfg += k.replace('cfg_','') 
-            cfg += '='
-            cfg += str(v)
-            cfg += ';'
+            if k.__contains__('cfg_'):
+                cfg += k.replace('cfg_','') 
+                cfg += '='
+                cfg += str(v)
+                cfg += ';'
         return cfg
 
 
