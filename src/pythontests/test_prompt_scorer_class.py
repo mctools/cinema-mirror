@@ -14,10 +14,10 @@ expected_wl = [0.0000e+00,4.0000e+00,6.4000e+01,4.8500e+02,2.1220e+03,5.8450e+03
                8.5600e+02,2.7700e+02,6.2000e+01,9.0000e+00,5.0000e+00,1.0000e+00,
                0.0000e+00,0.0000e+00]
 
-expected_dict = {'ESpectrum_1': 'Scorer=ESpectrum;name=ESpectrum_1;scoreTransfer=1;min=0.0;max=0.25;numbin=100;ptstate=ENTRY;',
+expected_dict = {'ESpectrum': 'Scorer=ESpectrum;name=ESpectrum;scoreTransfer=1;min=0.0;max=0.25;numbin=100;ptstate=ENTRY;',
  'PSDMap': 'Scorer=PSD;name=PSDMap;xmin=-180;xmax=180;numbin_x=10;ymin=-180;ymax=180;numbin_y=10;ptstate=ENTRY;type=XZ;',
- 'TOF_1': 'Scorer=TOF;name=TOF_1;min=0.0025;max=0.008;numbin=100;ptstate=ENTRY;',
- 'VolFluence_1': 'Scorer=VolFluence;name=VolFluence_1;min=0;max=1;numbin=100;ptstate=ENTRY;linear=yes;',
+ 'TOF': 'Scorer=TOF;name=TOF;min=0.0025;max=0.008;numbin=100;ptstate=ENTRY;',
+ 'VolFluence': 'Scorer=VolFluence;name=VolFluence;min=0;max=1;numbin=100;ptstate=ENTRY;linear=yes;',
  'WavelengthSp': 'Scorer=WlSpectrum;name=WavelengthSp;min=1.6;max=2.1;numbin=20;ptstate=ENTRY;'}
 
 class MySim(PromptMPI):

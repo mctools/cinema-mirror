@@ -28,7 +28,7 @@ class PSD(ConfigString):
     def __init__(self) -> None:
         super().__init__()
         self.cfg_Scorer='PSD'
-        self.cfg_name = 'PSD_1'
+        self.cfg_name = 'PSD'
         self.cfg_xmin = -1.
         self.cfg_xmax = 1.
         self.cfg_numbin_x = 10 
@@ -42,7 +42,7 @@ class WlSpectrum(ConfigString):
     def __init__(self) -> None:
         super().__init__()
         self.cfg_Scorer='WlSpectrum'
-        self.cfg_name = 'WlSpectrum_1'
+        self.cfg_name = 'WlSpectrum'
         self.cfg_min = 0.0
         self.cfg_max = 5
         self.cfg_numbin = 100
@@ -52,7 +52,7 @@ class ESpectrum(ConfigString):
     def __init__(self) -> None:
         super().__init__()
         self.cfg_Scorer='ESpectrum'
-        self.cfg_name = 'ESpectrum_1'
+        self.cfg_name = 'ESpectrum'
         self.cfg_scoreTransfer = 1
         self.cfg_min = 0.0
         self.cfg_max = 0.25
@@ -63,7 +63,7 @@ class TOF(ConfigString):
     def __init__(self) -> None:
         super().__init__()
         self.cfg_Scorer='TOF'
-        self.cfg_name = 'TOF_1'
+        self.cfg_name = 'TOF'
         self.cfg_min = 0.0025
         self.cfg_max = 0.008
         self.cfg_numbin = 100
@@ -72,7 +72,7 @@ class VolFluence(ConfigString):
     def __init__(self) -> None:
         super().__init__()
         self.cfg_Scorer='VolFluence'
-        self.cfg_name = 'VolFluence_1'
+        self.cfg_name = 'VolFluence'
         self.cfg_min = 0
         self.cfg_max = 1
         self.cfg_numbin = 100
