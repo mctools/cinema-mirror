@@ -313,12 +313,12 @@ def make2CurveAnalyser(nums = [20, 20], lengths = [0, 0], spacings = [0, 0], cur
 
 
         
-def makeTrapezoidGuide(length, x_neg, y_neg, x_pos, y_pos, m, 
-                 thickness=800., outer_mateiral='solid::Cd/8.65gcm3',
+def makeTrapezoidGuide(length, front_x, front_y, rear_x, rear_y, m, 
+                 thickness=20., outer_mateiral='solid::Cd/8.65gcm3',
                  inner_mat='freegas::H1/1e-26kgm3'):
-    inner = Volume('inner', Trapezoid(x_neg, x_pos, y_neg, y_pos, length), matCfg=inner_mat)
-    outer = Volume('outer', Trapezoid(x_neg+thickness, x_pos+thickness, 
-                                      y_neg+thickness, y_pos+thickness, length), 
+    inner = Volume('inner', Trapezoid(front_x, rear_x, front_y, rear_y, length), matCfg=inner_mat)
+    outer = Volume('outer', Trapezoid(front_x+thickness, rear_x+thickness, 
+                                      front_y+thickness, rear_y+thickness, length), 
                                       matCfg=outer_mateiral, 
                                       surfaceCfg=f'physics=Mirror;m={m}')
     outer.placeChild('ininout', inner) 
