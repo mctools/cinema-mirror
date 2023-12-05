@@ -6,10 +6,10 @@ from Cinema.Prompt import PromptFileReader
 
 guntest_dict ={}
 guntest_dict['SimpleThermalGun'] = {'gdml': 'SimpleThermalGun.gdml', 'mcpl': 'ScorerDeltaMomentum_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 10.994339431719403, 16.]}
-guntest_dict['IsotropicGun'] = {'gdml': 'IsotropicGun.gdml', 'mcpl': 'ScorerDeltaMomentum_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 56.378238724171055, 55.]}
-guntest_dict['UniModeratorGun'] = {'gdml': 'UniModeratorGun.gdml', 'mcpl': 'ScorerDeltaMomentum_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 7640.151101725564, 798.]}
-guntest_dict['MPIGun'] = {'gdml': 'MPIGun.gdml', 'mcpl': 'ScorerDeltaMomentum_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 2880.551360686864, 861.]}
-guntest_dict['MaxwellianGun'] = {'gdml': 'MaxwellianGun.gdml', 'mcpl': 'ScorerDeltaMomentum_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 3767.290904484039, 832.]}
+guntest_dict['IsotropicGun'] = {'gdml': 'IsotropicGun.gdml', 'mcpl': 'ScorerDeltaMomentum_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 56.37823872416991, 55.]}
+guntest_dict['UniModeratorGun'] = {'gdml': 'UniModeratorGun.gdml', 'mcpl': 'ScorerDeltaMomentum_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 7640.151101726, 798.]}
+guntest_dict['MPIGun'] = {'gdml': 'MPIGun.gdml', 'mcpl': 'ScorerDeltaMomentum_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 2880.551360686819, 861.]}
+guntest_dict['MaxwellianGun'] = {'gdml': 'MaxwellianGun.gdml', 'mcpl': 'ScorerDeltaMomentum_SofQ_seed103.mcpl.gz', 'value': [5894.344942918124, 3767.2909044840676, 832.]}
 
 for gunname in guntest_dict:
     gun = guntest_dict[gunname]

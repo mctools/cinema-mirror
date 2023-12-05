@@ -73,6 +73,6 @@ w=hist1.getWeight().sum()
 x=hist1.getCentre().sum()
 wx=(hist1.getWeight()*hist1.getCentre()).sum()
 print(f'{w, x, wx}')
-np.testing.assert_allclose([w, x, wx], [777.4419711542337, 500.00000000000006, 1235.6859800633026], rtol=1e-15, atol=1e-15)
+np.testing.assert_allclose([w, x, wx], [803.8229091537303, 500.00000000000006, 1259.945967675783], rtol=1e-15, atol=1e-15)
 
 # hist1.plot(show=True)

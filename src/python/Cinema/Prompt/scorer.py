@@ -54,7 +54,7 @@ class ESpectrum(ConfigString):
         self.cfg_Scorer='ESpectrum'
         self.cfg_name = 'ESpectrum'
         self.cfg_scoreTransfer = 0
-        self.cfg_min = 0.0
+        self.cfg_min = 1e-5
         self.cfg_max = 0.25
         self.cfg_numbin = 100
         self.cfg_ptstate = 'ENTRY'
