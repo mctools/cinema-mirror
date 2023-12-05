@@ -20,7 +20,7 @@
 ################################################################################
 
 from .configstr import ConfigString
-from .solid import Box
+
 class Scorer(ConfigString):
     pass
 
@@ -97,10 +97,13 @@ class ScorerHelper:
         vol.addScorer(self.score.cfg)
 
 class ESpectrumHelper(ScorerHelper): 
-    def __init__(self, name, min=1e-5, max=1, numbin = 100, ptstate: str = 'ENTRY', energyTransfer=0) -> None:
+    def __init__(self, name, min=1e-5, max=1, numbin = 100, ptstate: str = 'ENTRY', energyTransfer=False) -> None:
         super().__init__(name, min, max, numbin, ptstate)
         self.score = ESpectrum()
-        self.score.cfg_scoreTransfer=energyTransfer
+        if energyTransfer:
+            self.score.cfg_scoreTransfer = 1
+        else:
+            self.score.cfg_scoreTransfer = 0
         self._ScorerHelper__realinit()
     
 class WlSpectrumHelper(ScorerHelper): 
