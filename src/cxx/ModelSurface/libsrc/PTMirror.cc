@@ -45,21 +45,28 @@ void Prompt::Mirror::sampleFinalState(Prompt::Particle &particle) const
 
   Vector newDir = nDirInLab - m_refNorm*(2*(nDirInLab.dot(m_refNorm)));
   double angleCos = newDir.angleCos(nDirInLab);
-  particle.setDirection(newDir);
 
   double Q = neutronAngleCosine2Q(angleCos, ekin, ekin); // elastic reflection
   m_wAtQ = Q<m_Qc ? m_R0 : 0.5*m_R0*(1-tanh(( Q-m_m*m_Qc)*m_i_W))*(1-m_alpha*( Q-m_Qc));
 
-  // std::cout << "Q " << Q << " scale " << scaleWeight << std::endl;
+  // std::cout << "Q " << Q << " scale " << m_wAtQ  << " " << particle.getPosition() << std::endl;
   if(m_wcut > m_wAtQ)
   {
     if(m_wcut*m_rng.generate() < m_wAtQ )
     {
       m_wAtQ = m_wcut;
+
     }
     else
-      particle.kill(Particle::KillType::BIAS);
+    {
+      // fixme: add m_raytracing to kill particle in the raytracing mode
+      // if(m_raytracing)
+      //   particle.kill(Particle::KillType::BIAS);
+      return;
+    }
   }
+
   particle.scaleWeight(m_wAtQ);
+  particle.setDirection(newDir);
 
 }

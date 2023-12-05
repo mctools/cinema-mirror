@@ -29,6 +29,8 @@ class ConfigString(dict):
         cfg = ''
         for k, v in self.items():
             if k.__contains__('cfg_'):
+                if v is None:
+                    raise RuntimeError(f'{self}. value for {k} is None. ')
                 cfg += k.replace('cfg_','') 
                 cfg += '='
                 cfg += str(v)
