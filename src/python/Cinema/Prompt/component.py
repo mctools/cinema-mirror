@@ -26,35 +26,31 @@ from .geo import Volume, Transformation3D
 from copy import deepcopy
 from scipy.spatial.transform import Rotation as scipyRot
 
-class SurfaceProcess():
 
-    def __init__(self) -> None:
-        pass
+class ConfigString(dict):
+    __getattr__ = dict.__getitem__
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
 
     def makeCfg(self):     
         cfg = ''
-        for k, v in self.__dict__.items():
-            if k.__contains__('cfg_'):
-                cfg += k.replace('cfg_','') 
-                cfg += '='
-                cfg += str(v)
-                cfg += ';'
+        for k, v in self.items():
+            cfg += k.replace('cfg_','') 
+            cfg += '='
+            cfg += str(v)
+            cfg += ';'
         return cfg
 
-class DiskChopper(SurfaceProcess):
 
+class DiskChopper(ConfigString):
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__({})
         self.cfg_physics = 'DiskChopper'
         self.cfg_rotFreq = 25
         self.cfg_r = 100
         self.cfg_theta0 = 20
         self.cfg_n = 1
         self.cfg_phase = 0
-
-    def get_cfg(self):
-
-        return self.makeCfg()
 
 
 class Anchor:
