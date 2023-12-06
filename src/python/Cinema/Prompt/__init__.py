@@ -255,11 +255,12 @@ class Prompt:
 
     def simulate(self, num : int = 0, timer=True, save2Disk=False, pythonGun=None):
         if pythonGun:
-            self.l.go(int(num), timer=timer, save2Dis=save2Disk)
-        else:
             from  tqdm import tqdm
             for i in tqdm(range(int(num)), desc = 'Progress:', unit =" events"):
                 self.l.simOneEvent(False)
+        else:
+            self.l.go(int(num), timer=timer, save2Dis=save2Disk)
+    
 
     def gatherHistData(self, cfg, raw=False):
         if raw:
