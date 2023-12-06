@@ -23,7 +23,7 @@
 #include "PTPython.hh"
 
 Prompt::PythonGun::PythonGun()
-    : PrimaryGun(Neutron())
+    : PrimaryGun(Neutron()), m_stackManager(Singleton<StackManager>::getInstance())
 {  
 }
 
@@ -31,24 +31,25 @@ Prompt::PythonGun::~PythonGun()
 { 
 }
 
-std::unique_ptr<Prompt::Particle> Prompt::PythonGun::generate()
+
+void Prompt::PythonGun::pushToStack(double *pdata)
 {
-    // auto ret = pt_call_python_method(m_pyobj, "generate");
+    m_ekin = pdata[0];
+    m_weight = pdata[1];
+    m_time = pdata[2];
+    m_pos.x() = pdata[3];
+    m_pos.y() = pdata[4];
+    m_pos.z() = pdata[5];
+    m_dir.x() = pdata[6];
+    m_dir.y() = pdata[7];
+    m_dir.z() = pdata[8];
 
-    // if (! PyArg_ParseTuple(ret, "ddddddddd", &m_ekin, &m_weight, &m_time,
-    //         &m_pos.x(), &m_pos.y(), &m_pos.z(),
-    //         &m_dir.x(), &m_dir.y(), &m_dir.z()))
-    // {
-    //     PROMPT_THROW(BadInput, "PyArg_ParseTuple failed\n");
-    // }
-    // Py_DECREF(ret);
-
-    // m_ekin0=m_ekin;
-    // m_eventid++;
-    // m_alive = true;
-    auto p = std::make_unique<Particle>(*this);
-    return std::move(p);
+    m_ekin0=m_ekin;
+    m_eventid++;
+    m_alive = true;
+    m_stackManager.add(std::make_unique<Particle>(*this));
 }
+
 
 void* pt_PythonGun_new()
 {
@@ -60,7 +61,7 @@ void pt_PythonGun_delete(void *obj)
     delete static_cast<Prompt::PythonGun *> (obj);
 }
 
-void pt_PythonGun_generate(void *obj)
+void pt_PythonGun_pushToStack(void *obj, double *pdata)
 {
-    static_cast<Prompt::PythonGun *> (obj)->generate();
+    static_cast<Prompt::PythonGun *> (obj)->pushToStack(pdata);
 }

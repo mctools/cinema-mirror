@@ -22,7 +22,7 @@ from ..Interface import *
 
 _pt_PythonGun_new = importFunc('pt_PythonGun_new', type_voidp, [type_pyobject])
 _pt_PythonGun_delete = importFunc('pt_PythonGun_delete', None, [type_voidp])
-_pt_PythonGun_generate = importFunc('pt_PythonGun_generate', None, [type_voidp])
+_pt_PythonGun_pushToStack = importFunc('pt_PythonGun_pushToStack', None, [type_voidp, type_npdbl1d])
 
 
 class PythonGun():
@@ -32,17 +32,14 @@ class PythonGun():
     def __del__(self):
         _pt_PythonGun_delete(self.cobj)
 
-    # This method will be called by the c++ 
     def generate(self):
-        en = self.sampleEnergy()
-        w = self.sampleWeight()
-        t = self.sampleTime()
-        pos = self.samplePosition()
-        dir = self.sampleDirection()        
-        return en, w, t, pos[0], pos[1], pos[2], dir[0], dir[1], dir[2]
-        
-    def pyGenerate(self):
-        _pt_PythonGun_generate(self.cobj)
+        pdata = np.zeros(9)
+        pdata[0] = self.sampleEnergy()
+        pdata[1] = self.sampleWeight()
+        pdata[2] = self.sampleTime()
+        pdata[3:6] = self.samplePosition()
+        pdata[6:9]  = self.sampleDirection()        
+        _pt_PythonGun_pushToStack(self.cobj, pdata)      
     
     def sampleEnergy(self):
         return 0.0253
@@ -54,10 +51,10 @@ class PythonGun():
         return 0.
     
     def samplePosition(self):
-        return 0.,0.,0.
+        return np.array([0.,0.,0.])
     
     def sampleDirection(self):
-        return 0.,0.,1.
+        return np.array([0.,0.,1.])
 
 
 

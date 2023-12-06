@@ -26,7 +26,7 @@ class MySim(PromptMPI):
         detector.addScorer(scorerCfg_detwl)
 
         world.placeChild("physicalbox", detector, Transformation3D(0., 0., 190), 1)
-        self.l.setWorld(world)
+        self.setWorld(world)
 
 
 class MyGun(PythonGun):
@@ -54,10 +54,9 @@ sim.makeWorld()
 
 # set gun
 gun = MyGun()
-sim.setGun(gun)
 
 # vis or production
-sim.simulate(1e5)
+sim.simulate(1e5, pythonGun=gun)
 wlhist = sim.gatherHistData("detector")
 PSDhist = sim.gatherHistData("NeutronHistMap")
 np.testing.assert_allclose(PSDhist.getHit().sum(), 64840.0)

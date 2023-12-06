@@ -254,8 +254,20 @@ class Prompt:
     def simulate(self, num : int = 0, timer=True, save2Disk=False, pythonGun=None):
         if pythonGun:
             from  tqdm import tqdm
-            for i in tqdm(range(int(num)), desc = 'Progress:', unit =" events"):
-                self.l.simOneEvent(False)
+            if hasattr(self, 'rank'):
+                if self.rank==0:
+                    for i in tqdm(range(int(num)), desc = 'Progress:', unit =" events"):
+                        pythonGun.generate()
+                        self.l.simOneEvent(False)
+                else:
+                    for i in range(int(num)):
+                        pythonGun.generate()
+                        self.l.simOneEvent(False)
+                
+            else:
+                for i in tqdm(range(int(num)), desc = 'Progress:', unit =" events"):
+                    pythonGun.generate()
+                    self.l.simOneEvent(False)
         else:
             self.l.go(int(num), timer=timer, save2Dis=save2Disk)
     
@@ -275,16 +287,16 @@ class PromptMPI(Prompt):
         super().__init__(seed+self.rank)
         
 
-    def simulate(self, num : int = 0):
+    def simulate(self, num : int = 0, pythonGun=None):
         batchSize = int(num/self.size)
         if self.rank:
-          super().simulate(batchSize,  timer=False)
+          super().simulate(batchSize,  timer=False, pythonGun=pythonGun)
         else:
-          super().simulate(num-batchSize*(self.size-1))
+          super().simulate(num-batchSize*(self.size-1), pythonGun=pythonGun)
 
-    def show(self, num : int = 0, mergeMesh=False):
+    def show(self, num : int = 0, mergeMesh=False, pythonGun=None):
         if self.rank==0:
-            self.l.showWorld(num, mergeMesh)
+            self.l.showWorld(num, mergeMesh, pythonGun)
             self.comm.Barrier()
         else:
             self.comm.Barrier()

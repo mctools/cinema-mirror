@@ -52,35 +52,40 @@ class MyGun(PythonGun):
         super().__init__()
 
     def sampleEnergy(self):
-        return wl2ekin(6)
+        return wl2ekin(8)
 
     def samplePosition(self):
-        return 0, 0, -12000
+        return np.array([0, 0, -12000])
+    
+    def sampleDirection(self):
+        return np.array([0, 0, 1])
 
 
 sim = MySim(seed=1010)
 sim.makeWorld()
 
-# set gun
-if False: #could be in either old style or the python style
-    ekin = wl2ekin(8)*0
+usePythonGun=False
+if usePythonGun:
+    gun = MyGun()
+else:
+    gun = None
+    # c++ cfg gun
+    ekin = wl2ekin(8)
     gunCfg = f'gun=SimpleThermalGun;position=0,0,-12000;direction=0,0,1;energy={ekin}'
     sim.setGun(gunCfg)
-else:
-    gun = MyGun()
-    sim.setGun(gun)
+
 
 # vis or production
 if False:
-    sim.show(100)
+    sim.show(100, pythonGun=gun)
 else:
-    sim.simulate(1e10)
+    sim.simulate(1e6, pythonGun=gun)
 
-psd = sim.getScorerHist('psd')
-espec = sim.getScorerHist('espec')
-wlspec = sim.getScorerHist('wlspec')
-tof = sim.getScorerHist('tof')
-volf = sim.getScorerHist('volf')
+psd = sim.gatherHistData('psd')
+espec = sim.gatherHistData('espec')
+wlspec = sim.gatherHistData('wlspec')
+tof = sim.gatherHistData('tof')
+volf = sim.gatherHistData('volf')
 
 if sim.rank==0:
     psd.plot(show=True)
