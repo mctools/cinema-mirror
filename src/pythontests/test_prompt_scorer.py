@@ -24,7 +24,7 @@ for scorername in scorertest_dict:
     f = PromptFileReader(scorer['mcpl'])
     hist_weight = f.getData('content').sum()
     hist_hit = f.getData('hit').sum()
-    if(scorername=='PSD' or scorername=='guide'):
+    if(scorername=='PSD' or scorername=='guide' or scorername=='WlAngle'):
         hist_xedge = f.getData('xedge').sum()
         hist_yedge = f.getData('yedge').sum()
         hist_content_xedge = (f.getData('content')*f.getData('xedge')[:-1]).sum()

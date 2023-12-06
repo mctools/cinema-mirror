@@ -1,6 +1,7 @@
 import numpy as np
 
 aa = 1.
+mm = 1.e7*aa
 cm = 1.e8*aa
 m = 1.e10*aa
 barn = 1e-24*cm**2

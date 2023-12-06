@@ -162,7 +162,7 @@ class IDFLoader():
             loc = np.loadtxt(file, dtype=float, usecols=(1,2,3))*1e3 #meter to mm
             basename =  os.path.basename(file)
             self.idf[basename[:-4]] = PixelLocator(pid, loc)
-            print(f'IDFLoader loaded file {basename}, contains {pid.size} pixels')
+            # print(f'IDFLoader loaded file {basename}, contains {pid.size} pixels')
 
     def query(self, key):
         return self.idf[key]

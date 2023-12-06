@@ -32,6 +32,7 @@
 #include "PTScorerWlSpectrum.hh"
 #include "PTScorerAngular.hh"
 #include "PTScorerSplit.hh"
+#include "PTScorerWlAngle.hh"
 
 Prompt::ScorerFactory::ScorerFactory()
 {}
@@ -559,6 +560,73 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       auto pointAxis = string2vec(cfg.find("point_on_axis", force));
       double rotFreq = ptstod(cfg.find("rot_fre", force));
       return std::make_shared<Prompt::ScorerRotatingObj>(name, rotAxis, pointAxis, rotFreq);
+    }
+    else if(ScorDef == "WlAngle")
+    {
+      // example cfg
+      // "Scorer=WlAngle; name=wl_angle;sample_pos=0,0,0;beam_dir=0,0,1;dist=1000;
+      // ptstate=ENTRY;wl_min=0.5;wl_max=5;numbin_wl=1000;angle_min=-3;angle_max=3;numbin_angle=1000;method=0"
+
+      int parCount = 13;
+
+      // The mandatory parameters
+      bool force = true;
+      std::string name = cfg.find("name", force);
+      auto samplePos = string2vec(cfg.find("sample_pos", force));
+      auto beamDir = string2vec(cfg.find("beam_dir", force));
+      double moderator2SampleDist = ptstod(cfg.find("dist", force));
+      double wl_min = ptstod(cfg.find("wl_min", force));
+      double wl_max = ptstod(cfg.find("wl_max", force));
+      double angle_min = ptstod(cfg.find("angle_min", force));
+      double angle_max = ptstod(cfg.find("angle_max", force));
+
+      // the optional parameters
+      int numbin_wl = 100;
+      if(cfg.find("numbin_wl")=="") 
+        parCount--;
+      else
+      {
+        numbin_wl = ptstoi(cfg.find("numbin_wl"));
+      }
+
+      int numbin_angle = 100;
+      if(cfg.find("numbin_angle")=="") 
+        parCount--;
+      else
+      {
+        numbin_angle = ptstoi(cfg.find("numbin_angle"));
+      }
+      
+      int method = 0;
+      if(cfg.find("method")=="") 
+        parCount--;
+      else
+      {
+        int methodInInt = ptstoi(cfg.find("method"));
+        if(methodInInt==0 || methodInInt==1)
+        {
+          method = methodInInt;
+        }
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"method\" should either be 0 or 1");
+        }
+      }
+
+      Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
+      std::string ptstateInStr = cfg.find("ptstate");
+      if(ptstateInStr.empty())
+        parCount--;
+      else
+      {
+        ptstate = getPTS (ptstateInStr);
+      }
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Scorer type WlAngle is missing or with extra config parameters " << cfg.size() << " " << parCount );
+      }
+
+      return std::make_shared<Prompt::ScorerWlAngle>(name, samplePos, beamDir, moderator2SampleDist, wl_min, wl_max, numbin_wl, angle_min, angle_max, numbin_angle, ptstate, method);
     }
     else
       PROMPT_THROW2(BadInput, "Scorer type " << ScorDef << " is not supported. ")

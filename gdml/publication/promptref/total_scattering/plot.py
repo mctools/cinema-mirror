@@ -2,6 +2,7 @@ import numpy as np
 from Cinema.Prompt import PromptFileReader
 from Cinema.Interface import plotStyle
 import matplotlib.pyplot as plt
+from matplotlib.legend_handler import HandlerTuple
 import h5py
 from glob import glob
 import os
@@ -90,19 +91,20 @@ plt.legend(fontsize=12*1.5, loc='best')
 plt.tight_layout()
 
 # Comparison between P(Q) for different scattering numbers obtained from non-biased and biased runs (Figure 9)
-plt.figure()
+fig, ax = plt.subplots()
 plt.ticklabel_format(axis='y', style='sci', scilimits=(0,1))
-plt.plot(q_HW, p_HW/numPar1+2e-4, zorder=2, label='All Scatterings+2$\\times$10$^{-4}$ ')
-plt.plot(q_HW1, p_HW1/numPar1, zorder=2, label=f'Single Scattering')
-plt.plot(q_HW2, p_HW2/numPar1, zorder=2, label=f'Two Scatterings ')
-plt.plot(q_HW4, p_HW4/numPar1, zorder=2, label=f'Four Scatterings ')
-plt.scatter(q_HWb[0:1001:2], p_HWb[0:1001:2]/numPar2+2e-4, marker='s', s=36, c='#e377c2', zorder=1, alpha=0.9)
-plt.scatter(q_HWb1[0:1001:2], p_HWb1[0:1001:2]/numPar2, marker='o', s=34, c='#7f7f7f', zorder=1, alpha=0.9)
-plt.scatter(q_HWb2[0:1001:12], p_HWb2[0:1001:12]/numPar2, marker='d', s=32, c='#9467bd', zorder=1, alpha=0.9)
-plt.scatter(q_HWb4[0:1001:12], p_HWb4[0:1001:12]/numPar2, marker='>', s=32, c='#17becf', zorder=1, alpha=0.9)
+line1, = ax.plot(q_HW, p_HW/numPar1*2, zorder=2)
+line2, = plt.plot(q_HW1, p_HW1/numPar1, zorder=2, linestyle='--')
+line3, = plt.plot(q_HW2, p_HW2/numPar1, zorder=2, linestyle='-.')
+line4, = plt.plot(q_HW4, p_HW4/numPar1, zorder=2, linestyle=(0, (1, 1)), linewidth=2.8)
+line5 = ax.scatter(q_HWb[0:1001:2], p_HWb[0:1001:2]/numPar2*2, marker='s', s=36, c='#e377c2', zorder=1, alpha=0.9)
+line6 = plt.scatter(q_HWb1[0:1001:2], p_HWb1[0:1001:2]/numPar2, marker='o', s=34, c='#7f7f7f', zorder=1, alpha=0.9)
+line7 = plt.scatter(q_HWb2[0:1001:12], p_HWb2[0:1001:12]/numPar2, marker='d', s=32, c='#9467bd', zorder=1, alpha=0.9)
+line8 = plt.scatter(q_HWb4[0:1001:12], p_HWb4[0:1001:12]/numPar2, marker='>', s=32, c='#17becf', zorder=1, alpha=0.9)
+ax.legend([(line1, line5), (line2, line6), (line3, line7), (line4, line8)],['All scatterings$\\times$2', 'Single scattering', 'Two scatterings', 'Four scatterings'], 
+          handler_map={tuple: HandlerTuple(ndivide=None)},  handlelength=3.5, ncol=1, fontsize=13, loc='best', frameon=False)
 plt.xlabel('Q, Å$^{-1}$') 
 plt.ylabel('P(Q), Å/neutron')
-plt.legend(fontsize=13, frameon=False, ncol=1, loc='center right')
 plt.tight_layout()
 
 plt.show()
