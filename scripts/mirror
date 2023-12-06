@@ -46,11 +46,15 @@ sim.setGun(gunCfg)
 if False:
     sim.show(1)
 else:
-    sim.simulate(1e6)
+    sim.simulate(1e7)
 
 destination = 0
-psd1 = sim.gatherHistData('psd1', dst=destination)
-psd2 = sim.gatherHistData('psd2', dst=destination)
+psd1 = sim.gatherHistData('psd1')
+psd2 = sim.gatherHistData('psd2')
+
+psd1.plot(show=False, log=False)
+psd2.plot(show=True, log=False)
+
 
 if sim.rank==destination:
     psd1.plot(show=False, log=False)
