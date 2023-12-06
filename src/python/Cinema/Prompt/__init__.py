@@ -251,25 +251,29 @@ class Prompt:
     def show(self, num : int = 0):
         self.l.showWorld(num)
 
-    def simulate(self, num : int = 0, timer=True, save2Disk=False, pythonGun=None):
-        if pythonGun:
-            from  tqdm import tqdm
+    def simulate(self, gun, num : int = 0, timer=True, save2Disk=False):
+        if hasattr(gun, 'items'):
+            self.setGun(gun.cfg)
+            self.l.go(int(num), timer=timer, save2Dis=save2Disk)
+        elif isinstance(gun, str):
+            self.setGun(gun)
+            self.l.go(int(num), timer=timer, save2Dis=save2Disk)
+        else:
+            from tqdm import tqdm
             if hasattr(self, 'rank'):
                 if self.rank==0:
                     for i in tqdm(range(int(num)), desc = 'Progress:', unit =" events"):
-                        pythonGun.generate()
+                        gun.generate()
                         self.l.simOneEvent(False)
                 else:
                     for i in range(int(num)):
-                        pythonGun.generate()
+                        gun.generate()
                         self.l.simOneEvent(False)
                 
             else:
                 for i in tqdm(range(int(num)), desc = 'Progress:', unit =" events"):
-                    pythonGun.generate()
+                    gun.generate()
                     self.l.simOneEvent(False)
-        else:
-            self.l.go(int(num), timer=timer, save2Dis=save2Disk)
     
 
     def gatherHistData(self, cfg, raw=False):
@@ -287,16 +291,16 @@ class PromptMPI(Prompt):
         super().__init__(seed+self.rank)
         
 
-    def simulate(self, num : int = 0, pythonGun=None):
+    def simulate(self, gun, num : int = 0):
         batchSize = int(num/self.size)
         if self.rank:
-          super().simulate(batchSize,  timer=False, pythonGun=pythonGun)
+          super().simulate(gun, batchSize,  timer=False)
         else:
-          super().simulate(num-batchSize*(self.size-1), pythonGun=pythonGun)
+          super().simulate(gun, num-batchSize*(self.size-1))
 
-    def show(self, num : int = 0, mergeMesh=False, pythonGun=None):
+    def show(self, gun, num : int = 0, mergeMesh=False):
         if self.rank==0:
-            self.l.showWorld(num, mergeMesh, pythonGun)
+            self.l.showWorld(gun, num, mergeMesh)
             self.comm.Barrier()
         else:
             self.comm.Barrier()

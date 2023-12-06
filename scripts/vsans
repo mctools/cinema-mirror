@@ -4,7 +4,7 @@ from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.geo import Volume, Transformation3D
 from Cinema.Prompt.solid import Box,Tube
 from Cinema.Prompt.scorer import makePSD, ESpectrumHelper, WlSpectrumHelper, TOFHelper, VolFluenceHelper
-from Cinema.Prompt.gun import PythonGun
+from Cinema.Prompt.gun import PythonGun, SimpleThermalGun, MaxwellianGun
 from Cinema.Prompt.Histogram import wl2ekin
 from Cinema.Prompt.physics import Material, Mirror
 
@@ -46,6 +46,8 @@ class MySim(PromptMPI):
 
         self.setWorld(world)
 
+sim = MySim(seed=1010)
+sim.makeWorld()
 
 class MyGun(PythonGun):
     def __init__(self):
@@ -60,26 +62,21 @@ class MyGun(PythonGun):
     def sampleDirection(self):
         return np.array([0, 0, 1])
 
+usePythonGun=True
 
-sim = MySim(seed=1010)
-sim.makeWorld()
-
-usePythonGun=False
 if usePythonGun:
     gun = MyGun()
 else:
-    gun = None
-    # c++ cfg gun
-    ekin = wl2ekin(8)
-    gunCfg = f'gun=SimpleThermalGun;position=0,0,-12000;direction=0,0,1;energy={ekin}'
-    sim.setGun(gunCfg)
-
+    gun = SimpleThermalGun()
+    gun.setPosition([0,0,-12000])
+    gun.setDirection([0, 0, 1])
+    gun.setWavelength(8)
 
 # vis or production
-if False:
-    sim.show(100, pythonGun=gun)
+if True:
+    sim.show(gun, 100)
 else:
-    sim.simulate(1e6, pythonGun=gun)
+    sim.simulate(gun, 1e6)
 
 psd = sim.gatherHistData('psd')
 espec = sim.gatherHistData('espec')

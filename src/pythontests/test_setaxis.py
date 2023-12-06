@@ -59,13 +59,12 @@ class MySim(Prompt):
 sim = MySim()
 # set gun
 gunCfg = "gun=MaxwellianGun;src_w=5;src_h=5;src_z=-80;slit_w=50;slit_h=50;slit_z=100"
-sim.setGun(gunCfg)
 sim.makeWorld()
 # vis or production
 if False:
-    sim.show(110)
+    sim.show(gunCfg, 110)
 else:
-    sim.simulate(1e4)
+    sim.simulate(gunCfg, 1e4)
 
 
 hist1 = sim.gatherHistData('wl')

@@ -38,7 +38,7 @@ class PythonGun():
         pdata[1] = self.sampleWeight()
         pdata[2] = self.sampleTime()
         pdata[3:6] = self.samplePosition()
-        pdata[6:9]  = self.sampleDirection()        
+        pdata[6:]  = self.sampleDirection()        
         _pt_PythonGun_pushToStack(self.cobj, pdata)      
     
     def sampleEnergy(self):
@@ -59,4 +59,84 @@ class PythonGun():
 
 
     
+from .configstr import ConfigString
+from .Histogram import wl2ekin
 
+class Gun(ConfigString):
+    pass
+
+# gunCfg = f'gun=SimpleThermalGun;position=0,0,-12000;direction=0,0,1;energy={0}'
+
+class IsotropicGun(ConfigString):
+    def __init__(self) -> None:
+        super().__init__()
+        self.cfg_gun='IsotropicGun'
+        self.cfg_position = '0,0,0.'
+        self.cfg_energy = 0
+
+    def setPosition(self, pos):
+        self.cfg_position = f'{pos[0]}, {pos[1]}, {pos[2]}'
+
+    def setEnergy(self, ekin):
+        self.cfg_energy = ekin
+
+    def setWavelength(self, wl):
+        self.cfg_energy = wl2ekin(wl)
+
+class SimpleThermalGun(IsotropicGun):
+    def __init__(self) -> None:
+        super().__init__()
+        self.cfg_gun='SimpleThermalGun'
+        self.cfg_direction = '0,0,1.'
+
+    def setDirection(self, dir):
+        self.cfg_position = f'{dir[0]}, {dir[1]}, {dir[2]}'
+
+
+class SurfaceSurce(ConfigString):
+    def __init__(self, src_whz=None, slit_whz=None) -> None:
+        super().__init__()
+        if src_whz:
+            self.setSource(src_whz)
+        if slit_whz:
+            self.setSlit(slit_whz)
+
+    def setSource(self, whz):
+        self.cfg_src_w = whz[0]
+        self.cfg_src_h = whz[1]
+        self.cfg_src_z = whz[2]
+
+    def setSlit(self, whz):
+        self.cfg_slit_w = whz[0]
+        self.cfg_slit_h = whz[1]
+        self.cfg_slit_z = whz[2]
+
+class MaxwellianGun(SurfaceSurce):
+    def __init__(self, src_whz=None, slit_whz=None, temperature=293.15) -> None:
+        super().__init__(src_whz, slit_whz)
+        self.setTemperature(temperature)
+        
+
+    def setTemperature(self, temp):
+        self.cfg_temperature = temp
+
+class UniModeratorGun(SurfaceSurce):
+    def __init__(self, src_whz=None, slit_whz=None, wl_mean=1, wl_range=0.0001) -> None:
+        super().__init__(src_whz, slit_whz)
+        self.setWlMean(wl_mean)
+        self.setWlRange(wl_range)
+    
+    def setWlMean(self, wl):
+        self.cfg_mean_wl = wl
+
+    def setWlRange(self, wl_range):
+        self.cfg_range_wl = wl_range
+
+class MCPLGun(ConfigString):
+    def __init__(self, mcplfile = None) -> None:
+        super().__init__()
+        if mcplfile:
+            self.setMCPLFile(mcplfile)
+
+    def setMCPLFile(self, mcplfile):
+        self.cfg_mcplfile = mcplfile

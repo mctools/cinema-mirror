@@ -56,7 +56,7 @@ sim.makeWorld()
 gun = MyGun()
 
 # vis or production
-sim.simulate(1e5, pythonGun=gun)
+sim.simulate(gun, 1e5)
 wlhist = sim.gatherHistData("detector")
 PSDhist = sim.gatherHistData("NeutronHistMap")
 np.testing.assert_allclose(PSDhist.getHit().sum(), 64840.0)

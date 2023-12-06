@@ -85,7 +85,7 @@ sim.makeWorld()
 gun = MyGun()
 
 # vis or production
-sim.simulate(1e5, pythonGun=gun)
+sim.simulate(gun, 1e5)
 wlhist = sim.gatherHistData("WavelengthSp")
 PSDhist = sim.gatherHistData("PSDMap")
 print(sim.scorer, expected_dict)

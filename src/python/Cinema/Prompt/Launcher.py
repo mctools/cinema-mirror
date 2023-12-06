@@ -60,7 +60,7 @@ class Launcher():
         _pt_setWorld(logicalvol.cobj)
         self.worldExist = True
     
-    def showWorld(self, particles=None, mergeMesh=False, pythonGun=None):
+    def showWorld(self, gun, particles=None, mergeMesh=False):
         if not self.worldExist:
             raise RuntimeError('World is not set')
         v = Visualiser([], printWorld=False, mergeMesh=mergeMesh) 
@@ -68,11 +68,15 @@ class Launcher():
             v.show()
         else:
             for i in range(particles):
-                if pythonGun:
-                    pythonGun.generate()
-                    self.simOneEvent(recordTrj=True)                    
-                else:
+                if hasattr(gun, 'items'):
+                    self.setGun(gun.cfg)
                     self.go(1, recordTrj=True, timer=False, save2Dis=False)
+                elif isinstance(gun, str):
+                    self.setGun(gun)
+                    self.go(1, recordTrj=True, timer=False, save2Dis=False)
+                else:
+                    gun.generate()
+                    self.simOneEvent(recordTrj=True)                    
                 trj = self.getTrajectory()
                 try:
                     v.addTrj(trj)
