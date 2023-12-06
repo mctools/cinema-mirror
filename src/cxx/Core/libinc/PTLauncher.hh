@@ -26,7 +26,6 @@
 #include "PTPrimaryGun.hh"
 #include "PTActiveVolume.hh"
 #include "PTStackManager.hh"
-#include "Python.h"
 namespace Prompt {
   class Launcher {
   public:

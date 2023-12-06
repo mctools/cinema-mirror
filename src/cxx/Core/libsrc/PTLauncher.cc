@@ -29,7 +29,6 @@
 #include "PTIsotropicGun.hh"
 #include "PTNeutron.hh"
 #include "PTGunFactory.hh"
-#include "PTPython.hh"
 #include "PTPythonGun.hh"
 #include "NCrystal/NCrystal.hh"
 
