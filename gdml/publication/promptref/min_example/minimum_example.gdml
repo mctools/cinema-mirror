@@ -2,12 +2,12 @@
 <gdml>
     <userinfo>
         <!-- Defining gun -->
-        <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=0.0169;position=-80.,0.,0.;direction=1,0,0" />
+        <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun; energy=0.0169; position=-80.,0.,0.; direction=1,0,0" />
     </userinfo>
     <materials>
-        <!-- Defining material, supported by Ncrystal -->
-        <material name="Vaccum">
-          <atom value="vacuum.ncmat"/>
+        <!-- Defining material -->
+        <material name="Universe">
+          <atom value="freegas::H1/1e-26kgm3"/>
         </material>
         <material name="Al">
           <atom value="Al_sg225.ncmat"/>
@@ -26,9 +26,9 @@
         </volume>
         <volume name="VolWorld">
             <solidref ref="WorldSolid" />
-            <materialref ref="Vaccum" />
-            <!-- Defining PSD scorer and assigning it to world -->
-            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap;xmin=-500;xmax=500;numbin_x=1000;ymin=-500;ymax=500;numbin_y=1000;ptstate=EXIT;type=YZ"/>
+            <materialref ref="Universe" />
+            <!-- Defining PSD scorer and attaching it to World -->
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD; name=NeutronHistMap; xmin=-500; xmax=500; numbin_x=1000; ymin=-500; ymax=500; numbin_y=1000; ptstate=EXIT; type=YZ"/>
             <physvol name="PhysVol_Sample">
                 <volumeref ref="VolSample" />
             </physvol>
