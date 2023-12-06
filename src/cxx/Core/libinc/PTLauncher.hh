@@ -33,6 +33,8 @@ namespace Prompt {
     void go(uint64_t numParticle, double printPrecent, bool recordTrj=false, bool timer=true, bool save2Disk=true);
     void loadGeometry(const std::string &geofile); 
 
+    void simOneEvent(bool recordTrj);
+
     // void setWorld(); //for c++ debug
 
     void setSeed(uint64_t seed);
@@ -50,7 +52,7 @@ namespace Prompt {
     ~Launcher();
     std::shared_ptr<PrimaryGun> m_gun;
     std::vector<Vector> m_trajectory;
-    // ActiveVolume &m_activeVolume;
+    ActiveVolume &m_activeVolume;
     StackManager &m_stackManager;
 
   };

@@ -53,6 +53,7 @@ from .gun import PythonGun
 from mpi4py import MPI
 import numpy as np
 
+
 _pt_ResourceManager_clear = importFunc('pt_ResourceManager_clear', None, [])
 
 
@@ -252,8 +253,13 @@ class Prompt:
     def show(self, num : int = 0):
         self.l.showWorld(num)
 
-    def simulate(self, num : int = 0, timer=True, save2Disk=False):
-        self.l.go(int(num), timer=timer, save2Dis=save2Disk)
+    def simulate(self, num : int = 0, timer=True, save2Disk=False, pythonGun=None):
+        if pythonGun:
+            self.l.go(int(num), timer=timer, save2Dis=save2Disk)
+        else:
+            from  tqdm import tqdm
+            for i in tqdm(range(int(num)), desc = 'Progress:', unit =" events"):
+                self.l.simOneEvent(False)
 
     def gatherHistData(self, cfg, raw=False):
         if raw:

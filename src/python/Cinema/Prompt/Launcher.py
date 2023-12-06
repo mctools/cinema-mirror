@@ -39,6 +39,8 @@ _pt_ResourceManager_getHist = importFunc('pt_ResourceManager_getHist', type_void
 
 _pt_setWorld = importFunc('pt_setWorld', None, [type_voidp])
 
+_pt_Launcher_simOneEvent = importFunc('pt_Launcher_simOneEvent', None, [type_voidp, type_bool])
+
 
 @singleton
 class Launcher():
@@ -108,3 +110,6 @@ class Launcher():
             return Hist2D(cobj=cobj)
         else:
             raise RuntimeError("no implemented")
+        
+    def simOneEvent(self, recordTrj=False):
+        _pt_Launcher_simOneEvent(self.cobj, recordTrj)

@@ -75,3 +75,9 @@ void pt_Launcher_setPythonGun(void *obj, PyObject* pyobj)
 {
     static_cast<pt::Launcher *>(obj)->setPythonGun(pyobj);
 }
+
+
+void pt_Launcher_simOneEvent(void *obj, bool recordTrj)
+{
+  static_cast<pt::Launcher *>(obj)->simOneEvent(recordTrj);
+}
