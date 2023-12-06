@@ -52,10 +52,6 @@ destination = 0
 psd1 = sim.gatherHistData('psd1')
 psd2 = sim.gatherHistData('psd2')
 
-psd1.plot(show=False, log=False)
-psd2.plot(show=True, log=False)
-
-
 if sim.rank==destination:
     psd1.plot(show=False, log=False)
     psd2.plot(show=True, log=False)
