@@ -245,10 +245,8 @@ class Prompt:
         self.l.setWorld(world)
 
     def setGun(self, gun):
-        if isinstance(gun, str):
-            self.l.setGun(gun)
-        else:
-            self.l.setPythonGun(gun)
+        self.l.setGun(gun)
+
      
     def show(self, num : int = 0):
         self.l.showWorld(num)

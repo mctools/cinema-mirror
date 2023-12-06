@@ -33,7 +33,6 @@ _pt_Launcher_getTrajSize = importFunc('pt_Launcher_getTrajSize', type_sizet, [ty
 _pt_Launcher_getTrajectory = importFunc('pt_Launcher_getTrajectory', None, [type_voidp, type_npdbl2d])
 _pt_Launcher_go = importFunc('pt_Launcher_go', None, [type_voidp, type_sizet, type_dbl, type_bool, type_bool, type_bool])
 _pt_Launcher_setGun = importFunc('pt_Launcher_setGun', None, [type_voidp, type_cstr])
-_pt_Launcher_setPythonGun = importFunc('pt_Launcher_setPythonGun', None, [type_voidp, type_pyobject])
 
 _pt_ResourceManager_getHist = importFunc('pt_ResourceManager_getHist', type_voidp, [type_cstr])
 
@@ -78,10 +77,6 @@ class Launcher():
                     # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
                     pass
             v.show()
-
-    def setPythonGun(self, pygun):
-        print('setting a python gun')
-        _pt_Launcher_setPythonGun(self.cobj, pygun)
 
     def setGun(self, cfg):
         _pt_Launcher_setGun(self.cobj, cfg.encode('utf-8'))      

@@ -89,10 +89,6 @@ void Prompt::Launcher::setGun(const char* cfg)
   m_gun = Singleton<GunFactory>::getInstance().createGun(std::string(cfg));
 }
 
-void Prompt::Launcher::setPythonGun(PyObject *pyobj)
-{
-  m_gun = std::make_shared<PythonGun>(pyobj);
-}
 
 
 void Prompt::Launcher::simOneEvent(bool recordTrj)
@@ -165,7 +161,7 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
 {
   // fixme: recordTrj should be done in the particle class with an optional switch.
   // to save 1. particle id, event id, the volume id, the physical id
-    
+
   if(!m_gun.use_count())
   {
     std::cout << "PrimaryGun is not set, fallback to the neutron IsotropicGun\n";
