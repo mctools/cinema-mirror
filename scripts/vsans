@@ -31,7 +31,7 @@ class MySim(PromptMPI):
         world = Volume("world", Box(10000, 10000, 25000))
         water = Volume('sample', Box(10,10,1.5), matCfg = matCfg_sample.cfg)
         water.addScorer(self.scorer['multi'])
-        world.placeChild("sample", water, Transformation3D(0., 0., 0), 1)
+        world.placeChild("sample", water, Transformation3D(0., 0., 0), 1234)
 
         makePSD('psd', water, 10, 10 )
 
@@ -42,7 +42,7 @@ class MySim(PromptMPI):
         TOFHelper('tof').make(detector)
         VolFluenceHelper('volf').make(detector)
 
-        world.placeChild("det", detector, Transformation3D(0., 0., 9000), 1)
+        world.placeChild("det", detector, Transformation3D(0., 0., 9000), 1234)
 
         self.setWorld(world)
 
