@@ -25,16 +25,16 @@
 #include "PTParticle.hh"
 #include "PTHist1D.hh"
 #include "PTHist2D.hh"
+// #include "PTActiveVolume.hh"
+// #include "PTSingleton.hh"
 
 namespace Prompt {
-
-
+   class ActiveVolume;
   class Scorer {
   public:
     enum class ScorerType {SURFACE, ENTRY, PROPAGATE, EXIT, ENTRY2EXIT, ABSORB};
   public:
-    Scorer(const std::string& name, ScorerType type) 
-      : m_name(name), m_type(type) {};
+    Scorer(const std::string& name, ScorerType type, int groupid=0) ;
     virtual ~Scorer() {std::cout<<"Destructing Scorer " << m_name <<std::endl;};
     const std::string &getName() const { return m_name; }
     ScorerType getType() const { return m_type; }
@@ -44,12 +44,15 @@ namespace Prompt {
   protected:
     const std::string m_name;
     const ScorerType m_type;
+    const int m_groupid;
+    ActiveVolume &m_activeVolume; 
+    
   };
 
   class Scorer1D : public Scorer {
   public:
-    Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist)
-    : Scorer(name, type), m_hist(std::move(hist)) {};
+    Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist, int groupid=0)
+    : Scorer(name, type, groupid), m_hist(std::move(hist)) {};
     virtual ~Scorer1D() {  }
     void save_mcpl() override { m_hist->save(m_name); }
     const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }
@@ -59,8 +62,8 @@ namespace Prompt {
 
   class Scorer2D : public Scorer {
   public:
-    Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist)
-    : Scorer(name, type), m_hist(std::move(hist)) {};
+    Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist, int groupid=0)
+    : Scorer(name, type, groupid), m_hist(std::move(hist)) {};
     virtual ~Scorer2D() {  }
     void save_mcpl() override { m_hist->save(m_name); }
     const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }

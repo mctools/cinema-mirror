@@ -26,8 +26,6 @@
 #include "PromptCore.hh"
 #include "PTSingleton.hh"
 #include "PTParticle.hh"
-#include "PTScorer.hh"
-#include "PTHist2D.hh"
 #include <VecGeom/management/GeoManager.h>
 #include "PTGeoLoader.hh"
 #include "PTGeoTranslator.hh"

@@ -32,9 +32,10 @@ Prompt::ScorerPSD::~ScorerPSD() {}
 
 void Prompt::ScorerPSD::score(Prompt::Particle &particle)
 {
-  auto &activeVolume = Singleton<ActiveVolume>::getInstance();
-  // std::cout << "PSD " << activeVolume.getVolume()->GetCopyNo() << std::endl;
-  Vector vec = activeVolume.getGeoTranslator().global2Local(particle.getPosition());
+  if (m_activeVolume.getVolume()->GetCopyNo() != m_groupid)
+    return;
+
+  Vector vec = m_activeVolume.getGeoTranslator().global2Local(particle.getPosition());
 
   if (m_type==PSDType::XY)
     m_hist->fill(vec.x(), vec.y(), particle.getWeight() );
