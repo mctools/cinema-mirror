@@ -54,7 +54,7 @@ class MySim(PromptMPI):
         detector.addScorer(scorerTOF)
         detector.addScorer(scorerFluence)
 
-        world.placeChild("physicalbox", detector, Transformation3D(0., 0., 190), 1)
+        world.placeChild("physicalbox", detector, Transformation3D(0., 0., 190))
         self.l.setWorld(world)
 
 

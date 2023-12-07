@@ -22,14 +22,14 @@ class MySim(PromptMPI):
 
         detector1 = Volume("det1", Box(25, 25, 0.0001))
         makePSD('psd1', detector1, 20, 20 )
-        world.placeChild("det", detector1, Transformation3D(0., 0., -1000), 1)
+        world.placeChild("det", detector1, Transformation3D(0., 0., -1000))
 
         detector2 = Volume("det2", Box(35, 35, 0.0001))
         makePSD('psd2', detector2, 20, 20 )
-        world.placeChild("det2", detector2, Transformation3D(0., 0., 1200), 1)
+        world.placeChild("det2", detector2, Transformation3D(0., 0., 1200))
 
         guide = makeTrapezoidGuide(500, 25,25,25,25, 1.0, 10)
-        world.placeChild("guide", guide, Transformation3D(0., 0., -400), 1)
+        world.placeChild("guide", guide, Transformation3D(0., 0., -400))
 
         self.setWorld(world)
 
