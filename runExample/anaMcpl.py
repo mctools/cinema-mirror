@@ -4,9 +4,9 @@ import matplotlib.colors as colors
 from Cinema.Interface import plotStyle
 from Cinema.Prompt.PromptFileReader import McplAnalysor
 
-File = './*ScorerPSD_NeutronHistMap_seed*.mcpl.gz'   
+File = './*ScorerPSD_Monitor1_seed*.mcpl.gz'   
 Data = McplAnalysor(File)
-hist = Data.getHistMany(seedStart=1, seedEnd=5)
+hist = Data.getHistMany(offset=0, num=None)
 
 plotStyle()
 # Fig lamda_theta_hw_Exp

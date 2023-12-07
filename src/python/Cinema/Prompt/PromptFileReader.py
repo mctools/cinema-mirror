@@ -83,12 +83,21 @@ class McplAnalysor(PromptFileReader):
         
         return hist
     
-    def getHistMany(self, seedStart, seedEnd):
+    def getHistMany(self, offset=0, num=None):
+        histMany = None
         files = self.filesMany()
-        self.filePath = files[seedStart-1]
-        histMany = self.getHist()
-        for i in range(seedStart, seedEnd):
+        if num is None:
+            num = len(files)
+        offset = max(0, offset)
+        num = min(num, len(files))
+        
+        for i in range(offset, num):
             self.filePath = files[i]
             print(self.filePath)
-            histMany += self.getHist()
+            if histMany is None:
+                histMany = self.getHist()
+            else:
+                histMany += self.getHist()
+        
         return histMany
+
