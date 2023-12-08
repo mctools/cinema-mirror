@@ -21,3 +21,10 @@
 ################################################################################
 
 __version__="1.0.0"
+
+import os, sys
+if os.getenv('CINEMAPATH') is None:
+    os.environ["CINEMAPATH"] = cwdir = os.path.dirname(__file__)
+    sys.path.append(os.getcwd())
+    sys.path.append(os.path.dirname(__file__))
+    os.environ["NCRYSTAL_DATA_PATH"] = os.path.join(cwdir, 'ncmat')

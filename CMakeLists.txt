@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(cinema)
-find_package(HDF5 REQUIRED COMPONENTS C)
-
+set(FIND_LIBRARY_USE_LIB64_PATHS TRUE)
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
@@ -27,7 +26,7 @@ set(NCrystal_DIR  "$ENV{NCrystal_ext}/lib/cmake")
 find_package(NCrystal 3.0.0 REQUIRED)
 
 # MCPL
-set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mcpl/install/lib/cmake/MCPL/")
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mcpl/install/")
 find_package(MCPL REQUIRED)
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -35,15 +34,12 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 add_subdirectory(src/cxx)
-add_subdirectory(bin)
 
 #Test
 enable_testing()
-add_subdirectory(src/cxxtests)
 
-
-set(Python_ROOT_DIR ${PROJECT_SOURCE_DIR}/cinemavirenv/bin/python)
 set(Python_FIND_STRATEGY LOCATION)
+set(Python_ROOT_DIR ${PROJECT_SOURCE_DIR}/cinemavirenv/bin/python)
 find_package(Python REQUIRED COMPONENTS Interpreter)
 
 file(GLOB TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontests/*.py")

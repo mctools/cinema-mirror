@@ -85,12 +85,17 @@ datalist = package_files('gdml')
 
 setup(
     
-    packages=['Cinema', 'Cinema.Interface', 'Cinema.Prompt', 'Cinema.Prompt.Histogram'],
+    packages=['Cinema', 
+              'Cinema.Interface', 
+              'Cinema.Prompt', 
+              'Cinema.Prompt.Histogram', 
+              'Cinema.Experiment', 
+              'Cinema.Experiment.Analyser'],
 
     package_dir={
         'Cinema': os.path.join('.','src','python') + os.path.sep + 'Cinema',
-        'Cinema.Experiment': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Experiment', 'Analyser'),
-        'Cinema.Experiment.Analyser': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Experiment'),
+        'Cinema.Experiment': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Experiment'),
+        'Cinema.Experiment.Analyser': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Experiment', 'Analyser'),
         'Cinema.Interface': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Interface'),
         'Cinema.Prompt': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt'),
         'Cinema.Prompt.Histogram': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt', 'Histogram'),
@@ -102,9 +107,12 @@ setup(
         ('/Cinema/ncmat', glob.glob('./ncmat/*')),
         ('/Cinema/ncmat', glob.glob('./data_ncrystal/data/*')),
         ('/Cinema', glob.glob('./hash*')),
+        ('/Cinema/test/', './src/pythontests/test_prompt_gun.py'),
+        ('/Cinema/test/', './src/pythontests/test_prompt.py'),
+        ('/Cinema/test/', './src/pythontests/test_prompt_scorer.py'),
         ] + datalist,
 
-    install_requires=['pyvista', 'matplotlib', 'mcpl'],
+    install_requires=['pyvista', 'matplotlib', 'mcpl', 'scipy', 'h5py'],
 
     ext_modules=[CMakeExtension(name='cinema', sourcedir='')],
 

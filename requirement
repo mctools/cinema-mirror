@@ -1,31 +1,6 @@
-#Tak
-numba==0.55.1
-
 #required packages for Prompt visualisation
-vtk==9.1.0
-pyvista==0.34.1
+pyvista
 matplotlib
-tetgen #tetrahedralise function in pyvista 
-pymeshfix #reconstruct a manifold clean surface
-
-#required packages for post-analysis
+mcpl
 scipy
 h5py
-mcpl
-
-#PiXiu
-phonopy==2.14.0
-spglib==1.16.4
-seekpath==2.0.1
-periodictable
-requests
-
-#logging
-loguru
-
-# Crawler
-#mp-api
-
-# Database
-pymongo  #synchronous
-#motor  #asynchronous

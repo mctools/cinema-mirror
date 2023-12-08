@@ -41,9 +41,13 @@ type_npcplx2d=np.ctypeslib.ndpointer(dtype=np.complex128,ndim=2,flags='C_CONTIGU
 
 def _getPromptLib():
     _ptpath = os.getenv('CINEMAPATH')
-    if _ptpath is None:
-        raise IOError('CINEMAPATH enviroment is not set')
-    libfile = glob.glob(_ptpath +'/cinemabin/src/cxx/libprompt_core.so')[0]
+    try:
+        libfile = glob.glob(_ptpath +'/cinemabin/src/cxx/libprompt_core.so')[0]
+    except:
+        try:
+            libfile = glob.glob(_ptpath + os.sep + 'libprompt_core.so')[0]
+        except:
+            raise IOError('CINEMAPATH enviroment need to be configured')
     return ctypes.CDLL(libfile), _ptpath
 
 _taklib, _ptpath = _getPromptLib()

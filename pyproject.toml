@@ -1,6 +1,6 @@
 [project]
 name="neutron-cinema"
-version="1.0.0"
+version="1.0.0.7"
 authors=[
     {name="Xiao-Xiao Cai"},
     {name="Ming Tang"},
