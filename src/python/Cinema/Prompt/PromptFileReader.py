@@ -61,6 +61,7 @@ class PromptFileReader:
     
 class McplAnalysor(PromptFileReader):
     def __init__(self,filePath):
+        super().__init__()
         self.filePath = filePath
         
     def filesMany(self):
