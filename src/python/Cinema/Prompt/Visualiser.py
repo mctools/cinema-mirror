@@ -28,6 +28,42 @@ import matplotlib.colors as mcolors
 from .Mesh import Mesh
 
 
+# from https://stackoverflow.com/questions/57173235/how-to-detect-whether-in-jupyter-notebook-or-lab 
+def is_jupyterlab_session() -> bool:
+    """Check whether we are in a Jupyter-Lab session.
+    Notes
+    -----
+    This is a heuristic based process inspection based on the current Jupyter lab
+    (major 3) version. So it could fail in the future.
+    It will also report false positive in case a classic notebook frontend is started
+    via Jupyter lab.
+    """
+    import psutil
+
+    # inspect parent process for any signs of being a jupyter lab server
+
+    parent = psutil.Process().parent()
+    if parent.name() == "jupyter-lab":
+        return True
+    keys = (
+        "JUPYTERHUB_API_KEY",
+        "JPY_API_TOKEN",
+        "JUPYTERHUB_API_TOKEN",
+    )
+    env = parent.environ()
+    if any(k in env for k in keys):
+        return True
+
+    return False
+
+InJupyterlab = False
+if is_jupyterlab_session():
+    InJupyterlab = True
+    pv.set_jupyter_backend('trame')  
+
+
+
+
 class Visualiser():
     def __init__(self, blacklist, printWorld=False, nSegments=30, mergeMesh=False, dumpMesh=False, window_size=[1920, 1080]):
         self.color =  list(mcolors.CSS4_COLORS.keys())
@@ -118,4 +154,5 @@ class Visualiser():
             if crp.points.size>0:
                 self.plotter.add_mesh(crp, color='red', opacity=0.3, point_size=8 )
 
-        self.plotter.show(title='Cinema Visualiser')
+        if not InJupyterlab:
+            self.plotter.show(title='Cinema Visualiser')
