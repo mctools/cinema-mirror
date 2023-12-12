@@ -44,6 +44,8 @@ git pull origin master
 # --remove pre-exist intermediate files
 cd /io
 rm -rf ./build/
+rm -rf ./cinemabin/
+rm -rf ./cinemavirenv/
 rm -rf ./${project_name}.egg-info
 rm -rf ./dist
 rm -rf ./wheelrepaired

@@ -102,3 +102,4 @@ class McplAnalysor(PromptFileReader):
                 histMany += self.getHist()
         
         return histMany
+

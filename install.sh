@@ -32,9 +32,9 @@ unset cinema_prunepath
 
 export CINEMAPATH="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #install ncrystal
-
+export response='y'
 if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
-  read -r -p "Do you want to install NCrystal into $CINEMAPATH/external? [y/N] " response
+  # read -r -p "Do you want to install NCrystal into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       if [ ! -d $CINEMAPATH/external ]; then
         mkdir $CINEMAPATH/external
@@ -62,7 +62,7 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
 
 #MCPL
 if [ ! -f $CINEMAPATH/external/mcpl/install/lib/libmcpl.so ]; then
-  read -r -p "Do you want to install MCPL into $CINEMAPATH/external? [y/N] " response
+  # read -r -p "Do you want to install MCPL into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       if [ ! -d $CINEMAPATH/external ]; then
         mkdir $CINEMAPATH/external
@@ -85,7 +85,7 @@ if [ ! -f $CINEMAPATH/external/mcpl/install/lib/libmcpl.so ]; then
 
 #install libxerces
 if [ ! -f $CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so ]; then
-  read -r -p "Do you want to install libxerces into $CINEMAPATH/external? [y/N] " response
+  # read -r -p "Do you want to install libxerces into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       if [ ! -d $CINEMAPATH/external ]; then
         mkdir $CINEMAPATH/external
@@ -109,7 +109,7 @@ fi
 #install VecGeom
 
 if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
-  read -r -p "Do you want to install VecGeom into $CINEMAPATH/external? [y/N] " response
+  # read -r -p "Do you want to install VecGeom into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     if [ ! -d $CINEMAPATH/external ]; then
       mkdir $CINEMAPATH/external
@@ -160,7 +160,7 @@ fi
 if [ -f $CINEMAPATH/cinemavirenv/bin/activate ]; then
   . $CINEMAPATH/cinemavirenv/bin/activate
 else
-  read -r -p "Do you want install Cinema python virtual environment in $CINEMAPATH/cinemavirenv? [y/N] " response
+  # read -r -p "Do you want install Cinema python virtual environment in $CINEMAPATH/cinemavirenv? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     python3 -m venv $CINEMAPATH/cinemavirenv
     . $CINEMAPATH/cinemavirenv/bin/activate
@@ -177,7 +177,7 @@ fi
 if [ -f $CINEMAPATH/external/pixiusssp/SSSP_precision_pseudos/Cu.pbe-dn-kjpaw_psl.1.0.0.UPF ]; then
   export PIXIUSSSP=$CINEMAPATH/external/pixiusssp
 else
-  read -r -p "Do you want (re)install the SSSP DFT pseudopotential into $CINEMAPATH/external? [y/N] " response
+  # read -r -p "Do you want (re)install the SSSP DFT pseudopotential into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     cd  $CINEMAPATH/external/
     git clone ${PREFIX}/pixiusssp.git

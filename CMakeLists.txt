@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(cinema)
-find_package(HDF5 REQUIRED COMPONENTS C)
-
+set(FIND_LIBRARY_USE_LIB64_PATHS TRUE)
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
@@ -41,14 +40,13 @@ endif()
 set(Python_FIND_STRATEGY LOCATION)
 
 add_subdirectory(src/cxx)
-add_subdirectory(bin)
 
 #Test
 enable_testing()
-add_subdirectory(src/cxxtests)
 
-
-find_package(Python REQUIRED COMPONENTS Interpreter )
+set(Python_FIND_STRATEGY LOCATION)
+set(Python_ROOT_DIR ${PROJECT_SOURCE_DIR}/cinemavirenv/bin/python)
+find_package(Python REQUIRED COMPONENTS Interpreter)
 
 file(GLOB TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontests/*.py")
 foreach(TS ${TESTFILES})
