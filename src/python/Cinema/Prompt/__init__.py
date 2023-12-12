@@ -78,7 +78,7 @@ class Parameter:
     def __repr__(self) -> str:
         return f'Parameter "{self.name}", [{self.lower_lim},{self.upper_lim}], Prompt value {self.promptval}\n'
      
-def analysisdb(study=None, name=None, target=None, storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna' ):
+def analysisdb(study=None, name=None, target=None, storage=None ):
     if study is None:
         import optuna
         study = optuna.load_study(study_name=name, storage=storage)

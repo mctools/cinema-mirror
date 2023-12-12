@@ -25,5 +25,5 @@ if (( $OPTIND == 1 )); then
 fi 
 
 chmod +x make_whl_main.sh
-sudo docker run --env PREFIX=${PREFIX} -i -t \
+docker run --env PREFIX=${PREFIX} -i -t \
 -v `pwd`/../../../:/io quay.io/pypa/manylinux2014_x86_64 /io/tools/scripts/manylinux/make_whl_main.sh
