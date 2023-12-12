@@ -57,12 +57,12 @@ gun.setSource([50,50,-2000])
 
 # vis or production
 if False:
-    sim.show(1)
+    sim.show(gun, 1)
 else:
     sim.simulate(gun, 1e6)
 
 destination = 0
-psd1 = sim.gatherHistData('psd1', dst=destination)
+psd1 = sim.gatherHistData('psd1', dst=destination).plot(show=True, log=False)
 psd2 = sim.gatherHistData('psd2', dst=destination)
 wlspec = sim.gatherHistData('wlspec', dst=destination)
 if sim.rank==destination:
