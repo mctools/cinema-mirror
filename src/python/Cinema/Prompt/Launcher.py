@@ -23,7 +23,7 @@
 __all__ = ['Launcher']
 
 from ..Interface import *
-from .Histogram import Hist1D, Hist2D, _pt_HistBase_dimension
+from .histogram import Hist1D, Hist2D, _pt_HistBase_dimension
 from .Visualiser import Visualiser
 
 _pt_Launcher_getInstance = importFunc('pt_Launcher_getInstance', type_voidp, [] )

@@ -327,7 +327,7 @@ if not OPT:
     tofy = 0
 
     m = 0
-    from Cinema.Prompt.Histogram import Hist2D, Hist1D
+    from Cinema.Prompt.histogram import Hist2D, Hist1D
     blankHist = Hist2D(-12.2,12.2,10,-100,100,150)
 
     wlHist=None

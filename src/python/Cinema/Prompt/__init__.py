@@ -33,8 +33,8 @@ from .Mesh import *
 from . import Visualiser
 from .Visualiser import *
 
-from . import Histogram
-from .Histogram import *
+from . import histogram
+from .histogram import *
 
 from .geo import *
 
@@ -44,7 +44,7 @@ from .scorer import *
 # __all__ += PromptFileReader.__all__
 # __all__ += Mesh.__all__
 # __all__ += Visualiser.__all__
-__all__ = Histogram.__all__
+__all__ = histogram.__all__
 
 
 # from . import Launcher, Visualiser

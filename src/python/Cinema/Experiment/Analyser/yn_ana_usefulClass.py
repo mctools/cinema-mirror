@@ -6,7 +6,7 @@ import re
 from Cinema.Interface.units import *
 from Cinema.Interface.helper import *
 from Cinema.Experiment.Analyser import ErrorPropagator, IDFLoader, DataLoader, RunData, Normalise
-from Cinema.Prompt.Histogram import *
+from Cinema.Prompt.histogram import *
 from Cinema.Prompt import PromptFileReader
 
 def atomNumLW_Stick(h2o_r, h2o_h): # mm

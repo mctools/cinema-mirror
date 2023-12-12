@@ -3,7 +3,7 @@
 import mcpl
 import matplotlib.pyplot as plt
 import numpy as np
-from  Cinema.Prompt.Histogram import Hist2D
+from  Cinema.Prompt.histogram import Hist2D
 
 def plot(fn, show=False):
     # fn='res.mcpl.gz'

@@ -1,5 +1,5 @@
 import numpy as np
-from Cinema.Prompt.Histogram import Hist1D
+from Cinema.Prompt.histogram import Hist1D
 from Cinema.Interface.units import avogadro
 import h5py
 from glob import glob

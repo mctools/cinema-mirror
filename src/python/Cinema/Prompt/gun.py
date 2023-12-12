@@ -60,7 +60,7 @@ class PythonGun():
 
     
 from .configstr import ConfigString
-from .Histogram import wl2ekin
+from .histogram import wl2ekin
 
 class Gun(ConfigString):
     pass
