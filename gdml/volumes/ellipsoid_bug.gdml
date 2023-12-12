@@ -16,19 +16,19 @@
     </materials>
 
     <solids>
-        <box lunit="mm" name="WorldSolid" x="150.0" y="150.0" z="150.0" />
+        <box lunit="mm" name="WorldSolid" x="250.0" y="250.0" z="250.0" />
         <ellipsoid aunit="deg" lunit="mm" name="EllipsoidSolid" ax="80.0" by="100.0" cz="140.0" zcut1="10" zcut2="50" />
     </solids>
 
     <structure>
         <volume name="VolEllipsoid">
             <solidref ref="EllipsoidSolid" />
-            <materialref ref="Vacuum" />
+            <materialref ref="Cd" />
         </volume>
 
         <volume name="VolWorld">
             <solidref ref="WorldSolid" />
-            <materialref ref="Cd" />
+            <materialref ref="Vacuum" />
 
             <physvol name="PhysVol_Ellipsoid">
                 <volumeref ref="VolEllipsoid" />
