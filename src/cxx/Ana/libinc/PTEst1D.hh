@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -27,7 +27,7 @@
 namespace Prompt {
   class Est1D : public Hist1D {
   public:
-    explicit Est1D(double xmin, double xmax, unsigned nbins,bool linear=true);
+    explicit Est1D(const std::string &name, double xmin, double xmax, unsigned nbins,bool linear=true);
     virtual ~Est1D();
     void fill(double val) override;
     void fill(double val, double weight) override;

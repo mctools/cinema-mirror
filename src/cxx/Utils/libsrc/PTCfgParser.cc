@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -20,38 +20,72 @@
 
 #include "PTCfgParser.hh"
 #include "PTUtils.hh" //split
-#include <cxxabi.h> //__cxa_demangle
+
+void Prompt::CfgParser::ScorerCfg::print()
+{
+  std::cout << "ScorerCfg " << name << " of size " << size() << ":\n";
+  for(auto it = parameters.begin(); it!=parameters.end();++it)
+  {
+    std::cout << "  [" << it->first << " = "
+                << it->second << "]\n";
+  }
+}
+
+std::string Prompt::CfgParser::ScorerCfg::find(const std::string &key, bool force)
+{
+  auto  it = parameters.find(key);
+  std::string v =  it == parameters.end() ? "" : it->second;
+  if(v.empty() && force)
+    PROMPT_THROW2(BadInput, "cfg is missing the key \""<< key << "\"" );
+  return v;
+}
 
 Prompt::CfgParser::CfgParser()
 {
-
 }
 
-std::string Prompt::CfgParser::getTypeName(const std::type_info& ti)
+Prompt::CfgParser::ScorerCfg Prompt::CfgParser::parse(const std::string& cfgstrinput)
 {
-  // see https://panthema.net/2008/0901-stacktrace-demangled/cxa_demangle.html and
-  // https://gcc.gnu.org/onlinedocs/libstdc++/manual/ext_demangling.html
+  std::string cfgstr = cfgstrinput; 
+  //find this substrings inside ' '
+  std::map<std::string, std::string> strRlcDict;
+  std::vector<size_t> pos;
+  size_t found = cfgstr.find(char(39)); //39 for '
+  while(found!=std::string::npos)
+  {
+    pos.push_back(found);
+    found = cfgstr.find(char(39), pos.back()+1);
+  }
+  if(pos.size()%2==1)
+    PROMPT_THROW(BadInput, " bad input caused by '");
 
-  std::string tname (abi::__cxa_demangle(ti.name(), nullptr, nullptr, nullptr));
+  
+  for(size_t i= 0; i<pos.size();i=i+2)
+  {
+    std::string sub=cfgstr.substr(pos[i]+1,pos[i+1]-pos[i]-1);
+    std::string magicstr = "magicsubstring"+std::to_string(i);
+    cfgstr.replace(pos[i], pos[i+1]-pos[i]+1, magicstr);
+    strRlcDict.emplace(magicstr, sub);
+  }  
 
-  std::string substr = "Prompt::";
-  std::string::size_type i = tname.find(substr);
-  if (i != std::string::npos)
-     tname.erase(i, substr.length());
-
-  return tname;
-}
-
-Prompt::CfgParser::ScorerCfg Prompt::CfgParser::getScorerCfg(const std::string& cfgstr)
-{
   auto strvec = split(cfgstr, ';');
   ScorerCfg cfg;
   cfg.name=strvec[0];
   for(const auto &s: strvec)
   {
     auto p = split(s, '=');
+    if(p.size()!=2)
+        PROMPT_THROW2(BadInput, " cfg section \""<< s << "\" is ill-defined" );
     cfg.parameters[p[0]] = p[1];
-    std::cout << s << std::endl;
+    // std::cout << s << std::endl;
   }
-  return cfg;
+
+  for(auto it=cfg.parameters.begin();it!=cfg.parameters.end();++it)
+  {
+    auto itstr = strRlcDict.find(it->second);
+    if(itstr!=strRlcDict.end())
+      it->second = itstr->second;
+  }
+
+  return std::move(cfg);
 }

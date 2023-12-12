@@ -1,10 +1,11 @@
-build*
+build
 __pycache__
 #gdml
 *virenv
 cinemabin
 external
 rundir
+docs
 
 # Prerequisites
 *.d
@@ -40,3 +41,7 @@ rundir
 *.app
 
 bigdata
+
+
+#vscode
+*.json

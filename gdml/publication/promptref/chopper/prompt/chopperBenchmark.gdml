@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<gdml>
+
+    <userinfo>
+        <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=IsotropicGun;energy=0;position=0,0,0" /> -->
+        <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;src_w=1;src_h=1;src_z=0;
+                                    slit_w=45;slit_h=45;slit_z=10000.0;temperature=293;" />
+    </userinfo>
+
+    <materials>
+        <material name="Vacuum">
+          <atom value="void.ncmat"/>
+        </material>
+    </materials>
+
+    <solids>
+        <box lunit="mm" name="WorldBox" x="1200.0" y="1200.0" z="21000.0" />
+        <tube lunit="mm" name="Chopper1" rmin="0.0" rmax="250.0" z="0.0000002" deltaphi="360.0" startphi="0.0"/>
+        <box name="DetectorSolid1" x="1200.0" y="1200.0" z="0.0000002" />
+        <box name="DetectorSolid2" x="1200.0" y="1200.0" z="0.0000002" />
+    </solids>
+
+    <structure>
+        <volume name="LV_Chopper1">
+            <solidref ref="Chopper1" />
+            <materialref ref="Vacuum" />
+            <auxiliary auxtype="SurfaceProcess" auxvalue="physics=DiskChopper;rotFreq=100;r=130;theta0=20;n=4;phase=0"/>           
+        </volume>
+
+        <volume name="DetectorIn">
+            <materialref ref="Vacuum"/>
+            <solidref ref="DetectorSolid1"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=In; min=0.0; max=0.02; numbin=10000"/>
+        </volume>
+
+        <volume name="DetectorOut">
+            <materialref ref="Vacuum"/>
+            <solidref ref="DetectorSolid2"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=Out; min=0.0; max=0.02; numbin=10000"/>
+        </volume>
+
+        <volume name="worldVOL">
+            <solidref ref="WorldBox" />
+            <materialref ref="Vacuum" />
+
+            <physvol>
+                <volumeref ref="LV_Chopper1" />
+                <position name="P_PhyVol1" unit="mm" x="0.0" y="-190.0" z="10000.0" />
+                <rotation name="R_PhyVol1" unit="deg" x="0.0" y="0.0" z="0.0" />
+            </physvol>
+
+            <physvol>
+                <volumeref ref="DetectorOut"/>
+                <position name="DetPost" x="0.0" y="0.0" z="10000.00001" />
+            </physvol>
+
+            <physvol>
+                <volumeref ref="DetectorIn"/>
+                <position name="DetPost2" x="0.0" y="0.0" z="9999.99999" />
+            </physvol>
+
+        </volume>
+        
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="worldVOL" />
+    </setup>
+</gdml>

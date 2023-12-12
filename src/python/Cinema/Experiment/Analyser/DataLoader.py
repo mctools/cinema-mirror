@@ -4,7 +4,7 @@
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2022 Prompt developers                                     ##
+##  Copyright 2021-2024 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -46,6 +46,9 @@ class ErrorPropagator():
             self.error = np.divide(weight, uncet, where=(uncet!=0.))
         if ycentre is not None:
             self.ycentre = np.copy(ycentre)
+            
+    def sum(self, axisIdx):
+        return self.weight.sum(axis=axisIdx)
 
     def compatible(self, xcentre, ycentre):
         np.testing.assert_almost_equal(self.xcentre, xcentre)
@@ -83,10 +86,10 @@ class ErrorPropagator():
         selferr = np.divide(self.error, self.weight, where=(self.weight!=0.))
         otherw = weight
         othererr = np.divide(error, otherw, where=(otherw!=0.))
-        self.error = np.sqrt( selferr*selferr + othererr*othererr)
         self.weight = np.divide(self.weight, otherw, where=(otherw!=0.))
+        self.error = np.sqrt(selferr*selferr + othererr*othererr)*np.abs(self.weight)
 
-    def __idiv__(self, other):
+    def __itruediv__(self, other):
         if hasattr(other, 'ycentre'):
             self.divide(other.weight, other.error, other.xcentre, other.ycentre)
         else:
@@ -95,7 +98,7 @@ class ErrorPropagator():
 
     def scale(self, factor):
         self.weight = self.weight*factor
-        self.error = self.error*factor
+        self.error = self.error*np.abs(factor)
 
 
     def plot(self, show=False, label=None, idx = 2000):
@@ -113,9 +116,9 @@ class ErrorPropagator():
 
 
 class DataLoader():
-    def __init__(self, fname, moduleName, tofcut=30, printCentent=False):
+    def __init__(self, fname, moduleName, tofcut=30, printContent=False):
         hf=h5py.File(fname,'r')
-        if printCentent:
+        if printContent:
             keys=[]
             readKeys(keys, hf)
             print(keys)
@@ -124,7 +127,7 @@ class DataLoader():
         pid = hf[f'/csns/instrument/{moduleName}/pixel_id'][()].flatten() #vector
         tofpidMat = hf[f'/csns/instrument/{moduleName}/histogram_data'][()] #matrix
         tofpidMat[:, :tofcut] = 0
-        self.tofCentre = tof[:-1]+np.diff(tof) #vector
+        self.tofCentre = tof[:-1]+np.diff(tof)*0.5 #vector
 
         self.detErrPro = ErrorPropagator(tofpidMat, pid, tof, tofpidMat)
 

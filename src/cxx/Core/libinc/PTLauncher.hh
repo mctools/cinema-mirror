@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -24,17 +24,25 @@
 #include "PromptCore.hh"
 #include "PTSingleton.hh"
 #include "PTPrimaryGun.hh"
-
+#include "PTActiveVolume.hh"
+#include "PTStackManager.hh"
 namespace Prompt {
   class Launcher {
   public:
-    void go(uint64_t numParticle, double printPrecent, bool recordTrj=false, bool timer=true);
-    void loadGeometry(const std::string &geofile);
-    void setSeed(uint64_t seed) { Singleton<SingletonPTRand>::getInstance().setSeed(seed); }
+    void go(uint64_t numParticle, double printPrecent, bool recordTrj=false, bool timer=true, bool save2Disk=true);
+    void loadGeometry(const std::string &geofile); 
+
+    void simOneEvent(bool recordTrj);
+
+    // void setWorld(); //for c++ debug
+
+    void setSeed(uint64_t seed);
     uint64_t getSeed() { return Singleton<SingletonPTRand>::getInstance().getSeed(); }
     void setGun(std::shared_ptr<PrimaryGun> gun) { m_gun=gun; }
+    void setGun(const char* cfg);
     const std::vector<Vector> &getTrajectory() { return m_trajectory; }
     size_t getTrajSize() { return m_trajectory.size(); }
+
 
   private:
     friend class Singleton<Launcher>;
@@ -42,6 +50,9 @@ namespace Prompt {
     ~Launcher();
     std::shared_ptr<PrimaryGun> m_gun;
     std::vector<Vector> m_trajectory;
+    ActiveVolume &m_activeVolume;
+    StackManager &m_stackManager;
+
   };
 }
 #endif

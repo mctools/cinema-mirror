@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<gdml>
+
+  <userinfo>
+    <!-- 9Aa -->
+    <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;position=49,0,-999;direction=0,0,1;energy=1e-3" /> -->
+
+    <auxiliary auxtype="PrimaryGun" auxvalue="gun=MaxwellianGun;
+      src_w=100;src_h=100;src_z=-999;
+      slit_w=200;slit_h=200;slit_z=0;temperature=300;" />
+
+    <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;
+      mean_wl=6;range_wl=1e-6;
+      src_w=100;src_h=100;src_z=-999;
+      slit_w=200;slit_h=200;slit_z=0" /> -->
+
+  </userinfo>
+
+   <define>
+    <position name="DetectorPos" x="0" y="0" z="999." />
+    <position name="SideDetPos" x="-500" y="0" z="0" />
+
+    <position name="GuidePos" x="0." y="0" z="1999" />
+    <rotation name="rot_sample" unit="deg" x="90" y="0" z="0" />
+
+
+    <constant name="sample_r" value="50" />
+    <constant name="sample2_l_x" value="100" />
+    <constant name="sample2_l_z" value="500" />
+
+    <position name="shift_sample2_l" x="sample2_l_x" y="0" z="sample2_l_z" />
+    <!-- <position name="shift_sample2_r" x="-100" y="0" z="500" /> -->
+
+  </define>
+
+  <materials>
+    <material name="Vacuum">
+      <atom value="vacuum.ncmat"/>
+    </material>
+
+    <material name="Al">
+      <atom value="Al_sg225.ncmat"/>
+    </material>
+
+    <material name="Sans">
+      <atom value="nanodiamond.ncmat"/>
+    </material>
+
+    <material name="Ge">
+      <atom value="    Ge_sg227.ncmat;mos=0.3deg;incoh_elas=0;inelas=0
+                      ;dir1=@crys_hkl:5,1,1@lab:0,0,1
+                      ;dir2=@crys_hkl:0,1,-1@lab:0,1,0"/>
+    </material>
+
+  </materials>
+
+  <solids>
+    <box name="DetectorSolid" x="500" y="500" z="0.00001" />
+    <box name="sideDetSolid" x="1e-4" y="600" z="5000" />
+
+    <hype name="SampleTubeSolid" rmin="0" rmax="sample_r" z="350" inst="0" outst="3.58" />
+    <!-- <tube name="GuideEntrySolid" rmin="0" rmax="50" z="0.0001" startphi="0" deltaphi="360" aunit="deg"/> -->
+    <box name="GuideEntrySolid" x="100" y="100" z="0.0001" />
+    <box name="worldSolid" x="1600.0" y="600.0" z="5000.0" />
+  </solids>
+
+  <structure>
+    <volume name="Sample">
+      <materialref ref="Sans"/>
+      <solidref ref="SampleTubeSolid"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=ro1;
+        rotation_axis=0,1,0;point_on_axis=100,0,500;rot_fre=100;type=EXIT"/>
+    </volume>
+    <!-- PROPAGATE, ENTRY, EXIT -->
+
+    <volume name="SideDetVol">
+      <materialref ref="Vacuum"/>
+      <solidref ref="sideDetSolid"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=side;xmin=-300;
+        xmax=300;numbin_x=5;ymin=-2500;ymax=2500;numbin_y=50;type=YZ"/>
+    </volume>
+
+    <volume name="Detector">
+      <materialref ref="Vacuum"/>
+      <solidref ref="DetectorSolid"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap;
+        xmin=-250;xmax=250;numbin_x=50;ymin=-250;ymax=250;numbin_y=50;type=XY"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=detector;
+        min=0.0; max=0.5; numbin=200"/>
+    </volume>
+
+    <volume name="GuideEntry">
+      <materialref ref="Vacuum"/>
+      <solidref ref="GuideEntrySolid"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap2;
+        xmin=-50;xmax=50;numbin_x=11;ymin=-50;ymax=50;numbin_y=11;type=XY"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=detector2;
+        min=0.0; max=0.5; numbin=200"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=entryTOF;
+        min=0.0; max=0.01; numbin=200"/>
+    </volume>
+
+    <volume name="World">
+      <materialref ref="Vacuum"/>
+      <solidref ref="worldSolid"/>
+
+       <physvol>
+        <volumeref ref="Sample"/>
+        <rotationref ref="rot_sample" />
+        <positionref ref="shift_sample2_l"/>
+      </physvol>
+
+      <!-- <physvol>
+        <volumeref ref="Sample"/>
+        <rotationref ref="rot_sample" />
+        <positionref ref="shift_sample2_r"/>
+      </physvol> -->
+
+
+      <physvol>
+        <volumeref ref="SideDetVol"/>
+        <positionref ref="SideDetPos"/>
+      </physvol>
+
+
+      <physvol>
+        <volumeref ref="GuideEntry"/>
+        <positionref ref="GuidePos"/>
+      </physvol>
+
+      <physvol>
+        <volumeref ref="Detector"/>
+        <positionref ref="DetectorPos"/>
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="default" version="1.0">
+    <world ref="World"/>
+  </setup>
+
+
+</gdml>

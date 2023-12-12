@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -20,13 +20,13 @@
 
 #include "../doctest.h"
 #include "PTMath.hh"
-#include "PTModelCollection.hh"
+#include "PTCompoundModel.hh"
 
-TEST_CASE("ModelCollection")
+TEST_CASE("CompoundModel")
 {
 
-  auto collection = Prompt::ModelCollection() ;
-  collection.addPhysicsModel("Al_sg225.ncmat;dcutoff=0.5;temp=25C");
+  auto collection = Prompt::CompoundModel(2112) ;
+  collection.addNCScaAbsModels("Al_sg225.ncmat;dcutoff=0.5;temp=25C");
 
   double xs(0.);
   xs = collection.totalCrossSection(1., {0,0,0} );
@@ -37,13 +37,13 @@ TEST_CASE("ModelCollection")
 
   CHECK(Prompt::floateq(1.378536096609809*Prompt::Unit::barn, xs ));
 
-  double weight(0);
-  collection.sample(1., {1,0,0}, final, out, weight);
+
+  collection.generate(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;
 
-  collection.sample(1., {1,0,0}, final, out, weight);
+  collection.generate(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;
 
-  collection.sample(1., {1,0,0}, final, out, weight);
+  collection.generate(1., {1,0,0}, final, out);
   std::cout << final << " " << out << std::endl;
 }

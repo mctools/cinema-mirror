@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -27,6 +27,7 @@
 extern "C" {
 #endif
 
+
 // Converters
 double pt_eKin2k(double ekin);
 double pt_angleCosine2Q(double anglecosine, double enin_eV, double enout_eV);
@@ -41,11 +42,32 @@ double pt_rand_generate();
 // Prompt::Launcher
 void* pt_Launcher_getInstance();
 void pt_Launcher_setSeed(void* obj, uint64_t seed);
-void pt_Launcher_setGun(void* obj, void* objgun);
 void pt_Launcher_loadGeometry(void* obj, const char* fileName);
 size_t pt_Launcher_getTrajSize(void* obj);
 void pt_Launcher_getTrajectory(void* obj, double *trj);
-void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj, bool timer);
+void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj, bool timer, bool save2Disk);
+void pt_Launcher_setGun(void *obj, const char* cfg);
+void pt_Launcher_simOneEvent(void *obj, bool recordTrj);
+
+// Prompt::HistBase
+void pt_HistBase_merge(void* obj, void* obj2);
+void pt_HistBase_setWeight(void *obj, double *data, size_t n);
+void pt_HistBase_setHit(void *obj, double *data, size_t n);
+double pt_HistBase_getXMin(void* obj);
+double pt_HistBase_getXMax(void* obj);
+double pt_HistBase_getTotalWeight(void* obj);
+double pt_HistBase_getAccWeight(void* obj);
+double pt_HistBase_getOverflow(void* obj);
+double pt_HistBase_getUnderflow(void* obj);
+double pt_HistBase_getTotalHit(void* obj);
+size_t pt_HistBase_getDataSize(void* obj);
+void pt_HistBase_scale(void* obj, double scale);
+void pt_HistBase_reset(void* obj);
+void pt_HistBase_getRaw(void* obj, double* data);
+void pt_HistBase_getHit(void* obj, double* data);
+unsigned pt_HistBase_dimension(void* obj);
+const char* pt_HistBase_getName(void* obj);
+
 
 // Prompt::Hist1D
 void* pt_Hist1D_new(double xmin, double xmax, unsigned nbins, bool linear);
@@ -53,6 +75,7 @@ void pt_Hist1D_delete(void* obj);
 void pt_Hist1D_getEdge(void* obj, double* edge);
 void pt_Hist1D_getWeight(void* obj, double* w);
 void pt_Hist1D_getHit(void* obj, double* h);
+unsigned pt_Hist1D_getNumBin(void* obj); 
 void pt_Hist1D_fill(void* obj, double val, double weight);
 void pt_Hist1D_fillmany(void* obj, size_t n, double* val, double* weight);
 
@@ -72,6 +95,10 @@ void pt_Hist2D_getHit(void* obj, double* h);
 void pt_Hist2D_fill(void* obj, double xval, double yval, double weight);
 void pt_Hist2D_fillmany(void* obj, size_t n, double* xval, double* yval, double* weight);
 void pt_Hist2D_merge(void* obj, void* obj2);
+double pt_Hist2D_getYMin(void* obj);
+double pt_Hist2D_getYMax(void* obj);
+unsigned  pt_Hist2D_getNBinX(void* obj);
+unsigned  pt_Hist2D_getNBinY(void* obj);
 
 #ifdef __cplusplus
 }

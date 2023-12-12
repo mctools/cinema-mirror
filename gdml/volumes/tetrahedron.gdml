@@ -1,14 +1,14 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0"?>
 <gdml>
 
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="IsotropicGun;Neutron;0.001; 0.0,0.0,0.0; 0,0,1" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=IsotropicGun;energy=0.001;position=0,0,0" />
     </userinfo>
 
     <define>
         <position name="v1" x="-70" y="-70" z="-60"/>
         <position name="v2" x="70" y="-40" z="-60"/>
-        <position name="v3" x="0.0" y="60" z="-60"/>
+        <position name="v3" x="0" y="60" z="-60"/>
         <position name="v4" x="0" y="0" z="60"/>
     </define>
 

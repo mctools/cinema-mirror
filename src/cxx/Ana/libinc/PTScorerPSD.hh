@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -28,14 +28,14 @@ namespace Prompt {
 
   class ScorerPSD  : public Scorer2D {
   public:
-    enum ScorerType {XY, XZ, YZ};
+    enum class PSDType {XY, XZ, YZ};
   public:
     ScorerPSD(const std::string &name, double xmin, double xmax, unsigned nxbins,
-      double ymin, double ymax, unsigned nybins, ScorerType type=XY);
+      double ymin, double ymax, unsigned nybins, ScorerType stype=Scorer::ScorerType::ENTRY, PSDType type=PSDType::XY);
     virtual ~ScorerPSD();
     virtual void score(Particle &particle) override;
   private:
-    ScorerType m_type;
+    PSDType m_type;
   };
 }
 #endif

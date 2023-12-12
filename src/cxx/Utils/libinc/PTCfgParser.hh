@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -23,8 +23,9 @@
 
 #include <string>
 #include <map>
-#include <typeinfo>
+#include <iostream>
 #include "PTSingleton.hh"
+#include "PTUtils.hh"
 
 namespace Prompt {
   class CfgParser {
@@ -32,19 +33,84 @@ namespace Prompt {
     struct ScorerCfg {
       std::string name;
       std::map<std::string, std::string> parameters;
-      void print()
+      void print();
+      std::string find(const std::string &key, bool force=false);
+      bool contains(const std::string &key)
       {
-        printf("+ScorerCfg %s\n", name.c_str() );
+        return find(key).empty() ? false : true;
       }
-      std::string find(const std::string &key)
+      size_t size()
       {
-        auto  it = parameters.find(key);
-        return  it == parameters.end() ? nullptr : it->second;
+        return parameters.size();
       }
+
+      bool getStringIfExist(const std::string &key, std::string& str)
+      {
+        std::string strAsStr = find(key);
+        if(strAsStr.empty())
+          return false;
+        else
+        {
+          std::swap(str,strAsStr);
+          return true;
+        }
+      }
+
+      bool getDoubleIfExist(const std::string &key, double &vale)
+      {
+        std::string valueAsStr = find(key);
+        if(!getStringIfExist(key, valueAsStr))
+          return false;
+        else
+        {
+          vale = ptstod(valueAsStr);
+          return true;
+        }
+      }
+
+      bool getUnsignedIfExist(const std::string &key, unsigned &vale)
+      {
+        std::string valueAsStr = find(key);
+        if(!getStringIfExist(key, valueAsStr))
+          return false;
+        else
+        {
+          vale = ptstou(valueAsStr);
+          return true;
+        }
+      }
+
+      bool getIntIfExist(const std::string &key, int &vale)
+      {
+        std::string valueAsStr = find(key);
+        if(!getStringIfExist(key, valueAsStr))
+          return false;
+        else
+        {
+          vale = ptstoi(valueAsStr);
+          return true;
+        }
+      }
+
+      bool getVectorIfExist(const std::string &key, Vector &vale)
+      {
+        std::string valueAsStr = find(key);
+        if(!getStringIfExist(key, valueAsStr))
+          return false;
+        else
+        {
+          vale = string2vec(valueAsStr);
+          return true;
+        }
+      }
+
+
+
+
+
     };
   public:
-    ScorerCfg getScorerCfg(const std::string& cfgstr);
-    std::string getTypeName(const std::type_info& ti);
+    ScorerCfg parse(const std::string& cfgstr);
   private:
     friend class Singleton<CfgParser>;
     CfgParser();

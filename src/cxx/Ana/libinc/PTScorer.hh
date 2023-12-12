@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -25,45 +25,49 @@
 #include "PTParticle.hh"
 #include "PTHist1D.hh"
 #include "PTHist2D.hh"
-#include "PTCfgParser.hh"
+// #include "PTActiveVolume.hh"
+// #include "PTSingleton.hh"
 
 namespace Prompt {
-
+   class ActiveVolume;
   class Scorer {
   public:
-    enum ScorerType {SURFACE, ENTRY, PROPAGATE, ABSORB, EXIT};
+    enum class ScorerType {SURFACE, ENTRY, PROPAGATE, EXIT, ENTRY2EXIT, ABSORB};
   public:
-    Scorer() {};
-    Scorer(const std::string& name, ScorerType type) : m_name(name), m_type(type) {};
-
-    virtual ~Scorer() {std::cout<<"Destructing scorer " << m_name <<std::endl;};
-    const std::string &getName() { return m_name; }
-    ScorerType getType() { return m_type; }
+    Scorer(const std::string& name, ScorerType type, int groupid=0) ;
+    virtual ~Scorer() {std::cout<<"Destructing Scorer " << m_name <<std::endl;};
+    const std::string &getName() const { return m_name; }
+    ScorerType getType() const { return m_type; }
     virtual void score(Particle &particle) = 0;
-    virtual void save(const std::string &fname) = 0;
+    virtual void save_mcpl() = 0;
+    virtual const HistBase* getHist() const = 0 ; 
   protected:
-    std::string m_name;
-    ScorerType m_type;
+    const std::string m_name;
+    const ScorerType m_type;
+    const int m_groupid;
+    ActiveVolume &m_activeVolume; 
+    
   };
 
   class Scorer1D : public Scorer {
   public:
-    Scorer1D(): Scorer() {};
-    Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist)
-    : Scorer(name, type), m_hist(std::move(hist)) {};
-    virtual ~Scorer1D() { save(m_name); }
-    void save(const std::string &fname) { m_hist->save(fname); }
+    Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist, int groupid=0)
+    : Scorer(name, type, groupid), m_hist(std::move(hist)) {};
+    virtual ~Scorer1D() {  }
+    void save_mcpl() override { m_hist->save(m_name); }
+    const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }
   protected:
     std::unique_ptr<Hist1D> m_hist;
   };
 
   class Scorer2D : public Scorer {
   public:
-    Scorer2D(): Scorer() {};
-    Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist)
-    : Scorer(name, type), m_hist(std::move(hist)) {};
-    virtual ~Scorer2D() { save(m_name); }
-    void save(const std::string &fname) { m_hist->save(fname); }
+    Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist, int groupid=0)
+    : Scorer(name, type, groupid), m_hist(std::move(hist)) {};
+    virtual ~Scorer2D() {  }
+    void save_mcpl() override { m_hist->save(m_name); }
+    const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }
+
   protected:
     std::unique_ptr<Hist2D> m_hist;
   };

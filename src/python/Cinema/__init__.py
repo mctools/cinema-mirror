@@ -4,7 +4,7 @@
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2022 Prompt developers                                     ##
+##  Copyright 2021-2024 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -20,4 +20,12 @@
 ##                                                                            ##
 ################################################################################
 
-__version__=0.1
+__version__="2.0.0"
+
+import os, sys
+if os.getenv('CINEMAPATH') is None:
+    os.environ["CINEMAPATH"] = cwdir = os.path.dirname(__file__)
+    sys.path.append(os.getcwd())
+    sys.path.append(os.path.dirname(__file__))
+    os.environ["NCRYSTAL_DATA_PATH"] = os.path.join(cwdir, 'ncmat')
+__version__='2.0.0'

@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -35,7 +35,7 @@ TEST_CASE("Hist1D_log")
   double xUpper = 100.;
   unsigned loop = 1000000;
   auto gen = std::make_shared<pt::RandEngine>(6402);
-  auto hist = std::make_unique<pt::Hist1D>(1,  xUpper, 10, false);
+  auto hist = std::make_unique<pt::Hist1D>("Hist1D_log", 1,  xUpper, 10, false);
   auto RandCanonical = std::make_unique<pt::RandCanonical<pt::RandEngine>>(gen);
 
   auto start = std::chrono::steady_clock::now();
@@ -76,7 +76,7 @@ TEST_CASE("Hist1D_lin")
   double xUpper = 100.;
   unsigned loop = 1000000;
   auto gen = std::make_shared<pt::RandEngine>(6402);
-  auto hist = std::make_unique<pt::Hist1D>(0,  xUpper, 10);
+  auto hist = std::make_unique<pt::Hist1D>("Hist1D_lin", 0,  xUpper, 10);
   auto RandCanonical = std::make_unique<pt::RandCanonical<pt::RandEngine>>(gen);
 
   auto start = std::chrono::steady_clock::now();

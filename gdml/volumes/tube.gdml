@@ -1,12 +1,9 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0"?>
 <gdml>
 
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="IsotropicGun;Neutron;0.001; 0.0,0.0,0.0; 0,0,1" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=IsotropicGun;energy=0.001;position=0,0,0" />
     </userinfo>
-
-    <define>
-    </define>
 
     <materials>
         <material name="Vacuum">
@@ -20,8 +17,7 @@
 
     <solids>
         <box lunit="mm" name="WorldSolid" x="150.0" y="150.0" z="150.0" />
-        <tube aunit="deg" lunit="mm" name="TubeSolid" rmin="0.0" rmax="50.0" z="120.0" deltaphi="360.0" startphi="0.0" />
-        <!-- <tube aunit="deg" lunit="mm" name="TubeSolid" rmin="20.0" rmax="50.0" z="120.0" deltaphi="180.0" startphi="0.0" /> -->
+        <tube aunit="deg" lunit="mm" name="TubeSolid" rmin="10.0" rmax="50.0" z="120.0" deltaphi="360.0" startphi="0.0" />
     </solids>
 
     <structure>

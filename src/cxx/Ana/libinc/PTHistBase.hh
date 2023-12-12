@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -27,26 +27,35 @@
 #include <stdexcept>
 #include <mutex>
 #include "PTException.hh"
-#include "NumpyWriter.hh"
 
 namespace Prompt {
 
   class HistBase {
   public:
-    explicit HistBase(unsigned nbins);
+    explicit HistBase(const std::string &name, unsigned nbins);
     virtual ~HistBase();
 
     virtual void merge(const HistBase &);
-
+    void setWeight(double *data, size_t n);
+    void setHit(double *data, size_t n);
+    
     double getXMin() const {return m_xmin;}
     double getXMax() const {return m_xmax;}
-    double getIntegral() const {return m_sumW;};
+    double getTotalWeight() const {return m_sumW;};
     double getOverflow() const {return m_overflow;};
     double getUnderflow() const {return m_underflow;};
-    uint32_t getNBin() const {return m_nbins;};
-    double getTotalHist() const {
+    size_t getDataSize() const {return m_nbins;};
+
+    double getAccWeight() const {
       double sum(0);
-      for(auto v: m_hit)
+      for(const auto v: m_data)
+        sum += v;
+      return sum;
+    }
+
+    double getTotalHit() const {
+      double sum(0);
+      for(const auto v: m_hit)
         sum += v;
       return sum;
     };
@@ -56,12 +65,14 @@ namespace Prompt {
 
     const std::vector<double>& getRaw() const {return m_data;}
     const std::vector<double>& getHit() const {return m_hit;}
+    const std::string& getName() const {return m_name;}
 
     virtual unsigned dimension() const = 0;
     virtual void save(const std::string &filename) const = 0;
 
   protected:
 
+    std::string m_name;
     mutable std::mutex m_hist_mutex;
     std::vector<double> m_data, m_hit;
     double m_xmin;
@@ -69,7 +80,8 @@ namespace Prompt {
     double m_sumW;
     double m_underflow;
     double m_overflow;
-    uint32_t m_nbins;
+    size_t m_nbins;
+    std::string m_mcpl_file_name;
 
   private:
     //Copy/assignment are forbidden to avoid troubles

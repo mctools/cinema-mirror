@@ -4,7 +4,7 @@
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2022 Prompt developers                                     ##
+##  Copyright 2021-2024 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -29,3 +29,5 @@ from .PixelLocator import PixelLocator as PixelLocator
 from .Data import RunData as RunData
 from .Data import SampleData as SampleData
 from .Data import Normalise as Normalise
+
+# from .yn_ana_usefulClass import *

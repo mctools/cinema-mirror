@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -35,9 +35,16 @@
 #include "PTVector.hh"
 #include "PTMath.hh"
 
-namespace Prompt {
+namespace Prompt
+{
+
+  constexpr double ENERGYTOKEN_ABSORB = -1.;
+  constexpr double ENERGYTOKEN_BIAS = -2.;
+  constexpr double ENERGYTOKEN_SCORE = -3.;
+
+  static const std::string PTVersion = "v1.0.0";
+
   void printLogo();
   void printLogo2();
-
 }
 #endif

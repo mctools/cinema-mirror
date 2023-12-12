@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -29,19 +29,19 @@ namespace pt = Prompt;
 
 TEST_CASE("test_isotropicgun")
 {
-auto hist = std::make_unique<pt::Hist1D>(0.0001, 180 , 100, false);
-  auto gun = pt::IsotropicGun(pt::Neutron(), 0.0253, pt::Vector(0.,0.,-12000.), pt::Vector(0.,0.,1.));
+  auto hist = std::make_unique<pt::Hist1D>("test_isotropicgun", 0.0001, 180 , 100, false);
+  auto gun = pt::IsotropicGun(pt::Neutron(), 0.0253, pt::Vector(0.,0.,-12000.));
   double sum_theta = 0.0;
   double num = 10000;
   for(unsigned i=0;i<num;i++)
   {
     auto p = gun.generate();
-    const pt::Vector& direction = p.getDirection();
+    const pt::Vector& direction = p->getDirection();
     double theta = direction.angle(pt::Vector(0.,0.,1))*180/M_PI;
     sum_theta += theta;
 
-    std::cout << "event id " << p.getEventID()
-    << " " << p.getDirection()
+    std::cout << "event id " << p->getEventID()
+    << " " << p->getDirection()
     << " " << theta << std::endl;
     hist->fill(theta);
   }

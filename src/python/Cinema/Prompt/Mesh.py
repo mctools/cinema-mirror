@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
-
 ################################################################################
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2022 Prompt developers                                     ##
+##  Copyright 2021-2024 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -21,7 +19,6 @@
 ################################################################################
 
 from ..Interface import *
-import copy
 
 _pt_Transformation3D_new = importFunc('pt_Transformation3D_new', type_voidp, [type_voidp])
 _pt_Transformation3D_newfromID = importFunc('pt_Transformation3D_newfromID', type_voidp, [type_uint])
@@ -54,7 +51,7 @@ class MeshHelper(object):
 _pt_countFullTreeNode = importFunc('pt_countFullTreeNode', type_sizet, [])
 _pt_printMesh = importFunc("pt_printMesh", type_voidp, [])
 _pt_meshInfo = importFunc("pt_meshInfo", None,  [type_sizet, type_sizet, type_sizetp, type_sizetp, type_sizetp])
-_pt_getMesh = importFunc("pt_getMesh", None,  [type_sizet, type_sizet, type_npdbl2d, type_npszt1d, type_npszt1d])
+_pt_getMesh = importFunc("pt_getMesh", None,  [type_sizet, type_sizet, type_npsbl2d, type_npszt1d, type_npszt1d])
 _pt_getMeshName = importFunc("pt_getMeshName", type_cstr,  [type_sizet])
 _pt_getLogVolumeInfo = importFunc("pt_getLogVolumeInfo", None, [type_sizet, type_cstr])
 
@@ -93,7 +90,7 @@ class Mesh():
         name, npoints, nPlolygen, faceSize = self.meshInfo(nSegments)
         if npoints==0:
             return name, np.array([]), np.array([])
-        vert = np.zeros([npoints, 3], dtype=float)
+        vert = np.zeros([npoints, 3], dtype=np.float32)
         NumPolygonPoints = np.zeros(nPlolygen, dtype=type_sizet)
         facesVec = np.zeros(faceSize+nPlolygen, dtype=type_sizet)
         _pt_getMesh(self.n, nSegments, vert, NumPolygonPoints, facesVec)

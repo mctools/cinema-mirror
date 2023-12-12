@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='utf-8'?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+    <userinfo>
+      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=0.03449325754989497;position=0,-100,-100;direction=0,1,1" /> -->
+      <!-- Ge -->
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=0.03449325754989497;position=0,0,-140;direction=0,0,1" />
+
+      <!-- Cu -->
+      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=0.02503972;position=0,0,-140;direction=0,0,1" /> -->
+
+      <!-- Graphite -->
+      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=0.003632713;position=0,0,-140;direction=0,0,1" /> -->
+    </userinfo>
+
+   
+    <materials>
+        <material name="Air">
+          <atom value="freegas::N78O22/1.225kgm3"/>
+        </material>
+
+        <material name="Ge">
+          <atom value="Ge_sg227.ncmat;mos=0.3deg;incoh_elas=0;inelas=0
+                       ;dir1=@crys_hkl:5,1,1@lab:0,0,1
+                       ;dir2=@crys_hkl:0,1,-1@lab:1,0,0"/>
+        </material>
+
+        <material name="Cu">
+          <atom value="Cu_sg225.ncmat;mos=0.3deg;
+                       ;dir1=@crys_hkl:2,2,0@lab:0,0,1
+                       ;dir2=@crys_hkl:0,0,1@lab:1,0,0"/>
+        </material>
+
+        <material name="Graphite">
+          <atom value="physics=ncrystal;
+                       nccfg='C_sg194_pyrolytic_graphite.ncmat;mos=2deg;
+                       ;dir1=@crys_hkl:0,0,2@lab:0,0,1
+                       ;dir2=@crys_hkl:1,0,0@lab:1,0,0';
+                       scatter_bias=0.1;abs_bias=1.0"/>
+        </material>
+
+    </materials>
+    <solids>
+        <box lunit="mm" name="WorldBox" x="300.0" y="300.0" z="300.0" />
+        <box lunit="mm" name="MonitorBox" x="40" y="40" z="1" />
+        <box lunit="mm" name="CrystalBox" x="54" y="116" z="1" />
+    </solids>
+
+    <structure>
+        <volume name="LV_Monitor1">
+            <solidref ref="MonitorBox" />
+            <materialref ref="Air"  />
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=In;xmin=-20;xmax=20;numbin_x=20;ymin=-20;ymax=20;numbin_y=20;type=XY"/>
+        </volume>
+
+        <volume name="LV_Monito2">
+            <solidref ref="MonitorBox" />
+            <materialref ref="Air"  />
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=Out;xmin=-20;xmax=20;numbin_x=20;ymin=-20;ymax=20;numbin_y=20;type=XY"/>
+        </volume>
+
+
+        <volume name="LV_Box_Mono_L">
+            <solidref ref="CrystalBox" />
+            <materialref ref="Ge" />
+        </volume>
+
+        <volume name="worldVOL">
+            <solidref ref="WorldBox" />
+            <materialref ref="Air" />
+            <physvol name="phy_Monitor1">
+                <volumeref ref="LV_Monitor1" />
+                <position name="P_Monitor"  unit="mm" x="0" y="0" z="-80" />
+            </physvol>
+
+            <physvol name="phy_Monitor2">
+                <volumeref ref="LV_Monito2" />
+                <position name="P_Monitor2"  unit="mm" x="0" y="80" z="-0" />
+                <rotation name="R_Monitor2" unit="deg" x="-90"  y="0" z="0"/>
+            </physvol>
+
+            <physvol name="LV_Box_Mono">
+                <volumeref ref="LV_Box_Mono_L" />
+                <rotation name="R_LV_Mono" unit="deg" x="-45"  y="0" z="0"/>
+                <position name="P_Mono"  unit="mm" x="0" y="0" z="0" />
+            </physvol>
+        </volume>
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="worldVOL" />
+    </setup>
+</gdml>

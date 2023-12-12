@@ -3,6 +3,7 @@
 
 #include <vector>  // std::pair, std::make_pair
 #include <utility>
+#include <stddef.h>
 
 double eKin2k(double eV);
 std::pair<double, double>  minMaxQ(double enin_eV, double enout_eV);

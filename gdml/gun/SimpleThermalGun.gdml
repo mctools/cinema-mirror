@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<gdml>
+<!-- aneutron is generated in a xs biased sphere and hitting a box -->
+    <userinfo>
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=0.0253;position=0,0,-500;direction=0,0,1" />
+    </userinfo>
+
+    <materials>
+        <material name="Vacuum">
+          <atom value="vacuum.ncmat"/>
+        </material>
+
+        <material name="HWater">
+          <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat;density=1.0gcm3"/>
+          <D value="1"/>
+        </material>
+    </materials>
+
+    <solids>
+        <box lunit="mm" name="WorldSolid" x="700.0" y="700.0" z="2800.0" />
+        <box lunit="mm" name="boxSolid" x="400" y="400" z="400" />
+        <sphere aunit="deg" lunit="mm" name="SphereSolid" rmin="0.0" rmax="4" deltaphi="360.0" startphi="0.0" deltatheta="180.0" starttheta="0.0" />
+    </solids>
+
+    <structure>
+        <volume name="VolSphere">
+            <solidref ref="SphereSolid" />
+            <materialref ref="HWater" />
+        </volume>
+
+        <volume name="VolBox">
+            <solidref ref="boxSolid" />
+            <materialref ref="HWater" />
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=SofQ;sample_pos=0,0,0;beam_dir=0,0,1;dist=500;ptstate=ENTRY;linear=no;min=0.01;max=50;numbin=1000"/>
+        </volume>
+
+        <volume name="VolWorld">
+            <solidref ref="WorldSolid" />
+            <materialref ref="Vacuum" />
+
+            <physvol name="PhysVol_Shere">
+                <volumeref ref="VolSphere" />
+                <position name="Position" unit="mm" x="0.0" y="0.0" z="0.0" />
+            </physvol>
+
+            <physvol name="PhysVol_Box">
+                <volumeref ref="VolBox" />
+                <position name="Position2" unit="mm" x="0.0" y="0.0" z="600.0" />
+            </physvol>
+        </volume>
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="VolWorld" />
+    </setup>
+</gdml>

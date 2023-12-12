@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -37,13 +37,15 @@ namespace Prompt {
 
   class ScorerFactory  {
   public:
-    //used in GeoManager::loadFile
+    //used in GeoManager::initFromGDML
     std::shared_ptr<Scorer> createScorer(const std::string &cfg, double v);
-
   private:
+  
     friend class Singleton<ScorerFactory>;
     ScorerFactory();
     ~ScorerFactory() = default;
+    Scorer::ScorerType getPTS(const std::string& ptstateInStr) const;
+
   };
 }
 

@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -21,13 +21,17 @@
 #include "PTPrimaryGun.hh"
 
 
-Prompt::Particle Prompt::PrimaryGun::generate()
+std::unique_ptr<Prompt::Particle> Prompt::PrimaryGun::generate()
 {
   sampleEnergy(m_ekin);
   m_ekin0=m_ekin;
   samplePosDir(m_pos, m_dir);
   m_eventid++;
-  m_weight=1.;
+  m_weight = getParticleWeight();
   m_alive=true;
-  return *this;
+  m_time = getTime();
+  auto p = std::make_unique<Particle>(*this);
+  // *p.get() = *this;
+  // std::cout << *this << std::endl;
+  return std::move(p);
 }

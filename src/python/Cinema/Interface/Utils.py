@@ -4,7 +4,7 @@
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2022 Prompt developers                                     ##
+##  Copyright 2021-2024 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -27,13 +27,13 @@ def findData(fn, dir='data'):
     if len(fs)!=2:
         raise RuntimeError('findData input should be something like Al/cell.json')
     pxpath = os.getenv('CINEMAPATH')+ f'/{dir}/' + fs[0]+'/'
-    print(pxpath)
+    # print(pxpath)
     fnlist=[]
     for root, dirs, files in os.walk(pxpath):
         if fs[1] in files:
             fnlist.append(os.path.join(root, fs[1]))
     if len(fnlist)!=1:
-        raise RuntimeError('file not found')
+        raise RuntimeError(f'{len(fnlist)} {fn} files found')
     return fnlist[0]
 
 

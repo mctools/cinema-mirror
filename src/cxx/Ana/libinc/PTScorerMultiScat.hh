@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -28,7 +28,7 @@ namespace Prompt {
 
   class ScorerMultiScat : public Scorer1D {
   public:
-    ScorerMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, bool linear=true);
+    ScorerMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, ScorerType stype=Scorer::ScorerType::PROPAGATE, bool linear=true);
     virtual ~ScorerMultiScat();
     virtual void score(Particle &particle) override;
   private:

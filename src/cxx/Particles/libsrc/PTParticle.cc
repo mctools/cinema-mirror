@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -26,7 +26,10 @@ void Prompt::Particle::kill(KillType t)
   m_killtype = t;
 }
 
-bool Prompt::Particle::isAlive()
+std::ostream& Prompt::operator << (std::ostream &o, const Prompt::Particle& p)
 {
-  return m_alive;
+  return o<<"Particle: { " << p.getEventID() <<", ekin " << p.getEKin() 
+          <<", time " << p.getTime() 
+          <<", weight " << p.getWeight() << ", position "
+          << p.getPosition() << ", direction " << p.getDirection() << " }";
 }

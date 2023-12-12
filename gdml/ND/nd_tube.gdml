@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<gdml>
+
+  <userinfo>
+    <!-- 9Aa -->
+    <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;position=0,0,-999;direction=0,0,1;energy=1e-3" />
+    <!-- <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;position=0,0,-100;direction=0,0,1" /> -->
+  </userinfo>
+
+   <define>
+    <position name="DetectorPos" x="0" y="0" z="999." />
+    <rotation name="rot_sample" unit="deg" x="90" y="0" z="0" />
+    <position name="shift_sample" x="28.5" y="0" z="0" />
+    <constant name="r_sample" value="30" />
+  </define>
+
+  <materials>
+    <material name="Vacuum">
+      <atom value="vacuum.ncmat"/>
+    </material>
+
+    <material name="Al">
+      <atom value="Al_sg225.ncmat"/>
+    </material>
+
+    <material name="Sans">
+      <atom value="nanodiamond.ncmat"/>
+    </material>
+
+    <material name="Ge">
+      <atom value="    Ge_sg227.ncmat;mos=0.3deg;incoh_elas=0;inelas=0
+                      ;dir1=@crys_hkl:5,1,1@lab:0,0,1
+                      ;dir2=@crys_hkl:0,1,-1@lab:0,1,0"/>
+    </material>
+
+    <material name="HeavyWater">
+      <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat"/>
+    </material>
+
+  </materials>
+
+  <solids>
+    <box name="DetectorSolid" x="500" y="500" z="0.00001" />
+    <tube name="SampleTubeSolid" rmin="0" rmax="r_sample" z="100" startphi="0" deltaphi="360" aunit="deg"/>
+    <box name="worldSolid" x="600.0" y="600.0" z="2000.0" />
+  </solids>
+
+  <structure>
+    <volume name="Sample">
+      <materialref ref="Sans"/>
+      <solidref ref="SampleTubeSolid"/>
+    </volume>
+
+    <volume name="Detector">
+      <materialref ref="Vacuum"/>
+      <solidref ref="DetectorSolid"/>
+      <!-- <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum; name=SofQ;sample_pos=0,0,0;beam_dir=0,0,1;dist=-100;ptstate=ENTRY;linear=no;min=0.001; max = 50; numbin=100"/> -->
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap;xmin=-250;xmax=250;numbin_x=200;ymin=-250;ymax=250;numbin_y=200;type=XY"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=detector; min=0.0; max=0.0253; numbin=1000"/>
+    </volume>
+
+    <volume name="World">
+      <materialref ref="Vacuum"/>
+      <solidref ref="worldSolid"/>
+      <physvol>
+        <volumeref ref="Sample"/>
+        <rotationref ref="rot_sample" />
+        <positionref ref="shift_sample"/>
+      </physvol>
+
+      <physvol>
+        <volumeref ref="Detector"/>
+        <positionref ref="DetectorPos"/>
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="default" version="1.0">
+    <world ref="World"/>
+  </setup>
+
+
+</gdml>

@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<gdml>
+    <userinfo>
+        <!-- Defining gun -->
+        <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun; energy=0.0169; position=-80.,0.,0.; direction=1,0,0" />
+    </userinfo>
+    <materials>
+        <!-- Defining material -->
+        <material name="Universe">
+          <atom value="freegas::H1/1e-26kgm3"/>
+        </material>
+        <material name="Al">
+          <atom value="Al_sg225.ncmat"/>
+        </material>
+    </materials>
+    <solids>
+        <!-- Defining solid -->
+        <box lunit="mm" name="WorldSolid" x="400.0" y="1000.0" z="1000.0" />
+        <box lunit="mm" name="SampleSolid" x="10.0" y="10.0" z="10.0" />
+    </solids>
+    <structure>
+        <!-- Defining geometry tree and hierarchy of volumes -->
+        <volume name="VolSample">
+            <solidref ref="SampleSolid" />
+            <materialref ref="Al" />
+        </volume>
+        <volume name="VolWorld">
+            <solidref ref="WorldSolid" />
+            <materialref ref="Universe" />
+            <!-- Defining PSD scorer and attaching it to World -->
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD; name=NeutronHistMap; xmin=-500; xmax=500; numbin_x=1000; ymin=-500; ymax=500; numbin_y=1000; ptstate=EXIT; type=YZ"/>
+            <physvol name="PhysVol_Sample">
+                <volumeref ref="VolSample" />
+            </physvol>
+        </volume>
+    </structure>
+    <setup name="Default" version="1.0">
+        <world ref="VolWorld" />
+    </setup>
+</gdml>

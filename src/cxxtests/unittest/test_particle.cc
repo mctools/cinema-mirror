@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -36,6 +36,7 @@ TEST_CASE("Particle")
 
   auto n = pt::Neutron(0., pt::Vector(1,0,0), pt::Vector(0,0,0) );
   auto p = pt::Proton(0., pt::Vector(1,0,0), pt::Vector(0,0,0) );
+  std::cout << n << std::endl;
 
   for(auto en : en_vec)
   {

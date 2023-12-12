@@ -2,32 +2,28 @@
 
 from io import BytesIO
 import numpy as np
-from  Cinema.Prompt.Math.Hist import Hist2D
+from  Cinema.Prompt.Histogram import Hist1D, NumpyHist1D
 import matplotlib.pyplot as plt
 
 xbin=10
 xmin=0.
 xmax=1.
 
-ybin=100
-ymin=0.
-ymax=1.
+def create():
+    histcpp=Hist1D(xmin, xmax, xbin)
+    histpy=NumpyHist1D(xbin, [xmin, xmax])
 
+    for i in range(10):
+        data=np.random.random([2,10000])
+        histpy.fill(data[0], data[1])
+        histcpp.fillmany(data[0], data[1])
 
-for i in range(100):
-    hist=Hist2D(xmin, xmax, xbin, ymin, ymax, ybin)
-    input = np.random.random([2,1])
-    x=input[0]
-    y=input[1]
-    hist.fill(x,y)
+    np.testing.assert_allclose(histpy.hist, histcpp.getWeight(), rtol=1e-13, atol=1e-13)
+    return histpy, histcpp
 
-    data=hist.getWeight()
+hpy1, hpc1 = create()
+hpy2, hpc2 = create()
 
-    histLoc = np.nonzero(data)
-    xi = ((x-xmin)/(xmax-xmin)*xbin).astype(int)
-    yi = ((y-ymin)/(ymax-ymin)*ybin).astype(int)
-
-    np.testing.assert_equal(histLoc[0], xi)
-    np.testing.assert_equal(histLoc[1], yi)
-
-print('passed 100 times')
+hpc1.merge(hpc2)
+np.testing.assert_allclose(hpy1.hist+hpy2.hist, hpc1.getWeight(), rtol=1e-13, atol=1e-13)
+print('passed!')

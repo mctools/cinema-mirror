@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -22,26 +22,26 @@
 
 #include <iostream>
 #include <memory>
-#include "PTGeoManager.hh"
-#include "PTNavManager.hh"
+#include "PTGeoLoader.hh"
+#include "PTActiveVolume.hh"
 #include "PTMath.hh"
 #include "PTNeutron.hh"
 #include "PTProgressMonitor.hh"
 
 namespace pt = Prompt;
 
-TEST_CASE("GeoManager")
+TEST_CASE("GeoLoader")
 {
   //set the seed for the random generator
   pt::Singleton<pt::SingletonPTRand>::getInstance().setSeed(0);
 
   //load geometry
-  auto &geoman = pt::Singleton<pt::GeoManager>::getInstance();
+  auto &geoman = pt::Singleton<pt::GeoLoader>::getInstance();
   auto path = std::string(getenv("CINEMAPATH"));
-  geoman.loadFile(path +"/gdml/first_geo.gdml");
+  geoman.initFromGDML(path +"/gdml/first_geo.gdml");
 
   //create navigation manager
-  auto &navman = pt::Singleton<pt::NavManager>::getInstance();
+  auto &activeVolume = pt::Singleton<pt::ActiveVolume>::getInstance();
 
 
   size_t numBeam = 10;
@@ -54,15 +54,15 @@ TEST_CASE("GeoManager")
     pt::Neutron neutron(0.05 , {0.,0.,1.}, {0,0,-12000.*pt::Unit::mm});
 
     //! allocate the point in a volume
-    navman.locateLogicalVolume(neutron.getPosition());
-    while(!navman.exitWorld() && neutron.isAlive())
+    activeVolume.locateActiveVolume(neutron.getPosition());
+    while(!activeVolume.exitWorld() && neutron.isAlive())
     {
       //! first step of a particle in a volume
-      // std::cout << navman.getVolumeName() << " " << neutron.getPosition() << std::endl;
-      navman.setupVolumePhysics();
+      // std::cout << activeVolume.getVolumeName() << " " << neutron.getPosition() << std::endl;
+      activeVolume.setupVolPhysAndGeoTrans();
 
       //! the next while loop, particle should move in the same volume
-      while(navman.proprogateInAVolume(neutron, 0))
+      while(activeVolume.proprogateInAVolume(neutron))
       {
         if(neutron.isAlive())
           continue;

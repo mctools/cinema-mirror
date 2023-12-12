@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -21,12 +21,16 @@
 #include "PTHistBase.hh"
 #include <stdexcept>
 #include <fstream>
-//fixme:
-Prompt::HistBase::HistBase(unsigned nbin)
-: m_data(nbin,0.), m_hit(nbin,0.), m_xmin(0), m_xmax(0),
+#include <cstring>
+#include "PTRandCanonical.hh"
+
+
+Prompt::HistBase::HistBase(const std::string &name, unsigned nbin)
+:m_name(name), m_data(nbin,0.), m_hit(nbin,0.), m_xmin(0), m_xmax(0),
  m_sumW(0), m_underflow(0), m_overflow(0),m_nbins(0)
 {
-
+  auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
+  m_mcpl_file_name = m_name+"_seed"+std::to_string(seed);
 }
 
 Prompt::HistBase::~HistBase()
@@ -58,9 +62,24 @@ void Prompt::HistBase::merge(const Prompt::HistBase &hist)
 
 }
 
+
+
+void Prompt::HistBase::setWeight(double *data, size_t n)
+{
+  if(n != m_data.size())
+    PROMPT_THROW(CalcError, "wrong vector size");
+  memcpy(m_data.data(), data, sizeof(double)*n);
+}
+
+void Prompt::HistBase::setHit(double *data, size_t n)
+{
+  if(n != m_hit.size())
+    PROMPT_THROW(CalcError, "wrong vector size");
+  memcpy(m_hit.data(), data, sizeof(double)*n);
+}
+
 void Prompt::HistBase::scale(double scalefact)
 {
-  std::lock_guard<std::mutex> guard(m_hist_mutex);
 
   for(unsigned i=0;i<m_nbins;i++)
     m_data[i] *= scalefact;

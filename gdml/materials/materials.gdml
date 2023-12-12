@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='utf-8'?>
+<gdml>
+<!-- aneutron is generated in a xs biased sphere and hitting a box -->
+    <userinfo>
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=IsotropicGun;energy=1.;position=0,0,0" />
+    </userinfo>
+    <define>
+    </define>
+
+    <materials>
+        <material name="Air">
+          <atom value="freegas::N78O22/1.225kgm3"/>
+        </material>
+
+        <material name="Al">
+          <atom value="solid::Al/2.7gcm3"/>
+        </material>
+
+        <material name="Water">
+          <atom value="LiquidHeavyWaterD2O_T293.6K.ncmat;density=1.0gcm3"/>
+          <D value="1"/>
+        </material>
+
+        <material name="WaterBiased">
+          <atom value="physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat;density=1.0gcm3';scatter_bias=1.0;abs_bias=1.0"/>
+        </material>
+    </materials>
+
+    <solids>
+        <box lunit="mm" name="WorldSolid" x="300.0" y="300.0" z="300.0" />
+        <box lunit="mm" name="boxSolid" x="200" y="200" z="0.0001" />
+        <sphere name="SphereSolid" rmin="0" rmax="100"
+          deltaphi="360.0" startphi="0.0" deltatheta="180.0" starttheta="0.0" />
+    </solids>
+
+    <structure>
+        <volume name="VolSphere">
+            <solidref ref="SphereSolid" />
+            <materialref ref="WaterBiased" />
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=VolFluence;name=Sflux;min=1e-5;max=1.2;numbin=100;linear=no"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=RotatingObj;name=roen;
+              rotation_axis=0,1,0;point_on_axis=0,0,0;rot_fre=1000"/>
+        </volume>
+
+        <volume name="VolBoxSide">
+            <solidref ref="boxSolid" />
+            <materialref ref="Air" />
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=Side;
+              xmin=-100;xmax=100;numbin_x=100;ymin=-100;ymax=100;numbin_y=100;type=XY"/>
+        </volume>
+
+        <volume name="VolBoxTop">
+            <solidref ref="boxSolid" />
+            <materialref ref="Air" />
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=Top;
+              xmin=-100;xmax=100;numbin_x=100;ymin=-100;ymax=100;numbin_y=100;type=XY"/>
+        </volume>
+
+        <volume name="VolWorld">
+            <solidref ref="WorldSolid" />
+            <materialref ref="Air" />
+
+            <physvol name="PhysVol_Shere">
+                <volumeref ref="VolSphere" />
+                <position name="Position" unit="mm" x="0.0" y="0.0" z="0.0" />
+            </physvol>
+
+            <physvol name="PhysVol_BoxSide">
+                <volumeref ref="VolBoxSide" />
+                <position name="PositionSide" unit="mm" z="120.0" />
+            </physvol>
+
+            <physvol name="PhysVol_BoxTop">
+                <volumeref ref="VolBoxTop" />
+                <position name="Position3" unit="mm" y="120.0" />
+                <rotation name="rot" unit="deg" x="90.0" />
+            </physvol>
+
+        </volume>
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="VolWorld" />
+    </setup>
+</gdml>

@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(cinema)
-find_package(HDF5 REQUIRED COMPONENTS C)
-
+set(FIND_LIBRARY_USE_LIB64_PATHS TRUE)
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
@@ -22,27 +21,36 @@ if(NOT TARGET VecGeom::vgdml)
 endif()
 
 # NCrystal
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/ncrystal/install/")
 message(STATUS "NCrystal_DIR=$ENV{NCrystal_ext}/lib/cmake")
 set(NCrystal_DIR  "$ENV{NCrystal_ext}/lib/cmake")
 find_package(NCrystal 3.0.0 REQUIRED)
+message(STATUS "FOUND NCrystal: ${NCrystal_FOUND} ${NCrystal_DIR}")
 
-
+# MCPL
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mcpl/install/")
+find_package(MCPL REQUIRED)
+message(STATUS "FOUND MCPL: ${MCPL_FOUND} ${MCPL_DIR}")
 
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+# set(Python_ROOT_DIR ${CMAKE_SOURCE_DIR}/cinemavirenv/bin/python)
+set(Python_FIND_STRATEGY LOCATION)
+
 add_subdirectory(src/cxx)
-add_subdirectory(bin)
 
 #Test
 enable_testing()
-add_subdirectory(src/cxxtests)
 
+set(Python_FIND_STRATEGY LOCATION)
+set(Python_ROOT_DIR ${PROJECT_SOURCE_DIR}/cinemavirenv/bin/python)
 find_package(Python REQUIRED COMPONENTS Interpreter)
 
 file(GLOB TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontests/*.py")
 foreach(TS ${TESTFILES})
+	message(STATUS "Running ${Python_EXECUTABLE} ${TS}")
 	get_filename_component(EXCNAME  ${TS}  NAME_WE)
 	add_test (NAME python-${EXCNAME}
 	  COMMAND ${Python_EXECUTABLE} ${TS}

@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -19,10 +19,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTHist2D.hh"
+#include "PTMath.hh"
+#include "PTMCPLBinaryWrite.hh"
+#include <typeinfo>
+#include "PTUtils.hh"
+#include "PTMCPLBinaryWrite.hh"
 
-Prompt::Hist2D::Hist2D(double xmin, double xmax, unsigned xnbins,
+Prompt::Hist2D::Hist2D(const std::string &name, double xmin, double xmax, unsigned xnbins,
                        double ymin, double ymax, unsigned ynbins)
-:HistBase(xnbins*ynbins), m_xbinfactor(xnbins/(xmax-xmin)),
+:HistBase(name, xnbins*ynbins), m_xbinfactor(xnbins/(xmax-xmin)),
 m_ybinfactor(ynbins/(ymax-ymin))
 {
   m_xmin=xmin, m_xmax=xmax, m_xnbins=xnbins;
@@ -51,54 +56,74 @@ void Prompt::Hist2D::operator+=(const Hist2D& hist)
     m_data[i]+=data[i];
 }
 
-#include<iostream>
-#include<fstream>
+std::vector<double> Prompt::Hist2D::getXEdge() const
+{
+  return linspace(m_xmin, m_xmax, m_xnbins+1);
+}
+
+std::vector<double> Prompt::Hist2D::getYEdge() const
+{
+  return linspace(m_ymin, m_ymax, m_ynbins+1);
+}
+
+
 void Prompt::Hist2D::save(const std::string &filename) const
 {
-  std::cout << "total count " << getTotalHist() << std::endl;
-  std::ofstream ofs;
-  ofs.open(filename, std::ios::out);
+  //fixme: filename should be removed
+  std::cout << "saving 2d\n";
+  auto bwr = new MCPLBinaryWrite(m_mcpl_file_name);
+  double intergral(getTotalWeight()), overflow(getOverflow()), underflow(getUnderflow());
+  bwr->addHeaderComment(m_name);
+  bwr->addHeaderComment(getTypeName(typeid(this)).c_str());
+  bwr->addHeaderComment(("Total hit: " + std::to_string(getTotalHit())).c_str());
 
-  for(uint32_t i=0;i<m_xnbins;i++)
-  {
-    for(uint32_t j=0;j<m_ynbins;j++)
-    {
-      ofs << m_data[i*m_ynbins + j] << " ";
-    }
-    ofs << "\n";
-  }
-  ofs.close();
+  bwr->addHeaderComment(("Integral weight: " + std::to_string(intergral )).c_str());
+  bwr->addHeaderComment(("Accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
+  bwr->addHeaderComment(("Overflow weight: " + std::to_string(overflow )).c_str());
+  bwr->addHeaderComment(("Underflow weight: " + std::to_string(underflow)).c_str());
 
-  ofs.open(filename+"_hit", std::ios::out);
+  bwr->addHeaderData("Overflow", &overflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("Underflow", &underflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
 
-  for(uint32_t i=0;i<m_xnbins;i++)
-  {
-    for(uint32_t j=0;j<m_ynbins;j++)
-    {
-      ofs << m_hit[i*m_ynbins + j] << " ";
-    }
-    ofs << "\n";
-  }
-  ofs.close();
+  bwr->addHeaderData("content", m_data.data(), {m_xnbins, m_ynbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("hit", m_hit.data(), {m_xnbins, m_ynbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("xedge", getXEdge().data(), {m_xnbins+1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("yedge", getYEdge().data(), {m_ynbins+1}, Prompt::NumpyWriter::NPDataType::f8);
 
-  char buffer [1000];
+  char buffer [2000];
   //fixme: add xy to dimansion
   int n =sprintf (buffer,
-    "import numpy as np\n"
+    "from Cinema.Prompt import PromptFileReader\n"
     "import matplotlib.pyplot as plt\n"
-    "import matplotlib.colors as colors\n"
-    "data=np.loadtxt('%s')\n"
+    "import matplotlib.colors as colors\nimport numpy as np\n"
+    "import argparse\nparser = argparse.ArgumentParser()\n"
+    "parser.add_argument('-l', '--linear', action='store_true', dest='logscale', help='colour bar in log scale')\n"
+    "f = PromptFileReader('%s.mcpl.gz')\n"
+    "args=parser.parse_args()\n"
+    "data=f.getData('content')\n"
+    "count=f.getData('hit')\n"
+    "x=f.getData('xedge'); y=f.getData('yedge'); X, Y = np.meshgrid(x, y)\n"
     "fig=plt.figure()\n"
     "ax = fig.add_subplot(111)\n"
-    "pcm = ax.pcolormesh(data.T, cmap=plt.cm.jet,shading='auto')\n"
-    "#pcm = ax.pcolormesh(data.T, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=data.max()*1e-10, vmax=data.max()), shading='auto')\n"
+    "if args.logscale:\n"
+    "  pcm = ax.pcolormesh(X, Y, data.T, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=data.max()*1e-10, vmax=data.max()), shading='auto')\n"
+    "else:\n"
+    "  pcm = ax.pcolormesh(X, Y, data.T, cmap=plt.cm.jet,shading='auto')\n"
     "fig.colorbar(pcm, ax=ax)\n"
-    "count=np.loadtxt('%s')\n"
-    "count=count.sum()-count.max()\n"
+    "count=count.sum()\n"
     "integral= data.sum()\n"
-    "plt.title(f'Integral {integral}, count {count}')\n"
-    "plt.show()\n", filename.c_str(), (filename+"_hit").c_str());
+    "plt.title(f'%s, integral {integral}, count {count}')\n"
+    "plt.figure()\n"
+    "plt.subplot(211)\n"
+    "plt.plot(x[:-1]+np.diff(x)*0.5, data.sum(axis=1))\n"
+    "plt.xlabel('integral x')\n"
+    "plt.title('%s')\n"
+    "plt.subplot(212)\n"
+    "plt.plot(y[:-1]+np.diff(y)*0.5, data.sum(axis=0))\n"
+    "plt.xlabel('integral y')\n"
+    "plt.show()\n", bwr->getFileName().c_str(), bwr->getFileName().c_str(), bwr->getFileName().c_str());
 
+  delete bwr;
   std::ofstream outfile(filename+"_view.py");
   outfile << buffer;
   outfile.close();
@@ -113,7 +138,6 @@ void Prompt::Hist2D::fill(double xval, double yval)
 
 void Prompt::Hist2D::fill(double xval, double yval, double w)
 {
-  std::lock_guard<std::mutex> guard(m_hist_mutex);
   fill_unguard(xval, yval, w);
 }
 

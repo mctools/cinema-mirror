@@ -53,8 +53,9 @@ class Pseudo():
                 {vdwOrmag}
              /
              &electrons
+                electron_maxstep=1000
                 conv_thr = 1.0d-12
-                mixing_beta = 0.7
+                mixing_beta = 0.3
                 mixing_mode = 'plain'
                 diagonalization= 'david'
             /
@@ -90,8 +91,9 @@ class Pseudo():
                 {vdwOrmag}
              /
              &electrons
+                electron_maxstep=1000
                 conv_thr = 1.0d-12
-                mixing_beta = 0.7
+                mixing_beta = 0.3
                 mixing_mode = 'plain'
                 diagonalization= 'david'
              /

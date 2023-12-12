@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -21,8 +21,8 @@
 #include "PTScorerTOF.hh"
 
 
-Prompt::ScorerTOF::ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins)
-:Scorer1D("ScorerTOF_"+name, Scorer::ENTRY,std::make_unique<Hist1D>(xmin, xmax, nxbins))
+Prompt::ScorerTOF::ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins, ScorerType stype)
+:Scorer1D("ScorerTOF_"+name, stype,std::make_unique<Hist1D>("ScorerTOF_"+name, xmin, xmax, nxbins))
 {}
 
 Prompt::ScorerTOF::~ScorerTOF() {}
@@ -31,4 +31,3 @@ void Prompt::ScorerTOF::score(Prompt::Particle &particle)
 {
   m_hist->fill(particle.getTime(), particle.getWeight());
 }
-

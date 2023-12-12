@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -20,19 +20,25 @@
 
 #include "PTHist1D.hh"
 #include "PTMath.hh"
+#include "PTMCPLBinaryWrite.hh"
+#include <typeinfo>
+#include "PTUtils.hh"
+#include "PTMCPLBinaryWrite.hh"
 
-Prompt::Hist1D::Hist1D(double xmin, double xmax, unsigned nbins, bool linear)
-:HistBase(nbins), m_binfactor(0), m_linear(linear), m_logxmin(0)
+Prompt::Hist1D::Hist1D(const std::string &name, double xmin, double xmax, unsigned nbins, bool linear)
+:HistBase(name, nbins), m_binfactor(0), m_linear(linear), m_logxmin(0)
 {
   m_xmin=xmin, m_xmax=xmax, m_nbins=nbins;
+  if(nbins==0)
+    PROMPT_THROW(BadInput, "bin size is zero");
   if(linear) {
     if(xmin==xmax)
-      PROMPT_THROW(BadInput, "xmin and xman can not be equal");
+      PROMPT_THROW(BadInput, "xmin and xmax can not be equal");
     m_binfactor=nbins/(xmax-xmin);
   }
   else {
     if(xmin<=0 || xmax<=0)
-      PROMPT_THROW(BadInput, "xmin and xman must be positive");
+      PROMPT_THROW(BadInput, "xmin and xmax must be positive");
     m_binfactor=nbins/(log10(xmax)-log10(xmin));
     m_logxmin=log10(m_xmin);
   }
@@ -50,32 +56,48 @@ std::vector<double> Prompt::Hist1D::getEdge() const
     return logspace(log10(m_xmin), log10(m_xmax), m_nbins+1);
 }
 
-#include "PTRandCanonical.hh"
-
 void Prompt::Hist1D::save(const std::string &filename) const
 {
-  auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
-  NumpyWriter nvt;
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_content.npy", m_data, NumpyWriter::data_type::f8,
-                   std::vector<uint64_t>{m_nbins});
+  //fixme: filename should be removed
+  auto bwr = new MCPLBinaryWrite(m_mcpl_file_name);
 
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_hit.npy", m_hit, NumpyWriter::data_type::f8,
-                  std::vector<uint64_t>{m_nbins});
+  double intergral(getTotalWeight()), overflow(getOverflow()), underflow(getUnderflow());
+  bwr->addHeaderComment(m_name);
+  bwr->addHeaderComment(getTypeName(typeid(this)).c_str());
+  bwr->addHeaderComment(("Total hit: " + std::to_string(getTotalHit())).c_str());
 
-  nvt.writeNumpyFile(filename+"_seed"+std::to_string(seed)+"_edge.npy", getEdge(), NumpyWriter::data_type::f8,
-                   std::vector<uint64_t>{m_nbins+1});
+  bwr->addHeaderComment(("Integral weight: " + std::to_string(intergral )).c_str());
+  bwr->addHeaderComment(("Accumulated weight: " + std::to_string(intergral-overflow-underflow)).c_str());
+  bwr->addHeaderComment(("Overflow weight: " + std::to_string(overflow )).c_str());
+  bwr->addHeaderComment(("Underflow weight: " + std::to_string(underflow)).c_str());
 
-  char buffer [500];
+  bwr->addHeaderData("overflow", &overflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("underflow", &underflow, {1}, Prompt::NumpyWriter::NPDataType::f8);
+
+  bwr->addHeaderData("content", m_data.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("hit", m_hit.data(), {m_nbins}, Prompt::NumpyWriter::NPDataType::f8);
+  bwr->addHeaderData("edge", getEdge().data(), {m_nbins+1}, Prompt::NumpyWriter::NPDataType::f8);
+
+  char buffer [1000];
   int n =sprintf (buffer,
-    "import numpy as np\n"
+    "import numpy as np\nfrom Cinema.Prompt import PromptFileReader\n"
     "import matplotlib.pyplot as plt\n"
-    "x=np.load('%s_seed%ld_edge.npy')\n"
-    "y=np.load('%s_seed%ld_content.npy')\n"
-    "plt.%s(x[:-1],y/np.diff(x), label=f'integral={y.sum()}')\n"
+    "import argparse\n"
+    "parser = argparse.ArgumentParser()\n"
+    "parser.add_argument('-l', '--linear', action='store_true', dest='logscale', help='colour bar in log scale')\n"
+    "args=parser.parse_args()\n"
+    "f = PromptFileReader('%s.mcpl.gz')\n"
+    "x=f.getData('edge')\n"
+    "y=f.getData('content')\n"
+    "if args.logscale:\n"
+    "  plt.semilogy(x[:-1],y/np.diff(x), label=f'total weight={y.sum()}')\n"
+    "else:\n"
+    "  plt.plot(x[:-1],y/np.diff(x), label=f'total weight={y.sum()}')\n"
     "plt.grid()\n"
     "plt.legend()\n"
-    "plt.show()\n", filename.c_str(), seed, filename.c_str(), seed, m_linear? "plot":"loglog");
+    "plt.show()\n", bwr->getFileName().c_str());
 
+  delete bwr;
   std::ofstream outfile(filename+"_view.py");
   outfile << buffer;
   outfile.close();

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<gdml>
+
+    <userinfo>
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=2.0;position=0,0,-250;direction=0,0,1" />
+    </userinfo>
+
+    <define>
+        <position name="PosChild" unit="mm" x="0.0" y="0.0" z="0.0" />
+        <rotation name="RotChild" unit="deg" y="0.0" />
+    </define>
+
+    <materials>
+        <material name="Vacuum">
+          <atom value="vacuum.ncmat"/>
+        </material>
+    </materials>
+
+    <solids>
+        <box lunit="mm" name="Mother" x="600.0" y="600.0" z="600.0" />
+    </solids>
+
+    <structure>
+        <volume name="VolMother">
+            <solidref ref="Mother" />
+            <materialref ref="Vacuum" />
+            <physvol>
+                <file name="child.gdml"/>
+                <positionref ref="PosChild"/>
+                <rotationref ref="RotChild"/>
+            </physvol>
+        </volume>
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="VolMother" />
+    </setup>
+</gdml>

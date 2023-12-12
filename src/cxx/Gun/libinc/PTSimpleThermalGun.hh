@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -30,7 +30,7 @@ namespace Prompt {
   class SimpleThermalGun : public PrimaryGun {
   public:
     SimpleThermalGun(const Particle &aParticle, double ekin=0.0253, const Vector &pos=Vector{0.,0.,-12000.}, const Vector &dir=Vector{0.,0.,1.} )
-    : PrimaryGun(aParticle), m_ekin(ekin), m_pos(pos), m_dir(dir) {};
+    : PrimaryGun(aParticle), m_ekin(ekin), m_pos(pos), m_dir(dir.unit()) {};
     virtual ~SimpleThermalGun() {};
     virtual void sampleEnergy(double &ekin)
     {
@@ -39,11 +39,7 @@ namespace Prompt {
         double cosr = cos(M_PI*0.5*m_rng.generate());
         ekin = 0.0253*(-log(m_rng.generate())-log(m_rng.generate())*cosr*cosr);
       }
-      else if(m_ekin<0)
-      {
-        ekin = 0.0253*m_rng.generate();
-      }
-      else
+      else if(m_ekin>0)
       {
         ekin = m_ekin;
       }

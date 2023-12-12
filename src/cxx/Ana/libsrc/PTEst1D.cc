@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -21,8 +21,8 @@
 #include "PTEst1D.hh"
 #include "PTMath.hh"
 
-Prompt::Est1D::Est1D(double xmin, double xmax, unsigned nbins, bool linear)
-:Hist1D(xmin, xmax, nbins, linear)
+Prompt::Est1D::Est1D(const std::string &name, double xmin, double xmax, unsigned nbins, bool linear)
+:Hist1D(name, xmin, xmax, nbins, linear)
 {
 }
 

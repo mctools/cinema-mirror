@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -20,7 +20,7 @@
 
 #include "PTMeshHelper.hh"
 #include "PTGeoTree.hh"
-#include "PTGeoManager.hh"
+#include "PTGeoLoader.hh"
 
 #include <VecGeom/base/Config.h>
 #include <VecGeom/volumes/SolidMesh.h>
@@ -50,6 +50,23 @@ void* pt_Transformation3D_newfromID(int id)
   return static_cast<void *>(p);
 }
 
+void* pt_Transformation3D_newfromdata(double x, double y, double z,
+                              double phi, double theta, double psi,  
+                              double sx, double sy, double sz)
+{
+  auto obj = new vecgeom::Transformation3D(x, y, z, phi, theta, psi, sx, sy, sz);
+  return static_cast<void *>(obj);    
+}   
+
+
+void pt_Transformlation3D_setRotation(void *obj, double r0, double r1, double r2, double r3,
+                                      double r4, double r5, double r6, double r7, double r8)
+{
+  
+  static_cast<vecgeom::Transformation3D *>(obj)->SetRotation(r0,r1,r2,r3,r4,r5,r6,r7,r8);
+  static_cast<vecgeom::Transformation3D *>(obj)->SetProperties(); // update the internal flags 
+}
+
 void pt_Transformation3D_delete(void *trfm3Dobj)
 {
   delete static_cast<vecgeom::Transformation3D *>(trfm3Dobj);
@@ -67,12 +84,10 @@ void pt_Transformation3D_transform(void *obj, size_t numPt, double *in, double *
   auto mat = static_cast<vecgeom::Transformation3D *>(obj);
   for(size_t i=0;i<numPt;i++)
   {
-    vecgeom::Vector3D<Precision> vert(in[i*3], in[i*3+1], in[i*3+2]);
-    auto vertTransformed = mat->Transform(vert);
-    // auto vertTransformed = mat->InverseTransform(vert);
-    out[i*3] = vertTransformed[0];
-    out[i*3+1] = vertTransformed[1];
-    out[i*3+2] = vertTransformed[2];
+    // vecgeom::Vector3D<Precision> vert(in[i*3], in[i*3+1], in[i*3+2]);
+    auto vert = *reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(in+i*3);
+    auto vertTransformed = *reinterpret_cast<vecgeom::Vector3D<vecgeom::Precision>*>(out+i*3);
+    vertTransformed = mat->Transform(vert);
   }
 }
 
@@ -135,14 +150,14 @@ void pt_getLogVolumeInfo(size_t pvolID, char* cp)
 {
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
   const auto node = tree.m_fullTreeNode[pvolID];
-  auto &geoManager = Prompt::Singleton<Prompt::GeoManager>::getInstance();
-  std::string info = "Material cfgstr: ";
-  info += geoManager.getLogicalVolumeMaterialName(node->logical) + ".";
+  auto &resman = Prompt::Singleton<Prompt::ResourceManager>::getInstance();
+  std::string info = "Material : ";
+  info += resman.getLogicalVolumeMaterialName(node->logical);
 
-  auto scorinfo = geoManager.getLogicalVolumeScorerName(node->logical);
+  auto scorinfo = resman.getLogicalVolumeScorerName(node->logical);
   if(!scorinfo.empty())
   {
-    info += " Associated scorer: ";
+    info += "\n Associated scorer: ";
     info += scorinfo;
   }
   sprintf (cp, "%s ", info.c_str());
@@ -151,7 +166,7 @@ void pt_getLogVolumeInfo(size_t pvolID, char* cp)
 //size of points: 3*n
 //size of faces: n
 //size of NumPolygonPoints: m
-void pt_getMesh(size_t pvolID, size_t nSegments, double *points, size_t *NumPolygonPoints, size_t *faces)
+void pt_getMesh(size_t pvolID, size_t nSegments, float *points, size_t *NumPolygonPoints, size_t *faces)
 {
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
   const auto node = tree.m_fullTreeNode[pvolID];

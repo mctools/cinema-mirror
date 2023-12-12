@@ -14,9 +14,7 @@ class CellBase():
         else:
             self.lattice = np.zeros([3, 3])
             self.abc = None
-        self.position=[]
-        self.num=[]
-        self.element=[]
+
 
     def estSupercellDim(self, size=10.):
         res = (size//self.abc).astype(int)
@@ -30,8 +28,8 @@ class CellBase():
             res[np.where(res%2==0)]+=1
         return res
 
-    def estMesh(self, size=200.):
-        res = (size//self.abc).astype(int)
+    def estPhonMesh(self, size=200.):
+        res = (size/(2*np.pi/self.abc)/len(self.num)).astype(int)
         res[np.where(res==0)]=1
         return res
 
@@ -44,12 +42,37 @@ class CellBase():
         return res
 
     def getCell(self):
-        return (self.lattice, self.position, self.num)
+        return (self.lattice, self.reduced_pos, self.num)
+    
+    def getAtomSymbols(self):
+        raise NotImplementedError()
 
+
+    def getAtomInfo(self):
+        symb = self.getAtomSymbols()
+
+        mass=[]
+        bc=[] #bound coherent scattering length
+        num=[]
+
+        for ele in symb:
+            m, b, n =getAtomMassBC(ele)
+            mass.append(m)
+            bc.append(b)
+            num.append(n)
+
+        return np.array(mass), np.array(bc), np.array(num)
+
+    
 
 class QeXmlCell(CellBase):
     def __init__(self, filename, au2Aa=0.529177248994098):
         super().__init__()
+        self.reduced_pos=[]
+        self.num=[]
+        self.element=[]
+        self.lattice=np.zeros((3,3))
+
         def internal(subtree):
             if list(subtree):
                 for child in list(subtree):
@@ -58,7 +81,7 @@ class QeXmlCell(CellBase):
                         atominfo=getAtomMassBC(ele)
                         self.element.append(ele)
                         self.num.append(atominfo[2])
-                        self.position.append(np.fromstring(child.text, sep=' '))
+                        self.reduced_pos.append(np.fromstring(child.text, sep=' '))
                     elif child.tag=='a1':
                         self.lattice[0] = np.fromstring(child.text, sep=' ')*au2Aa
                     elif child.tag=='a2':
@@ -72,15 +95,27 @@ class QeXmlCell(CellBase):
         if len(info)!=1:
             raise RuntimeError('./output/atomic_structure is not unique')
         internal(info[0])
+        
         self.abc = np.linalg.norm(self.lattice, axis=1)
         invlatt = np.linalg.inv(self.lattice).T
-        self.position = np.array(self.position)*au2Aa
-        for i in range(self.position.shape[0]):
-            self.position[i] = invlatt.dot(self.position[i])
+        self.reduced_pos = np.array(self.reduced_pos)*au2Aa # it is in the abs unit
+        for i in range(self.reduced_pos.shape[0]):
+            self.reduced_pos[i] = invlatt.dot(self.reduced_pos[i])
 
         self.totmagn = float( (root.findall('./output/magnetization/total')[0]).text )
-        print(self.position, self.element)
+        self.lattice_reci = np.linalg.inv(self.lattice.T)*2*np.pi
 
+        # print(self.lattice_reci, self.element)
+
+    def qreduced2abs(self, r):
+        return r.dot(self.lattice_reci)
+       
+    def qabs2reduced(self, q):
+        fac = 1./(2*np.pi)
+        return q.dot(self.lattice.T)*fac
+    
+    def getAtomSymbols(self):
+        return self.element
 
 
 
@@ -94,6 +129,10 @@ class MPCell(CellBase):
             with open(filename, 'r') as fp:
                 mat_dict = json.load(fp)
 
+        self.reduced_pos=[]
+        self.num=[]
+        self.element=[]
+
         self.totMagn = mat_dict.get('total_magnetization')
         self.spacegroupnum =  mat_dict['spacegroup']['number']
         structure = mat_dict['structure']
@@ -105,7 +144,7 @@ class MPCell(CellBase):
             if len(site['species'])!=1:
                 raise RuntimeError('occu is not unity')
             # self.sites[i]={site['species'][0]['element']: site['abc'] }
-            self.position.append(site['abc'])
+            self.reduced_pos.append(site['abc'])
             elename = site['species'][0]['element']
             atominfo=getAtomMassBC(elename)
             self.element.append(elename)

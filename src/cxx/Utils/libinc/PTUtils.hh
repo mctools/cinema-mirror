@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -22,11 +22,18 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
+#include <typeinfo> //getTypeName
 
 namespace Prompt {
   std::vector<std::string> split(const std::string& text, char delimiter);
   Vector string2vec(const std::string& text, char delimiter=',');
   double ptstod(const std::string& text);
+  int ptstoi(const std::string& text);
+  int ptstou(const std::string& text);
+  unsigned crc32(const char * buffer , int length);
+  unsigned crc32(const std::string& str);
+  std::string getTypeName(const std::type_info& ti);
+
 }
 
 #endif

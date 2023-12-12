@@ -20,24 +20,17 @@ class MeshCell(Hdf5Powder):
                 mass.append(m)
                 bc.append(b)
                 pos.append(np.array(v))
-        pos=np.array(pos)
+        reduced_pos=np.array(pos)
         mass=np.array(mass)
         bc=np.array(bc)
-        super().__init__(lattice, mass, pos, bc, temperature, h5FileName )
+        super().__init__(lattice, mass, reduced_pos, bc, temperature, h5FileName )
 
 
 class MeshQE(Hdf5Powder):
-    def __init__(self, h5FileName, qexml, temperature):
+    def __init__(self, h5FileName, qexml, temperature, phonIdx=None):
         qecell = QeXmlCell(qexml)
         self.name=qexml
         lattice=qecell.lattice
-        pos = qecell.position
-        mass=[]
-        bc=[] #bound coherent scattering length
-        for ele in qecell.element:
-            m, b, _ =getAtomMassBC(ele)
-            mass.append(m)
-            bc.append(b)
-        mass=np.array(mass)
-        bc=np.array(bc)
-        super().__init__(lattice, mass, pos, bc, temperature, h5FileName )
+        reduced_pos = qecell.reduced_pos
+        mass, bc, _ = qecell.getAtomInfo()
+        super().__init__(lattice, mass, reduced_pos, bc, temperature, h5FileName, phonIdx)

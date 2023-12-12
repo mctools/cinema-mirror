@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -19,6 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTPython.hh"
+#include "PTHistBase.hh"
 #include "PTHist1D.hh"
 #include "PTHist2D.hh"
 #include "PTEst1D.hh"
@@ -27,9 +28,104 @@
 namespace pt = Prompt;
 
 
+unsigned pt_HistBase_dimension(void* obj)
+{
+  return static_cast<pt::HistBase *>(obj)->dimension();
+}
+
+void pt_HistBase_merge(void* obj, void* obj2)
+{
+  auto hist1 = static_cast<pt::HistBase*>(obj);
+  hist1->merge(*static_cast<pt::HistBase*>(obj2));
+}
+
+void pt_HistBase_setWeight(void *obj, double *data, size_t n)
+{
+  auto hist = static_cast<pt::HistBase*>(obj);
+  hist->setWeight(data, n);
+}
+
+void pt_HistBase_setHit(void *obj, double *data, size_t n)
+{
+  auto hist = static_cast<pt::HistBase*>(obj);
+  hist->setHit(data, n);
+}
+
+double pt_HistBase_getXMin(void* obj)
+{
+  return static_cast<pt::HistBase*>(obj)->getXMin();
+}
+
+double pt_HistBase_getXMax(void* obj)
+{
+  return static_cast<pt::HistBase*>(obj)->getXMax();
+}
+
+double pt_HistBase_getTotalWeight(void* obj)
+{
+  return static_cast<pt::HistBase*>(obj)->getTotalWeight();
+}
+
+double pt_HistBase_getAccWeight(void* obj)
+{
+  return static_cast<pt::HistBase*>(obj)->getAccWeight();
+}
+
+double pt_HistBase_getOverflow(void* obj)
+{
+  return static_cast<pt::HistBase*>(obj)->getOverflow();
+}
+
+double pt_HistBase_getUnderflow(void* obj)
+{
+  return static_cast<pt::HistBase*>(obj)->getUnderflow();
+}
+
+double pt_HistBase_getTotalHit(void* obj)
+{
+  return static_cast<pt::HistBase*>(obj)->getTotalHit();
+}
+
+size_t pt_HistBase_getDataSize(void* obj)
+{
+  return static_cast<pt::HistBase*>(obj)->getDataSize();
+}
+void pt_HistBase_scale(void* obj, double scale)
+{
+  static_cast<pt::HistBase*>(obj)->scale(scale);
+}
+
+void pt_HistBase_reset(void* obj)
+{
+  static_cast<pt::HistBase*>(obj)->reset();
+}
+
+void pt_HistBase_getRaw(void* obj, double *data)
+{
+  auto cdata = static_cast<pt::Hist1D *>(obj)->getRaw();
+  for(size_t i=0;i<cdata.size();i++)
+  {
+    data[i] = cdata[i];
+  }
+}
+
+void pt_HistBase_getHit(void* obj, double* data)
+{
+  auto cdata = static_cast<pt::Hist1D *>(obj)->getHit();
+  for(size_t i=0;i<cdata.size();i++)
+  {
+    data[i] = cdata[i];
+  }
+}
+const char* pt_HistBase_getName(void* obj)
+{
+  return static_cast<pt::Hist1D *>(obj)->getName().c_str();
+}
+
+
 void* pt_Hist1D_new(double xmin, double xmax, unsigned nbins, bool linear)
 {
-    return static_cast<void *>(new pt::Hist1D(xmin, xmax, nbins, linear));
+    return static_cast<void *>(new pt::Hist1D("pt_Hist1D_new", xmin, xmax, nbins, linear));
 }
 
 void pt_Hist1D_getEdge(void* obj, double* edge)
@@ -44,6 +140,7 @@ void pt_Hist1D_getEdge(void* obj, double* edge)
 void pt_Hist1D_getWeight(void* obj, double* w)
 {
   auto weight = static_cast<pt::Hist1D *>(obj)->getRaw();
+  // w = weight.data();
   for(size_t i=0;i<weight.size();i++)
   {
     w[i] = weight[i];
@@ -57,6 +154,12 @@ void pt_Hist1D_getHit(void* obj, double* h)
   {
     h[i] = hit[i];
   }
+}
+
+
+unsigned pt_Hist1D_getNumBin(void* obj)
+{
+  return static_cast<pt::Hist1D *>(obj)->getDataSize();
 }
 
 
@@ -77,11 +180,11 @@ void pt_Hist1D_delete(void* obj)
 }
 
 
-// Prompt::Hist2D
+// pt::Hist2D
 void* pt_Hist2D_new(double xmin, double xmax, unsigned nxbins,
                     double ymin, double ymax, unsigned nybins)
 {
-  return static_cast<void *>(new pt::Hist2D(xmin, xmax, nxbins,
+  return static_cast<void *>(new pt::Hist2D("pt_Hist2D_new", xmin, xmax, nxbins,
                                             ymin, ymax, nybins));
 }
 
@@ -101,8 +204,28 @@ void pt_Hist2D_getWeight(void* obj, double* w)
 
 void pt_Hist2D_merge(void* obj, void* obj2)
 {
-  auto hist1 = static_cast<Prompt::Hist2D*>(obj);
-  hist1->merge(*static_cast<Prompt::HistBase*>(obj2));
+  auto hist1 = static_cast<pt::Hist2D*>(obj);
+  hist1->merge(*static_cast<pt::HistBase*>(obj2));
+}
+
+double pt_Hist2D_getYMin(void* obj)
+{
+  return static_cast<pt::Hist2D*>(obj)->getYMin();
+}
+
+double pt_Hist2D_getYMax(void* obj)
+{
+  return static_cast<pt::Hist2D*>(obj)->getYMax();
+}
+
+unsigned  pt_Hist2D_getNBinX(void* obj)
+{
+  return static_cast<pt::Hist2D*>(obj)->getNBinX();
+}
+
+unsigned  pt_Hist2D_getNBinY(void* obj)
+{
+  return static_cast<pt::Hist2D*>(obj)->getNBinY();
 }
 
 void pt_Hist2D_fill(void* obj, double xval, double yval, double weight)
@@ -128,7 +251,7 @@ void pt_Hist2D_getHit(void* obj, double* h)
 
 void pt_Hist2D_getDensity(void* obj, double* d)
 {
-  auto nbin = static_cast<pt::Hist2D *>(obj)->getNBin();
+  auto nbin = static_cast<pt::Hist2D *>(obj)->getDataSize();
   auto weight = static_cast<pt::Hist2D *>(obj)->getRaw();
   auto hit = static_cast<pt::Hist2D *>(obj)->getHit();
   for(size_t i=0;i<nbin;i++)
@@ -138,10 +261,10 @@ void pt_Hist2D_getDensity(void* obj, double* d)
   }
 }
 
-// Prompt::Hist1D
+// pt::Hist1D
 void* pt_Est1D_new(double xmin, double xmax, unsigned nbins, bool linear)
 {
-  return static_cast<void *>(new pt::Est1D(xmin, xmax, nbins, linear));
+  return static_cast<void *>(new pt::Est1D("pt_Est1D_new", xmin, xmax, nbins, linear));
 }
 
 void pt_Est1D_delete(void* obj)

@@ -47,6 +47,7 @@ parser.add_argument('-i', '--input', action='store', type=str, default='mp-13_Fe
 parser.add_argument('-n', '--numcpu', action='store', type=int, default=lastGoodNumber(os.cpu_count()//2),
                     dest='numcpu', help='number of CPU')
 parser.add_argument('-r', '--rundft', action='store_true', dest='rundft', help='run DFT')
+parser.add_argument('-t', '--thermal', action='store_true', dest='thermal', help='calculate thermal displacement')
 parser.add_argument('-p', '--plotpdf', action='store_true', dest='plotpdf', help='generate pdf files')
 parser.add_argument('-m', '--mp-id', action='store', type=str, default=None,
                     dest='mpid', help='the Materials Project ID. This option will take precedence than --input. mp-149 for example.')
@@ -54,6 +55,7 @@ parser.add_argument('-c', '--mongo-url', action='store', type=str, default=None,
         dest='mongo_url', help='the MongoDB connection string. mongodb://user:pass@localhost:27017/ for example.')
 parser.add_argument('-s', '--use-spark', action='store_true', dest='use_spark', help='run in spark')
 parser.add_argument('-v', '--vdW', action='store_true', dest='vdW', help='consider Van Der Waals forces in DFT')
+parser.add_argument('-d', '--phonmeshdensity', action='store', dest='phonmeshdensity', type=float, default=100., help='Est phonon mesh density per atom per 1/Aa')
 
 args = parser.parse_args()
 inputfile=args.input
@@ -61,6 +63,9 @@ cores=args.numcpu
 rundft=args.rundft
 mpid = args.mpid
 vdW = args.vdW
+thermal = args.thermal
+phonmeshdensity = args.phonmeshdensity
+
 use_spark = args.use_spark
 mongo_url = args.mongo_url
 
@@ -144,7 +149,7 @@ relexed_cell = QeXmlCell('out_relax.xml')
 dim = relexed_cell.estSupercellDim()
 kpt = relexed_cell.estSupercellKpoint()
 cell = relexed_cell.getCell()
-mesh =  relexed_cell.estMesh()
+mesh =  relexed_cell.estPhonMesh(phonmeshdensity)
 
 logger.info(f'cell after relax {cell}, total magnetisation {relexed_cell.totmagn}')
 
@@ -177,19 +182,20 @@ if rundft and not os.path.isfile('FORCE_SETS'):
 #band
 pcor, label = getPath(path)
 logger.info(f'band {" ".join(map(str,pcor))}; {" ".join(map(str,label))}')
-if os.system(f'phonopy --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" --hdf5 --eigvecs {plotflag} -s'):
+if os.system(f'phonopy --fc-symmetry  --dim "{dim[0]} {dim[1]} {dim[2]}" --band="{" ".join(map(str,pcor))}" --band-labels="{" ".join(map(str,label))}" --hdf5 --eigvecs {plotflag} -s --writefc'):
     logger.info(f'band fail')
     raise IOError("band fail")
 
-#density of states
-if os.system(f'phonopy -v --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]} --pdos AUTO --mesh {mesh[0]} {mesh[1]} {mesh[2]}  --nowritemesh {plotflag} -s'):
-    logger.info(f'dos fail')
-    raise IOError("dos fail")
+#tdm
+if thermal:
+    if os.system(f'phonopy --fc-symmetry --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --tdm --mesh {mesh[0]} {mesh[1]} {mesh[2]}'):
+        logger.info(f'dos and mesh fail')
+        raise IOError("dos and mesh fail")
 
 #mesh
-if os.system(f'phonopy --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}  --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym'):
-    logger.info(f'mesh fail')
-    raise IOError("mesh fail")
+if os.system(f'phonopy --fc-symmetry --qe -c unitcell.in --dim {dim[0]} {dim[1]} {dim[2]}   --mesh {mesh[0]} {mesh[1]} {mesh[2]} --hdf5-compression gzip --hdf5  --eigvecs --nomeshsym --pdos AUTO  {plotflag} -s'):
+    logger.info(f'dos and mesh fail')
+    raise IOError("dos and mesh fail")
 
 logger.info(f'Calculation completed!')
 

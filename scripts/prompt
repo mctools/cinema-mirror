@@ -17,7 +17,8 @@ parser.add_argument('-n', '--neutronNum', action='store', type=float, default=10
                     dest='neutronNum', help='neutron number')
 parser.add_argument('-b', '--blacklist',  type=str, nargs='+', dest='blacklist', help='solid mesh blacklist to inform the geometry mesh loader ')
 parser.add_argument('-d', '--dumpmesh', action='store_true', dest='dumpmesh', help='dump mesh into disk')
-parser.add_argument('-m', '--nSegments', action='store', type=int, default=30,
+parser.add_argument('-m', '--mergemesh', action='store_true', dest='mergemesh', help='flag to merge mesh for efficient visualize')
+parser.add_argument('--nSeg', action='store', type=int, default=30,
                     dest='nSegments', help='number of verts a volume')
 
 
@@ -25,39 +26,32 @@ parser.add_argument('-m', '--nSegments', action='store', type=int, default=30,
 #TODO:
 # parser.add_argument('-l', '--geoLayer', action='store', type=float, default=0,
 #                     dest='geoLayer', help='geometry tree layers to be shown')
-#
-# parser.add_argument('-n', '--neutronNum', action='store', type=float, default=100,
-#                     dest='num', help='maxium number of verts to represent a volume')
-#
-# parser.add_argument('-n', '--neutronNum', action='store', type=float, default=100,
-#                     dest='neutronNum', help='emforce all defined physical volume to be placed into the world')
-
-# parser.add_argument('-n', '--neutronNum', action='store', type=float, default=100,
-#                     dest='neutronNum', help='print trajectores in the terminal')
 
 
 args=parser.parse_args()
 inputfile=args.gdml
 printTraj=False
-
-if not os.path.isfile(inputfile):
-    inputfile=findData(f'gdml/{inputfile}', '.')
-    if not os.path.isfile(inputfile):
-        raise IOError(f'The input GDML file {args.gdml} is not found.')
-
 rdseed=args.seed
 
 myLcher=Launcher()
 myLcher.setSeed(rdseed)
-myLcher.loadGeometry(inputfile)
+
+if inputfile=='':
+    myLcher.loadFakeGeoPhysics()
+else:
+    if not os.path.isfile(inputfile):
+        inputfile=findData(f'gdml/{inputfile}', '.')
+        if not os.path.isfile(inputfile):
+            raise IOError(f'The input GDML file {args.gdml} is not found.')
+    myLcher.loadGeometry(inputfile)
 
 if args.visualize is True:
-    v = Visualiser(args.blacklist, printWorld=False, nSegments=args.nSegments, dumpMesh=args.dumpmesh)
+    v = Visualiser(args.blacklist, printWorld=False, nSegments=args.nSegments, mergeMesh=args.mergemesh, dumpMesh=args.dumpmesh)
     for i in range(int(args.neutronNum)):
-        myLcher.go(1, recordTrj=True, timer=False)
+        myLcher.go(1, recordTrj=True, timer=False, save2Dis=False)
         trj = myLcher.getTrajectory()
         try:
-            v.addLine(trj)
+            v.addTrj(trj)
         except ValueError:
             print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
     v.show()

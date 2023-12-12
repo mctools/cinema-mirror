@@ -27,11 +27,14 @@ parser.add_argument('--instrument', action='store', type=str, default='',
                     dest='instrument', help='Pre-defined parameters for a given instrument, including "TFXA": 135deg,  32cm-1 ')
 args=parser.parse_args()
 
-#0.0363271
-#1cm-1=0.00012eV
-#TFXA 135deg 32cm-1 (0.00384eVe), in the book, Vibrational Spectroscopy with Neutrons With Applications in Chemistry, Biology, Materials Science and Catalysis (Philip C. H. Mitchell, Stewart F Parker etc.) page 101
-#TFXA 135deg 24cm-1 (0.00288eV), https://www.isis.stfc.ac.uk/Pages/TOSCA-History.aspx
-#according to ncrystal, graphite 002 d-spacing is 3.3555, as lamba=2*d*sin(135), lambda is 4.7454Aa(i.e. 3.63271meV). It is like the book is correct.
+# 0.0363271
+# 1cm-1=0.00012eV
+# TFXA 135deg 32cm-1 (0.00384eVe), in the book, Vibrational Spectroscopy with
+# Neutrons With Applications in Chemistry, Biology, Materials Science and Catalysis
+# (Philip C. H. Mitchell, Stewart F Parker etc.) page 101
+# TFXA 135deg 24cm-1 (0.00288eV), https://www.isis.stfc.ac.uk/Pages/TOSCA-History.aspx
+# according to ncrystal, graphite 002 d-spacing is 3.3555, as lamba=2*d*sin(135),
+# lambda is 4.7454Aa(i.e. 3.63271meV). It is like the book gives the right setting at then.
 
 scatAngle = args.scatAngle
 enout = args.enout

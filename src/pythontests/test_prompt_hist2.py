@@ -2,7 +2,7 @@
 
 from io import BytesIO
 import numpy as np
-from  Cinema.Prompt.Math.Hist import Hist2D, NumpyHist2D
+from  Cinema.Prompt.Histogram import Hist2D, NumpyHist2D
 
 import matplotlib.pyplot as plt
 
@@ -42,8 +42,8 @@ ref[1,1]=1
 ref[2,2]=1
 np.testing.assert_array_equal(hist1.getHit(), ref)
 
-import copy
-hist3=copy.copy(hist1)
-hist3.merge(hist2)
+# import copy
+# hist3=copy.copy(hist1)
+# hist3.merge(hist2)
 
 print('passed')

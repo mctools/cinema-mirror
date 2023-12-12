@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<gdml>
+    <userinfo>
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=SimpleThermalGun;energy=3.635;position=0,0,-10000;direction=0,0,1" />
+    </userinfo>
+
+    <materials>
+        <material name="Universe">
+          <atom value="freegas::H1/1e-26kgm3"/>
+        </material>
+
+        <material name="HeavyWater">
+          <atom value="physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=1.0;abs_bias=0"/>
+        </material>
+
+        <material name="HeavyWater_biased">
+          <atom value="physics=ncrystal;nccfg='LiquidHeavyWaterD2O_T293.6K.ncmat';scatter_bias=2.0;abs_bias=0"/>
+        </material>
+
+        <material name="He3_20bar">
+          <atom value="freegas::He/2.691217kgm3/He_is_He3"/>
+        </material>
+    </materials>
+
+    <solids>
+        <box  name="WorldSolid" x="5000.0" y="5000.0" z="20100.0" lunit="mm"/>
+        <sphere name="SampleSolid" rmin="0.0" rmax="12.0" deltaphi="360.0" startphi="0.0" deltatheta="180.0" starttheta="0.0" aunit="deg" lunit="mm"/>
+        <sphere name="DetectorSolid" rmin="2000" rmax="2001.0" deltaphi="360.0" startphi="0.0" deltatheta="179.9" starttheta="0.05" aunit="deg" lunit="mm"/>
+    </solids>
+
+    <structure>
+        <volume name="Sample">
+          <materialref ref="HeavyWater"/>
+          <!-- <materialref ref="HeavyWater_biased"/> -->
+          <solidref ref="SampleSolid"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=MultiScat;name=HW;min=1;max=8;linear=yes"/>
+        </volume>
+
+        <volume name="Detector">
+          <materialref ref="He3_20bar"/>
+          <solidref ref="DetectorSolid"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=-1;min=0.1;max=50.1;numbin=1000;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ1_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=1;min=0.1;max=50.1;numbin=1000;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ2_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=2;min=0.1;max=50.1;numbin=1000;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ3_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=3;min=0.1;max=50.1;numbin=1000;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ4_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=4;min=0.1;max=50.1;numbin=1000;linear=yes"/>
+          <auxiliary auxtype="Scorer" auxvalue="Scorer=DeltaMomentum;name=PofQ5_HW;sample_pos=0,0,0;beam_dir=0,0,1;dist=10000;ptstate=ENTRY;method=0;scatnum=5;min=0.1;max=50.1;numbin=1000;linear=yes"/>
+        </volume>
+
+        <volume name="World">
+            <solidref ref="WorldSolid" />
+            <materialref ref="Universe" />
+
+            <physvol>
+              <volumeref ref="Sample"/>
+            </physvol>
+
+            <physvol>
+              <volumeref ref="Detector"/>
+            </physvol>
+        </volume>
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="World" />
+    </setup>
+</gdml>

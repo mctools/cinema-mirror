@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -30,11 +30,13 @@ namespace Prompt {
   class PrimaryGun : public Particle {
   public:
     PrimaryGun(const Particle &aParticle)
-    : Particle(aParticle), m_rng(Singleton<SingletonPTRand>::getInstance()) {};
-    virtual ~PrimaryGun() {};
-    virtual Particle generate();
+    : Particle(aParticle), m_rng(Singleton<SingletonPTRand>::getInstance()) {  };
+    virtual ~PrimaryGun() = default;
+    virtual std::unique_ptr<Particle> generate();
     virtual void sampleEnergy(double &ekin) = 0;
     virtual void samplePosDir(Vector &pos, Vector &dir) = 0;
+    virtual double getParticleWeight() { return 1.;}
+    virtual double getTime() { return 0.;}
 
   protected:
     SingletonPTRand &m_rng;

@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -29,8 +29,8 @@
 namespace Prompt {
   class IsotropicGun : public SimpleThermalGun {
   public:
-    IsotropicGun(const Particle &aParticle, double ekin, const Vector &pos, const Vector &dir )
-    : SimpleThermalGun(aParticle, ekin, pos, dir), m_pos(pos) {};
+    IsotropicGun(const Particle &aParticle, double ekin, const Vector &pos )
+    : SimpleThermalGun(aParticle, ekin, pos), m_pos(pos) {};
     virtual ~IsotropicGun() {};
     virtual void samplePosDir(Vector &pos, Vector &dir) override
     {

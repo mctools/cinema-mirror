@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -22,6 +22,7 @@
 
 #include "PTCfgParser.hh"
 #include "PTSingleton.hh"
+#include "PTUtils.hh"
 
 namespace pt = Prompt;
 #include <typeinfo>
@@ -31,7 +32,7 @@ namespace pt = Prompt;
 TEST_CASE("CfgParser")
 {
   auto &ps = pt::Singleton<pt::CfgParser>::getInstance();
-  std::cout << ps.getTypeName(typeid(pt::CfgParser)) << std::endl;
-  auto cfg = ps.getScorerCfg("Scorer=NeutronSq; name=SofQ;sample_position=0,0,1;beam_direction=0,0,1;src_sample_dist=30000;ScorerType=ENTRY;linear=true");
+  std::cout << pt::getTypeName(typeid(pt::CfgParser)) << std::endl;
+  auto cfg = ps.parse("Scorer=DeltaMomentum; name=SofQ;sample_pos=0,0,1;beam_dir=0,0,1;dist=30000;ScorerType=ENTRY;linear=true");
   cfg.print();
 }

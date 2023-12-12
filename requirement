@@ -1,27 +1,34 @@
 #Tak
-numba==0.55.1
+# numba==0.55.1
 
 #required packages for Prompt visualisation
-pyvista==0.34.1
+mpi4py
+pyvista
 matplotlib
-
-#required packages for post-analysis
+mcpl
 scipy
 h5py
+# tetgen #tetrahedralise function in pyvista 
+# pymeshfix #reconstruct a manifold clean surface
+
 
 #PiXiu
-phonopy==2.14.0
-spglib==1.16.4
-seekpath==2.0.1
-periodictable
-requests
+# phonopy==2.14.0
+# spglib==1.16.4
+# seekpath==2.0.1
+# periodictable
+# requests
 
 #logging
-loguru
+# loguru
 
 # Crawler
 #mp-api
 
 # Database
-pymongo  #synchronous
+# pymongo  #synchronous
 #motor  #asynchronous
+
+# optimization
+# optuna
+# mysqlclient

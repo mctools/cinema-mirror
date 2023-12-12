@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<gdml>
+    <userinfo>
+      <!-- <auxiliary auxtype="PrimaryGun" auxvalue="MaxwellianGun;Neutron;300.;600, 600, -30000, 10, 10, -1000" /> -->
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=UniModeratorGun;mean_wl=1.5549;range_wl=0.05;src_w=40;src_h=40;
+      src_z=-1900;slit_w=40;slit_h=40;slit_z=0" />
+    </userinfo>
+
+    <define>
+        <position name="P_Pad_1"  unit="mm" x="-24.95745" />
+        <position name="P_Pad_2"  unit="mm" x="-22.58055" />
+        <position name="P_Pad_3"  unit="mm" x="-20.20365" />
+        <position name="P_Pad_4"  unit="mm" x="-17.82675" />
+        <position name="P_Pad_5"  unit="mm" x="-15.44985" />
+        <position name="P_Pad_6"  unit="mm" x="-13.07295" />
+        <position name="P_Pad_7"  unit="mm" x="-10.69605" />
+        <position name="P_Pad_8"  unit="mm" x="-8.31915" />
+        <position name="P_Pad_9"  unit="mm" x="-5.94225" />
+        <position name="P_Pad_10" unit="mm" x="-3.56535" />
+        <position name="P_Pad_11" unit="mm" x="-1.18845" />
+        <position name="P_Pad_12" unit="mm" x ="1.18845" />
+        <position name="P_Pad_13" unit="mm" x ="3.56535" />
+        <position name="P_Pad_14" unit="mm" x ="5.94225" />
+        <position name="P_Pad_15" unit="mm" x ="8.31915" />
+        <position name="P_Pad_16" unit="mm" x ="10.69605" />
+        <position name="P_Pad_17" unit="mm" x ="13.07295" />
+        <position name="P_Pad_18" unit="mm" x ="15.44985" />
+        <position name="P_Pad_19" unit="mm" x ="17.82675" />
+        <position name="P_Pad_20" unit="mm" x ="20.20365" />
+        <position name="P_Pad_21" unit="mm" x ="22.58055" />
+        <position name="P_Pad_22" unit="mm" x ="24.95745" />
+    </define>
+
+    <materials>
+        <material name="Ge">
+          <atom value="physics=ncrystal
+                      ;nccfg='Ge_PUS.ncmat;mos=0.267deg
+                      ;dir1=@crys_hkl:5,1,1@lab:0,0,1
+                      ;dir2=@crys_hkl:0,1,-1@lab:1,0,0';
+                       scatter_bias=1.0;abs_bias=1.0"/>
+        </material>
+
+        <material name="Universe">
+          <atom value="freegas::H1/1e-26kgm3"/>
+        </material>
+
+        <material name="Al2O3">
+          <atom value="physics=ncrystal;nccfg='Al2O3_sg167_Corundum.ncmat;density=0.5x';
+                       scatter_bias=5.0;abs_bias=5.0"/>
+        </material>
+
+        <material name="G4_He3">
+          <atom value="freegas::He/1.076487kgm3/He_is_He3"/>
+        </material>
+
+        <material  name="B4C">
+            <atom value="solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11"/>
+        </material>
+
+        <material name="Al">
+          <atom value="Al_sg225.ncmat"/>
+        </material>
+
+    </materials>
+
+    <solids>
+        <box lunit="mm" name="WorldBox" x="8000.0" y="10000.0" z="15000.0" />
+        <!-- <tube aunit="deg" deltaphi="360.0" lunit="mm" name="SampleCan" rmax="2.5" rmin="0.0" startphi="0.0" z="30.0" /> -->
+        <orb r="2.5" name="SampleCan"/>
+        <box lunit="mm" name="MonoBox" x="116" y="54" z="8" />
+        <box lunit="mm" name="solidPadBox" x="0.085" y="90" z="525.26" />
+        <box lunit="mm" name="alpha1Box" x="50" y="90" z="525.26" />
+        <box lunit="mm" name="multiplierBox" x="50" y="50" z="0.5" />
+        <box lunit="mm" name="TrdBox" x="8000" y="8000" z="1015" />
+        <trd lunit="mm" name="ColliTrd" x1="90" y1="25" x2="30" y2="25" z="1015" />
+        <box lunit="mm" name="StopBox" x="100" y="100" z="200" />
+        <sphere aunit="deg" lunit="mm" name="Sphere_Detector" rmin="1200" rmax="1201" deltaphi="360" startphi="0" deltatheta="140" starttheta="20" />
+    </solids>
+
+    <structure>
+        <volume name="LV_ColliTrd">
+            <solidref ref="ColliTrd"/>
+            <materialref ref="Universe"/>
+        </volume>
+
+        <volume name="LV_Trd_Colli">
+            <solidref ref="TrdBox"/>
+            <materialref ref="B4C"/>
+            <physvol name="LV_ColliTrd">
+                <volumeref ref="LV_ColliTrd"/>
+            </physvol>
+        </volume>
+
+        <volume name="padBox">
+            <solidref ref="solidPadBox"/>
+            <materialref ref="B4C"/>
+        </volume>
+
+        <volume name="LV_alpha1Colli">
+            <solidref ref="alpha1Box" />
+            <materialref  ref="Universe" />
+            <physvol name="LV_Pad_1">
+                <volumeref ref="padBox" />
+                <positionref ref="P_Pad_1" />
+            </physvol>
+            <physvol name="LV_Pad_2">
+                <volumeref ref="padBox" />
+                <positionref ref="P_Pad_2" />
+            </physvol>
+            <physvol name="LV_Pad_3">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_3" />
+            </physvol>
+            <physvol name="LV_Pad_4">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_4" />
+            </physvol>
+            <physvol name="LV_Pad_5">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_5" />
+            </physvol>
+            <physvol name="LV_Pad_6">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_6" />
+            </physvol>
+            <physvol name="LV_Pad_7">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_7" />
+            </physvol>
+            <physvol name="LV_Pad_8">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_8" />
+            </physvol>
+            <physvol name="LV_Pad_9">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_9" />
+            </physvol>
+            <physvol name="LV_Pad_10">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_10" />
+            </physvol>
+            <physvol name="LV_Pad_11">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_11" />
+            </physvol>
+            <physvol name="LV_Pad_12">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_12" />
+            </physvol>
+            <physvol name="LV_Pad_13">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_13" />
+            </physvol>
+            <physvol name="LV_Pad_14">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_14" />
+            </physvol>
+            <physvol name="LV_Pad_15">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_15" />
+            </physvol>
+            <physvol name="LV_Pad_16">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_16" />
+            </physvol>
+            <physvol name="LV_Pad_17">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_17" />
+            </physvol>
+            <physvol name="LV_Pad_18">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_18" />
+            </physvol>
+            <physvol name="LV_Pad_19">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_19" />
+            </physvol>
+            <physvol name="LV_Pad_20">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_20" />
+            </physvol>
+            <physvol name="LV_Pad_21">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_21" />
+            </physvol>
+            <physvol name="LV_Pad_22">
+                <volumeref ref="padBox" />
+                <positionref  ref="P_Pad_22" />
+            </physvol>
+        </volume>
+
+        <volume name="LV_Tube_SampleCan">
+            <solidref ref="SampleCan" />
+            <materialref ref="Al2O3" />
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=Split;name=split_hist;split=100"/>
+        </volume>
+
+        <volume name="LV_Box_Mono_L">
+            <solidref ref="MonoBox" />
+            <materialref ref="Ge" />
+        </volume>
+
+        <volume name="LV_Box_Mono_G">
+            <solidref ref="MonoBox" />
+            <materialref ref="Universe"/>
+
+            <physvol name="ModuleHe3_L">
+                <volumeref ref="LV_Box_Mono_L" />
+            </physvol>
+        </volume>
+
+        <volume name="LV_Detector">
+            <solidref ref="Sphere_Detector"/>
+            <materialref ref="Universe"/>
+            <auxiliary auxtype="Scorer" auxvalue="Scorer=Angular;name=ST_template;sample_pos=0,-2750,0;beam_dir=0,-1,0;
+                                                 dist=3650.;min=5.0;max=160;numbin=1000;ptstate=ENTRY"/>
+        </volume>
+
+        <volume name="worldVOL">
+            <solidref ref="WorldBox" />
+            <materialref ref="Universe" />
+
+            <physvol name="LV_Box_Mono">
+                <volumeref ref="LV_Box_Mono_G" />
+                <position name="P_Mono"  unit="mm" x="0" y="0" z="0" />
+                <rotation name="R_LV_Mono" unit="deg" x="45"  y="0" z="0"/>
+            </physvol>
+
+            <physvol name="Phys_alpha1Colli">
+                <volumeref ref="LV_alpha1Colli" />
+                <position  name="P_alphaColli" unit="mm" x="0" y="0" z="-290"/>
+            </physvol>
+
+            <physvol name="LV_Trd_Colli">
+                <volumeref ref="LV_Trd_Colli" />
+                <rotation name="R_LV_Colli" unit="deg" x="-90" y="0" z="0"/>
+                <position name="P_LV_Colli" unit="mm" x="0" y="-1007.5" z="0" />
+            </physvol>
+
+            <physvol name="LV_Tube_SampleCan">
+                <volumeref ref="LV_Tube_SampleCan" />
+                <position  name="P_SampleCan" unit="mm"  x="0"  y="-2750"  z="0"/>
+            </physvol>
+
+            <physvol name="LV_Detector">
+                <volumeref ref="LV_Detector"/>
+                <rotation name="R_Detector" unit="deg" x="-90" y="0" z="0"/>
+                <position name="P_Detector" unit="mm"  x="0" y="-2750" z="0"/>
+            </physvol>
+
+        </volume>
+    </structure>
+
+    <setup name="Default" version="1.0">
+        <world ref="worldVOL" />
+    </setup>
+</gdml>

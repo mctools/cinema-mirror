@@ -4,7 +4,7 @@
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2022 Prompt developers                                     ##
+##  Copyright 2021-2024 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -22,7 +22,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from Prompt.Math.Hist import Hist1D, Hist2D
+from Prompt.Math.Histogram import Hist1D, Hist2D
 from Prompt.Math import *
 import Prompt.Math.Units as Units
 

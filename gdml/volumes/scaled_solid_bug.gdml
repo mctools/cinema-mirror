@@ -1,8 +1,8 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0"?>
 <gdml>
 
     <userinfo>
-      <auxiliary auxtype="PrimaryGun" auxvalue="IsotropicGun;Neutron;0.001; 0.0,0.0,0.0; 0,0,1" />
+      <auxiliary auxtype="PrimaryGun" auxvalue="gun=IsotropicGun;energy=0.001;position=0,0,0" />
     </userinfo>
 
     <define>
@@ -24,7 +24,6 @@
         <tube aunit="deg" lunit="mm" name="TubeSolid" rmin="0.0" rmax="20.0" z="40.0" deltaphi="360.0" startphi="0.0" />
         <scaledSolid name="ScaledTube" >
             <solidref ref="TubeSolid"/>
-            <!-- <scale name="Tube_Scale" x="2" y="1" z="3"/> -->
             <scaleref ref="Tube_Scale"/>
         </scaledSolid>
     </solids>

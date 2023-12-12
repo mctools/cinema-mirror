@@ -1,12 +1,12 @@
 import numpy as np
-from Cinema.Prompt.Math.Hist import Hist1D
+from Cinema.Prompt.Histogram import Hist1D
 from Cinema.Interface.units import avogadro
 import h5py
 from glob import glob
 import os
 import re
 
-# atom number in material        
+# atom number in material
 def atomNum(d2o_r, d2o_h, v_r, v_h): # mm
     d2o_density = 1.10526/1000 # g/mm3
     d2o_molmass = 2*2+16 # g/mol
@@ -32,7 +32,7 @@ class WgtFileAnalysor(Hist1D):
         x_hist = self.getCentre()
         y_hist = self.getWeight()/np.diff(self.getEdge())
         return x_hist, y_hist
-    
+
     def fillHist(self, seedStart, seedEnd, xmin, xmax, numbin, linear=True, scatnum=None):
         super().__init__(xmin, xmax, numbin, linear)
         for i in range(seedStart-1, seedEnd):
@@ -46,28 +46,30 @@ class WgtFileAnalysor(Hist1D):
                 weight = weight[idx]
             self.fillmany(x, weight)
         x_hist, y_hist = self.densityHist()
-        return x_hist, y_hist
+        uncet = np.sqrt(self.getHit()/10.)
+        err_hist = np.divide(y_hist, uncet, where=(uncet!=0.))
+        return x_hist, y_hist, err_hist
 
 class SQTrueHist(WgtFileAnalysor):
     def __init__(self, filePath):
-        super().__init__(filePath, 'qtrue', 'weight')        
+        super().__init__(filePath, 'qtrue', 'weight')
 
 class SQHist(WgtFileAnalysor):
     def __init__(self, filePath):
         super().__init__(filePath, 'q', 'weight')
-    
+
 class MultiScatAnalysor(WgtFileAnalysor):
     def __init__(self, filePath):
         self.filePath = filePath
-        
+
     def sqHist(self, seedStart, seedEnd, xmin, xmax, numbin, scatnum, inelastic=True, linear=True):
         if inelastic:
             super().__init__(self.filePath, 'qtrue', 'weight')
         else:
             super().__init__(self.filePath, 'q', 'weight')
-        q_hist, s_hist= self.fillHist(seedStart, seedEnd, xmin, xmax, numbin, linear, scatnum)
-        return q_hist, s_hist
-    
+        q_hist, s_hist, err_hist= self.fillHist(seedStart, seedEnd, xmin, xmax, numbin, linear, scatnum)
+        return q_hist, s_hist, err_hist
+
     def probaMultiScat(self, seedStart, seedEnd, scatnum):
         super().__init__(self.filePath, 'numScat', 'weight')
         proba = 0
@@ -78,21 +80,3 @@ class MultiScatAnalysor(WgtFileAnalysor):
             weight = np.array(Data[self.weightname])[idx]
             proba += np.sum(weight)
         return proba
-            
-            
-        
-
-
-
-
-
-
-        
-       
-
-
-
-
-
-
-
