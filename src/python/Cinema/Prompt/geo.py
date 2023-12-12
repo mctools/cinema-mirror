@@ -248,7 +248,10 @@ class Volume:
         if matCfg is None:
             self.setMaterial('freegas::H1/1e-26kgm3') # set as the universe
         else:
-            self.setMaterial(matCfg) 
+            if isinstance(matCfg, str):
+                self.setMaterial(matCfg) 
+            else:
+                self.setMaterial(matCfg.cfg) 
 
         if surfaceCfg is not None:
             self.setSurface(surfaceCfg) 

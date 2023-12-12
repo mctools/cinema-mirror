@@ -115,6 +115,7 @@ class MaxwellianGun(SurfaceSurce):
     def __init__(self, src_whz=None, slit_whz=None, temperature=293.15) -> None:
         super().__init__(src_whz, slit_whz)
         self.setTemperature(temperature)
+        self.cfg_gun='MaxwellianGun'
         
 
     def setTemperature(self, temp):
@@ -125,6 +126,7 @@ class UniModeratorGun(SurfaceSurce):
         super().__init__(src_whz, slit_whz)
         self.setWlMean(wl_mean)
         self.setWlRange(wl_range)
+        self.cfg_gun='UniModeratorGun'
     
     def setWlMean(self, wl):
         self.cfg_mean_wl = wl
@@ -137,6 +139,7 @@ class MCPLGun(ConfigString):
         super().__init__()
         if mcplfile:
             self.setMCPLFile(mcplfile)
+        self.cfg_gun='MCPLGun'
 
     def setMCPLFile(self, mcplfile):
         self.cfg_mcplfile = mcplfile
