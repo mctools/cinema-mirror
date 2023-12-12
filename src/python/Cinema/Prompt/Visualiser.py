@@ -56,16 +56,14 @@ def is_jupyterlab_session() -> bool:
 
     return False
 
-InJupyterlab = False
-if is_jupyterlab_session():
-    InJupyterlab = True
-    pv.set_jupyter_backend('trame')  
-
 
 
 
 class Visualiser():
     def __init__(self, blacklist, printWorld=False, nSegments=30, mergeMesh=False, dumpMesh=False, window_size=[1920, 1080]):
+        if is_jupyterlab_session():
+            pv.set_jupyter_backend('trame')  
+
         self.color =  list(mcolors.CSS4_COLORS.keys())
         self.worldMesh = Mesh()
         self.blacklist = blacklist
@@ -154,5 +152,4 @@ class Visualiser():
             if crp.points.size>0:
                 self.plotter.add_mesh(crp, color='red', opacity=0.3, point_size=8 )
 
-        if not InJupyterlab:
-            self.plotter.show(title='Cinema Visualiser')
+        self.plotter.show(title='Cinema Visualiser')
