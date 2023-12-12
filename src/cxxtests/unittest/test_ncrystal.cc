@@ -94,7 +94,7 @@ TEST_CASE("NCrystal")
       //   std::cout <<  ": A " << com.A() << ", Z " << com.Z() << ", fraction " << frac << std::endl;
 
       //   std::cout << "Component " << i << com.data()  << std::endl;
-      }      
+      // }      
     }
   }
 

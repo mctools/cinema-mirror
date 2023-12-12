@@ -60,8 +60,10 @@ class PromptFileReader:
         return value
     
 class McplAnalysor(PromptFileReader):
-    def __init__(self,filePath):
+    def __init__(self, filePath, particleBlocklength=10000, dumpHeader=True):
         self.filePath = filePath
+        self.particleBlocklength = particleBlocklength
+        self.dumpHeader = dumpHeader
         
     def filesMany(self):
         path = os.path.join(self.filePath)
@@ -70,7 +72,7 @@ class McplAnalysor(PromptFileReader):
         return files
 
     def getHist(self):
-        super().__init__(self.filePath)
+        super().__init__(self.filePath, particleBlocklength=self.particleBlocklength, dumpHeader=self.dumpHeader)
         content = self.getData('content')
         hit = self.getData('hit')
         if content.ndim == 1:
@@ -83,12 +85,20 @@ class McplAnalysor(PromptFileReader):
         
         return hist
     
-    def getHistMany(self, seedStart, seedEnd):
+    def getHistMany(self, offset=0, num=None):
+        histMany = None
         files = self.filesMany()
-        self.filePath = files[seedStart-1]
-        histMany = self.getHist()
-        for i in range(seedStart, seedEnd):
+        if num is None:
+            num = len(files)
+        offset = max(0, offset)
+        num = min(num, len(files))
+        
+        for i in range(offset, num):
             self.filePath = files[i]
             print(self.filePath)
-            histMany += self.getHist()
+            if histMany is None:
+                histMany = self.getHist()
+            else:
+                histMany += self.getHist()
+        
         return histMany
