@@ -62,7 +62,7 @@ else:
     sim.simulate(gun, 1e6)
 
 destination = 0
-psd1 = sim.gatherHistData('psd1', dst=destination).plot(show=True, log=False)
+psd1 = sim.gatherHistData('psd1', dst=destination)
 psd2 = sim.gatherHistData('psd2', dst=destination)
 wlspec = sim.gatherHistData('wlspec', dst=destination)
 if sim.rank==destination:
