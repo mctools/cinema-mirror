@@ -32,7 +32,7 @@ Prompt::ScorerPSD::~ScorerPSD() {}
 
 void Prompt::ScorerPSD::score(Prompt::Particle &particle)
 {
-  if (m_activeVolume.getVolume()->GetCopyNo() != m_groupid)
+  if (getVolumeGroupID() != m_groupid)
     return;
 
   Vector vec = m_activeVolume.getGeoTranslator().global2Local(particle.getPosition());

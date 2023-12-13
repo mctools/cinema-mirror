@@ -24,3 +24,8 @@
 Prompt::Scorer::Scorer(const std::string& name, ScorerType type, int groupid) 
   : m_name(name), m_type(type), m_groupid(groupid), m_activeVolume(Singleton<ActiveVolume>::getInstance())  { };
 
+
+int Prompt::Scorer::getVolumeGroupID()
+{
+  return m_activeVolume.getVolume()->GetCopyNo();
+}

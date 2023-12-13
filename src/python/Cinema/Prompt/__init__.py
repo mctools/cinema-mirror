@@ -218,7 +218,7 @@ class Prompt:
     def clear(self):
         _pt_ResourceManager_clear()
         self.l.worldExist = False
-        self.scorer = {}
+        Volume.scorerDict = {}
     
     def setWorld(self, world):
         self.l.setWorld(world)
