@@ -209,27 +209,6 @@ class Prompt:
     def makeWorld(self):
         raise NotImplementedError('') 
     
-    def addPSD(self, volume : Volume, psdName, xMin = -100, xMax = 100, 
-               yMin = -100, yMax = 100, xBins = None, yBins = None, 
-               ptstate = 'ENTRY', type='XY'):
-        if xBins is None:
-            xBins = int((xMax - xMin) * 0.2)
-        if yBins is None:
-            yBins = int((yMax - yMin) * 0.2)
-        psd = PSD()
-        psd.cfg_name = psdName
-        psd.cfg_xmin = xMin     # TODO: auto dimension
-        psd.cfg_xmax = xMax
-        psd.cfg_ymin = yMin
-        psd.cfg_ymax = yMax
-        psd.cfg_numbin_x = xBins
-        psd.cfg_numbin_y = yBins
-        psd.cfg_ptstate = ptstate
-        psd.cfg_type = type
-        psdCfg = psd.makeCfg()
-        volume.addScorer(psdCfg)
-        self.scorer[psdName] = psdCfg
-
     def scorerNameConfig(self, name):
         if name in self.scorer.keys():
             newName = name + '`'
@@ -244,19 +223,16 @@ class Prompt:
     def setWorld(self, world):
         self.l.setWorld(world)
 
-    def setGun(self, gun):
-        self.l.setGun(gun)
-
      
-    def show(self, num : int = 0):
-        self.l.showWorld(num)
+    def show(self, gun, num : int = 0):
+        self.l.showWorld(gun, num)
 
     def simulate(self, gun, num : int = 0, timer=True, save2Disk=False):
         if hasattr(gun, 'items'):
-            self.setGun(gun.cfg)
+            self.l.setGun(gun.cfg)
             self.l.go(int(num), timer=timer, save2Dis=save2Disk)
         elif isinstance(gun, str):
-            self.setGun(gun)
+            self.l.setGun(gun)
             self.l.go(int(num), timer=timer, save2Dis=save2Disk)
         else:
             from tqdm import tqdm
