@@ -1,6 +1,6 @@
 [project]
 name="neutron-cinema"
-version="1.5.0"
+version="2.0.0a1"
 authors=[
     {name="Xiao-Xiao Cai"},
     {name="Ming Tang"},
@@ -13,8 +13,6 @@ readme = "README.md"
 keywords = ["NCyrstal", "Neutron Scattering", "Spectroscopy"]
 requires-python = ">=3.7"
 classifiers = [
-    'Development Status :: 4 - Beta',
-
     'Intended Audience :: Science/Research',
 
     'Topic :: Scientific/Engineering :: Physics',
@@ -28,6 +26,17 @@ classifiers = [
 
     'Operating System :: POSIX :: Linux',
 ]
+dependencies = [
+    "pyvista",
+    "matplotlib",
+    "mcpl",
+    "scipy",
+    "h5py",
+    "optuna",
+    "mpi4py",
+    "psutil",
+]
+
 
 [project.urls]
 repository = "https://gitlab.com/cinema-developers/prompt.git"

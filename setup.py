@@ -107,12 +107,13 @@ setup(
         ('/Cinema/ncmat', glob.glob('./ncmat/*')),
         ('/Cinema/ncmat', glob.glob('./data_ncrystal/data/*')),
         ('/Cinema', glob.glob('./hash*')),
-        ('/Cinema/test/', './src/pythontests/test_prompt_gun.py'),
-        ('/Cinema/test/', './src/pythontests/test_prompt.py'),
-        ('/Cinema/test/', './src/pythontests/test_prompt_scorer.py'),
+        ('/Cinema/test', glob.glob('./src/pythontests/test_prompt_gun.py')),
+        ('/Cinema/test', glob.glob('./src/pythontests/test_prompt.py')),
+        ('/Cinema/test', glob.glob('./src/pythontests/test_prompt_scorer.py')),
+        ('/Cinema/examples', glob.glob('./scripts/guide.py')),
         ] + datalist,
 
-    install_requires=['pyvista', 'matplotlib', 'mcpl', 'scipy', 'h5py'],
+    # outdated argument: install_requires=['pyvista', 'matplotlib', 'mcpl', 'scipy', 'h5py', 'optuna'],
 
     ext_modules=[CMakeExtension(name='cinema', sourcedir='')],
 
