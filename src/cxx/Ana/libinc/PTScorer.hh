@@ -46,6 +46,8 @@ namespace Prompt {
     const ScorerType m_type;
     const int m_groupid;
     ActiveVolume &m_activeVolume; 
+
+    int getVolumeGroupID();
     
   };
 
