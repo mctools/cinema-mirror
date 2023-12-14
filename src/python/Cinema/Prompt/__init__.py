@@ -21,8 +21,8 @@
 ################################################################################
 import warnings
 
-from . import Launcher
-from .Launcher import *
+from . import launcher
+from .launcher import *
 
 from . import PromptFileReader
 from .PromptFileReader import *
@@ -40,7 +40,7 @@ from .geo import *
 
 from .scorer import *
 
-# __all__ = Launcher.__all__
+# __all__ = launcher.__all__
 # __all__ += PromptFileReader.__all__
 # __all__ += Mesh.__all__
 # __all__ += Visualiser.__all__
