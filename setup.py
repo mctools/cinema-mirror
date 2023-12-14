@@ -88,7 +88,7 @@ setup(
     packages=['Cinema', 
               'Cinema.Interface', 
               'Cinema.Prompt', 
-              'Cinema.Prompt.Histogram', 
+              'Cinema.Prompt.histogram', 
               'Cinema.Experiment', 
               'Cinema.Experiment.Analyser'],
 
