@@ -98,7 +98,7 @@ setup(
         'Cinema.Experiment.Analyser': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Experiment', 'Analyser'),
         'Cinema.Interface': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Interface'),
         'Cinema.Prompt': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt'),
-        'Cinema.Prompt.Histogram': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt', 'Histogram'),
+        'Cinema.Prompt.histogram': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt', 'histogram'),
         },
     
     scripts=[os.path.join('.', 'scripts', 'prompt') ],
