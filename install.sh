@@ -148,11 +148,9 @@ fi
 
 
 if [ -d $CINEMAPATH/cinemabin ]; then
-  #export PATH="$CINEMAPATH/resource/cxx/src:$PATH"
-  #export PATH="$CINEMAPATH/resource/src/bin:$PATH"
   export LD_LIBRARY_PATH="$CINEMAPATH/cinemabin:$LD_LIBRARY_PATH"
   export DYLD_LIBRARY_PATH="$CINEMAPATH/cinemabin:$DYLD_LIBRARY_PATH"
-  export PATH="$CINEMAPATH/cinemabin/bin:$CINEMAPATH/scripts:$PATH"
+  export PATH="$CINEMAPATH/src/python/ptgeo/examples:$CINEMAPATH/cinemabin/bin:$CINEMAPATH/scripts:$PATH"
   echo "Added the cinemabin directory into environment"
 fi
 
