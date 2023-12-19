@@ -19,10 +19,14 @@ import subprocess
 fn.sort()
 for f in fn:
     print(f)
-    # if f=='n-008_O_016.endf.gnds.xml':
-    #     continue  
+    # Segmentation fault (core dumped)
+    # n-008_O_016.endf.gnds.xml
+    # n-028_Ni_060.endf.gnds.xml
+    # n-092_U_233.endf.gnds.xml
+    # n-092_U_238.endf.gnds.xml
+    # n-094_Pu_240.endf.gnds.xml
 
     subprocess.run(f'processProtare.py -t 2.586e-8 -mc --hybrid {dirname+f} {"./prompt_data/"+f}', shell=True, check=False)
 
-subprocess.run(f'buildMapFile.py -o neutron.map -l prompt2.0 prompt_data/*xml', shell=True, check=False)
+subprocess.run(f'buildMapFile.py -o neutron.map -l prompt2.0 neutron/*xml', shell=True, check=False)
 
