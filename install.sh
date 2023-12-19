@@ -24,7 +24,7 @@ if [ ! -z ${CINEMAPATH:-} ]; then
     cinema_prunepath PATH "$CINEMAPATH/cinemabin"
     cinema_prunepath LD_LIBRARY_PATH "$CINEMAPATH/cinemabin:$CINEMAPATH/src/python/bin"
     cinema_prunepath DYLD_LIBRARY_PATH "$CINEMAPATH/cinemabin"
-    cinema_prunepath PYTHONPATH "$CINEMAPATH/src/python"
+    cinema_prunepath PYTHONPATH "$CINEMAPATH/src/python;$CINEMAPATH/src/python/ptgeo/python"
     echo "Cleaned up previously defined Cinema enviorment"
 fi
 
@@ -131,7 +131,7 @@ if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
 fi
 
 if [ -f $CINEMAPATH/src/python/Cinema/__init__.py ]; then
-  export PYTHONPATH="$CINEMAPATH/src/python:$PYTHONPATH"
+  export PYTHONPATH="$CINEMAPATH/src/python:$CINEMAPATH/src/python/ptgeo/python:$PYTHONPATH"
   echo "Added Cinema python module into path"
 else
   echo "Can not find Cinema python module"
