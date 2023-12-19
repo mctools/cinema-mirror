@@ -105,8 +105,7 @@ void pt_Box_delete(void* obj)
 void *pt_Polyhedron_new(double phiStart, double phiDelta, const int sideCount, const int zPlaneCount,
                      double *zPlanes, double *rMin, double *rMax)
 {
-  std::cout << sideCount << " " << zPlanes[2] << " " << rMin[2] << " " << rMax[2] << std::endl;
-    return static_cast<void *>(new vg::UnplacedPolyhedron( sideCount, 
+    return static_cast<void *>(new vg::UnplacedPolyhedron(phiStart, phiDelta,  sideCount, 
                           zPlaneCount, zPlanes, rMin, rMax));
 }
 

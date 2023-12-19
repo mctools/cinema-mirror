@@ -66,11 +66,15 @@ class Trapezoid(Solid):
         self.cobj = _pt_Trapezoid_new(x1, x2, y1, y2, z)
 
 class Polyhedron(Solid):
-    def __init__(self, phiStart, phiDelta, sideCount, zPlaneCount, 
-                 zPlanes, rMin, rMax) -> None:
+    def __init__(self, zPlanes, rMin, rMax, sideCount=6,
+                 phiStart_deg=0, phiDelta_deg=360) -> None:
         super().__init__()
-        self.cobj = _pt_Polyhedron_new(phiStart, phiDelta, int(sideCount), int(zPlaneCount), 
-                 np.array(zPlanes), np.array(rMin), np.array(rMax))
+        zp, rmin, rmax = np.array(zPlanes), np.array(rMin), np.array(rMax)
+        if zp.size!=rmin.size or rmin.size!=rmax.size:
+            raise RuntimeError('the sizes of zPlanes, rMin and rMax are not equal')    
+        
+        self.cobj = _pt_Polyhedron_new(np.deg2rad(phiStart_deg), np.deg2rad(phiDelta_deg), int(sideCount), int(zp.size), 
+                 zp, rmin, rmax)
 
 class Tessellated(Solid): #this one is not working
     def __init__(self, faces, points, tranMat=None) -> None:
