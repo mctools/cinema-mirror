@@ -191,3 +191,9 @@ else
     export PIXIUSSSP=$CINEMAPATH/external/pixiusssp
   fi
 fi
+
+# add submodule and define the master branch as the one you want to track
+cd $CINEMAPATH/src/python/
+git submodule add https://gitlab.com/cinema-developers/ptgeo.git
+git submodule init
+cd -
