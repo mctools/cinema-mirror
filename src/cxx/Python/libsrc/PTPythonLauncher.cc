@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -71,7 +71,8 @@ void pt_Launcher_setGun(void *obj, const char* cfg)
   static_cast<pt::Launcher *>(obj)->setGun(cfg);
 }
 
-void pt_Launcher_setPythonGun(void *obj, PyObject* pyobj)
+
+void pt_Launcher_simOneEvent(void *obj, bool recordTrj)
 {
-    static_cast<pt::Launcher *>(obj)->setPythonGun(pyobj);
+  static_cast<pt::Launcher *>(obj)->simOneEvent(recordTrj);
 }

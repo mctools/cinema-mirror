@@ -4,7 +4,7 @@
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2022 Prompt developers                                     ##
+##  Copyright 2021-2024 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -21,8 +21,8 @@
 ################################################################################
 import warnings
 
-from . import Launcher
-from .Launcher import *
+from . import launcher
+from .launcher import *
 
 from . import PromptFileReader
 from .PromptFileReader import *
@@ -33,18 +33,18 @@ from .Mesh import *
 from . import Visualiser
 from .Visualiser import *
 
-from . import Histogram
-from .Histogram import *
+from . import histogram
+from .histogram import *
 
 from .geo import *
 
 from .scorer import *
 
-# __all__ = Launcher.__all__
+# __all__ = launcher.__all__
 # __all__ += PromptFileReader.__all__
 # __all__ += Mesh.__all__
 # __all__ += Visualiser.__all__
-__all__ = Histogram.__all__
+__all__ = histogram.__all__
 
 
 # from . import Launcher, Visualiser
@@ -52,6 +52,7 @@ __all__ = Histogram.__all__
 from .gun import PythonGun
 from mpi4py import MPI
 import numpy as np
+
 
 _pt_ResourceManager_clear = importFunc('pt_ResourceManager_clear', None, [])
 
@@ -77,7 +78,7 @@ class Parameter:
     def __repr__(self) -> str:
         return f'Parameter "{self.name}", [{self.lower_lim},{self.upper_lim}], Prompt value {self.promptval}\n'
      
-def analysisdb(study=None, name=None, target=None, storage='mysql://prompt:csnsPrompt_2023@da07.csns.ihep.ac.cn/optuna' ):
+def analysisdb(study=None, name=None, target=None, storage=None ):
     if study is None:
         import optuna
         study = optuna.load_study(study_name=name, storage=storage)
@@ -199,33 +200,15 @@ class Optimiser:
 class Prompt:
     def __init__(self, seed : int = 4096) -> None:
         self.l = Launcher()
-        self.scorer = {}
         self.l.setSeed(seed)
+
+    @property
+    def scorer(self):
+        return Volume.scorerDict
 
     def makeWorld(self):
         raise NotImplementedError('') 
     
-    def addPSD(self, volume : Volume, psdName, xMin = -100, xMax = 100, 
-               yMin = -100, yMax = 100, xBins = None, yBins = None, 
-               ptstate = 'ENTRY', type='XY'):
-        if xBins is None:
-            xBins = int((xMax - xMin) * 0.2)
-        if yBins is None:
-            yBins = int((yMax - yMin) * 0.2)
-        psd = PSD()
-        psd.cfg_name = psdName
-        psd.cfg_xmin = xMin     # TODO: auto dimension
-        psd.cfg_xmax = xMax
-        psd.cfg_ymin = yMin
-        psd.cfg_ymax = yMax
-        psd.cfg_numbin_x = xBins
-        psd.cfg_numbin_y = yBins
-        psd.cfg_ptstate = ptstate
-        psd.cfg_type = type
-        psdCfg = psd.makeCfg()
-        volume.addScorer(psdCfg)
-        self.scorer[psdName] = psdCfg
-
     def scorerNameConfig(self, name):
         if name in self.scorer.keys():
             newName = name + '`'
@@ -235,24 +218,41 @@ class Prompt:
     def clear(self):
         _pt_ResourceManager_clear()
         self.l.worldExist = False
-        self.scorer = {}
+        Volume.scorerDict = {}
     
     def setWorld(self, world):
         self.l.setWorld(world)
 
-    def setGun(self, gun):
-        if isinstance(gun, str):
-            self.l.setGun(gun)
-        else:
-            self.l.setPythonGun(gun)
      
-    def show(self, num : int = 0):
-        self.l.showWorld(num)
+    def show(self, gun, num : int = 0):
+        self.l.showWorld(gun, num)
 
-    def simulate(self, num : int = 0, timer=True, save2Disk=False):
-        self.l.go(int(num), timer=timer, save2Dis=save2Disk)
+    def simulate(self, gun, num : int = 0, timer=True, save2Disk=False):
+        if hasattr(gun, 'items'):
+            self.l.setGun(gun.cfg)
+            self.l.go(int(num), timer=timer, save2Dis=save2Disk)
+        elif isinstance(gun, str):
+            self.l.setGun(gun)
+            self.l.go(int(num), timer=timer, save2Dis=save2Disk)
+        else:
+            from tqdm import tqdm
+            if hasattr(self, 'rank'):
+                if self.rank==0:
+                    for i in tqdm(range(int(num)), desc = 'Progress:', unit =" events"):
+                        gun.generate()
+                        self.l.simOneEvent(False)
+                else:
+                    for i in range(int(num)):
+                        gun.generate()
+                        self.l.simOneEvent(False)
+                
+            else:
+                for i in tqdm(range(int(num)), desc = 'Progress:', unit =" events"):
+                    gun.generate()
+                    self.l.simOneEvent(False)
+    
 
-    def getScorerHist(self, cfg, raw=False):
+    def gatherHistData(self, cfg, raw=False):
         if raw:
             return self.l.getHist(cfg)
         else:
@@ -267,25 +267,25 @@ class PromptMPI(Prompt):
         super().__init__(seed+self.rank)
         
 
-    def simulate(self, num : int = 0):
+    def simulate(self, gun, num : int = 0):
         batchSize = int(num/self.size)
         if self.rank:
-          super().simulate(batchSize,  timer=False)
+          super().simulate(gun, batchSize,  timer=False)
         else:
-          super().simulate(num-batchSize*(self.size-1))
+          super().simulate(gun, num-batchSize*(self.size-1))
 
-    def show(self, num : int = 0):
+    def show(self, gun, num : int = 0, mergeMesh=False):
         if self.rank==0:
-            self.l.showWorld(num, True)
+            self.l.showWorld(gun, num, mergeMesh)
             self.comm.Barrier()
         else:
             self.comm.Barrier()
 
-    def getScorerHist(self, cfg, raw=False, dst=0):
-        hist = super().getScorerHist(cfg, raw)
+    def gatherHistData(self, cfg, raw=False, dst=0):
+        hist = super().gatherHistData(cfg, raw)
         weight = hist.getWeight()
         hit = hist.getHit()
-        print(f'rank {self.rank} hist info: {hist.getWeight().sum()} {hist.getHit().sum()}')
+        print(f'rank {self.rank} hist info: weight {hist.getWeight().sum()}, hit {hist.getHit().sum()}')
 
         recvw = None
         recvh = None

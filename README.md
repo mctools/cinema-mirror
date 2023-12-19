@@ -1,29 +1,66 @@
-# Prompt
-Probability-Conserved Cross Section Biasing Monte Carlo Particle Transport System
+# prompt
 
-Before compiling Prompt, please install the vecgeom package (https://gitlab.cern.ch/VecGeom/VecGeom), which is the only dependence of this Monte Carlo system at the moment.
+Prompt: Probability-Conserved Cross Section Biasing Monte Carlo Particle Transport System. 
 
-Compilation
------------------------
-cd $PATH_OF_PROMPT &&
-mkdir build && cd build &&
-cmake .. &&
-make -j
+Introduction of system can be found at [arXiv](https://arxiv.org/abs/2304.06226).
+
+## Installing on Linux(Ubuntu) from source
+
+To build Prompt, several prerequisites are needed.
+```
+sudo apt install g++ cmake python3-dev python3-pip python3-venv
+```
+
+Clone the source and compile it as
+
+```
+git clone https://gitlab.com/cinema-developers/prompt.git
+cd prompt
+. env.sh
+cimbuild
+```
+
+## Installing on Linux with pip
+
+```
+pip install neutron-cinema
+```
 
 
-Version history
-----------------------
-v alpha.0.1, 25 March 2022
-- Added more analysor in the Ana pacakge
-- Created a new class of particle guns for the simulations of CSNS instruments
-- A rich collection of python modules for analysing data produced by Prompt simulation
+## Runing Prompt simulations
 
-v beta.0.2, 31 Oct 2021
-- PTSingleton for modern template singleton management.
-- Add volume scorer for statistical analysis   
-- Add particle gun module for generate primary incident particle
-- Smart pointer for material physics models resource management
+After installation, GDML formatted simulation input files can be launched by Prompt as   
 
-v beta.0.1, 14 Oct 2021
-- Initial draft by compiling distributed modules from TAK, PiXiu, and NCrystal
-- PTGeoManager class is able to load gmdl files using the Vecgeom package
+
+```
+prompt [-g file] [-s seed] [-n number] [-v]
+```
+
+| Option |  Defult  | Description |
+|:-----:|:--------:|:------|
+| -g   |  | Set GDML input file.  | 
+| -s   |  4096  |   Set the seed for the random generator |
+| -n   | 100 |    Set the number of primary neutron events |
+| -v   |  | The flag to activate the visualisation |
+
+Example of visualising the geometry defined in the total_scattering.gdml:
+```
+prompt -g total_scattering.gdml -v
+```
+
+The simulation will produce histogroms in the MCPL format only in the production run, if any scorers are specified. To run the simulation with 1e6 neutrons
+```
+prompt -g total_scattering.gdml -n 1e6
+```
+
+After the execution, seven histogrom files and accosiated python analysis template scripts will be generated. The reults can be plotted as 
+```
+python ScorerDeltaMomentum_PofQ_HW_view.py
+```
+
+There are many input examples are available in the gdml sub-directory. 
+
+
+<h3 align="left">Connect with us:</h3>
+<p align="left"><a href="mailto:cinema-users@outlook.com">cinema-users@outlook.com</a>
+</p>

@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -29,7 +29,6 @@
 #include "PTIsotropicGun.hh"
 #include "PTNeutron.hh"
 #include "PTGunFactory.hh"
-#include "PTPython.hh"
 #include "PTPythonGun.hh"
 #include "NCrystal/NCrystal.hh"
 
@@ -52,8 +51,8 @@ private:
 
    
 Prompt::Launcher::Launcher()
-: m_stackManager(Singleton<StackManager>::getInstance())
-// m_activeVolume(Singleton<ActiveVolume>::getInstance()), 
+: m_stackManager(Singleton<StackManager>::getInstance()),
+m_activeVolume(Singleton<ActiveVolume>::getInstance())
 {
   //This checks that the included NCrystal headers and the linked NCrystal
   //library are from the same release of NCrystal:
@@ -89,33 +88,11 @@ void Prompt::Launcher::setGun(const char* cfg)
   m_gun = Singleton<GunFactory>::getInstance().createGun(std::string(cfg));
 }
 
-void Prompt::Launcher::setPythonGun(PyObject *pyobj)
+
+
+void Prompt::Launcher::simOneEvent(bool recordTrj)
 {
-  m_gun = std::make_shared<PythonGun>(pyobj);
-}
-
-
-void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj, bool timer, bool save)
-{
-  // fixme: recordTrj should be done in the particle class with an optional switch.
-  // to save 1. particle id, event id, the volume id, the physical id
-  
-  if(!m_gun.use_count())
-  {
-    std::cout << "PrimaryGun is not set, fallback to the neutron IsotropicGun\n";
-    m_gun = std::make_shared<IsotropicGun>(Neutron(), 0.0253, Vector{0,0,0});
-  }
-
-  ActiveVolume &m_activeVolume = Singleton<ActiveVolume>::getInstance();
-
-  ProgressMonitor *moni=nullptr;
-  if(timer)
-    moni = new ProgressMonitor("Prompt simulation", numParticle, printPrecent);
-  for(size_t i=0;i<numParticle;i++)
-  {
-    //add a primary particle into the stack
-    m_stackManager.add(m_gun->generate());
-
+      //add a primary particle into the stack
     while(!m_stackManager.empty())
     {
       auto particle = *(m_stackManager.pop()).get();
@@ -177,6 +154,28 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
         m_trajectory.push_back(particle.getPosition());
       }
     }
+}
+
+void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj, bool timer, bool save)
+{
+  // fixme: recordTrj should be done in the particle class with an optional switch.
+  // to save 1. particle id, event id, the volume id, the physical id
+
+  if(!m_gun.use_count())
+  {
+    std::cout << "PrimaryGun is not set, fallback to the neutron IsotropicGun\n";
+    m_gun = std::make_shared<IsotropicGun>(Neutron(), 0.0253, Vector{0,0,0});
+  }
+
+  ProgressMonitor *moni=nullptr;
+  if(timer)
+    moni = new ProgressMonitor("Prompt simulation", numParticle, printPrecent);
+  
+  for(size_t i=0;i<numParticle;i++)
+  {
+    //add a primary particle into the stack
+    m_stackManager.add(m_gun->generate());
+    simOneEvent(recordTrj);
     if(timer)
       moni->OneTaskCompleted();
   }
@@ -190,3 +189,5 @@ void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool record
       Singleton<ResourceManager>::getInstance().writeScorer2Disk();
 
 }
+
+

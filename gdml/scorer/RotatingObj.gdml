@@ -61,7 +61,7 @@
       <auxiliary auxtype="Scorer" auxvalue="Scorer=PSD;name=NeutronHistMap;
         xmin=-250;xmax=250;numbin_x=21;ymin=-250;ymax=250;numbin_y=21;type=XY"/>
       <auxiliary auxtype="Scorer" auxvalue="Scorer=TOF; name=TOF; min=0.0; max=0.05; numbin=200"/>
-      <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=ESP; min=0.0; max=0.1; numbin=200"/>
+      <auxiliary auxtype="Scorer" auxvalue="Scorer=ESpectrum; name=ESP; min=1e-5; max=0.1; numbin=200"/>
 
     </volume>
 

@@ -5,7 +5,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -26,8 +26,6 @@
 #include "PromptCore.hh"
 #include "PTSingleton.hh"
 #include "PTParticle.hh"
-#include "PTScorer.hh"
-#include "PTHist2D.hh"
 #include <VecGeom/management/GeoManager.h>
 #include "PTGeoLoader.hh"
 #include "PTGeoTranslator.hh"

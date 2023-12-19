@@ -4,7 +4,7 @@
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2022 Prompt developers                                     ##
+##  Copyright 2021-2024 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -23,7 +23,7 @@
 import numpy as np
 from scipy.spatial import KDTree
 import glob, os
-from Cinema.Prompt.Histogram.Hist import Hist1D, Hist2D
+from Cinema.Prompt.histogram.Hist import Hist1D, Hist2D
 
 class DD():
     def __init__(self):
@@ -162,7 +162,7 @@ class IDFLoader():
             loc = np.loadtxt(file, dtype=float, usecols=(1,2,3))*1e3 #meter to mm
             basename =  os.path.basename(file)
             self.idf[basename[:-4]] = PixelLocator(pid, loc)
-            print(f'IDFLoader loaded file {basename}, contains {pid.size} pixels')
+            # print(f'IDFLoader loaded file {basename}, contains {pid.size} pixels')
 
     def query(self, key):
         return self.idf[key]

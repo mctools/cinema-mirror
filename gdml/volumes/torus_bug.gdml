@@ -23,12 +23,12 @@
     <structure>
         <volume name="VolTorus">
             <solidref ref="TorusSolid" />
-            <materialref ref="Vacuum" />
+            <materialref ref="Cd" />
         </volume>
 
         <volume name="VolWorld">
             <solidref ref="WorldSolid" />
-            <materialref ref="Cd" />
+            <materialref ref="Vacuum" />
 
             <physvol name="PhysVol_Torus">
                 <volumeref ref="VolTorus" />

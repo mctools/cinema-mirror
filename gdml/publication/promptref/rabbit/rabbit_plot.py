@@ -51,10 +51,10 @@ def zoom_area(leftbottom, righttop):
 	plt.gca().add_patch(area)
 
 
-plot_overview('bias0p1.mcpl.gz', 'bias=0.1', '(b)')
-plot_overview('bias1.mcpl.gz', 'bias=1', '(d)')
-plot_zoom('bias0p1.mcpl.gz', 'bias=0.1')
-plot_zoom('bias1.mcpl.gz', 'bias=1')
+plot_overview('ScorerPSD_bias0p1_seed4096.mcpl.gz', 'bias=0.1', '(d)')
+plot_overview('ScorerPSD_bias1_seed4096.mcpl.gz', 'bias=1', '(b)')
+plot_zoom('ScorerPSD_bias0p1_seed4096.mcpl.gz', 'bias=0.1')
+plot_zoom('ScorerPSD_bias1_seed4096.mcpl.gz', 'bias=1')
 
 
 plt.show()

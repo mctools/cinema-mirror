@@ -5,31 +5,30 @@
 mpi4py
 pyvista
 matplotlib
-tetgen #tetrahedralise function in pyvista 
-pymeshfix #reconstruct a manifold clean surface
-
-#required packages for post-analysis
+mcpl
 scipy
 h5py
-mcpl
+# tetgen #tetrahedralise function in pyvista 
+# pymeshfix #reconstruct a manifold clean surface
+
 
 #PiXiu
-phonopy==2.14.0
-spglib==1.16.4
-seekpath==2.0.1
-periodictable
-requests
+# phonopy==2.14.0
+# spglib==1.16.4
+# seekpath==2.0.1
+# periodictable
+# requests
 
 #logging
-loguru
+# loguru
 
 # Crawler
 #mp-api
 
 # Database
-pymongo  #synchronous
+# pymongo  #synchronous
 #motor  #asynchronous
 
 # optimization
-optuna
+# optuna
 # mysqlclient

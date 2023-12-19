@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 ################################################################################
 ##                                                                            ##
@@ -20,26 +19,24 @@
 ##                                                                            ##
 ################################################################################
 
-# __all__ = ['eKin2k', 'angleCosine2Q', 'wl2ekin', 'ekin2wl', 'ekin2v', 'v2ekin', ' angleCosine2QMany', 'v2ekinMany']
-__all__ = []
-from . import Hist
-from .Hist import *
-__all__ += Hist.__all__
 
-from Cinema.Interface import *
-import numpy as np
+class ConfigString(dict):
+    __getattr__ = dict.__getitem__
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
 
-eKin2k = importFunc('pt_eKin2k', type_dbl, [type_dbl] )
-angleCosine2Q = importFunc('pt_angleCosine2Q', type_dbl, [type_dbl, type_dbl, type_dbl] )
-wl2ekin = importFunc('pt_wl2ekin', type_dbl, [type_dbl] )
-ekin2wl = importFunc('pt_ekin2wl', type_dbl, [type_dbl] )
-
-#output unit mm/sec
-ekin2v = importFunc('pt_ekin2speed', type_dbl, [type_dbl] )
-v2ekin = importFunc('pt_speed2ekin', type_dbl, [type_dbl] )
-
-# def elasticQ(cosAngle, fl)
-angleCosine2QMany = np.vectorize(angleCosine2Q)
-v2ekinMany = np.vectorize(v2ekin)
-
-# def qElastic(l)
+    def makeCfg(self):     
+        cfg = ''
+        for k, v in self.items():
+            if k.__contains__('cfg_'):
+                if v is None:
+                    raise RuntimeError(f'{self}. value for {k} is None. ')
+                cfg += k.replace('cfg_','') 
+                cfg += '='
+                cfg += str(v)
+                cfg += ';'
+        return cfg
+    
+    @property
+    def cfg(self) -> str: 
+        return self.makeCfg()

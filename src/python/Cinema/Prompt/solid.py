@@ -35,6 +35,9 @@ _pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, 
 class Box:
     def __init__(self, hx, hy, hz):
         self.cobj = _pt_Box_new(hx, hy, hz)
+        self.hx = hx
+        self.hy = hy
+        self.hz = hz
 
     # the memory should be managed by the Volume. 
     # fixme: double check if it is release at the very end

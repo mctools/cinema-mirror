@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+from Cinema.Prompt import Prompt, PromptMPI
+from Cinema.Prompt.geo import Volume, Transformation3D
+from Cinema.Prompt.solid import Box,Tube
+from Cinema.Prompt.scorer import makePSD, ESpectrumHelper, WlSpectrumHelper, TOFHelper, VolFluenceHelper
+from Cinema.Prompt.gun import PythonGun, SimpleThermalGun, MaxwellianGun
+from Cinema.Prompt.histogram import wl2ekin
+from Cinema.Prompt.physics import Material, Mirror
+
+import numpy as np
+
+class MySim(PromptMPI):
+    def __init__(self, seed=4096) -> None:
+        super().__init__(seed)
+        self.scorer['multi'] ='Scorer=MultiScat; name=D2O; min=1; max=10; linear=yes'
+      
+
+    def makeWorld(self):
+        matCfg_sample = Material('LiquidWaterH2O_T293.6K.ncmat')
+
+        air = Material('freegas::N78O22/1.225kgm3')
+        air.setBiasScat(10)
+        air.setBiasAbsp(0)
+
+        enriched = Material('solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11')
+        cd = Material('solid::Cd/8.65gcm3')
+
+
+
+        world = Volume("world", Box(10000, 10000, 25000))
+        water = Volume('sample', Box(10,10,1.5), matCfg = matCfg_sample.cfg)
+        water.addScorer(self.scorer['multi'])
+        world.placeChild("sample", water, Transformation3D(0., 0., 0), 1234)
+
+        makePSD('psd', water, 10, 10 )
+
+        detector = Volume("det", Tube(0, 410, 0.0001))
+
+        ESpectrumHelper('espec').make(detector)
+        WlSpectrumHelper('wlspec').make(detector)
+        TOFHelper('tof').make(detector)
+        VolFluenceHelper('volf').make(detector)
+
+        world.placeChild("det", detector, Transformation3D(0., 0., 9000), 1234)
+
+        self.setWorld(world)
+
+sim = MySim(seed=1010)
+sim.makeWorld()
+
+class MyGun(PythonGun):
+    def __init__(self):
+        super().__init__()
+
+    def sampleEnergy(self):
+        return wl2ekin(8)
+
+    def samplePosition(self):
+        return np.array([0, 0, -12000])
+    
+    def sampleDirection(self):
+        return np.array([0, 0, 1])
+
+usePythonGun=True
+
+if usePythonGun:
+    gun = MyGun()
+else:
+    gun = SimpleThermalGun()
+    gun.setPosition([0,0,-12000])
+    gun.setDirection([0, 0, 1])
+    gun.setWavelength(8)
+
+# vis or production
+if True:
+    sim.show(gun, 100)
+else:
+    sim.simulate(gun, 1e6)
+
+psd = sim.gatherHistData('psd')
+espec = sim.gatherHistData('espec')
+wlspec = sim.gatherHistData('wlspec')
+tof = sim.gatherHistData('tof')
+volf = sim.gatherHistData('volf')
+
+if sim.rank==0:
+    psd.plot(show=True)
+    espec.plot(show=True, log=True)
+    wlspec.plot(show=True)
+    tof.plot(show=True)
+    volf.plot(show=True)
+

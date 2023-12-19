@@ -4,7 +4,7 @@
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2022 Prompt developers                                     ##
+##  Copyright 2021-2024 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -23,7 +23,7 @@
 __all__ = ['Launcher']
 
 from ..Interface import *
-from .Histogram import Hist1D, Hist2D, _pt_HistBase_dimension
+from .histogram import Hist1D, Hist2D, _pt_HistBase_dimension
 from .Visualiser import Visualiser
 
 _pt_Launcher_getInstance = importFunc('pt_Launcher_getInstance', type_voidp, [] )
@@ -33,11 +33,12 @@ _pt_Launcher_getTrajSize = importFunc('pt_Launcher_getTrajSize', type_sizet, [ty
 _pt_Launcher_getTrajectory = importFunc('pt_Launcher_getTrajectory', None, [type_voidp, type_npdbl2d])
 _pt_Launcher_go = importFunc('pt_Launcher_go', None, [type_voidp, type_sizet, type_dbl, type_bool, type_bool, type_bool])
 _pt_Launcher_setGun = importFunc('pt_Launcher_setGun', None, [type_voidp, type_cstr])
-_pt_Launcher_setPythonGun = importFunc('pt_Launcher_setPythonGun', None, [type_voidp, type_pyobject])
 
 _pt_ResourceManager_getHist = importFunc('pt_ResourceManager_getHist', type_voidp, [type_cstr])
 
 _pt_setWorld = importFunc('pt_setWorld', None, [type_voidp])
+
+_pt_Launcher_simOneEvent = importFunc('pt_Launcher_simOneEvent', None, [type_voidp, type_bool])
 
 
 @singleton
@@ -59,7 +60,7 @@ class Launcher():
         _pt_setWorld(logicalvol.cobj)
         self.worldExist = True
     
-    def showWorld(self, particles=None, mergeMesh=False):
+    def showWorld(self, gun, particles=None, mergeMesh=False):
         if not self.worldExist:
             raise RuntimeError('World is not set')
         v = Visualiser([], printWorld=False, mergeMesh=mergeMesh) 
@@ -67,7 +68,15 @@ class Launcher():
             v.show()
         else:
             for i in range(particles):
-                self.go(1, recordTrj=True, timer=False, save2Dis=False)
+                if hasattr(gun, 'items'):
+                    self.setGun(gun.cfg)
+                    self.go(1, recordTrj=True, timer=False, save2Dis=False)
+                elif isinstance(gun, str):
+                    self.setGun(gun)
+                    self.go(1, recordTrj=True, timer=False, save2Dis=False)
+                else:
+                    gun.generate()
+                    self.simOneEvent(recordTrj=True)                    
                 trj = self.getTrajectory()
                 try:
                     v.addTrj(trj)
@@ -76,10 +85,6 @@ class Launcher():
                     # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
                     pass
             v.show()
-
-    def setPythonGun(self, pygun):
-        print('setting a python gun')
-        _pt_Launcher_setPythonGun(self.cobj, pygun)
 
     def setGun(self, cfg):
         _pt_Launcher_setGun(self.cobj, cfg.encode('utf-8'))      
@@ -108,3 +113,6 @@ class Launcher():
             return Hist2D(cobj=cobj)
         else:
             raise RuntimeError("no implemented")
+        
+    def simOneEvent(self, recordTrj=False):
+        _pt_Launcher_simOneEvent(self.cobj, recordTrj)

@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -33,12 +33,12 @@ Prompt::Hist1D::Hist1D(const std::string &name, double xmin, double xmax, unsign
     PROMPT_THROW(BadInput, "bin size is zero");
   if(linear) {
     if(xmin==xmax)
-      PROMPT_THROW(BadInput, "xmin and xman can not be equal");
+      PROMPT_THROW(BadInput, "xmin and xmax can not be equal");
     m_binfactor=nbins/(xmax-xmin);
   }
   else {
     if(xmin<=0 || xmax<=0)
-      PROMPT_THROW(BadInput, "xmin and xman must be positive");
+      PROMPT_THROW(BadInput, "xmin and xmax must be positive");
     m_binfactor=nbins/(log10(xmax)-log10(xmin));
     m_logxmin=log10(m_xmin);
   }

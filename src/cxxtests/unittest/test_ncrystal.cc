@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -76,7 +76,7 @@ TEST_CASE("NCrystal")
 
 
   //test info
-  NCrystal::MatCfg matcfg("LiquidHeavyWaterD2O_T293.6K.ncmat" );
+  NCrystal::MatCfg matcfg("solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11" );
   auto info = NCrystal::createInfo(matcfg);
   const NCrystal::Info::Composition & comp = info->getComposition();
 
@@ -85,6 +85,17 @@ TEST_CASE("NCrystal")
     double frac = v.fraction;
     const auto& atom = v.atom.data();
     std::cout << atom.elementName() << ": A " << atom.A() << ", Z " << atom.Z() << ", fraction " << frac << std::endl;
+    std::cout << atom.isComposite() << " " << atom.isNaturalElement() << " "  << std::endl;   
+    if(atom.isComposite())
+    {
+      // for (unsigned i=0;i<atom.nComponents();i++)
+      // {
+      //   auto &com = atom.getComponent(i);
+      //   std::cout <<  ": A " << com.A() << ", Z " << com.Z() << ", fraction " << frac << std::endl;
+
+      //   std::cout << "Component " << i << com.data()  << std::endl;
+      // }      
+    }
   }
 
 }

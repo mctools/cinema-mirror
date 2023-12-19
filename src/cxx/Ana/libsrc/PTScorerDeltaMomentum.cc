@@ -2,7 +2,7 @@
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
 //                                                                            //
-//  Copyright 2021-2022 Prompt developers                                     //
+//  Copyright 2021-2024 Prompt developers                                     //
 //                                                                            //
 //  Licensed under the Apache License, Version 2.0 (the "License");           //
 //  you may not use this file except in compliance with the License.          //
@@ -75,5 +75,7 @@ void Prompt::ScorerDeltaMomentum::score(Prompt::Particle &particle)
       double q = neutronAngleCosine2Q(angle_cos, ekin, ekin);
       m_hist->fill(q, particle.getWeight()/q);
     }
+    else 
+      PROMPT_THROW(BadInput,"m_method should be either 0 or 1"); 
   }
 }

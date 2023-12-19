@@ -44,6 +44,8 @@ git pull origin master
 # --remove pre-exist intermediate files
 cd /io
 rm -rf ./build/
+rm -rf ./cinemabin/
+rm -rf ./cinemavirenv/
 rm -rf ./${project_name}.egg-info
 rm -rf ./dist
 rm -rf ./wheelrepaired
@@ -51,12 +53,12 @@ rm -rf ./wheelrepaired
 cd /io
 . install.sh -f
 git config --global --add safe.directory /io
-# for PYBIN in /opt/python/cp*/bin; do
-#     ## resolve local requirements
-#     #"${PYBIN}/python" install -r /io/dev-requirements.txt
-#     "${PYBIN}/python" setup.py bdist_wheel
-# done
-/opt/python/cp38-cp38/bin/python setup.py bdist_wheel
+for PYBIN in /opt/python/cp*/bin; do
+    ## resolve local requirements
+    #"${PYBIN}/python" install -r /io/dev-requirements.txt
+    "${PYBIN}/python" setup.py bdist_wheel
+done
+# /opt/python/cp38-cp38/bin/python setup.py bdist_wheel
 cd /io/dist
 for WHL in *.whl; do
     auditwheel repair ${WHL} -w /io/wheelrepaired

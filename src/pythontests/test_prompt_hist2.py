@@ -2,7 +2,7 @@
 
 from io import BytesIO
 import numpy as np
-from  Cinema.Prompt.Histogram import Hist2D, NumpyHist2D
+from  Cinema.Prompt.histogram import Hist2D, NumpyHist2D
 
 import matplotlib.pyplot as plt
 

@@ -94,7 +94,7 @@ def target_function(X : np.ndarray) -> float:
     sim.setGun(gunCfg)
     sim.simulate(incident)
     # sim.show(100)
-    hist2 = sim.getScorerHist(sim.scorer['PSD2'])
+    hist2 = sim.gatherHistData(sim.scorer['PSD2'])
     return -hist2.getWeight().sum() # it is a minimisation optimiser
 
 space = ParameterSpace([ContinuousParameter("boxlenght1", 5, 50), ContinuousParameter("boxlenght2", 5, 50)])

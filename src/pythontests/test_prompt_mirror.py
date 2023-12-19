@@ -16,6 +16,7 @@ hist_hit = f.getData('hit').sum()
 hist_edge = f.getData('xedge').sum()
 
 np.set_printoptions(precision=16)
+
 res = np.array([hist_edge, hist_weight, hist_hit])
 print(res)
-np.testing.assert_allclose(res, [0.,1901.342181739251, 2067.], rtol=1e-15)
+np.testing.assert_allclose(res, [0.,1893.289934745695, 2062.], rtol=1e-15)

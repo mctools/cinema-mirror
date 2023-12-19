@@ -137,8 +137,8 @@ if False:
 else:
     sim.simulate(1e8)
 
-psd1hist = sim.getScorerHist(sim.scorer['PSD1'])
-psd2hist = sim.getScorerHist(sim.scorer['PSD2'])
+psd1hist = sim.gatherHistData(sim.scorer['PSD1'])
+psd2hist = sim.gatherHistData(sim.scorer['PSD2'])
 
 if sim.rank==0:
     # print(f'total {psd1hist.getWeight().sum()} {psd1hist.getHit().sum()}')

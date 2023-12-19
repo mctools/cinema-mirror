@@ -34,7 +34,7 @@ then
     return
 fi
 
-. install.sh
+. "$( dirname "${BASH_SOURCE[0]}" )"/install.sh
 
 # ln -s
 echo -e "Enjoy!"

@@ -4,7 +4,7 @@
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2022 Prompt developers                                     ##
+##  Copyright 2021-2024 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -28,8 +28,42 @@ import matplotlib.colors as mcolors
 from .Mesh import Mesh
 
 
+# from https://stackoverflow.com/questions/57173235/how-to-detect-whether-in-jupyter-notebook-or-lab 
+def is_jupyterlab_session() -> bool:
+    """Check whether we are in a Jupyter-Lab session.
+    Notes
+    -----
+    This is a heuristic based process inspection based on the current Jupyter lab
+    (major 3) version. So it could fail in the future.
+    It will also report false positive in case a classic notebook frontend is started
+    via Jupyter lab.
+    """
+    import psutil
+
+    # inspect parent process for any signs of being a jupyter lab server
+
+    parent = psutil.Process().parent()
+    if parent.name() == "jupyter-lab":
+        return True
+    keys = (
+        "JUPYTERHUB_API_KEY",
+        "JPY_API_TOKEN",
+        "JUPYTERHUB_API_TOKEN",
+    )
+    env = parent.environ()
+    if any(k in env for k in keys):
+        return True
+
+    return False
+
+
+
+
 class Visualiser():
     def __init__(self, blacklist, printWorld=False, nSegments=30, mergeMesh=False, dumpMesh=False, window_size=[1920, 1080]):
+        if is_jupyterlab_session():
+            pv.set_jupyter_backend('trame')  
+
         self.color =  list(mcolors.CSS4_COLORS.keys())
         self.worldMesh = Mesh()
         self.blacklist = blacklist

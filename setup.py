@@ -85,19 +85,20 @@ datalist = package_files('gdml')
 
 setup(
     
-    packages=['Cinema', 'Cinema.Interface', 'Cinema.Prompt', 'Cinema.Prompt.Histogram', 'Cinema.PiXiu', 'Cinema.PiXiu.io', 'Cinema.PiXiu.PhononCalc', 'Cinema.Experiment', 'Cinema.Experiment.Analyser', 'Cinema.Tak'],
+    packages=['Cinema', 
+              'Cinema.Interface', 
+              'Cinema.Prompt', 
+              'Cinema.Prompt.histogram', 
+              'Cinema.Experiment', 
+              'Cinema.Experiment.Analyser'],
 
     package_dir={
         'Cinema': os.path.join('.','src','python') + os.path.sep + 'Cinema',
+        'Cinema.Experiment': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Experiment'),
+        'Cinema.Experiment.Analyser': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Experiment', 'Analyser'),
         'Cinema.Interface': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Interface'),
         'Cinema.Prompt': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt'),
-        'Cinema.Prompt.Histogram': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt', 'Histogram'),
-        'Cinema.PiXiu': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'PiXiu'),
-        'Cinema.PiXiu.io': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'PiXiu', 'io'),
-        'Cinema.PiXiu.PhononCalc': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'PiXiu', 'PhononCalc'),
-        'Cinema.Experiment': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'Experiment'),
-        'Cinema.Experiment.Analyser': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'Experiment', 'Analyser'),
-        'Cinema.Tak': os.path.join('.', 'src', 'python') + os.path.sep + os.path.join('Cinema', 'Tak'),
+        'Cinema.Prompt.histogram': os.path.join('.','src','python') + os.path.sep + os.path.join('Cinema', 'Prompt', 'histogram'),
         },
     
     scripts=[os.path.join('.', 'scripts', 'prompt') ],
@@ -106,11 +107,15 @@ setup(
         ('/Cinema/ncmat', glob.glob('./ncmat/*')),
         ('/Cinema/ncmat', glob.glob('./data_ncrystal/data/*')),
         ('/Cinema', glob.glob('./hash*')),
+        ('/Cinema/test', glob.glob('./src/pythontests/test_prompt_gun.py')),
+        ('/Cinema/test', glob.glob('./src/pythontests/test_prompt.py')),
+        ('/Cinema/test', glob.glob('./src/pythontests/test_prompt_scorer.py')),
+        ('/Cinema/examples', glob.glob('./scripts/guide.py')),
         ] + datalist,
 
-    install_requires=['pyvista', 'matplotlib', 'mcpl'],
+    # outdated argument: install_requires=['pyvista', 'matplotlib', 'mcpl', 'scipy', 'h5py', 'optuna'],
 
-    # ext_modules=[CMakeExtension(name='cinema', sourcedir='')],
+    ext_modules=[CMakeExtension(name='cinema', sourcedir='')],
 
     cmdclass={
         'build_ext': CMakeBuild,

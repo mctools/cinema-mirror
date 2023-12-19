@@ -4,7 +4,7 @@
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2022 Prompt developers                                     ##
+##  Copyright 2021-2024 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -52,13 +52,13 @@ type_npint641d=np.ctypeslib.ndpointer(dtype=np.int64,ndim=1,flags='C_CONTIGUOUS'
 
 def _getPromptLib():
     _ptpath = os.getenv('CINEMAPATH')
-    if _ptpath is not None:
+    try:
         libfile = glob.glob(_ptpath +'/cinemabin/src/cxx/libprompt_core.so')[0]
-    else:
-        _t = pathlib.Path(__file__).resolve().parent.parent
-        _ptpath = str(_t)
-        libfile = str(sorted(_t.rglob('libprompt_core.so'))[0])
-        
+    except:
+        try:
+            libfile = glob.glob(_ptpath + os.sep + 'libprompt_core.so')[0]
+        except:
+            raise IOError('CINEMAPATH enviroment need to be configured')
     return ctypes.CDLL(libfile), _ptpath
 
 _taklib, _ptpath = _getPromptLib()

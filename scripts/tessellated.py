@@ -30,9 +30,6 @@ l.setWorld(world)
 l.setGun(gunCfg)
 l.showWorld(100)
 
-# gun = PythonGun()
-# l.setPythonGun(gun)
-
 # l.go(1000000)
 
 # psd = l.getHist(scorerCfg_detpsd)

@@ -1,6 +1,6 @@
 import numpy as np
 from Cinema.Prompt import PromptFileReader
-from Cinema.Prompt.Histogram import Hist1D
+from Cinema.Prompt.histogram import Hist1D
 from Cinema.Interface.units import avogadro
 from glob import glob
 import os

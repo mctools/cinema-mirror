@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import optuna
 from sklearn.neighbors import KernelDensity
 import time
-from Cinema.Prompt.Histogram import Hist2D, Hist1D
+from Cinema.Prompt.histogram import Hist2D, Hist1D
 import mcpl
 from Cinema.Interface import plotStyle
 

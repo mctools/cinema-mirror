@@ -18,36 +18,14 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "PTScorer.hh"
+#include "PTActiveVolume.hh"
 
-#include "PromptCore.hh"
-#include "PTPython.hh"
+Prompt::Scorer::Scorer(const std::string& name, ScorerType type, int groupid) 
+  : m_name(name), m_type(type), m_groupid(groupid), m_activeVolume(Singleton<ActiveVolume>::getInstance())  { };
 
 
-PyObject* get(PyObject* &module, const char* name) 
+int Prompt::Scorer::getVolumeGroupID()
 {
-    PyObject* ret = PyObject_GetAttrString(module, name);
-    if(!ret)
-        PROMPT_THROW2(BadInput, "Can not get attribute " << name );
-    return ret;
+  return m_activeVolume.getVolume()->GetCopyNo();
 }
-
-// PyObject_Call(),
-// PyObject_CallFunction() 
-// PyObject_CallMethod()
-
-PyObject *pt_call_python_method(PyObject *obj, const char* method)
-{
-    // https://www.geeksforgeeks.org/releasing-gil-and-mixing-threads-from-c-and-python/
-    // For any C involving Python objects or the Python C API, GIL needs to be acquired and released first. 
-    // This can be performed using PyGILState_Ensure() and PyGILState_Release() as in the code given below.
-    // Every call to PyGILState_Ensure() must have a matching call to PyGILState_Release().
-
-    PyGILState_STATE state = PyGILState_Ensure();
-    if(!obj)
-        PROMPT_THROW(BadInput, "Input PyObject is not valid")
-    auto ret = PyObject_CallMethod(obj, method,"()"); 
-    PyGILState_Release(state);
-    Py_INCREF(ret);   //  remember to Py_DECREF after use
-    return ret;
-}
-
