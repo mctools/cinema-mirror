@@ -27,6 +27,9 @@ void* pt_Trapezoid_new(double x1, double x2, double y1, double y2, double z);
 // Tessellated
 void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, float *point);
 
+// Polyhedron
+void *pt_Polyhedron_new(double phiStart, double phiDelta, const int sideCount, const int zPlaneCount,
+                     double *zPlanes, double *rMin, double *rMax);
 
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume);

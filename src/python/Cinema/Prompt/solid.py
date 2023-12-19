@@ -26,14 +26,19 @@ _pt_Box_delete = importFunc('pt_Box_delete', None, [type_voidp] )
 _pt_Tube_new = importFunc('pt_Tube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 _pt_Trapezoid_new = importFunc('pt_Trapezoid_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 _pt_Sphere_new = importFunc('pt_Sphere_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
-
+_pt_Polyhedron_new = importFunc('pt_Polyhedron_new', type_voidp, [type_dbl, type_dbl, type_int, type_int, type_npdbl1d, type_npdbl1d, type_npdbl1d] )
 
 #Tessellated
 _pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npsbl2d] )
 
 
-class Box:
+class Solid:
+    def __init__(self) -> None:
+        pass
+
+class Box(Solid):
     def __init__(self, hx, hy, hz):
+        super().__init__()
         self.cobj = _pt_Box_new(hx, hy, hz)
         self.hx = hx
         self.hy = hy
@@ -45,19 +50,31 @@ class Box:
         # _pt_Box_delete(self.cobj)
         pass
 
-class Tube:
+class Tube(Solid):
     def __init__(self, rmin, rmax, z, startphi = 0, deltaphi = 360):
+        super().__init__()
         self.cobj = _pt_Tube_new(rmin, rmax, z, np.deg2rad(startphi), np.deg2rad(deltaphi))
 
-class Sphere:
+class Sphere(Solid):
     def __init__(self, rmin, rmax, startphi=0., deltaphi=2*np.pi, starttheta=0., deltatheta=np.pi):
+        super().__init__()
         self.cobj = _pt_Sphere_new(rmin, rmax, startphi, deltaphi, starttheta, deltatheta)
-class Trapezoid:
+
+class Trapezoid(Solid):
     def __init__(self, x1, x2, y1, y2, z) -> None:
+        super().__init__()
         self.cobj = _pt_Trapezoid_new(x1, x2, y1, y2, z)
 
-class Tessellated: #this one is not working
+class Polyhedron(Solid):
+    def __init__(self, phiStart, phiDelta, sideCount, zPlaneCount, 
+                 zPlanes, rMin, rMax) -> None:
+        super().__init__()
+        self.cobj = _pt_Polyhedron_new(phiStart, phiDelta, int(sideCount), int(zPlaneCount), 
+                 np.array(zPlanes), np.array(rMin), np.array(rMax))
+
+class Tessellated(Solid): #this one is not working
     def __init__(self, faces, points, tranMat=None) -> None:
+        super().__init__()
         if tranMat is not None:
             tranMat.transformInplace(points)
         self.cobj = _pt_Tessellated_new(faces.shape[0], faces, points)

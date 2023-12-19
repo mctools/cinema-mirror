@@ -23,6 +23,7 @@ from ..Interface import *
 from .Mesh import _pt_Transformation3D_transform
 from copy import deepcopy
 from .scorer import Scorer
+from .solid import Solid
 
 __all__ = ['Volume', 'Transformation3D']
 
@@ -234,7 +235,7 @@ class Transformation3D:
 class Volume:
     scorerDict = {}
 
-    def __init__(self, volname, solid, matCfg=None, surfaceCfg=None):
+    def __init__(self, volname, solid : Solid, matCfg=None, surfaceCfg=None):
         self.volname = volname
         self.solid = solid
         self.child = []
@@ -283,6 +284,8 @@ class Volume:
         _pt_ResourceManager_addSurface(self.volid, cfg.encode('utf-8')) 
 
     def placeChild(self, name, logVolume, transf=Transformation3D(0,0,0), scorerGroup=0):
+        if not isinstance(logVolume, Volume):
+            raise RuntimeError('logVolume is not an instance of class Volume')
         self.child.append(logVolume)
         _pt_Volume_placeChild(self.cobj, name.encode('utf-8'), logVolume.cobj, transf.cobj, scorerGroup)
         return self
