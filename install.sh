@@ -193,7 +193,14 @@ else
 fi
 
 # add submodule and define the master branch as the one you want to track
-cd $CINEMAPATH/src/python/
-git submodule add https://gitlab.com/cinema-developers/ptgeo.git
-git submodule init
-cd -
+if [ ! -f $CINEMAPATH/src/python/ptgeo/__init__.py ]; then
+  echo "Clone ptgeo submodule"
+  cd $CINEMAPATH/src/python
+  # git submodule add https://gitlab.com/cinema-developers/ptgeo.git
+  # git submodule init
+  git submodule update --init --recursive
+  cd -
+fi
+
+export PATH="$CINEMAPATH/src/python/ptgeo/examples:$PATH"
+echo "Added the ptgeo example directory into environment"
