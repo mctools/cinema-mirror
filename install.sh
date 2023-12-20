@@ -105,6 +105,28 @@ if [ ! -f $CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so ]; then
     fi
 fi
 
+# KDSource 
+if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libkdsource.so ]; then
+  # read -r -p "Do you want to install KDSource into $CINEMAPATH/external? [y/N] " response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+      if [ ! -d $CINEMAPATH/external ]; then
+        mkdir $CINEMAPATH/external
+      fi
+      cd $CINEMAPATH/external
+      if [ -d KDSource ]; then
+        rm -rf KDSource
+      fi
+      git clone https://gitlab.com/cinema-developers/KDSource.git
+      cd -
+      mkdir $CINEMAPATH/external/KDSource/build $CINEMAPATH/external/KDSource/install && cd $CINEMAPATH/external/KDSource/build
+      rm -rf $CINEMAPATH/external/KDSource/mcpl
+      ln -s $CINEMAPATH/external/mcpl $CINEMAPATH/external/KDSource/
+      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/KDSource/install ..
+      make -j ${NUMCPU} && make install
+      cd -
+      echo "installed  KDSource"
+    fi
+fi
 
 #install VecGeom
 
