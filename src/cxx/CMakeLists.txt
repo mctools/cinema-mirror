@@ -42,7 +42,12 @@ file(GLOB RAC_SRC "${PROJECT_SOURCE_DIR}/Process/libsrc/*.cc")
 file(GLOB TRJ_SRC "${PROJECT_SOURCE_DIR}/Trj/libsrc/*.cc")
 file(GLOB MCPL_SRC "${PROJECT_SOURCE_DIR}/MCPL/libsrc/*.cc" "${PROJECT_SOURCE_DIR}/MCPL/libsrc/*.c")
 
-ADD_LIBRARY(${PROJECT_NAME} SHARED ${MCPL_SRC} ${COR_SRC} ${RAC_SRC} ${SUR_SRC} ${RND_SRC} ${UTL_SRC} ${RTR_SRC} ${ANA_SRC} ${PAR_SRC} ${BUK_SRC} ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC})
+file(GLOB KDSource_SRC "${PROJECT_SOURCE_DIR}/../external/KDSource/src/kdsource/*.c" )
+
+
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${MCPL_SRC} ${COR_SRC} ${RAC_SRC} ${SUR_SRC} ${RND_SRC} 
+                                ${UTL_SRC} ${RTR_SRC} ${ANA_SRC} ${PAR_SRC} ${BUK_SRC} 
+                                ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC} ${KDSource_SRC})
 
 find_package(Python REQUIRED COMPONENTS Interpreter)
 
@@ -70,4 +75,5 @@ target_include_directories( ${PROJECT_NAME}
     ${NCrystal_INCDIR}
     ${HDF5_INCLUDE_DIR}
     ${MCPL_INCDIR}
+    ${KDS_INCDIR}
 )
