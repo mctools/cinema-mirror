@@ -38,7 +38,7 @@ endif()
 
 
 # KDSrouce 
-set(KDS_INCDIR "${PROJECT_SOURCE_DIR}/external/KDSource/src/kdsource") 
+set(KDS_INCDIR "${PROJECT_SOURCE_DIR}/external/KDSource/install/include") 
 
 # set(Python_ROOT_DIR ${CMAKE_SOURCE_DIR}/cinemavirenv/bin/python)
 set(Python_FIND_STRATEGY LOCATION)
