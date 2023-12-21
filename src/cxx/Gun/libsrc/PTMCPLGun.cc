@@ -51,7 +51,7 @@ Prompt::MCPLGun::MCPLGun(const Particle &aParticle, const std::string &fn)
 Prompt::MCPLGun::~MCPLGun() 
 {
   if(m_mode)
-    delete kdsource;
+    KDS_destroy(kdsource);
 }
 
 std::unique_ptr<Prompt::Particle> Prompt::MCPLGun::generate()
