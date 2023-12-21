@@ -28,7 +28,8 @@ find_package(NCrystal 3.0.0 REQUIRED)
 message(STATUS "FOUND NCrystal: ${NCrystal_FOUND} ${NCrystal_DIR}")
 
 # MCPL
-set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/mcpl/install/")
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/KDSource/install")
+set(MCPL_DIR  "${CMAKE_SOURCE_DIR}/external/KDSource/install/lib/cmake")
 find_package(MCPL REQUIRED)
 message(STATUS "FOUND MCPL: ${MCPL_FOUND} ${MCPL_DIR}")
 
@@ -36,9 +37,11 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-
 # KDSrouce 
 set(KDS_INCDIR "${PROJECT_SOURCE_DIR}/external/KDSource/install/include") 
+set(KDS_LIB "${PROJECT_SOURCE_DIR}/external/KDSource/install/lib") 
+set(KDS_SRC "${PROJECT_SOURCE_DIR}/external/KDSource/src/kdsource") 
+
 
 # set(Python_ROOT_DIR ${CMAKE_SOURCE_DIR}/cinemavirenv/bin/python)
 set(Python_FIND_STRATEGY LOCATION)

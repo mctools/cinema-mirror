@@ -73,9 +73,10 @@ if [ ! -f $CINEMAPATH/external/mcpl/install/lib/libmcpl.so ]; then
       fi
       git clone ${PREFIX}/mcpl.git
       cd -
-      mkdir $CINEMAPATH/external/mcpl/build && cd $CINEMAPATH/external/mcpl/build
-      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/mcpl/install ..
-      make -j ${NUMCPU} && make install
+      # MCPL is not built as it will be built in the KDSource
+      # mkdir $CINEMAPATH/external/mcpl/build && cd $CINEMAPATH/external/mcpl/build
+      # cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/mcpl/install ..
+      # make -j ${NUMCPU} && make install
       cd -
       echo "installed  MCPL"
     else

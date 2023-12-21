@@ -19,11 +19,23 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTMCPLGun.hh"
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "kdsource.h"
+
+#ifdef __cplusplus
+}
+#endif
+
+
 #include <filesystem>
 
 Prompt::MCPLGun::MCPLGun(const Particle &aParticle, const std::string &fn)
-: PrimaryGun(aParticle), m_mode(std::filesystem::path(fn).extension()==".xml" ? 0 : 1)
+: PrimaryGun(aParticle), m_mode(std::filesystem::path(fn).extension()==".xml" ? true : false)
 { 
   if(m_mode)
   {
@@ -36,20 +48,25 @@ Prompt::MCPLGun::MCPLGun(const Particle &aParticle, const std::string &fn)
 
 }
 
-Prompt::MCPLGun::~MCPLGun() { }
+Prompt::MCPLGun::~MCPLGun() 
+{
+  if(m_mode)
+    delete kdsource;
+}
 
 std::unique_ptr<Prompt::Particle> Prompt::MCPLGun::generate()
 {
+  // m_particle is read in different modes
   if(m_mode)
   {
     char pt;
     mcpl_particle_t part;
     double w, v;
     int eof_reached;
-    int use_kde = 1;
+
     double w_crit = 1;
 
-    if(KDS_sample2(kdsource, m_particle, use_kde, w_crit, NULL, 1))
+    if(KDS_sample2(kdsource, m_particle, true, w_crit, NULL, 1))
     {      
       PROMPT_THROW(CalcError, "eof_reached should not happen in the kde mode");
     }
@@ -61,6 +78,7 @@ std::unique_ptr<Prompt::Particle> Prompt::MCPLGun::generate()
     m_particle = m_mcplread->getParticle();      
   }
 
+  //reading and converting unit 
   m_ekin = m_particle->ekin*Unit::MeV;
   m_ekin0 = m_ekin;
 
