@@ -20,19 +20,46 @@
 ################################################################################
 
 from ..Interface import *
+from ctypes import Structure, c_int32, c_uint64
 
 _pt_MCPLBinaryWrite_new = importFunc('pt_MCPLBinaryWrite_new', type_voidp, [type_cstr, type_bool, type_bool, type_bool] )
 _pt_MCPLBinaryWrite_delete = importFunc('pt_MCPLBinaryWrite_delete', type_voidp, [type_voidp] )
-_pt_MCPLBinaryWrite_write = importFunc('pt_MCPLBinaryWrite_write', type_voidp, [type_voidp, type_voidp] )
+
+# mcpl definition of mcpl_particle_t
+#   typedef struct {
+#     double ekin;            /* kinetic energy [MeV]             */
+#     double polarisation[3]; /* polarisation vector              */
+#     double position[3];     /* position [cm]                    */
+#     double direction[3];    /* momentum direction (unit vector) */
+#     double time;            /* time-stamp [millisecond]         */
+#     double weight;          /* weight or intensity              */
+#     int32_t pdgcode;    /* MC particle number from the Particle Data Group (2112=neutron, 22=gamma, ...)        */
+#     uint32_t userflags; /* User flags (if used, the file header should probably contain information about how). */
+#   } mcpl_particle_t;
+
+
+
+class MCPLParticle(Structure):
+    _fields_ = [("ekin", type_dbl),
+                ("polarisation_x", type_dbl), ("polarisation_y", type_dbl), ("polarisation_z", type_dbl),
+                ("position_x", type_dbl), ("position_y", type_dbl), ("position_z", type_dbl),
+                ("direction_x", type_dbl,), ("direction_y", type_dbl), ("direction_z", type_dbl),
+                ("time", type_dbl),
+                ("weight", type_dbl),
+                ("pdgcode", c_int32),
+                ("userflags", c_uint64)]
+
+_pt_MCPLBinaryWrite_write = importFunc('pt_MCPLBinaryWrite_write', type_voidp, [type_voidp, ctypes.POINTER(MCPLParticle)] )
+_pt_MCPLBinaryRead_read = importFunc('pt_MCPLBinaryWrite_write', ctypes.POINTER(MCPLParticle), [type_voidp] )
 
 
 class MCPLBinaryWrite:
     def __init__(self, fn, enable_double=False, enable_extra3double=False, 
                 enable_extraUnsigned=False) -> None:
-        self.cobj = _pt_MCPLBinaryWrite_new(fn, enable_double, enable_extra3double, enable_extraUnsigned )
+        self.cobj = _pt_MCPLBinaryWrite_new(fn.encode('utf-8'), enable_double, enable_extra3double, enable_extraUnsigned )
 
     def __del__(self):
         _pt_MCPLBinaryWrite_delete(self.cobj)
     
-    def write(self, par):
+    def write(self, par : MCPLParticle):
         _pt_MCPLBinaryWrite_write(self.cobj, par)
