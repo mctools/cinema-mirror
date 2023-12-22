@@ -23,6 +23,7 @@
 
 #include "PTPrimaryGun.hh"
 #include "PTMCPLParticleReader.hh"
+#include "PTMCPLBinaryWrite.hh"
 
 class KDSource ;
 namespace Prompt {
@@ -42,6 +43,8 @@ namespace Prompt {
       KDSource *kdsource;
       mcpl_particle_t *m_particle;
       int m_mode;
+      double m_w_crit;
+      // MCPLBinaryWrite m_writer; // for testing
   };
 }
 

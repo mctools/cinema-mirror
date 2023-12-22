@@ -77,7 +77,7 @@ if [ ! -f $CINEMAPATH/external/mcpl/install/lib/libmcpl.so ]; then
       # mkdir $CINEMAPATH/external/mcpl/build && cd $CINEMAPATH/external/mcpl/build
       # cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/mcpl/install ..
       # make -j ${NUMCPU} && make install
-      cd -
+      # cd -
       echo "installed  MCPL"
     else
       echo "Found MCPL"

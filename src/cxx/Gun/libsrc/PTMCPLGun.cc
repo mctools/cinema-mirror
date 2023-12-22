@@ -35,15 +35,18 @@ extern "C" {
 #include <filesystem>
 
 Prompt::MCPLGun::MCPLGun(const Particle &aParticle, const std::string &fn)
-: PrimaryGun(aParticle), m_mode(std::filesystem::path(fn).extension()==".xml" ? true : false)
+: PrimaryGun(aParticle), m_mode(std::filesystem::path(fn).extension()==".xml" ? true : false),
+m_particle((mcpl_particle_t*)malloc(sizeof(mcpl_particle_t))), m_w_crit(0.)//, m_writer("pt_resampled")
 { 
   if(m_mode)
   {
     kdsource = KDS_open(fn.c_str());
+    m_w_crit = KDS_w_mean(kdsource, 1000, NULL);
   }
   else
   {
-    m_mcplread = std::make_unique<MCPLParticleReader>(fn);
+    free(m_particle);
+    m_mcplread = std::make_unique<MCPLParticleReader>(fn, true);
   }
 
 }
@@ -51,7 +54,10 @@ Prompt::MCPLGun::MCPLGun(const Particle &aParticle, const std::string &fn)
 Prompt::MCPLGun::~MCPLGun() 
 {
   if(m_mode)
+  {
     KDS_destroy(kdsource);
+    free(m_particle);
+  }
 }
 
 std::unique_ptr<Prompt::Particle> Prompt::MCPLGun::generate()
@@ -59,21 +65,11 @@ std::unique_ptr<Prompt::Particle> Prompt::MCPLGun::generate()
   // m_particle is read in different modes
   if(m_mode)
   {
-    char pt;
-    mcpl_particle_t part;
-    double w, v;
-    int eof_reached;
-
-    double w_crit = 1;
-
-    if(KDS_sample2(kdsource, m_particle, true, w_crit, NULL, 1))
-    {      
-      PROMPT_THROW(CalcError, "eof_reached should not happen in the kde mode");
-    }
+    KDS_sample2(kdsource, m_particle, true, m_w_crit, NULL, 1);
   }
   else
   {
-    if(m_mcplread->readOneParticle())
+    if(! m_mcplread->readOneParticle())
       PROMPT_THROW(CalcError, "failed to read particle from the mcpl file");
     m_particle = m_mcplread->getParticle();      
   }
@@ -92,9 +88,12 @@ std::unique_ptr<Prompt::Particle> Prompt::MCPLGun::generate()
     
   m_eventid++;
   m_weight = m_particle->weight;
-  m_alive=true;
-  m_time = getTime();
+  m_alive = true;
+  m_time = m_particle->time*Unit::ms;
   auto p = std::make_unique<Particle>(*this);
+  // std::cout << *p.get() << std::endl;
+  // m_writer.write(*p.get());
+
   return std::move(p);
 }
 

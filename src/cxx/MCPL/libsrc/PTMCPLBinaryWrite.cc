@@ -81,9 +81,9 @@ void Prompt::MCPLBinaryWrite::write(const Particle &p)
 
   //position in centimeters:
   const Vector &pos = p.getPosition();
-  m_particleInFile->position[0] = pos.x()*10;
-  m_particleInFile->position[1] = pos.y()*10;
-  m_particleInFile->position[2] = pos.z()*10;
+  m_particleInFile->position[0] = pos.x()*0.1;
+  m_particleInFile->position[1] = pos.y()*0.1;
+  m_particleInFile->position[2] = pos.z()*0.1;
 
   //kinetic energy in MeV:
   m_particleInFile->ekin = p.getEKin()*1e-6;
@@ -95,7 +95,7 @@ void Prompt::MCPLBinaryWrite::write(const Particle &p)
   m_particleInFile->direction[2] = dir.z();
 
   //time in milliseconds:
-  m_particleInFile->time = p.getTime()*1e-3;
+  m_particleInFile->time = p.getTime()*1e3;
 
   //weight in unspecified units:
   m_particleInFile->weight = p.getWeight();
