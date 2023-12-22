@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 ################################################################################
 ##                                                                            ##
@@ -20,20 +19,20 @@
 ##                                                                            ##
 ################################################################################
 
+from ..Interface import *
+
+_pt_MCPLBinaryWrite_new = importFunc('pt_MCPLBinaryWrite_new', type_voidp, [type_cstr, type_bool, type_bool, type_bool] )
+_pt_MCPLBinaryWrite_delete = importFunc('pt_MCPLBinaryWrite_delete', type_voidp, [type_voidp] )
+_pt_MCPLBinaryWrite_write = importFunc('pt_MCPLBinaryWrite_write', type_voidp, [type_voidp, type_voidp] )
 
 
-from Cinema.Prompt.geo import Transformation3D
-import numpy as np
+class MCPLBinaryWrite:
+    def __init__(self, fn, enable_double=False, enable_extra3double=False, 
+                enable_extraUnsigned=False) -> None:
+        self.cobj = _pt_MCPLBinaryWrite_new(fn, enable_double, enable_extra3double, enable_extraUnsigned )
 
-for i in np.arange(10):
-    angles=np.random.random(3)*np.pi
-    mat1 = Transformation3D(rot_z=angles[0], rot_new_x=angles[1], rot_new_z=angles[2])
-    mat2 = Transformation3D()
-    mat2.setRot(rot_z=angles[0], rot_new_x=angles[1], rot_new_z=angles[2])
-    data = np.random.random([1000,3])
-    data2 = np.copy(data)
-    np.testing.assert_allclose(data, data2, rtol=1e-15, atol=1e-15)
-
-    mat1.transformInplace(data)
-    mat2.transformInplace(data2)
-    np.testing.assert_allclose(data, data2, rtol=1e-15, atol=1e-15)
+    def __del__(self):
+        _pt_MCPLBinaryWrite_delete(self.cobj)
+    
+    def write(self, par):
+        _pt_MCPLBinaryWrite_write(self.cobj, par)

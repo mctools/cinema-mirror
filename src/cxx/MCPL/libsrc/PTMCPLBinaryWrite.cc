@@ -72,6 +72,16 @@ void Prompt::MCPLBinaryWrite::write(const PromptRecord &p)
   mcpl_add_particle(m_file, m_particleInFile);
 }
 
+void Prompt::MCPLBinaryWrite::write(const mcpl_particle_t &p)
+{
+  if(m_fileNotCreated) init();
+  m_headerClosed=true;
+  
+  memcpy (m_particleInFile, &p, sizeof(mcpl_particle_t));
+  mcpl_add_particle(m_file, m_particleInFile);
+}
+
+
 void Prompt::MCPLBinaryWrite::write(const Particle &p)
 {
   if(m_fileNotCreated) init();
