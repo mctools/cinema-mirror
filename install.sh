@@ -223,5 +223,9 @@ if [ ! -f $CINEMAPATH/src/python/ptgeo/__init__.py ]; then
   cd -
 fi
 
+# gidipuls
+# fixme: to be added
+
+
 export PATH="$CINEMAPATH/src/python/ptgeo/examples:$PATH"
 echo "Added the ptgeo example directory into environment"

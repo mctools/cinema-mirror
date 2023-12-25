@@ -51,11 +51,11 @@ find_package(Python REQUIRED COMPONENTS Interpreter)
 FIND_LIBRARY(mcpl mcpl ${KDS_LIB})
 FIND_LIBRARY(kdsource kdsource ${KDS_LIB})
 
+FIND_LIBRARY(gidiplus gidiplus ${GIDIPLUS_LIB})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml fftw3 ${HDF5_LIBRARIES} OpenMP::OpenMP_CXX  ${mcpl} ${kdsource} )
+target_link_libraries(${PROJECT_NAME} PUBLIC  ${gidiplus} NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml fftw3 ${HDF5_LIBRARIES} OpenMP::OpenMP_CXX  ${mcpl} ${kdsource})
 
 #fixme remove openmp
-
 target_include_directories( ${PROJECT_NAME}
     PUBLIC
     ${PROJECT_SOURCE_DIR}/Core/libinc
@@ -77,4 +77,6 @@ target_include_directories( ${PROJECT_NAME}
     ${NCrystal_INCDIR}
     ${HDF5_INCLUDE_DIR}
     ${MCPL_INCDIR} #KDSource files are in this DIR as well
+    PRIVATE
+    ${GIDIPLUS_INCDIR}
 )
