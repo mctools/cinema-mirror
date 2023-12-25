@@ -53,7 +53,8 @@ set(Python_FIND_STRATEGY LOCATION)
 enable_testing()
 
 add_subdirectory(src/cxx)
-add_subdirectory(src/cxxtests)
+add_subdirectory(src/cxxtests) #DO NOT REMOVE TESTS!!!
+add_subdirectory(bin)
 
 
 set(Python_FIND_STRATEGY LOCATION)

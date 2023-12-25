@@ -47,6 +47,9 @@ namespace Prompt {
 
   class PhysicsBase {
   public:
+    PhysicsBase() = delete;
+    PhysicsBase &operator = (const PhysicsBase&) = delete;
+
     PhysicsBase(const std::string &name);
     PhysicsBase(const std::string &name, int gdp, double emin, double emax);
     virtual ~PhysicsBase() = default;

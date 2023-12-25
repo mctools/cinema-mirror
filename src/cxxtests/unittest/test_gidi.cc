@@ -28,5 +28,6 @@ namespace pt = Prompt;
 
 TEST_CASE("GeoLoader")
 {
-  pt::GIDIModel model();
+  std::cout << "@@@@@\n";
+  pt::GIDIModel model("data", 1);
 }

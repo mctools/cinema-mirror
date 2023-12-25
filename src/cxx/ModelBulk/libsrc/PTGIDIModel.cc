@@ -37,15 +37,13 @@ Prompt::GIDIModel::GIDIModel(const std::string &cfgstring, double bias)
   PoPI::Database pops( "/home/caixx/git/fudge/rundir/prompt_data/pops.xml" );
   GIDI::Map::Map map( "/home/caixx/git/fudge/rundir/prompt_data/neutron.map", pops );
 
-  // GIDI::Transporting::Particles particles;
-  // std::set<int> reactionsToExclude;
-  // LUPI::StatusMessageReporting smr1;
-
+  // PoPI::Database pops( "/home/caixx/git/gidiplus/GIDI/Test/pops.xml" );
+  // GIDI::Map::Map map( "/home/caixx/git/gidiplus/GIDI/Test/all3T.map", pops );
 
   GIDI::Construction::Settings construction( GIDI::Construction::ParseMode::MonteCarloContinuousEnergy, 
                                                GIDI::Construction::PhotoMode::nuclearAndAtomic );
  
-  GIDI::ProtareSingle *protare = static_cast<GIDI::ProtareSingle *>( map.protare( construction, pops, "n", "O16" ) );
+  GIDI::ProtareSingle *protare = static_cast<GIDI::ProtareSingle *>( map.protare( construction, pops, "n", "He3" ) );
 
 
   
@@ -54,16 +52,45 @@ Prompt::GIDIModel::GIDIModel(const std::string &cfgstring, double bias)
     std::cout << "label = " << iter->heatedCrossSection( ) << "  temperature = " << iter->temperature( ).value( ) << std::endl;
   }
 
+  std::string label( temperatures[0].heatedCrossSection( ) );
 
 
-  // m_oriented = m_scat.isOriented();
-  // if(Unit::eV != 1.)
-  //   PROMPT_THROW(CalcError, "The default unit of NCrystal is eV");
+  // MC Part
+  MCGIDI::Transporting::MC *MC = new MCGIDI::Transporting::MC( pops, protare->projectile( ).ID( ), &protare->styles( ), label, GIDI::Transporting::DelayedNeutrons::on, 20.0 );
+  MC->setNuclearPlusCoulombInterferenceOnly( true );
+  MC->sampleNonTransportingParticles( true );
+
+  LUPI::StatusMessageReporting smr1;
+  GIDI::Transporting::Particles particles;
+  std::set<int> reactionsToExclude;
+
+
+  MCGIDI::DomainHash domainHash( 4000, 1e-8, 10 );
+  MCGIDI::Protare *MCProtare;
+  MCProtare = MCGIDI::protareFromGIDIProtare( smr1, *protare, pops, *MC, particles, domainHash, temperatures, reactionsToExclude );
+
+
+
+  MCGIDI::Vector<MCGIDI::Protare *> protares( 1 );
+  protares[0] = MCProtare;
+  MCGIDI::URR_protareInfos URR_protare_infos( protares );
+
+
+  MCProtare = MCGIDI::protareFromGIDIProtare( smr1, *protare, pops, *MC, particles, domainHash, temperatures, reactionsToExclude );
+
+
+  for( double energy = 1e-12; energy < 100; energy *= 3 ) {
+    int hashIndex = domainHash.index( energy );
+
+    double crossSection = MCProtare->crossSection( URR_protare_infos, hashIndex, 2.586e-08, energy );
+    std::cout << "    energy = " << energy << " crossSection = " << crossSection << std::endl;
+  }
+
 }
 
 Prompt::GIDIModel::~GIDIModel()
 {
-  std::cout<<"Destructing scattering physics " << m_modelName <<std::endl;
+  std::cout<<"Destructing GIDIModel " << m_modelName <<std::endl;
 }
 
 
