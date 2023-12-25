@@ -48,6 +48,10 @@ class MCPLParticle(Structure):
                 ("weight", type_dbl),
                 ("pdgcode", c_int32),
                 ("userflags", c_uint64)]
+    
+    def __repr__(self):
+        return f'ekin {self.ekin}, polarisation_x {self.polarisation_x}, polarisation_y {self.polarisation_y}, polarisation_z {self.polarisation_z}, position_x {self.position_x}, position_y {self.position_y}, position_z {self.position_z}, direction_x {self.direction_x}, direction_y {self.direction_y}, direction_z {self.direction_z}, time {self.time}, weight {self.weight}, pdgcode {self.pdgcode}, userflags {self.userflags}'
+
 
 _pt_MCPLBinaryWrite_write = importFunc('pt_MCPLBinaryWrite_write', type_voidp, [type_voidp, ctypes.POINTER(MCPLParticle)] )
 _pt_MCPLBinaryRead_read = importFunc('pt_MCPLBinaryWrite_write', ctypes.POINTER(MCPLParticle), [type_voidp] )

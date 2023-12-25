@@ -32,7 +32,7 @@ void pt_MCPLBinaryWrite_delete(void* obj)
   delete static_cast<Prompt::MCPLBinaryWrite *>(obj);
 }
 
-void pt_MCPLBinaryWrite_write(void* obj, void* par)
+void pt_MCPLBinaryWrite_write(void* obj, mcpl_particle_t par)
 {
-  static_cast<Prompt::MCPLBinaryWrite *>(obj)->write(*static_cast<mcpl_particle_t *>(par));
+  static_cast<Prompt::MCPLBinaryWrite *>(obj)->write(par);
 }
