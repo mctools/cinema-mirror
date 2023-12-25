@@ -39,6 +39,7 @@ namespace Prompt {
 
       virtual ~MCPLBinary() = default; 
       const std::string& getFileName() { return m_filename; }
+      mcpl_particle_t *getParticle() { return m_particleInFile;}
 
 
     protected:

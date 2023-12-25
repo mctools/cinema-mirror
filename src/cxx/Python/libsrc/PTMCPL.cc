@@ -18,50 +18,21 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTPythonGun.hh"
-#include "PTNeutron.hh"
 #include "PTPython.hh"
+#include "PTMCPLBinaryWrite.hh"
 
-Prompt::PythonGun::PythonGun()
-    : PrimaryGun(Neutron()), m_stackManager(Singleton<StackManager>::getInstance())
-{  
-}
-
-Prompt::PythonGun::~PythonGun()
-{ 
-}
-
-
-void Prompt::PythonGun::pushToStack(double *pdata)
+void* pt_MCPLBinaryWrite_new(const char *fn, bool enable_double, bool enable_extra3double, 
+                bool enable_extraUnsigned)
 {
-    m_ekin = pdata[0];
-    m_weight = pdata[1];
-    m_time = pdata[2];
-    m_pos.x() = pdata[3];
-    m_pos.y() = pdata[4];
-    m_pos.z() = pdata[5];
-    m_dir.x() = pdata[6];
-    m_dir.y() = pdata[7];
-    m_dir.z() = pdata[8];
-
-    m_ekin0=m_ekin;
-    m_eventid++;
-    m_alive = true;
-    m_stackManager.add(std::make_unique<Particle>(*this));
+  return static_cast<void *>(new Prompt::MCPLBinaryWrite(fn, enable_double, enable_extra3double, enable_extraUnsigned ));
 }
 
-
-void* pt_PythonGun_new()
+void pt_MCPLBinaryWrite_delete(void* obj)
 {
-    return static_cast<void *> (new Prompt::PythonGun()) ;
+  delete static_cast<Prompt::MCPLBinaryWrite *>(obj);
 }
 
-void pt_PythonGun_delete(void *obj)
+void pt_MCPLBinaryWrite_write(void* obj, mcpl_particle_t par)
 {
-    delete static_cast<Prompt::PythonGun *> (obj);
-}
-
-void pt_PythonGun_pushToStack(void *obj, double *pdata)
-{
-    static_cast<Prompt::PythonGun *> (obj)->pushToStack(pdata);
+  static_cast<Prompt::MCPLBinaryWrite *>(obj)->write(par);
 }

@@ -40,13 +40,20 @@ file(GLOB MAT_SRC "${PROJECT_SOURCE_DIR}/Material/libsrc/*.cc")
 file(GLOB PYN_SRC "${PROJECT_SOURCE_DIR}/Python/libsrc/*.cc")
 file(GLOB RAC_SRC "${PROJECT_SOURCE_DIR}/Process/libsrc/*.cc")
 file(GLOB TRJ_SRC "${PROJECT_SOURCE_DIR}/Trj/libsrc/*.cc")
-file(GLOB MCPL_SRC "${PROJECT_SOURCE_DIR}/MCPL/libsrc/*.cc" "${PROJECT_SOURCE_DIR}/MCPL/libsrc/*.c")
+file(GLOB MCPL_SRC "${PROJECT_SOURCE_DIR}/MCPL/libsrc/*.cc" )
 
-ADD_LIBRARY(${PROJECT_NAME} SHARED ${MCPL_SRC} ${COR_SRC} ${RAC_SRC} ${SUR_SRC} ${RND_SRC} ${UTL_SRC} ${RTR_SRC} ${ANA_SRC} ${PAR_SRC} ${BUK_SRC} ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC})
-
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${MCPL_SRC} ${COR_SRC} ${RAC_SRC} ${SUR_SRC} ${RND_SRC} 
+                                ${UTL_SRC} ${RTR_SRC} ${ANA_SRC} ${PAR_SRC} ${BUK_SRC} 
+                                ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC}) 
+                                
 find_package(Python REQUIRED COMPONENTS Interpreter)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml fftw3 ${HDF5_LIBRARIES} MCPL::mcpl OpenMP::OpenMP_CXX)
+FIND_LIBRARY(mcpl mcpl ${KDS_LIB})
+FIND_LIBRARY(kdsource kdsource ${KDS_LIB})
+
+
+target_link_libraries(${PROJECT_NAME} PRIVATE NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml fftw3 ${HDF5_LIBRARIES} OpenMP::OpenMP_CXX  ${mcpl} ${kdsource} )
+
 #fixme remove openmp
 
 target_include_directories( ${PROJECT_NAME}
@@ -69,5 +76,5 @@ target_include_directories( ${PROJECT_NAME}
     ${VECGEOM_INCLUDE_DIRS}
     ${NCrystal_INCDIR}
     ${HDF5_INCLUDE_DIR}
-    ${MCPL_INCDIR}
+    ${MCPL_INCDIR} #KDSource files are in this DIR as well
 )

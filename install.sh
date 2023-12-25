@@ -24,7 +24,7 @@ if [ ! -z ${CINEMAPATH:-} ]; then
     cinema_prunepath PATH "$CINEMAPATH/cinemabin"
     cinema_prunepath LD_LIBRARY_PATH "$CINEMAPATH/cinemabin:$CINEMAPATH/src/python/bin"
     cinema_prunepath DYLD_LIBRARY_PATH "$CINEMAPATH/cinemabin"
-    cinema_prunepath PYTHONPATH "$CINEMAPATH/src/python"
+    cinema_prunepath PYTHONPATH "$CINEMAPATH/src/python;$CINEMAPATH/src/python/ptgeo/python"
     echo "Cleaned up previously defined Cinema enviorment"
 fi
 
@@ -61,7 +61,7 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
   fi
 
 #MCPL
-if [ ! -f $CINEMAPATH/external/mcpl/install/lib/libmcpl.so ]; then
+if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libmcpl.so ]; then
   # read -r -p "Do you want to install MCPL into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       if [ ! -d $CINEMAPATH/external ]; then
@@ -73,10 +73,11 @@ if [ ! -f $CINEMAPATH/external/mcpl/install/lib/libmcpl.so ]; then
       fi
       git clone ${PREFIX}/mcpl.git
       cd -
-      mkdir $CINEMAPATH/external/mcpl/build && cd $CINEMAPATH/external/mcpl/build
-      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/mcpl/install ..
-      make -j ${NUMCPU} && make install
-      cd -
+      # MCPL is not built as it will be built in the KDSource
+      # mkdir $CINEMAPATH/external/mcpl/build && cd $CINEMAPATH/external/mcpl/build
+      # cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/mcpl/install ..
+      # make -j ${NUMCPU} && make install
+      # cd -
       echo "installed  MCPL"
     else
       echo "Found MCPL"
@@ -105,6 +106,28 @@ if [ ! -f $CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so ]; then
     fi
 fi
 
+# KDSource 
+if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libkdsource.so ]; then
+  # read -r -p "Do you want to install KDSource into $CINEMAPATH/external? [y/N] " response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+      if [ ! -d $CINEMAPATH/external ]; then
+        mkdir $CINEMAPATH/external
+      fi
+      cd $CINEMAPATH/external
+      if [ -d KDSource ]; then
+        rm -rf KDSource
+      fi
+      git clone https://gitlab.com/cinema-developers/KDSource.git
+      cd -
+      mkdir $CINEMAPATH/external/KDSource/build $CINEMAPATH/external/KDSource/install && cd $CINEMAPATH/external/KDSource/build
+      rm -rf $CINEMAPATH/external/KDSource/mcpl
+      ln -s $CINEMAPATH/external/mcpl $CINEMAPATH/external/KDSource/
+      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/KDSource/install ..
+      make -j ${NUMCPU} && make install
+      cd -
+      echo "installed  KDSource"
+    fi
+fi
 
 #install VecGeom
 
@@ -131,7 +154,7 @@ if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
 fi
 
 if [ -f $CINEMAPATH/src/python/Cinema/__init__.py ]; then
-  export PYTHONPATH="$CINEMAPATH/src/python:$PYTHONPATH"
+  export PYTHONPATH="$CINEMAPATH/src/python:$CINEMAPATH/src/python/ptgeo/python:$PYTHONPATH"
   echo "Added Cinema python module into path"
 else
   echo "Can not find Cinema python module"
@@ -148,11 +171,9 @@ fi
 
 
 if [ -d $CINEMAPATH/cinemabin ]; then
-  #export PATH="$CINEMAPATH/resource/cxx/src:$PATH"
-  #export PATH="$CINEMAPATH/resource/src/bin:$PATH"
   export LD_LIBRARY_PATH="$CINEMAPATH/cinemabin:$LD_LIBRARY_PATH"
   export DYLD_LIBRARY_PATH="$CINEMAPATH/cinemabin:$DYLD_LIBRARY_PATH"
-  export PATH="$CINEMAPATH/cinemabin/bin:$CINEMAPATH/scripts:$PATH"
+  export PATH="$CINEMAPATH/src/python/ptgeo/examples:$CINEMAPATH/cinemabin/bin:$CINEMAPATH/scripts:$PATH"
   echo "Added the cinemabin directory into environment"
 fi
 

@@ -58,6 +58,7 @@ namespace Prompt {
     PROMPT_ADD_ERROR_TYPE(CalcError);
     PROMPT_ADD_ERROR_TYPE(LogicError);
     PROMPT_ADD_ERROR_TYPE(BadInput);
+    PROMPT_ADD_ERROR_TYPE(NotImplemented);
 #undef Prompt_ADD_ERROR_TYPE
   }
 }

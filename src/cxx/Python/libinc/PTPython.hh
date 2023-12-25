@@ -100,6 +100,13 @@ double pt_Hist2D_getYMax(void* obj);
 unsigned  pt_Hist2D_getNBinX(void* obj);
 unsigned  pt_Hist2D_getNBinY(void* obj);
 
+// Prompt::MCPLBinaryWrite
+#include "mcpl.h"
+void* pt_MCPLBinaryWrite_new(const char *fn, bool enable_double=false, bool enable_extra3double=false, 
+                bool enable_extraUnsigned=false);
+void pt_MCPLBinaryWrite_delete(void* obj);
+void pt_MCPLBinaryWrite_write(void* obj, mcpl_particle_t par);
+
 #ifdef __cplusplus
 }
 #endif
