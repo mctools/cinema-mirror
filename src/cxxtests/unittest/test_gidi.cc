@@ -29,7 +29,7 @@ namespace pt = Prompt;
 TEST_CASE("GeoLoader")
 {
   auto &fac = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-  std::shared_ptr<Prompt::GIDIModel> model = fac.createGIDIModel("B10", 1.);
+  std::shared_ptr<Prompt::GIDIModel> model = fac.createGIDIModel("O16", 1.);
   std::cout << model->getCrossSection(1e6)/Prompt::Unit::barn << std::endl;
   pt::Vector in(1,0,0);
   pt::Vector out(0,0,0);

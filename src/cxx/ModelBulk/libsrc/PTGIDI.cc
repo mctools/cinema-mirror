@@ -131,6 +131,24 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   }
 
   std::cout << " total neutrons " << prod_n.size() << "\n";
+  // Neutron die as absorption
+  if(prod_n.size()==0)
+  {
+    final_ekin=ENERGYTOKEN_ABSORB;
+  }
+  else if(prod_n.size()==1)
+  {
+    final_ekin = prod_n[0].m_kineticEnergy*1e6;
+    final_dir.x() = prod_n[0].m_px_vx;
+    final_dir.y() = prod_n[0].m_py_vy;
+    final_dir.z() = prod_n[0].m_pz_vz;
+    final_dir.setMag(1.);
+  }
+  else
+  {
+    //Fixme: mcpl writer will be used to record neutron multiplication for keff application
+    PROMPT_THROW(NotImplemented, "neutron multiplication is not yet supported");
+  }
 
   
   // auto outcome1 = m_scat.sampleScatter( NCrystal::NeutronEnergy(ekin), {dir.x(), dir.y(), dir.z()});
@@ -180,6 +198,11 @@ int Prompt::GIDIFactory::getHashID(double energy) const
   return m_domainHash->index(energy);
 }
 
+bool Prompt::GIDIFactory::available() const
+{
+  return true;
+}
+
 
 std::shared_ptr<Prompt::GIDIModel> Prompt::GIDIFactory::createGIDIModel(const std::string &name, double bias) const
 {
@@ -188,9 +211,7 @@ std::shared_ptr<Prompt::GIDIModel> Prompt::GIDIFactory::createGIDIModel(const st
     PROMPT_THROW2(DataLoadError, "GIDIFactory failed to load data for " << name);
   }
 
- 
   auto *protare = m_map->protare( *m_construction, *m_pops, "n", name ) ;
-
   
   GIDI::Styles::TemperatureInfos temperatures = protare->temperatures( );
   for( GIDI::Styles::TemperatureInfos::const_iterator iter = temperatures.begin( ); iter != temperatures.end( ); ++iter ) {
@@ -201,7 +222,7 @@ std::shared_ptr<Prompt::GIDIModel> Prompt::GIDIFactory::createGIDIModel(const st
 
   // MC Part
   MCGIDI::Transporting::MC *MC = new MCGIDI::Transporting::MC( *m_pops, protare->projectile( ).ID( ), &protare->styles( ), label, GIDI::Transporting::DelayedNeutrons::on, 20.0 );
-  MC->setNuclearPlusCoulombInterferenceOnly( true );
+  MC->setNuclearPlusCoulombInterferenceOnly( false );
   MC->sampleNonTransportingParticles( false );
   
 
@@ -215,5 +236,5 @@ std::shared_ptr<Prompt::GIDIModel> Prompt::GIDIFactory::createGIDIModel(const st
   protares[0] = MCProtare.get();
   auto URR_protare_infos = std::make_shared<MCGIDI::URR_protareInfos>(protares);
 
-  return std::make_shared<GIDIModel>(name, MCProtare, URR_protare_infos, 1.);
+  return std::make_shared<GIDIModel>(name, MCProtare, URR_protare_infos, bias);
 }

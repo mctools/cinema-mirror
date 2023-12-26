@@ -21,6 +21,8 @@
 #include "../doctest.h"
 #include "PTNCrystalScat.hh"
 #include "PTMath.hh"
+#include "PTNaturalMaterial.hh"
+
 
 TEST_CASE("NCrystal")
 {
@@ -76,26 +78,44 @@ TEST_CASE("NCrystal")
 
 
   //test info
+  // NCrystal::MatCfg matcfg("solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11" );
+
   NCrystal::MatCfg matcfg("solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11" );
+  // NCrystal::MatCfg matcfg("Ge_sg227.ncmat" );
+
   auto info = NCrystal::createInfo(matcfg);
   const NCrystal::Info::Composition & comp = info->getComposition();
 
   for(const NCrystal::Info::CompositionEntry &v : comp)
   {
     double frac = v.fraction;
-    const auto& atom = v.atom.data();
-    std::cout << atom.elementName() << ": A " << atom.A() << ", Z " << atom.Z() << ", fraction " << frac << std::endl;
-    std::cout << atom.isComposite() << " " << atom.isNaturalElement() << " "  << std::endl;   
-    if(atom.isComposite())
-    {
-      // for (unsigned i=0;i<atom.nComponents();i++)
-      // {
-      //   auto &com = atom.getComponent(i);
-      //   std::cout <<  ": A " << com.A() << ", Z " << com.Z() << ", fraction " << frac << std::endl;
+    const auto& atomdata = v.atom.data();
+    std::cout << atomdata.elementName() << ": A " << atomdata.A() << ", Z " << atomdata.Z() << ", fraction " << frac << std::endl;
 
-      //   std::cout << "Component " << i << com.data()  << std::endl;
-      // }      
+    if(atomdata.isComposite())
+      std::cout << "is composite\n";
+    else if(atomdata.isNaturalElement())
+      std::cout << "is natural\n";
+    else if(atomdata.isSingleIsotope())
+      std::cout << "is is single isotope\n";
+
+
+    if(atomdata.isComposite())
+    {
+      for (unsigned i=0;i<atomdata.nComponents();i++)
+      {
+        auto &com = atomdata.getComponent(i);
+        std::cout << "fraction: " << com.fraction;
+        std::cout << ". A: " <<  com.data->A();
+        std::cout << ". Z: " <<  com.data->Z() << std::endl;
+
+      }      
     }
+    std::cout << std::endl;
   }
+
+  auto &nm = Prompt::Singleton<Prompt::NaturalMaterial>::getInstance();
+  nm.getComposition(10);
+   
 
 }

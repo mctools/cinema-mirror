@@ -88,6 +88,7 @@ namespace Prompt {
   public:
     std::shared_ptr<GIDIModel> createGIDIModel(const std::string &name, double bias) const;
     int getHashID(double energy) const;
+    bool available() const;
   private:
   
     friend class Singleton<GIDIFactory>;
