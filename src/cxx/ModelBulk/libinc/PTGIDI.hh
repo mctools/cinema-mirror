@@ -22,15 +22,54 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <string>
+#include <memory>
+#include <set>
+
 #include "PromptCore.hh"
 #include "PTDiscreteModel.hh"
-#include <memory>
+#include "PTSingleton.hh"
+
+
+namespace GIDI
+{
+  namespace Transporting
+  {
+    class Particles;
+  }
+
+  namespace Construction
+  {
+    class Settings;
+  }
+  
+  namespace Map
+  {
+    class Map;
+  }
+}
+
+namespace PoPI
+{
+  class Database;
+}
+
+namespace MCGIDI
+{
+  class DomainHash;
+  class Protare;
+  class URR_protareInfos;
+  namespace Sampling
+  {
+    class StdVectorProductHandler;
+  }
+}  
 
 namespace Prompt {
+  class GIDIFactory;
 
   class GIDIModel  : public DiscreteModel {
   public:
-    GIDIModel(const std::string &cfgstring, double bias=1.0);
+    GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare, std::shared_ptr<MCGIDI::URR_protareInfos> urr_info, double bias=1.0);
     virtual ~GIDIModel();
 
     virtual double getCrossSection(double ekin) const override;
@@ -38,8 +77,31 @@ namespace Prompt {
     virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
 
   private:
+    const GIDIFactory &m_factory;
+    std::shared_ptr<MCGIDI::Protare> m_mcprotare;
+    std::shared_ptr<MCGIDI::URR_protareInfos> m_urr_info;
+    mutable MCGIDI::Sampling::StdVectorProductHandler *m_products;
+    mutable double m_cacheEkin, m_cacheGidiXS;
   };
 
+  class GIDIFactory {
+  public:
+    std::shared_ptr<GIDIModel> createGIDIModel(const std::string &name, double bias) const;
+    int getHashID(double energy) const;
+  private:
+  
+    friend class Singleton<GIDIFactory>;
+    GIDIFactory();
+    ~GIDIFactory();
+
+    PoPI::Database *m_pops;
+    GIDI::Map::Map *m_map;
+    GIDI::Transporting::Particles *m_particles;
+    GIDI::Construction::Settings *m_construction;
+    MCGIDI::DomainHash *m_domainHash;
+    std::set<int> m_reactionsToExclude;
+
+  };
 }
 
 #endif
