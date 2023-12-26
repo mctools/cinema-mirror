@@ -22,12 +22,20 @@
 
 #include <iostream>
 #include <memory>
-#include "PTGIDIModel.hh"
+#include "PTGIDI.hh"
 
 namespace pt = Prompt;
 
 TEST_CASE("GeoLoader")
 {
-  std::cout << "@@@@@\n";
-  pt::GIDIModel model("data", 1);
+  auto &fac = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
+  std::shared_ptr<Prompt::GIDIModel> model = fac.createGIDIModel("B10", 1.);
+  std::cout << model->getCrossSection(1e6)/Prompt::Unit::barn << std::endl;
+  pt::Vector in(1,0,0);
+  pt::Vector out(0,0,0);
+  double ekin_out;
+  for(int i=0;i<10;i++)
+  {
+    model->generate(1e6, in, ekin_out, out );
+  }
 }
