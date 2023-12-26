@@ -1,6 +1,3 @@
-#ifndef Prompt_Core_hh
-#define Prompt_Core_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,30 +18,21 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <cmath>
-#include <vector>
-#include <iostream>
-#include <limits>
-#include <memory>
-#include <map>
-#include <cassert>
-#include <string>
+#include "PTPython.hh"
+#include "PTMCPLBinaryWrite.hh"
 
-#include "PTException.hh"
-#include "PTUnitSystem.hh"
-#include "PTVector.hh"
-#include "PTMath.hh"
-
-namespace Prompt
+void* pt_MCPLBinaryWrite_new(const char *fn, bool enable_double, bool enable_extra3double, 
+                bool enable_extraUnsigned)
 {
-
-  constexpr double ENERGYTOKEN_ABSORB = -1.;
-  constexpr double ENERGYTOKEN_BIAS = -2.;
-  constexpr double ENERGYTOKEN_SCORE = -3.;
-
-  static const std::string PTVersion = "v2.0.0";
-
-  void printLogo();
-  void printLogo2();
+  return static_cast<void *>(new Prompt::MCPLBinaryWrite(fn, enable_double, enable_extra3double, enable_extraUnsigned ));
 }
-#endif
+
+void pt_MCPLBinaryWrite_delete(void* obj)
+{
+  delete static_cast<Prompt::MCPLBinaryWrite *>(obj);
+}
+
+void pt_MCPLBinaryWrite_write(void* obj, mcpl_particle_t par)
+{
+  static_cast<Prompt::MCPLBinaryWrite *>(obj)->write(par);
+}

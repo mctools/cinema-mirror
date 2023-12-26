@@ -36,5 +36,6 @@ fi
 
 . "$( dirname "${BASH_SOURCE[0]}" )"/install.sh
 
+alias pull='git pull --recurse-submodules'
 # ln -s
 echo -e "Enjoy!"

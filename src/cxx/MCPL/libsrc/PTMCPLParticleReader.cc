@@ -60,14 +60,17 @@ bool Prompt::MCPLParticleReader::readOneParticle() const
 {
     pt_assert_always(m_parNum);
     m_particleInFile = const_cast< mcpl_particle_t *> (mcpl_read(m_file_r));
-    bool not_eof = m_particleInFile ? true : false;
+    bool eof = m_particleInFile ? false : true;
+    if(!m_repeat && eof)
+    {
+        return false;
+    }
     
-    if(m_repeat && !not_eof)
+    if(eof)
     {
         mcpl_rewind(m_file_r);
         m_particleInFile = const_cast< mcpl_particle_t *> (mcpl_read(m_file_r));
-        return true;
     }
-    else
-        return not_eof;
+
+    return true;
 }

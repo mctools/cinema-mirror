@@ -25,8 +25,8 @@
 
 Prompt::ActiveVolume::ActiveVolume()
 :m_geo(vecgeom::GeoManager::Instance()), 
-m_currState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth())),
-m_nextState(vecgeom::NavigationState::MakeInstance(m_geo.getMaxDepth()))
+m_currState(vecgeom::NavigationState::MakeInstance(0)),
+m_nextState(vecgeom::NavigationState::MakeInstance(0))
 {}
 
 Prompt::ActiveVolume::~ActiveVolume()

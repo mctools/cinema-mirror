@@ -1,5 +1,5 @@
-#ifndef Prompt_Core_hh
-#define Prompt_Core_hh
+#ifndef Prompt_NaturalMaterial_hh
+#define Prompt_NaturalMaterial_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,30 +21,35 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <cmath>
-#include <vector>
-#include <iostream>
-#include <limits>
+#include <string>
 #include <memory>
 #include <map>
-#include <cassert>
-#include <string>
 
-#include "PTException.hh"
-#include "PTUnitSystem.hh"
-#include "PTVector.hh"
-#include "PTMath.hh"
+#include "PromptCore.hh"
+#include "PTSingleton.hh"
 
-namespace Prompt
-{
+namespace Prompt {
 
-  constexpr double ENERGYTOKEN_ABSORB = -1.;
-  constexpr double ENERGYTOKEN_BIAS = -2.;
-  constexpr double ENERGYTOKEN_SCORE = -3.;
+    struct IsotopeComposition {
+    int Z;
+    int A;
+    double frac;
+    std::string name;
+  };
 
-  static const std::string PTVersion = "v2.0.0";
+  class NaturalMaterial {
+  public:
+    std::vector<Prompt::IsotopeComposition>& getComposition(int Z);
 
-  void printLogo();
-  void printLogo2();
+  private:
+  
+    friend class Singleton<NaturalMaterial>;
+    NaturalMaterial();
+    ~NaturalMaterial();
+
+    std::map<int, std::vector<Prompt::IsotopeComposition>> m_comp;
+
+  };
 }
+
 #endif

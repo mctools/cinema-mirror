@@ -1,6 +1,3 @@
-#ifndef Prompt_Core_hh
-#define Prompt_Core_hh
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -21,30 +18,53 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <cmath>
-#include <vector>
+#include "../doctest.h"
+
 #include <iostream>
-#include <limits>
 #include <memory>
-#include <map>
-#include <cassert>
-#include <string>
+#include "PTGIDI.hh"
+#include "PTNCrystalScat.hh"
+#include "PTHist1D.hh"
 
-#include "PTException.hh"
-#include "PTUnitSystem.hh"
-#include "PTVector.hh"
-#include "PTMath.hh"
+namespace pt = Prompt;
 
-namespace Prompt
+TEST_CASE("GeoLoader")
 {
+  auto &fac = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
+  std::shared_ptr<Prompt::GIDIModel> gidimodel = fac.createGIDIModel("C12", 1.);
+  double ekin(0.0253);
 
-  constexpr double ENERGYTOKEN_ABSORB = -1.;
-  constexpr double ENERGYTOKEN_BIAS = -2.;
-  constexpr double ENERGYTOKEN_SCORE = -3.;
+  std::cout << "Gidi xs "<<gidimodel->getCrossSection(ekin)/Prompt::Unit::barn << std::endl;
 
-  static const std::string PTVersion = "v2.0.0";
+  pt::Vector in(1,0,0);
+  pt::Vector out(0,0,0);
+  double ekin_out;
+  double gidiekin(0);
+  int loop=10000000;
+  auto hist1 = pt::Hist1D("gidi_hist", 0, 0.1, 100);
+  for(int i=0;i<loop;i++)
+  {
+    gidimodel->generate(ekin, in, ekin_out, out );
+    if(ekin_out!=-1.)
+    gidiekin += ekin_out;
+    hist1.fill(ekin_out);
+  }
+  std::cout << "gidiekin " << gidiekin/loop << std::endl;
+  hist1.save("histgidi.mcpl");
 
-  void printLogo();
-  void printLogo2();
+  auto pc = Prompt::NCrystalScat( "freegas::C/1.225kgm3/C_is_1.00_C12;temp=299.397" );
+  std::cout << "NCrystal xs " <<pc.getCrossSection(ekin)/Prompt::Unit::barn << std::endl;
+  gidiekin = 0;
+
+  auto hist2 = pt::Hist1D("ncrystal_hist", 0, 0.1, 100);
+
+  for(int i=0;i<loop;i++)
+  {
+    pc.generate(ekin, in, ekin_out, out );
+    gidiekin += ekin_out;
+    hist2.fill(ekin_out);
+  }
+  std::cout << "gidiekin ncrystal " << gidiekin/loop << std::endl;
+  hist2.save("histnc.mcpl");
+
 }
-#endif

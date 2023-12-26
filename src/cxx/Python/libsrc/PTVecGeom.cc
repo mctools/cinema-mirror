@@ -6,6 +6,7 @@
 #include "VecGeom/volumes/UnplacedSphere.h"
 #include "VecGeom/volumes/UnplacedTube.h"
 #include "VecGeom/volumes/UnplacedTrapezoid.h"
+#include "VecGeom/volumes/UnplacedPolyhedron.h"
 
 
 #include "VecGeom/volumes/UnplacedVolume.h"
@@ -100,6 +101,13 @@ void pt_Box_delete(void* obj)
     delete static_cast<vg::UnplacedBox *>(obj);
 }
 
+
+void *pt_Polyhedron_new(double phiStart, double phiDelta, const int sideCount, const int zPlaneCount,
+                     double *zPlanes, double *rMin, double *rMax)
+{
+    return static_cast<void *>(new vg::UnplacedPolyhedron(phiStart, phiDelta,  sideCount, 
+                          zPlaneCount, zPlanes, rMin, rMax));
+}
 
 void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, float *point)
 {

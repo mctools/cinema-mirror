@@ -47,6 +47,9 @@ namespace Prompt {
 
   class PhysicsBase {
   public:
+    PhysicsBase() = delete;
+    PhysicsBase &operator = (const PhysicsBase&) = delete;
+
     PhysicsBase(const std::string &name);
     PhysicsBase(const std::string &name, int gdp, double emin, double emax);
     virtual ~PhysicsBase() = default;
@@ -55,6 +58,7 @@ namespace Prompt {
     ModelValidity& getModelValidity() { return m_modelvalid; }
     virtual double getCrossSection(double ekin) const ;
     virtual double getCrossSection(double ekin, const Vector &dir) const;
+    double rand() const {return m_rng.generate(); } ;
 
   protected:
     std::string m_modelName;

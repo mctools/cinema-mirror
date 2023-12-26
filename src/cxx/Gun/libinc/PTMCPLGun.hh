@@ -23,43 +23,28 @@
 
 #include "PTPrimaryGun.hh"
 #include "PTMCPLParticleReader.hh"
+#include "PTMCPLBinaryWrite.hh"
 
+class KDSource ;
 namespace Prompt {
   class MCPLGun : public PrimaryGun {
   public:
-    MCPLGun(const Particle &aParticle, const std::string &fn)
-    : PrimaryGun(aParticle), m_mcplread(std::make_unique<MCPLParticleReader>(fn)) {  };
-    virtual ~MCPLGun() { }; 
+    MCPLGun(const Particle &aParticle, const std::string &fn);
 
-    virtual std::unique_ptr<Particle> generate() override
-    {
-      m_mcplread->readOneParticle();
-      return PrimaryGun::generate();
-    }
-
-    virtual void sampleEnergy(double &ekin) override
-    {
-      ekin=m_mcplread->getEnergy();
-    }
-
-    virtual void samplePosDir(Vector &pos, Vector &dir) override
-    {
-      m_mcplread->getPosition(pos);
-      m_mcplread->getDirection(dir);
-    }
-
-    virtual double getParticleWeight() override
-    { 
-      return m_mcplread->getWeight();
-    }
-
-    virtual double getTime() override
-    { 
-      return m_mcplread->getTime();
-    }
+    virtual ~MCPLGun(); 
+    virtual std::unique_ptr<Particle> generate() override;
+    virtual void sampleEnergy(double &ekin) override;
+    virtual void samplePosDir(Vector &pos, Vector &dir) override;
+    virtual double getParticleWeight() override;
+    virtual double getTime() override;
 
     private:
       std::unique_ptr <MCPLParticleReader>  m_mcplread;
+      KDSource *kdsource;
+      mcpl_particle_t *m_particle;
+      int m_mode;
+      double m_w_crit;
+      // MCPLBinaryWrite m_writer; // for testing
   };
 }
 

@@ -64,6 +64,7 @@ namespace Prompt {
     LogicError::~LogicError() throw() {}
     CalcError::~CalcError() throw() {}
     BadInput::~BadInput() throw() {}
+    NotImplemented::~NotImplemented() throw() {}
   }
 
 }
