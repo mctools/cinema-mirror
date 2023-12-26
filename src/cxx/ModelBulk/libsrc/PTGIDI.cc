@@ -95,8 +95,9 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
   double energy = ekin*1e-6;
 
-  MCGIDI::Sampling::Input input( true, MCGIDI::Sampling::Upscatter::Model::none );
-  input.m_temperature = 2.58e-5;                                                     // In keV/k;
+  MCGIDI::Sampling::Input input( true, MCGIDI::Sampling::Upscatter::Model::B );
+  input.m_temperature = 2.58e-5;   // In keV/k;
+
   //fixme, do not care about temperature at the moment
 
   int hashIndex = m_factory.getHashID(energy);
@@ -121,16 +122,19 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   m_products->clear();
   reaction->sampleProducts( m_mcprotare.get(), energy, input, getRandNumber, nullptr, *m_products );
 
+  if(input.m_frame == GIDI::Frame::centerOfMass)
+    PROMPT_THROW(NotImplemented, "GIDI::Frame::centerOfMass product is not yet implemented");
 
-  std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", m_products->size() " <<  m_products->size() << std::endl;
+  // debug and looking for the MT value for the selected reaction
+  // std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", m_products->size() " <<  m_products->size() << std::endl;
   std::vector<MCGIDI::Sampling::Product> prod_n;
   for( std::size_t i = 0; i < m_products->size( ); ++i ) 
   {
-    std::cout << (*m_products)[i].m_productIndex << "\n";
+    // std::cout << (*m_products)[i].m_productIndex << "\n";
     prod_n.push_back((*m_products)[i]);
   }
+  // std::cout << " total neutrons " << prod_n.size() << "\n";
 
-  std::cout << " total neutrons " << prod_n.size() << "\n";
   // Neutron die as absorption
   if(prod_n.size()==0)
   {
@@ -180,7 +184,6 @@ m_reactionsToExclude(std::set<int>())
   // std::cout << (*m_pops)["He3"] << std::endl;
   // std::cout << (*m_pops)["O16"] << std::endl;
   // std::cout << (*m_pops)["O16"] << std::endl;
-
 
 }
 
