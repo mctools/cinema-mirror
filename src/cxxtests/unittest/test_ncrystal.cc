@@ -107,7 +107,7 @@ TEST_CASE("NCrystal")
         auto &com = atomdata.getComponent(i);
         std::cout << "fraction: " << com.fraction;
         std::cout << ". A: " <<  com.data->A();
-        std::cout << ". Z: " <<  com.data->Z() << std::endl;
+        std::cout << ", Z: " <<  com.data->Z() << std::endl;
 
       }      
     }

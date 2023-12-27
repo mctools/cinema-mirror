@@ -61,6 +61,7 @@ namespace MCGIDI
   namespace Sampling
   {
     class StdVectorProductHandler;
+    class Input;
   }
 }  
 
@@ -69,7 +70,7 @@ namespace Prompt {
 
   class GIDIModel  : public DiscreteModel {
   public:
-    GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare, std::shared_ptr<MCGIDI::URR_protareInfos> urr_info, double bias=1.0);
+    GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare, std::shared_ptr<MCGIDI::URR_protareInfos> urr_info, double temperature, double bias=1.0);
     virtual ~GIDIModel();
 
     virtual double getCrossSection(double ekin) const override;
@@ -82,6 +83,8 @@ namespace Prompt {
     std::shared_ptr<MCGIDI::URR_protareInfos> m_urr_info;
     mutable MCGIDI::Sampling::StdVectorProductHandler *m_products;
     mutable double m_cacheEkin, m_cacheGidiXS;
+    const double m_temperature;
+    MCGIDI::Sampling::Input *m_input;
   };
 
   class GIDIFactory {

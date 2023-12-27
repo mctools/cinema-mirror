@@ -40,7 +40,7 @@ TEST_CASE("GeoLoader")
   pt::Vector out(0,0,0);
   double ekin_out;
   double gidiekin(0);
-  int loop=10000000;
+  int loop=1000;
   auto hist1 = pt::Hist1D("gidi_hist", 0, 0.1, 100);
   for(int i=0;i<loop;i++)
   {

@@ -38,7 +38,7 @@ inline double getRandNumber(void *obj)
 
 
 Prompt::GIDIModel::GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
-                             std::shared_ptr<MCGIDI::URR_protareInfos> urr_info, double bias)
+                             std::shared_ptr<MCGIDI::URR_protareInfos> urr_info, double temperature, double bias)
 :Prompt::DiscreteModel("GIDI", const_neutron_pgd,
                       std::numeric_limits<double>::min(), 
                       10*Prompt::Unit::eV, bias),
@@ -47,8 +47,15 @@ m_mcprotare(mcprotare),
 m_urr_info(urr_info),
 m_products(new MCGIDI::Sampling::StdVectorProductHandler()),
 m_cacheEkin(0.), 
-m_cacheGidiXS(0.)
+m_cacheGidiXS(0.),
+m_temperature(temperature),
+m_input(new MCGIDI::Sampling::Input(true, MCGIDI::Sampling::Upscatter::Model::B) )
 { 
+
+  m_input->m_temperature = const_boltzmann*temperature/Unit::keV;   // In keV/k;
+
+    // std::cout << "!!!!!!!!! " << temperature_K << " " << const_boltzmann*293.15/Unit::MeV << std::endl;
+
   int numberOfReactions = m_mcprotare->numberOfReactions();
   std::cout <<"Isotope " << name << " has " << numberOfReactions << " reactions"<< "\n";
      
@@ -78,7 +85,8 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
     m_cacheEkin = ekin;
     double gidiEnergy = ekin*1e-6;
     int hashIndex = m_factory.getHashID(gidiEnergy);
-    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info.get(), hashIndex, 2.586e-08, gidiEnergy );
+    //temperature unit here is MeV/k, not to confuse by the keV/k unit in m_input
+    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info.get(), hashIndex, const_boltzmann*m_temperature*1e-6, gidiEnergy ); 
     return m_cacheGidiXS*m_bias*Unit::barn;
   }
 }
@@ -95,14 +103,12 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
   double energy = ekin*1e-6;
 
-  MCGIDI::Sampling::Input input( true, MCGIDI::Sampling::Upscatter::Model::B );
-  input.m_temperature = 2.58e-5;   // In keV/k;
 
   //fixme, do not care about temperature at the moment
 
   int hashIndex = m_factory.getHashID(energy);
 
-  int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info.get(), hashIndex, input.m_temperature, energy, m_cacheGidiXS, getRandNumber, nullptr );
+  int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info.get(), hashIndex, m_input->m_temperature, energy, m_cacheGidiXS, getRandNumber, nullptr );
   MCGIDI::Reaction const *reaction = m_mcprotare->reaction( reactionIndex );
   
   // ///////////////////////////////////////////////////////////////////////////////////
@@ -120,9 +126,9 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
   pt_assert_always(m_mcprotare->threshold( reactionIndex ) < energy);
   m_products->clear();
-  reaction->sampleProducts( m_mcprotare.get(), energy, input, getRandNumber, nullptr, *m_products );
+  reaction->sampleProducts( m_mcprotare.get(), energy, *m_input, getRandNumber, nullptr, *m_products );
 
-  if(input.m_frame == GIDI::Frame::centerOfMass)
+  if(m_input->m_frame == GIDI::Frame::centerOfMass)
     PROMPT_THROW(NotImplemented, "GIDI::Frame::centerOfMass product is not yet implemented");
 
   // debug and looking for the MT value for the selected reaction
@@ -130,8 +136,8 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   std::vector<MCGIDI::Sampling::Product> prod_n;
   for( std::size_t i = 0; i < m_products->size( ); ++i ) 
   {
-    // std::cout << (*m_products)[i].m_productIndex << "\n";
-    prod_n.push_back((*m_products)[i]);
+    if ((*m_products)[i].m_productIndex==11)
+      prod_n.push_back((*m_products)[i]);
   }
   // std::cout << " total neutrons " << prod_n.size() << "\n";
 
@@ -154,13 +160,6 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
     PROMPT_THROW(NotImplemented, "neutron multiplication is not yet supported");
   }
 
-  
-  // auto outcome1 = m_scat.sampleScatter( NCrystal::NeutronEnergy(ekin), {dir.x(), dir.y(), dir.z()});
-  // final_ekin = outcome1.ekin.get();
-  // auto &outdir = outcome1.direction;
-  // final_dir.x() = outdir[0];
-  // final_dir.y() = outdir[1];
-  // final_dir.z() = outdir[2];
 }
 
 
@@ -175,12 +174,14 @@ m_reactionsToExclude(std::set<int>())
 {  
   GIDI::Transporting::Particle neutron(PoPI::IDs::neutron, GIDI::Transporting::Mode::MonteCarloContinuousEnergy);
   m_particles->add(neutron);
+  pt_assert_always((*m_pops)["n"] == 11);
+
   // GIDI::Transporting::Particle photon( PoPI::IDs::photon, GIDI::Transporting::Mode::MonteCarloContinuousEnergy);
   // particles.add(photon);
 
   // m_pops->print(true);
 
-  // std::cout << (*m_pops)["n"] << std::endl;
+  // std::cout << "!!!!!!!!!!!!!! "<<(*m_pops)["n"] << std::endl;
   // std::cout << (*m_pops)["He3"] << std::endl;
   // std::cout << (*m_pops)["O16"] << std::endl;
   // std::cout << (*m_pops)["O16"] << std::endl;
@@ -222,6 +223,7 @@ std::shared_ptr<Prompt::GIDIModel> Prompt::GIDIFactory::createGIDIModel(const st
   }
 
   std::string label( temperatures[0].heatedCrossSection( ) );
+  double temperature_K = temperatures[0].temperature( ).value() * Unit::MeV / const_boltzmann; 
 
   // MC Part
   MCGIDI::Transporting::MC *MC = new MCGIDI::Transporting::MC( *m_pops, protare->projectile( ).ID( ), &protare->styles( ), label, GIDI::Transporting::DelayedNeutrons::on, 20.0 );
@@ -239,5 +241,5 @@ std::shared_ptr<Prompt::GIDIModel> Prompt::GIDIFactory::createGIDIModel(const st
   protares[0] = MCProtare.get();
   auto URR_protare_infos = std::make_shared<MCGIDI::URR_protareInfos>(protares);
 
-  return std::make_shared<GIDIModel>(name, MCProtare, URR_protare_infos, bias);
+  return std::make_shared<GIDIModel>(name, MCProtare, URR_protare_infos, temperature_K, bias);
 }
