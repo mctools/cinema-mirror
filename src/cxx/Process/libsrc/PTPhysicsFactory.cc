@@ -89,6 +89,66 @@ void Prompt::PhysicsFactory::showNCComposition(const std::string &nccfgstr)
 }
 
 
+std::shared_ptr<Prompt::DiscreteModel> Prompt::PhysicsFactory::createIdealElaScat(const std::string &cfgstr)
+{
+  std::cout << "Parsing config string for a CompoundModel: \n";
+  CfgParser::StringCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
+  cfg.print();
+
+  std::unique_ptr<Prompt::CompoundModel> compmod;
+  std::string physDef = cfg.find("physics");
+  if(physDef.empty())
+  {
+    PROMPT_THROW2(BadInput, "Config string " << cfgstr << " does not define the scorer by the key \"physics\" ")
+  }
+  else if(physDef == "idealElaScat")
+  {
+    int parCount = 5; 
+
+    double scatter_bias = 1.;
+    if(!cfg.getDoubleIfExist("scatter_bias", scatter_bias))
+      parCount--;
+
+
+    if(!scatter_bias)  
+    {
+      PROMPT_THROW2(BadInput, "\"scatter_bias\" should be non-zero" );
+    }
+
+    double xs = 1.;
+    if(!cfg.getDoubleIfExist("xs_barn", xs))
+      parCount--;
+    if(!xs)  
+    {
+      PROMPT_THROW2(BadInput, "\"xs_barn\" should be non-zero" );
+    }
+
+    double density_per_aa3 = 0.05;
+    if(!cfg.getDoubleIfExist("density_per_aa3", density_per_aa3))
+      parCount--;
+    if(!density_per_aa3)  
+    {
+      PROMPT_THROW2(BadInput, "\"density_per_aa3\" should be non-zero" );
+    }
+
+    double ekin_transfer = 0.;
+    if(!cfg.getDoubleIfExist("energy_transfer_eV", ekin_transfer))
+      parCount--;
+
+    if(parCount!=cfg.size())
+    {
+      PROMPT_THROW2(BadInput, "Physics type \"idealElaScat\" is missing or with extra config parameters " << cfg.size() << " " << parCount );
+    }
+
+    return std::make_shared<IdealElaScat>(xs, density_per_aa3, scatter_bias, ekin_transfer);
+  }
+    
+  
+  PROMPT_THROW2(LogicError, "The physics type is not IdealElaScat " << physDef );
+
+}
+
+
 std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkMaterialProcess(const std::string &cfgstr)
 {
   std::cout << "Parsing config string for a CompoundModel: \n";

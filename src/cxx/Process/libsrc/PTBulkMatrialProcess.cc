@@ -181,10 +181,9 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
   }
   else if (type == PhysicsFactory::PhysicsType::NC_IDEALSCAT)
   {
-    m_compModel = pfact.createBulkMaterialProcess(cfgstr);
-    // pt_assert_always(m_compModel->getModels().size() == 0);
-    auto &aa = *reinterpret_cast<IdealElaScat *>(m_compModel->getModels()[0].get());
-    m_numdensity = aa.getNumberDensity();
+    auto idsct = pfact.createIdealElaScat(cfgstr);
+    m_compModel->addPhysicsModel(idsct);
+    m_numdensity =  reinterpret_cast<IdealElaScat *>(idsct.get())->getNumberDensity();
   }
 
 }
