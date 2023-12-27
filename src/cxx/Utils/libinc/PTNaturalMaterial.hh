@@ -40,6 +40,7 @@ namespace Prompt {
   class NaturalMaterial {
   public:
     std::vector<Prompt::IsotopeComposition>& getComposition(int Z);
+    void parseCfgStr(const std::string & str);
 
   private:
   

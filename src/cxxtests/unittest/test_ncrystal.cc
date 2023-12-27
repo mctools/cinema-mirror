@@ -76,46 +76,10 @@ TEST_CASE("NCrystal")
   auto xsect = ge.crossSection( wl, { 0.0, 1.0, 1.0 } );
   std::cout << "single crystal Ge x-sect at "<<wl<<" Aa is "<<xsect<<" barn (orientation 1)"<<std::endl;
 
-
-  //test info
-  // NCrystal::MatCfg matcfg("solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11" );
-
-  NCrystal::MatCfg matcfg("solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11" );
-  // NCrystal::MatCfg matcfg("Ge_sg227.ncmat" );
-
-  auto info = NCrystal::createInfo(matcfg);
-  const NCrystal::Info::Composition & comp = info->getComposition();
-
-  for(const NCrystal::Info::CompositionEntry &v : comp)
-  {
-    double frac = v.fraction;
-    const auto& atomdata = v.atom.data();
-    std::cout << atomdata.elementName() << ": A " << atomdata.A() << ", Z " << atomdata.Z() << ", fraction " << frac << std::endl;
-
-    if(atomdata.isComposite())
-      std::cout << "is composite\n";
-    else if(atomdata.isNaturalElement())
-      std::cout << "is natural\n";
-    else if(atomdata.isSingleIsotope())
-      std::cout << "is is single isotope\n";
-
-
-    if(atomdata.isComposite())
-    {
-      for (unsigned i=0;i<atomdata.nComponents();i++)
-      {
-        auto &com = atomdata.getComponent(i);
-        std::cout << "fraction: " << com.fraction;
-        std::cout << ". A: " <<  com.data->A();
-        std::cout << ", Z: " <<  com.data->Z() << std::endl;
-
-      }      
-    }
-    std::cout << std::endl;
-  }
-
   auto &nm = Prompt::Singleton<Prompt::NaturalMaterial>::getInstance();
   nm.getComposition(10);
-   
+  nm.parseCfgStr("Ge_sg227.ncmat");
+  nm.parseCfgStr("solid::B4C/2500gcm3/B_is_1.00_B10");
+  nm.parseCfgStr("solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11");
 
 }

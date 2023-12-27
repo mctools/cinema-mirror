@@ -40,8 +40,9 @@ inline double getRandNumber(void *obj)
 Prompt::GIDIModel::GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
                              std::shared_ptr<MCGIDI::URR_protareInfos> urr_info, double temperature, double bias)
 :Prompt::DiscreteModel("GIDI", const_neutron_pgd,
+                      10*Prompt::Unit::eV,
                       std::numeric_limits<double>::min(), 
-                      10*Prompt::Unit::eV, bias),
+                      bias),
 m_factory(Prompt::Singleton<Prompt::GIDIFactory>::getInstance()), 
 m_mcprotare(mcprotare), 
 m_urr_info(urr_info),
@@ -76,6 +77,9 @@ Prompt::GIDIModel::~GIDIModel()
 
 double Prompt::GIDIModel::getCrossSection(double ekin) const
 {
+  if (!m_modelvalid.ekinValid(ekin))
+    return 0;
+    
   if(ekin==m_cacheEkin)
   {
     return m_cacheGidiXS*m_bias*Unit::barn;

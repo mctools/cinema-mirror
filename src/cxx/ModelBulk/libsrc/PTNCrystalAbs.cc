@@ -43,13 +43,15 @@ Prompt::NCrystalAbs::~NCrystalAbs()
 
 double Prompt::NCrystalAbs::getCrossSection(double ekin) const
 {
-    return m_abs.crossSectionIsotropic(NCrystal::NeutronEnergy(ekin)).get()*Unit::barn*m_bias;
+  if (!m_modelvalid.ekinValid(ekin))
+     return 0.;
+
+  return m_abs.crossSectionIsotropic(NCrystal::NeutronEnergy(ekin)).get()*Unit::barn*m_bias;
 }
 
 double Prompt::NCrystalAbs::getCrossSection(double ekin, const Prompt::Vector &dir) const
 {
-  NCrystal::CrossSect xsect = m_abs.crossSectionIsotropic( NCrystal::NeutronEnergy(ekin) );
-  return xsect.get()*Unit::barn*m_bias;
+  return getCrossSection(ekin);
 }
 
 
