@@ -36,7 +36,7 @@ namespace Prompt {
 
   class NCrystalAbs  : public DiscreteModel {
   public:
-    NCrystalAbs(const std::string &cfgstring, double bias=1.0);
+    NCrystalAbs(const std::string &cfgstring, double bias=1.0, double lowerlimt=std::numeric_limits<double>::min(), double upperlimt = std::numeric_limits<double>::max());
     virtual ~NCrystalAbs();
 
     virtual double getCrossSection(double ekin) const override;

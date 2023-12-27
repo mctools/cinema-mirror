@@ -25,9 +25,10 @@
 #include "PTRandCanonical.hh"
 
 
-Prompt::NCrystalScat::NCrystalScat(const std::string &cfgstring, double bias)
+Prompt::NCrystalScat::NCrystalScat(const std::string &cfgstring, double bias,
+    double lowerlimt, double upperlimt)
 :Prompt::DiscreteModel(cfgstring, const_neutron_pgd,
-                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV, bias),
+                      lowerlimt, upperlimt, bias),
                       m_scat(NCrystal::createScatter(cfgstring))
 {
   m_oriented = m_scat.isOriented();

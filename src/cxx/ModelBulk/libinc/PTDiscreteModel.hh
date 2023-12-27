@@ -31,7 +31,6 @@ namespace Prompt {
 
   class DiscreteModel  : public PhysicsModel {
   public:
-    DiscreteModel(const std::string &name, double bias=1.0);
     DiscreteModel(const std::string &name, unsigned gdp, double emin, double emax, double bias=1.0);
     virtual ~DiscreteModel();
     double getBias() const

@@ -20,16 +20,10 @@
 
 #include "PTPhysicsModel.hh"
 
-Prompt::PhysicsBase::PhysicsBase(const std::string &name)
- :m_modelName(name), m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance()) {};
-
 Prompt::PhysicsBase::PhysicsBase(const std::string &name, int gdp,
              double emin, double emax)
  :m_modelName(name), m_modelvalid{gdp, emin, emax},
   m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance())  {};
-
-Prompt::PhysicsModel::PhysicsModel(const std::string &name)
-:PhysicsBase(name) {}
 
 Prompt::PhysicsModel::PhysicsModel(const std::string &name, unsigned gdp,
              double emin, double emax)

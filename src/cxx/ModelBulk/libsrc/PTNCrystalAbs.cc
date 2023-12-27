@@ -25,9 +25,9 @@
 #include "PTRandCanonical.hh"
 
 
-Prompt::NCrystalAbs::NCrystalAbs(const std::string &cfgstring, double bias)
-:Prompt::DiscreteModel(cfgstring, const_neutron_pgd,
-                      std::numeric_limits<double>::min(), 10*Prompt::Unit::eV, bias),
+Prompt::NCrystalAbs::NCrystalAbs(const std::string &cfgstring, double bias,
+    double lowerlimt, double upperlimt)
+:Prompt::DiscreteModel(cfgstring, const_neutron_pgd, lowerlimt, upperlimt),
                       m_abs(NCrystal::createAbsorption(cfgstring))
 {
   if( m_abs.isOriented() ) {
