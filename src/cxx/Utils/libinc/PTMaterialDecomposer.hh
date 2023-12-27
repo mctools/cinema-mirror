@@ -1,5 +1,5 @@
-#ifndef Prompt_NaturalMaterial_hh
-#define Prompt_NaturalMaterial_hh
+#ifndef Prompt_MaterialDecomposer_hh
+#define Prompt_MaterialDecomposer_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -37,16 +37,16 @@ namespace Prompt {
     std::string name;
   };
 
-  class NaturalMaterial {
+  class MaterialDecomposer {
   public:
     std::vector<Prompt::IsotopeComposition>& getComposition(int Z);
     void parseCfgStr(const std::string & str);
 
   private:
   
-    friend class Singleton<NaturalMaterial>;
-    NaturalMaterial();
-    ~NaturalMaterial();
+    friend class Singleton<MaterialDecomposer>;
+    MaterialDecomposer();
+    ~MaterialDecomposer();
 
     std::map<int, std::vector<Prompt::IsotopeComposition>> m_comp;
 

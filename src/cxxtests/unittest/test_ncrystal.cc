@@ -21,7 +21,7 @@
 #include "../doctest.h"
 #include "PTNCrystalScat.hh"
 #include "PTMath.hh"
-#include "PTNaturalMaterial.hh"
+#include "PTMaterialDecomposer.hh"
 
 
 TEST_CASE("NCrystal")
@@ -76,7 +76,7 @@ TEST_CASE("NCrystal")
   auto xsect = ge.crossSection( wl, { 0.0, 1.0, 1.0 } );
   std::cout << "single crystal Ge x-sect at "<<wl<<" Aa is "<<xsect<<" barn (orientation 1)"<<std::endl;
 
-  auto &nm = Prompt::Singleton<Prompt::NaturalMaterial>::getInstance();
+  auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
   nm.getComposition(10);
   nm.parseCfgStr("Ge_sg227.ncmat");
   nm.parseCfgStr("solid::B4C/2500gcm3/B_is_1.00_B10");
