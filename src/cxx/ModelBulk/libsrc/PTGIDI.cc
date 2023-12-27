@@ -251,13 +251,12 @@ std::shared_ptr<Prompt::GIDIModel> Prompt::GIDIFactory::createGIDIModel(const st
   return std::make_shared<GIDIModel>(name, MCProtare, URR_protare_infos, temperature_K, bias, frac);
 }
 
-std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIModel(std::vector<Prompt::IsotopeComposition> vecComp) const
+std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIModel(std::vector<Prompt::IsotopeComposition> vecComp, double bias, double minEKin, double maxEKin) const
 {
   std::vector<std::shared_ptr<GIDIModel>> gidimodels;
   for(const auto& isotope : vecComp)
   {
     const std::string &name = isotope.name;
-    double bias=1;
     double frac = isotope.frac;
 
     if(!m_map->isProtareAvailable( PoPI::IDs::neutron, name))
@@ -291,7 +290,7 @@ std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIM
     protares[0] = MCProtare.get();
     auto URR_protare_infos = std::make_shared<MCGIDI::URR_protareInfos>(protares);
 
-    gidimodels.emplace_back(std::make_shared<GIDIModel>(name, MCProtare, URR_protare_infos, temperature_K, bias, frac));
+    gidimodels.emplace_back(std::make_shared<GIDIModel>(name, MCProtare, URR_protare_infos, temperature_K, bias, frac, minEKin, maxEKin));
   }
   return std::move(gidimodels);
 

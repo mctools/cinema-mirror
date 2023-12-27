@@ -95,7 +95,7 @@ namespace Prompt {
   class GIDIFactory {
   public:
     std::shared_ptr<GIDIModel> createGIDIModel(const std::string &name, double bias, double frac) const;
-    std::vector<std::shared_ptr<GIDIModel>> createGIDIModel(std::vector<IsotopeComposition>) const;
+    std::vector<std::shared_ptr<GIDIModel>> createGIDIModel(std::vector<IsotopeComposition> iso,  double bias=1. , double minEKin=10., double maxEKin=std::numeric_limits<double>::max()) const;
 
     int getHashID(double energy) const;
     bool available() const;

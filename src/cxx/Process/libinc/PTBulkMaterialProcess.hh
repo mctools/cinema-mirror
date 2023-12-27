@@ -32,6 +32,8 @@ namespace Prompt {
     BulkMaterialProcess(const std::string& name);
     const std::string& getName() const { return m_name; }
     virtual ~BulkMaterialProcess();
+    CompoundModel* getCompoundModel() {return m_compModel.get(); }
+    double getNumDensity() {return m_numdensity; }
 
     double sampleStepLength(const Prompt::Particle &particle) const;
     void sampleFinalState(Prompt::Particle &particle, double stepLength=0., bool hitWall=false) const;
