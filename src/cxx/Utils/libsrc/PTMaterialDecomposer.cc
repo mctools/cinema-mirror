@@ -46,7 +46,7 @@
 // print(code)
 
 Prompt::MaterialDecomposer::MaterialDecomposer()
-:m_comp({  { 0, {{0, 1, 1.0, "n1"},} }, 
+:m_natcomp({  { 0, {{0, 1, 1.0, "n1"},} }, 
  { 1, {{1, 1, 0.999885, "H1"},{1, 2, 0.000115, "H2"},} }, 
  { 2, {{2, 3, 1.37e-06, "He3"},{2, 4, 0.9999986300000001, "He4"},} }, 
  { 3, {{3, 6, 0.0759, "Li6"},{3, 7, 0.9241, "Li7"},} }, 
@@ -142,8 +142,19 @@ Prompt::MaterialDecomposer::~MaterialDecomposer()
 }
 
 
-void Prompt::MaterialDecomposer::parseCfgStr(const std::string & str)
+std::vector<Prompt::IsotopeComposition> Prompt::MaterialDecomposer::decompose(const std::string & str)
 {
+
+  //   struct IsotopeComposition {
+  //   int Z;
+  //   int A;
+  //   double frac;
+  //   std::string name;
+  // };
+
+  std::vector<IsotopeComposition> isocomp;
+
+  // name 
   NCrystal::MatCfg matcfg(str);
 
   auto info = NCrystal::createInfo(matcfg);
@@ -156,15 +167,8 @@ void Prompt::MaterialDecomposer::parseCfgStr(const std::string & str)
     // std::cout << atomdata.elementName() << ": A " << atomdata.A() << ", Z " << atomdata.Z() << ", fraction " << frac << std::endl;
 
     if(atomdata.isComposite())
-      std::cout << atomdata.elementName() << " is composite\n";
-    else if(atomdata.isNaturalElement())
-      std::cout  << atomdata.elementName() << " is natural. Z=" << atomdata.Z() << "\n";
-    else if(atomdata.isSingleIsotope())
-      std::cout << atomdata.elementName()+std::to_string(atomdata.A()) << " is single isotope. Z=" << atomdata.Z() << ". A=" << atomdata.A() << "\n";
-
-
-    if(atomdata.isComposite())
     {
+      std::cout << atomdata.elementName() << " is composite\n";
       for (unsigned i=0;i<atomdata.nComponents();i++)
       {
         auto &com = atomdata.getComponent(i);
@@ -172,17 +176,31 @@ void Prompt::MaterialDecomposer::parseCfgStr(const std::string & str)
         << ", fraction: " << com.fraction;
         std::cout << ". A: " <<  com.data->A();
         std::cout << ", Z: " <<  com.data->Z() << std::endl;
-
+        isocomp.emplace_back(IsotopeComposition{ com.data->Z(), com.data->A(), com.fraction*v.fraction, atomdata.elementName()+std::to_string(com.data->A())  });
       }      
+    }
+    else if(atomdata.isNaturalElement())
+    {
+      std::cout  << atomdata.elementName() << " is natural. Z=" << atomdata.Z() << "\n";
+      auto natcomp = getComposition(atomdata.Z());
+      for(auto &v:natcomp)
+        v.frac *= frac;
+      isocomp.insert(isocomp.end(), natcomp.begin(), natcomp.end());
+    }
+    else if(atomdata.isSingleIsotope())
+    {
+      std::cout << atomdata.elementName()+std::to_string(atomdata.A()) << " is single isotope. Z=" << atomdata.Z() << ". A=" << atomdata.A() << "\n";
+      isocomp.emplace_back(IsotopeComposition{ atomdata.Z(), atomdata.A(), v.fraction, atomdata.elementName()+std::to_string(atomdata.A())  });
     }
     std::cout << std::endl;
   }
+  return isocomp;
 }
 
 
-std::vector<Prompt::IsotopeComposition>& Prompt::MaterialDecomposer::getComposition(int Z)
+std::vector<Prompt::IsotopeComposition> Prompt::MaterialDecomposer::getComposition(int Z)
 {
-  if (auto search = m_comp.find(Z); search != m_comp.end())
+  if (auto search = m_natcomp.find(Z); search != m_natcomp.end())
     return search->second;
   else
   {

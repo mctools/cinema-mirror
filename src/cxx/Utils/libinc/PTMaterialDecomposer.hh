@@ -24,6 +24,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <iostream>
 
 #include "PromptCore.hh"
 #include "PTSingleton.hh"
@@ -31,16 +32,23 @@
 namespace Prompt {
 
     struct IsotopeComposition {
-    int Z;
-    int A;
+    unsigned Z;
+    unsigned A;
     double frac;
     std::string name;
+
+    friend std::ostream& operator<<(std::ostream& os, const IsotopeComposition& self)
+    {
+      os << self.Z << " " << self.A << " " << self.frac << " " << self.name ;
+      return os;
+    }
   };
+
 
   class MaterialDecomposer {
   public:
-    std::vector<Prompt::IsotopeComposition>& getComposition(int Z);
-    void parseCfgStr(const std::string & str);
+    std::vector<IsotopeComposition> getComposition(int Z);
+    std::vector<IsotopeComposition> decompose(const std::string & str);
 
   private:
   
@@ -48,7 +56,7 @@ namespace Prompt {
     MaterialDecomposer();
     ~MaterialDecomposer();
 
-    std::map<int, std::vector<Prompt::IsotopeComposition>> m_comp;
+    std::map<int, std::vector<Prompt::IsotopeComposition>> m_natcomp;
 
   };
 }
