@@ -36,7 +36,7 @@ namespace Prompt {
 
   class NCrystalScat  : public DiscreteModel {
   public:
-    NCrystalScat(const std::string &cfgstring, double bias=1.0, double lowerlimt=std::numeric_limits<double>::min(), double upperlimt = std::numeric_limits<double>::max());
+    NCrystalScat(const std::string &cfgstring, double bias=1.0, double lowerlimt = 0., double upperlimt = std::numeric_limits<double>::max());
     virtual ~NCrystalScat();
 
     virtual double getCrossSection(double ekin) const override;

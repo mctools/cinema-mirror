@@ -70,7 +70,8 @@ namespace Prompt {
 
   class GIDIModel  : public DiscreteModel {
   public:
-    GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare, std::shared_ptr<MCGIDI::URR_protareInfos> urr_info, double temperature, double bias=1.0);
+    GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare, std::shared_ptr<MCGIDI::URR_protareInfos> urr_info,
+              double temperature, double bias=1.0, double frac=1.0, double lowerlimt = 0., double upperlimt = std::numeric_limits<double>::max());
     virtual ~GIDIModel();
 
     virtual double getCrossSection(double ekin) const override;
@@ -83,13 +84,19 @@ namespace Prompt {
     std::shared_ptr<MCGIDI::URR_protareInfos> m_urr_info;
     mutable MCGIDI::Sampling::StdVectorProductHandler *m_products;
     mutable double m_cacheEkin, m_cacheGidiXS;
-    const double m_temperature;
+    const double m_temperature, m_frac;
     MCGIDI::Sampling::Input *m_input;
   };
 
+  
+
+  class IsotopeComposition;
+
   class GIDIFactory {
   public:
-    std::shared_ptr<GIDIModel> createGIDIModel(const std::string &name, double bias) const;
+    std::shared_ptr<GIDIModel> createGIDIModel(const std::string &name, double bias, double frac) const;
+    std::vector<std::shared_ptr<GIDIModel>> createGIDIModel(std::vector<IsotopeComposition>) const;
+
     int getHashID(double energy) const;
     bool available() const;
   private:

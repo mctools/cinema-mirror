@@ -29,6 +29,7 @@
 #include <iostream>
 #include <iomanip>
 #include <functional>
+#include "PTMaterialDecomposer.hh"
 
 
 inline double getRandNumber(void *obj) 
@@ -38,10 +39,11 @@ inline double getRandNumber(void *obj)
 
 
 Prompt::GIDIModel::GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
-                             std::shared_ptr<MCGIDI::URR_protareInfos> urr_info, double temperature, double bias)
+                             std::shared_ptr<MCGIDI::URR_protareInfos> urr_info, double temperature, 
+                             double bias, double frac, double lowerlimt, double upperlimt)
 :Prompt::DiscreteModel("GIDI", const_neutron_pgd,
-                      10*Prompt::Unit::eV,
-                      std::numeric_limits<double>::min(), 
+                      lowerlimt,
+                      upperlimt, 
                       bias),
 m_factory(Prompt::Singleton<Prompt::GIDIFactory>::getInstance()), 
 m_mcprotare(mcprotare), 
@@ -50,6 +52,7 @@ m_products(new MCGIDI::Sampling::StdVectorProductHandler()),
 m_cacheEkin(0.), 
 m_cacheGidiXS(0.),
 m_temperature(temperature),
+m_frac(frac),
 m_input(new MCGIDI::Sampling::Input(true, MCGIDI::Sampling::Upscatter::Model::B) )
 { 
 
@@ -79,10 +82,10 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
 {
   if (!m_modelvalid.ekinValid(ekin))
     return 0;
-    
+
   if(ekin==m_cacheEkin)
   {
-    return m_cacheGidiXS*m_bias*Unit::barn;
+    return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
   else
   {
@@ -91,7 +94,7 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
     int hashIndex = m_factory.getHashID(gidiEnergy);
     //temperature unit here is MeV/k, not to confuse by the keV/k unit in m_input
     m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info.get(), hashIndex, const_boltzmann*m_temperature*1e-6, gidiEnergy ); 
-    return m_cacheGidiXS*m_bias*Unit::barn;
+    return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
 }
 
@@ -212,7 +215,7 @@ bool Prompt::GIDIFactory::available() const
 }
 
 
-std::shared_ptr<Prompt::GIDIModel> Prompt::GIDIFactory::createGIDIModel(const std::string &name, double bias) const
+std::shared_ptr<Prompt::GIDIModel> Prompt::GIDIFactory::createGIDIModel(const std::string &name, double bias, double frac) const
 {
   if(!m_map->isProtareAvailable( PoPI::IDs::neutron, name))
   {
@@ -245,5 +248,51 @@ std::shared_ptr<Prompt::GIDIModel> Prompt::GIDIFactory::createGIDIModel(const st
   protares[0] = MCProtare.get();
   auto URR_protare_infos = std::make_shared<MCGIDI::URR_protareInfos>(protares);
 
-  return std::make_shared<GIDIModel>(name, MCProtare, URR_protare_infos, temperature_K, bias);
+  return std::make_shared<GIDIModel>(name, MCProtare, URR_protare_infos, temperature_K, bias, frac);
+}
+
+std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIModel(std::vector<Prompt::IsotopeComposition> vecComp) const
+{
+  std::vector<std::shared_ptr<GIDIModel>> gidimodels;
+  for(const auto& isotope : vecComp)
+  {
+    const std::string &name = isotope.name;
+    double bias=1;
+    double frac = isotope.frac;
+
+    if(!m_map->isProtareAvailable( PoPI::IDs::neutron, name))
+    {
+      PROMPT_THROW2(DataLoadError, "GIDIFactory failed to load data for " << name);
+    }
+
+    auto *protare = m_map->protare( *m_construction, *m_pops, "n", name ) ;
+    
+    GIDI::Styles::TemperatureInfos temperatures = protare->temperatures( );
+    for( GIDI::Styles::TemperatureInfos::const_iterator iter = temperatures.begin( ); iter != temperatures.end( ); ++iter ) {
+      std::cout << "label = " << iter->heatedCrossSection( ) << "  temperature = " << iter->temperature( ).value( ) << std::endl;
+    }
+
+    std::string label( temperatures[0].heatedCrossSection( ) );
+    double temperature_K = temperatures[0].temperature( ).value() * Unit::MeV / const_boltzmann; 
+
+    // MC Part
+    MCGIDI::Transporting::MC *MC = new MCGIDI::Transporting::MC( *m_pops, protare->projectile( ).ID( ), &protare->styles( ), label, GIDI::Transporting::DelayedNeutrons::on, 20.0 );
+    MC->setNuclearPlusCoulombInterferenceOnly( false );
+    MC->sampleNonTransportingParticles( false );
+    
+
+    LUPI::StatusMessageReporting smr1;
+    if( protare->protareType( ) != GIDI::ProtareType::single ) {
+        PROMPT_THROW(CalcError, "ProtareType must be single");
+    }
+    auto MCProtare = std::make_shared<MCGIDI::ProtareSingle>(smr1, static_cast<GIDI::ProtareSingle const &>( *protare), *m_pops, *MC, *m_particles, *m_domainHash, temperatures, m_reactionsToExclude );
+
+    MCGIDI::Vector<MCGIDI::Protare *> protares( 1 );
+    protares[0] = MCProtare.get();
+    auto URR_protare_infos = std::make_shared<MCGIDI::URR_protareInfos>(protares);
+
+    gidimodels.emplace_back(std::make_shared<GIDIModel>(name, MCProtare, URR_protare_infos, temperature_K, bias, frac));
+  }
+  return std::move(gidimodels);
+
 }

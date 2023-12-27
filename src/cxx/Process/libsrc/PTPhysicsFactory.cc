@@ -300,6 +300,7 @@ std::shared_ptr<Prompt::SurfaceProcess> Prompt::PhysicsFactory::createSurfacePro
 Prompt::PhysicsFactory::PhysicsType Prompt::PhysicsFactory::checkPhysicsType(const std::string &cfgstr) const
 {
   CfgParser::ScorerCfg cfg;
+  // test if the cfg is a raw NCrystal cfg string
   try
   {
     auto &ps = Singleton<CfgParser>::getInstance();
