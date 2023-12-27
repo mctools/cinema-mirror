@@ -30,7 +30,7 @@
 namespace Prompt {
   class CfgParser {
   public:
-    struct ScorerCfg {
+    struct StringCfg {
       std::string name;
       std::map<std::string, std::string> parameters;
       void print();
@@ -110,7 +110,7 @@ namespace Prompt {
 
     };
   public:
-    ScorerCfg parse(const std::string& cfgstr);
+    StringCfg parse(const std::string& cfgstr);
   private:
     friend class Singleton<CfgParser>;
     CfgParser();

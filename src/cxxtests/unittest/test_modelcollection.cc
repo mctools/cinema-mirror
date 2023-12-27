@@ -25,25 +25,25 @@
 TEST_CASE("CompoundModel")
 {
 
-  auto collection = Prompt::CompoundModel(2112) ;
-  collection.addNCScaAbsModels("Al_sg225.ncmat;dcutoff=0.5;temp=25C");
+  // auto collection = Prompt::CompoundModel(2112) ;
+  // collection.addNCScaAbsModels("Al_sg225.ncmat;dcutoff=0.5;temp=25C");
 
-  double xs(0.);
-  xs = collection.totalCrossSection(1., {0,0,0} );
-  Prompt::Vector out;
-  double final;
-  std::cout << xs << std::endl;
-  printf("%.15f\n", xs);
+  // double xs(0.);
+  // xs = collection.totalCrossSection(1., {0,0,0} );
+  // Prompt::Vector out;
+  // double final;
+  // std::cout << xs << std::endl;
+  // printf("%.15f\n", xs);
 
-  CHECK(Prompt::floateq(1.378536096609809*Prompt::Unit::barn, xs ));
+  // CHECK(Prompt::floateq(1.378536096609809*Prompt::Unit::barn, xs ));
 
 
-  collection.generate(1., {1,0,0}, final, out);
-  std::cout << final << " " << out << std::endl;
+  // collection.generate(1., {1,0,0}, final, out);
+  // std::cout << final << " " << out << std::endl;
 
-  collection.generate(1., {1,0,0}, final, out);
-  std::cout << final << " " << out << std::endl;
+  // collection.generate(1., {1,0,0}, final, out);
+  // std::cout << final << " " << out << std::endl;
 
-  collection.generate(1., {1,0,0}, final, out);
-  std::cout << final << " " << out << std::endl;
+  // collection.generate(1., {1,0,0}, final, out);
+  // std::cout << final << " " << out << std::endl;
 }

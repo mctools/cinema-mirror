@@ -27,6 +27,9 @@
 #include "PTIdealElaScat.hh"
 #include "PTPhysicsFactory.hh"
 #include "PTActiveVolume.hh"
+#include "PTNCrystalScat.hh"
+#include "PTNCrystalAbs.hh"
+#include "PTCfgParser.hh"
 
 Prompt::BulkMaterialProcess::BulkMaterialProcess(const std::string &name)
     : m_rng(Singleton<SingletonPTRand>::getInstance()),
@@ -150,28 +153,38 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
 {
   std::cout << "Configuring physics model: " << cfgstr << std::endl;
   pt_assert_always(!m_numdensity); //multiple configuration
+
   auto &pfact = Singleton<PhysicsFactory>::getInstance();
   PhysicsFactory::PhysicsType type = pfact.checkPhysicsType(cfgstr);
 
-  if (type == PhysicsFactory::PhysicsType::NC_SCATTER)
+  if (type == PhysicsFactory::PhysicsType::NC_RAW)
   {
-    std::cout << "PhysicsType type NC_SCATTER" << std::endl;
-    m_compModel = pfact.createBulkMaterialProcess(cfgstr);
-    // pt_assert_always(m_compModel->getModels().size() == 1);
-    m_numdensity = pfact.nccalNumDensity(cfgstr); 
-  }
-  else if (type == PhysicsFactory::PhysicsType::NC_RAW)
-  {
-    std::cout << "PhysicsType type NC_RAW" << std::endl;
-    m_compModel->addNCScaAbsModels(cfgstr, 1.0);
     m_numdensity = pfact.nccalNumDensity(cfgstr);
+    m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0));
+    m_compModel->addPhysicsModel(std::make_shared<NCrystalAbs>(cfgstr, 1.0));
+  }
+  else if (type == PhysicsFactory::PhysicsType::NC_SCATTER)
+  {
+    CfgParser::StringCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
+
+    std::string nccfg;
+    cfg.getStringIfExist("nccfg", nccfg);
+    m_numdensity = pfact.nccalNumDensity(nccfg);
+
+    double scatter_bias = 1.0;
+    cfg.getDoubleIfExist("scatter_bias", scatter_bias);
+    m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias));
+
+    double abs_bias = 1.0;
+    cfg.getDoubleIfExist("abs_bias", abs_bias);
+    m_compModel->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias));
   }
   else if (type == PhysicsFactory::PhysicsType::NC_IDEALSCAT)
   {
-    std::cout << "PhysicsType type NC_IDEALSCAT" << std::endl;
     m_compModel = pfact.createBulkMaterialProcess(cfgstr);
     // pt_assert_always(m_compModel->getModels().size() == 0);
     auto &aa = *reinterpret_cast<IdealElaScat *>(m_compModel->getModels()[0].get());
     m_numdensity = aa.getNumberDensity();
   }
+
 }

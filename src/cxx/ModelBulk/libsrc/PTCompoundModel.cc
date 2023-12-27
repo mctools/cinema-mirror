@@ -31,33 +31,6 @@ Prompt::CompoundModel::CompoundModel(int gpd)
 
 Prompt::CompoundModel::~CompoundModel() {}
 
-// to be remove, or move to the physics factory
-void Prompt::CompoundModel::addNCScaAbsModels(const std::string &cfg, double bias)
-{
-  if(bias!=1.)
-    std::cout << "material " << cfg << " has a nonunity bias of " << bias << std::endl;
-
-  // fixme: absoption should be seperated once ENDF data model is available
-  m_models.emplace_back(std::make_shared<NCrystalAbs>(cfg, bias));
-  if(!m_models.back()->getModelValidity().rightParticleType(m_forgpd))
-    PROMPT_THROW2(BadInput, "the model is not aimed for suitable for particle GPD " << m_forgpd);
-
-  // cache_xs and bias will be updated once a calculation is required.
-  // so the initial value can be arbitrary.
-  m_cache.cache_xs.push_back(0.);
-  m_cache.bias.push_back(1.);
-  if(m_models.back()->isOriented())
-    m_containsOriented=true;
-
-  m_models.emplace_back(std::make_shared<NCrystalScat>(cfg, bias));
-  if(!m_models.back()->getModelValidity().rightParticleType(m_forgpd))
-    PROMPT_THROW2(BadInput, "the model is not aimed for suitable for particle GPD " << m_forgpd);
-
-  m_cache.cache_xs.push_back(0.);
-  m_cache.bias.push_back(1.);
-  if(m_models.back()->isOriented())
-    m_containsOriented=true;
-}
 
 void Prompt::CompoundModel::addPhysicsModel(std::shared_ptr<Prompt::DiscreteModel> model)
 {
@@ -68,7 +41,7 @@ void Prompt::CompoundModel::addPhysicsModel(std::shared_ptr<Prompt::DiscreteMode
   // cache_xs and bias will be updated once a calculation is required.
   // so the initial value can be arbitrary.
   m_cache.cache_xs.push_back(0.);
-  m_cache.bias.push_back(1.);
+  m_cache.bias.push_back(1.); // to be update in totalCrossSection
   if(m_models.back()->isOriented())
     m_containsOriented=true;
 }

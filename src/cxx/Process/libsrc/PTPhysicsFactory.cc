@@ -34,7 +34,7 @@ bool Prompt::PhysicsFactory::rawNCrystalCfg(const std::string &cfgstr)
   try
   {
     auto &ps = Singleton<CfgParser>::getInstance();
-    CfgParser::ScorerCfg cfg = ps.parse(cfgstr);
+    CfgParser::StringCfg cfg = ps.parse(cfgstr);
   }
   catch (Prompt::Error::BadInput& e)
   {
@@ -52,7 +52,7 @@ double Prompt::PhysicsFactory::nccalNumDensity(const std::string &cfgstr)
   std::string nccfgstr = cfgstr;
   if(!rawNCrystalCfg(cfgstr))
   {
-    CfgParser::ScorerCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
+    CfgParser::StringCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
     if(!cfg.getStringIfExist("nccfg", nccfgstr))
       PROMPT_THROW(BadInput, "NCrystal cfg string is not found");
   }
@@ -92,7 +92,7 @@ void Prompt::PhysicsFactory::showNCComposition(const std::string &nccfgstr)
 std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkMaterialProcess(const std::string &cfgstr)
 {
   std::cout << "Parsing config string for a CompoundModel: \n";
-  CfgParser::ScorerCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
+  CfgParser::StringCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
   cfg.print();
 
   std::unique_ptr<Prompt::CompoundModel> compmod;
@@ -299,7 +299,7 @@ std::shared_ptr<Prompt::SurfaceProcess> Prompt::PhysicsFactory::createSurfacePro
 
 Prompt::PhysicsFactory::PhysicsType Prompt::PhysicsFactory::checkPhysicsType(const std::string &cfgstr) const
 {
-  CfgParser::ScorerCfg cfg;
+  CfgParser::StringCfg cfg;
   // test if the cfg is a raw NCrystal cfg string
   try
   {

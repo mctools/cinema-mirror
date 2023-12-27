@@ -21,9 +21,9 @@
 #include "PTCfgParser.hh"
 #include "PTUtils.hh" //split
 
-void Prompt::CfgParser::ScorerCfg::print()
+void Prompt::CfgParser::StringCfg::print()
 {
-  std::cout << "ScorerCfg " << name << " of size " << size() << ":\n";
+  std::cout << "StringCfg " << name << " of size " << size() << ":\n";
   for(auto it = parameters.begin(); it!=parameters.end();++it)
   {
     std::cout << "  [" << it->first << " = "
@@ -31,7 +31,7 @@ void Prompt::CfgParser::ScorerCfg::print()
   }
 }
 
-std::string Prompt::CfgParser::ScorerCfg::find(const std::string &key, bool force)
+std::string Prompt::CfgParser::StringCfg::find(const std::string &key, bool force)
 {
   auto  it = parameters.find(key);
   std::string v =  it == parameters.end() ? "" : it->second;
@@ -44,7 +44,7 @@ Prompt::CfgParser::CfgParser()
 {
 }
 
-Prompt::CfgParser::ScorerCfg Prompt::CfgParser::parse(const std::string& cfgstrinput)
+Prompt::CfgParser::StringCfg Prompt::CfgParser::parse(const std::string& cfgstrinput)
 {
   std::string cfgstr = cfgstrinput; 
   //find this substrings inside ' '
@@ -69,7 +69,7 @@ Prompt::CfgParser::ScorerCfg Prompt::CfgParser::parse(const std::string& cfgstri
   }  
 
   auto strvec = split(cfgstr, ';');
-  ScorerCfg cfg;
+  StringCfg cfg;
   cfg.name=strvec[0];
   for(const auto &s: strvec)
   {
