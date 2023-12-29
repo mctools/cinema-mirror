@@ -163,7 +163,15 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   }
   else
   {
-    //Fixme: mcpl writer will be used to record neutron multiplication for keff application
+    final_ekin=ENERGYTOKEN_ABSORB;
+
+    for(auto v: prod_n)
+    {
+        std::cout << "prd idx " << v.m_productIndex << " "
+        << v.m_kineticEnergy << std::endl;
+    }
+    std::cout << std::endl;
+    // //Fixme: mcpl writer will be used to record neutron multiplication for keff application
     PROMPT_THROW(NotImplemented, "neutron multiplication is not yet supported");
   }
 

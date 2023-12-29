@@ -107,6 +107,11 @@ void* pt_MCPLBinaryWrite_new(const char *fn, bool enable_double=false, bool enab
 void pt_MCPLBinaryWrite_delete(void* obj);
 void pt_MCPLBinaryWrite_write(void* obj, mcpl_particle_t par);
 
+// XS python interface
+void* pt_makeCompoundModel(const char * cfg);
+void pt_deleteCompoundModel(void* obj);
+double pt_CompoundModel_getxs(void* obj, double ekin);
+
 #ifdef __cplusplus
 }
 #endif
