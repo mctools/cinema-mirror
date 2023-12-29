@@ -6,24 +6,26 @@ import matplotlib.pyplot as plt
 import argparse
 
 parser = argparse.ArgumentParser()
+
+parser.add_argument('cfg', metavar='N', type=str, nargs='+', default= ['Al_sg225.ncmat'],
+                    help='Prompt materil config')
+
 parser.add_argument('-e', '--energy', action='store', type=float, default=1.,
                     dest='energy', help='incident kinetic energy')
 
-parser.add_argument('-c', '--cfg', action='store', type=str, default='Al_sg225.ncmat',
-                    dest='cfg', help='Prompt materil config string')
 
 args=parser.parse_args()
 
-comp = CompoundModel(args.cfg)
-
-# lw = Material("'LiquidWaterH2O_T293.6K.ncmat;density=1gcm3'") # v2, 4.630884342994241. ml, 4.630884342994241. full spec 4.691033674854935 should 4.7046
-# lw = Material('freegas::H2O/1gcm3/H_is_1.00_H1/O_is_1.00_O16') # v2, 4.5781432733636525. ml, 4.5781432733636525. full spec 4.638707241003883, should be 4.6490. gidi 3.615059805936363                                           
-
 ekin = np.logspace(-5, 7, 1000)
-xs = np.zeros_like(ekin)
 
-for i in range(ekin.size):
-    xs[i] = comp.xs(ekin[i])
+for cfg in args.cfg:
+    comp = CompoundModel(cfg)
+    xs = np.zeros_like(ekin)
+    for i in range(ekin.size):
+        xs[i] = comp.xs(ekin[i])
 
-plt.loglog(ekin, xs)
+    plt.loglog(ekin, xs, label=cfg)
+    
+plt.legend(loc=0)
+plt.grid('both')
 plt.show()
