@@ -41,7 +41,7 @@ inline double getRandNumber(void *obj)
 Prompt::GIDIModel::GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
                              std::shared_ptr<MCGIDI::URR_protareInfos> urr_info, double temperature, 
                              double bias, double frac, double lowerlimt, double upperlimt)
-:Prompt::DiscreteModel("GIDI", const_neutron_pgd,
+:Prompt::DiscreteModel(name, const_neutron_pgd,
                       lowerlimt,
                       upperlimt, 
                       bias),
