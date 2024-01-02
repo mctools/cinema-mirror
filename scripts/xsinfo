@@ -7,8 +7,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('cfg', metavar='N', type=str, nargs='+', default= ['Al_sg225.ncmat'],
-                    help='Prompt materil config')
+parser.add_argument('cfg', metavar='N', type=str, nargs='+', help='Prompt materil config')
 
 parser.add_argument('-e', '--energy', action='store', type=float, default=1.,
                     dest='energy', help='incident kinetic energy')
@@ -16,7 +15,7 @@ parser.add_argument('-e', '--energy', action='store', type=float, default=1.,
 
 args=parser.parse_args()
 
-ekin = np.logspace(-5, 7, 1000)
+ekin = np.logspace(-5, np.log10(100e6), 1000)
 
 for cfg in args.cfg:
     comp = CompoundModel(cfg)
