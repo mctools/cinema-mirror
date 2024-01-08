@@ -9,6 +9,8 @@ import mcpl, os
 np.set_printoptions(suppress=True)
 from Cinema.PiXiu.phon import CohPhon
 
+# rundir ~/git/cinema/rundir/px/newNC/si
+
 resN = 1e7
 Qmesh = 100
 Qrange = 3
@@ -129,7 +131,7 @@ bw_knn_cv *= kds.kde.bw_silv(dim,len(bw_knn))/kds.kde.bw_silv(dim,len(bw_cv)) # 
 
 s = kds.KDSource(plist, geom, bw=bw_knn_cv,  kernel='epa') # Create new KDSource with full BW
 s.fit(N=N, scaling=scaling)
-
+s.plot_t
 xmlfile = "source.xml"
 s.save(xmlfile) # Save KDSource to XML file
 
