@@ -78,6 +78,6 @@ target_include_directories( ${PROJECT_NAME}
     ${NCrystal_INCDIR}
     ${HDF5_INCLUDE_DIR}
     ${MCPL_INCDIR} #KDSource files are in this DIR as well
-    PRIVATE
+    # PRIVATE
     ${GIDIPLUS_INCDIR}
 )

@@ -240,8 +240,7 @@ std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIM
     {
       PROMPT_THROW2(DataLoadError, "GIDIFactory failed to load data for " << name);
     }
-
-    auto *protare = m_map->protare( *m_construction, *m_pops, "n", name ) ;
+    auto *protare = m_map->protare( *m_construction, *m_pops, "n", name, "", "", false, true ) ;
     
     GIDI::Styles::TemperatureInfos temperatures = protare->temperatures( );
     for( GIDI::Styles::TemperatureInfos::const_iterator iter = temperatures.begin( ); iter != temperatures.end( ); ++iter ) {
@@ -252,17 +251,33 @@ std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIM
     double temperature_K = temperatures[0].temperature( ).value() * Unit::MeV / const_boltzmann; 
 
     // MC Part
-    MCGIDI::Transporting::MC *MC = new MCGIDI::Transporting::MC( *m_pops, protare->projectile( ).ID( ), &protare->styles( ), label, GIDI::Transporting::DelayedNeutrons::on, 20.0 );
-    MC->setNuclearPlusCoulombInterferenceOnly( false );
-    MC->sampleNonTransportingParticles( false );
+    // MCGIDI::Transporting::MC *MC = new MCGIDI::Transporting::MC( *m_pops, protare->projectile( ).ID( ), &protare->styles( ), label, GIDI::Transporting::DelayedNeutrons::off, 20.0 );
+    // MC->setNuclearPlusCoulombInterferenceOnly( false );
+    // MC->sampleNonTransportingParticles( true );
+
+    MCGIDI::Transporting::MC MC( *m_pops, protare->projectile( ).ID( ), &protare->styles( ), label, GIDI::Transporting::DelayedNeutrons::off, 20.0 );
+    MC.setNuclearPlusCoulombInterferenceOnly( false );
+    MC.sampleNonTransportingParticles( false );
+
     
 
     LUPI::StatusMessageReporting smr1;
     if( protare->protareType( ) != GIDI::ProtareType::single ) {
         PROMPT_THROW(CalcError, "ProtareType must be single");
     }
-    auto mcProtare = std::make_shared<MCGIDI::ProtareSingle>(smr1, static_cast<GIDI::ProtareSingle const &>( *protare), *m_pops, *MC, *m_particles, *m_domainHash, temperatures, m_reactionsToExclude );
+        std::set<int> reactionsToExclude;
 
+    MCGIDI::Protare *testprotar = MCGIDI::protareFromGIDIProtare( smr1, *protare, *m_pops, MC, *m_particles, *m_domainHash, temperatures, reactionsToExclude );
+    delete testprotar;
+    auto mcProtare = std::make_shared<MCGIDI::ProtareSingle>(smr1, static_cast<GIDI::ProtareSingle const &>( *protare), *m_pops, MC, *m_particles, *m_domainHash, temperatures, m_reactionsToExclude );
+
+  //   MCGIDI::Vector<MCGIDI::Protare *> protares( 1 );
+  //   protares[0] = mcProtare.get();
+  //   auto URR_protare_infos = std::make_shared<MCGIDI::URR_protareInfos>(protares);
+  //   // const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare, std::shared_ptr<MCGIDI::URR_protareInfos> urr_info,
+  //   //           double temperature, double bias=1.0, double frac=1.0, double lowerlimt = 0., double upperlimt = std::numeric_limits<double>::max()
+  //   gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare, URR_protare_infos, temperature_K, bias, frac, minEKin, maxEKin));
+  // }
 
     protares[i]= mcProtare.get();
     singleProtares.push_back(std::make_tuple(mcProtare, name, temperature_K, frac));
