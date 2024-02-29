@@ -4,6 +4,9 @@ from  Cinema.Prompt.compoundModel import CompoundModel
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
+from Cinema.Interface import plotStyle
+
+plotStyle()
 
 parser = argparse.ArgumentParser()
 
@@ -15,7 +18,7 @@ parser.add_argument('-e', '--energy', action='store', type=float, default=1.,
 
 args=parser.parse_args()
 
-ekin = np.logspace(-5, np.log10(100e6), 1000)
+ekin = np.logspace(-5, np.log10(20e6), 1000)
 
 for cfg in args.cfg:
     comp = CompoundModel(cfg)
@@ -23,6 +26,9 @@ for cfg in args.cfg:
     for i in range(ekin.size):
         xs[i] = comp.xs(ekin[i])
 
+
+    
+    np.save('xs', xs)
     plt.loglog(ekin, xs, label=cfg)
     
 plt.legend(loc=0)
