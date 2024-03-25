@@ -8,6 +8,7 @@ matplotlib
 mcpl
 scipy
 h5py
+psutil
 # tetgen #tetrahedralise function in pyvista 
 # pymeshfix #reconstruct a manifold clean surface
 
