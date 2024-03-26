@@ -272,7 +272,7 @@ class Volume:
             nameList = scorer.split(';')
             name = [n for n in nameList if 'name' in n][0]
             name = re.search(r'=.*', name)
-            name = re.sub(r'=', '', name.group())
+            name = re.sub(r'=', '', name.group()).strip()
             self.__class__.scorerDict[name] = scorer
             _pt_ResourceManager_addScorer(self.volid, scorer.encode('utf-8')) 
         else:
