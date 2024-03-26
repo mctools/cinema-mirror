@@ -17,7 +17,7 @@
 ##  limitations under the License.                                            ##
 ##                                                                            ##
 ################################################################################
-
+import numpy as np
 from ..Interface import *
 
 #box
@@ -27,6 +27,7 @@ _pt_Tube_new = importFunc('pt_Tube_new', type_voidp, [type_dbl, type_dbl, type_d
 _pt_Trapezoid_new = importFunc('pt_Trapezoid_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 _pt_Sphere_new = importFunc('pt_Sphere_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 _pt_Polyhedron_new = importFunc('pt_Polyhedron_new', type_voidp, [type_dbl, type_dbl, type_int, type_int, type_npdbl1d, type_npdbl1d, type_npdbl1d] )
+_pt_ArbTrapezoid_new = importFunc('pt_ArbTrapezoid_new', type_voidp, [type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dbl])
 
 #Tessellated
 _pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npsbl2d] )
@@ -82,3 +83,21 @@ class Tessellated(Solid): #this one is not working
         if tranMat is not None:
             tranMat.transformInplace(points)
         self.cobj = _pt_Tessellated_new(faces.shape[0], faces, points)
+
+class ArbTrapezoid(Solid):
+    def __init__(self, xy1 : np.ndarray, xy2 : np.ndarray, xy3 : np.ndarray, xy4 : np.ndarray,
+                 xy5 : np.ndarray, xy6 : np.ndarray, xy7 : np.ndarray, xy8 : np.ndarray, halfz) -> None:
+        super().__init__()
+        # if not xy1.flags['C_CONTIGUOUS']:         TODO: solid or not when ndarray is not contiguous?
+            # xy1 = np.ascontiguousarray(xy1, dtype=xy1.dtype)
+        # xy1 = ctypes.cast(xy1.ctypes.data, type_dblp)
+        xy1 = xy1.astype(np.double).ctypes.data_as(type_dblp)
+        xy2 = xy2.astype(np.double).ctypes.data_as(type_dblp)
+        xy3 = xy3.astype(np.double).ctypes.data_as(type_dblp)
+        xy4 = xy4.astype(np.double).ctypes.data_as(type_dblp)
+        xy5 = xy5.astype(np.double).ctypes.data_as(type_dblp)
+        xy6 = xy6.astype(np.double).ctypes.data_as(type_dblp)
+        xy7 = xy7.astype(np.double).ctypes.data_as(type_dblp)
+        xy8 = xy8.astype(np.double).ctypes.data_as(type_dblp)
+
+        self.cobj = _pt_ArbTrapezoid_new(xy1, xy2, xy3, xy4, xy5, xy6, xy7, xy8, halfz)

@@ -7,6 +7,7 @@
 #include "VecGeom/volumes/UnplacedTube.h"
 #include "VecGeom/volumes/UnplacedTrapezoid.h"
 #include "VecGeom/volumes/UnplacedPolyhedron.h"
+#include "VecGeom/volumes/UnplacedGenTrap.h"
 
 
 #include "VecGeom/volumes/UnplacedVolume.h"
@@ -149,6 +150,31 @@ void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, float *point)
     tsl->Close();
 
     return static_cast<void *>(tsl);
+}
+
+void *pt_ArbTrapezoid_new(double (*v11), double (*v12), double (*v13), double (*v14), 
+                        double (*v21), double (*v22), double (*v23), double (*v24),
+                        double halfHeight)
+{
+    std::vector<double> verticesx;
+    verticesx.push_back(v11[0]);
+    verticesx.push_back(v12[0]);
+    verticesx.push_back(v13[0]);
+    verticesx.push_back(v14[0]);
+    verticesx.push_back(v21[0]);
+    verticesx.push_back(v22[0]);
+    verticesx.push_back(v23[0]);
+    verticesx.push_back(v24[0]);
+    std::vector<double> verticesy;
+    verticesy.push_back(v11[1]);
+    verticesy.push_back(v12[1]);
+    verticesy.push_back(v13[1]);
+    verticesy.push_back(v14[1]);
+    verticesy.push_back(v21[1]);
+    verticesy.push_back(v22[1]);
+    verticesy.push_back(v23[1]);
+    verticesy.push_back(v24[1]);
+    return static_cast<void *> (new vg::UnplacedGenTrap(verticesx.data(), verticesy.data(), halfHeight));
 }
 
 
