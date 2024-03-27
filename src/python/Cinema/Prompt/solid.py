@@ -28,18 +28,24 @@ _pt_Trapezoid_new = importFunc('pt_Trapezoid_new', type_voidp, [type_dbl, type_d
 _pt_Sphere_new = importFunc('pt_Sphere_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 _pt_Polyhedron_new = importFunc('pt_Polyhedron_new', type_voidp, [type_dbl, type_dbl, type_int, type_int, type_npdbl1d, type_npdbl1d, type_npdbl1d] )
 _pt_ArbTrapezoid_new = importFunc('pt_ArbTrapezoid_new', type_voidp, [type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dbl])
+_pt_Cone_new = importFunc('pt_Cone_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 
 #Tessellated
 _pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npsbl2d] )
 
 
 class Solid:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, *args) -> None:
+        self.sanityCheckBase(*args)
+
+    def sanityCheckBase(self, *args): 
+        for p in args:
+            if p < 0:
+                raise ValueError(f"Invalid input! {p} Should be positive value or zero!")
 
 class Box(Solid):
     def __init__(self, hx, hy, hz):
-        super().__init__()
+        super().__init__(hx, hy, hz)
         self.cobj = _pt_Box_new(hx, hy, hz)
         self.hx = hx
         self.hy = hy
@@ -53,23 +59,24 @@ class Box(Solid):
 
 class Tube(Solid):
     def __init__(self, rmin, rmax, z, startphi = 0, deltaphi = 360):
-        super().__init__()
+        super().__init__(rmin, rmax, z, deltaphi)
         self.cobj = _pt_Tube_new(rmin, rmax, z, np.deg2rad(startphi), np.deg2rad(deltaphi))
 
 class Sphere(Solid):
     def __init__(self, rmin, rmax, startphi=0., deltaphi=2*np.pi, starttheta=0., deltatheta=np.pi):
-        super().__init__()
+        super().__init__(rmin, rmax, deltaphi, deltatheta)
         self.cobj = _pt_Sphere_new(rmin, rmax, startphi, deltaphi, starttheta, deltatheta)
 
 class Trapezoid(Solid):
     def __init__(self, x1, x2, y1, y2, z) -> None:
-        super().__init__()
+        super().__init__(x1, x2, y1, y2, z)
         self.cobj = _pt_Trapezoid_new(x1, x2, y1, y2, z)
 
 class Polyhedron(Solid):
     def __init__(self, zPlanes, rMin, rMax, sideCount=6,
                  phiStart_deg=0, phiDelta_deg=360) -> None:
-        super().__init__()
+        super().__init__(zPlanes, rMin, rMax, sideCount,
+                 phiDelta_deg)
         zp, rmin, rmax = np.array(zPlanes), np.array(rMin), np.array(rMax)
         if zp.size!=rmin.size or rmin.size!=rmax.size:
             raise RuntimeError('the sizes of zPlanes, rMin and rMax are not equal')    
@@ -87,7 +94,7 @@ class Tessellated(Solid): #this one is not working
 class ArbTrapezoid(Solid):
     def __init__(self, xy1 : np.ndarray, xy2 : np.ndarray, xy3 : np.ndarray, xy4 : np.ndarray,
                  xy5 : np.ndarray, xy6 : np.ndarray, xy7 : np.ndarray, xy8 : np.ndarray, halfz) -> None:
-        super().__init__()
+        super().__init__(halfz)
         # if not xy1.flags['C_CONTIGUOUS']:         TODO: solid or not when ndarray is not contiguous?
             # xy1 = np.ascontiguousarray(xy1, dtype=xy1.dtype)
         # xy1 = ctypes.cast(xy1.ctypes.data, type_dblp)
@@ -101,3 +108,14 @@ class ArbTrapezoid(Solid):
         xy8 = xy8.astype(np.double).ctypes.data_as(type_dblp)
 
         self.cobj = _pt_ArbTrapezoid_new(xy1, xy2, xy3, xy4, xy5, xy6, xy7, xy8, halfz)
+
+class Cone(Solid):
+    def __init__(self, rmaxBot, rmaxTop, z, rminBot = 0, rminTop = 0, startPhi = 0, deltaPhi = 360) -> None:
+        super().__init__(rmaxBot, rmaxTop, z, rminBot, rminTop, deltaPhi)
+        self.sanityCheck(rminBot, rmaxBot)
+        self.sanityCheck(rminTop, rmaxTop)
+        self.cobj = _pt_Cone_new(rminBot, rmaxBot, rminTop, rmaxTop, z, np.deg2rad(startPhi), np.deg2rad(deltaPhi))
+    
+    def sanityCheck(self, rmin, rmax):
+        if rmin > rmax:
+            raise ValueError(f"Invalid inputs! rmin ({rmin}) should less than or equal rmax ({rmax}))?")

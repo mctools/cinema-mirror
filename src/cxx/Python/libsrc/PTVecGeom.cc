@@ -8,6 +8,7 @@
 #include "VecGeom/volumes/UnplacedTrapezoid.h"
 #include "VecGeom/volumes/UnplacedPolyhedron.h"
 #include "VecGeom/volumes/UnplacedGenTrap.h"
+#include "VecGeom/volumes/UnplacedCone.h"
 
 
 #include "VecGeom/volumes/UnplacedVolume.h"
@@ -174,9 +175,16 @@ void *pt_ArbTrapezoid_new(double (*v11), double (*v12), double (*v13), double (*
     verticesy.push_back(v22[1]);
     verticesy.push_back(v23[1]);
     verticesy.push_back(v24[1]);
-    return static_cast<void *> (new vg::UnplacedGenTrap(verticesx.data(), verticesy.data(), halfHeight));
+    return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedGenTrap>(verticesx.data(), verticesy.data(), halfHeight));
 }
 
+// Cone
+void *pt_Cone_new(double rmin1, double rmax1, double rmin2, double rmax2, double dz, double phimin,
+               double deltaphi)
+{
+    return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedCone>(rmin1, rmax1, rmin2, rmax2, dz, phimin,
+              deltaphi));
+}
 
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume)

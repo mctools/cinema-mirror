@@ -36,6 +36,10 @@ void *pt_ArbTrapezoid_new(double (*v11), double (*v12), double (*v13), double (*
                         double (*v21), double (*v22), double (*v23), double (*v24),
                         double halfHeight);
 
+// Cone
+void *pt_Cone_new(double rmin1, double rmax1, double rmin2, double rmax2, double dz, double phimin,
+               double deltaphi);
+
 
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume);
