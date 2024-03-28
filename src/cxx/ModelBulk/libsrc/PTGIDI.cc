@@ -30,7 +30,7 @@
 #include <iomanip>
 #include <functional>
 #include "PTMaterialDecomposer.hh"
-#include<tuple> // for tuple
+#include <tuple> // for tuple
 
 #include "PTCentralData.hh"
 
@@ -41,7 +41,7 @@ inline double getRandNumber(void *obj)
 
 
 Prompt::GIDIModel::GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
-                             std::shared_ptr<MCGIDI::URR_protareInfos> urr_info, double temperature, 
+                             double temperature, 
                              double bias, double frac, double lowerlimt, double upperlimt)
 :Prompt::DiscreteModel(name, const_neutron_pgd,
                       lowerlimt,
@@ -49,7 +49,7 @@ Prompt::GIDIModel::GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Pr
                       bias),
 m_factory(Prompt::Singleton<Prompt::GIDIFactory>::getInstance()), 
 m_mcprotare(mcprotare), 
-m_urr_info(urr_info),
+m_urr_info(),
 m_products(new MCGIDI::Sampling::StdVectorProductHandler()),
 m_cacheEkin(0.), 
 m_cacheGidiXS(0.),
@@ -110,6 +110,7 @@ double Prompt::GIDIModel::getCrossSection(double ekin, const Prompt::Vector &dir
 
 void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
 {
+
   pt_assert_always(ekin==m_cacheEkin);
 
   double ekin_MeV = ekin*1e-6;
@@ -149,7 +150,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   // So, in the case that neutron is the only transporting particle, the energy deposition is calculated as incident neutorn kinetic energy 
   // plus Q and substrcut the total kinetic energy of all the tracking particles. 
 
-  printf("deposition %f\n\n", ekin_MeV+reaction->finalQ(ekin_MeV)-totalekin);
+  printf("MT%d, deposition %f\n\n", reaction->ENDF_MT(), ekin_MeV+reaction->finalQ(ekin_MeV)-totalekin);
 
   // std::cout << " total neutrons " << prod_n.size() << "\n";
 
@@ -189,10 +190,11 @@ Prompt::GIDIFactory::GIDIFactory()
 :m_pops(new PoPI::Database( Singleton<CentralData>::getInstance().getGidiPops())),
 m_map (new GIDI::Map::Map( Singleton<CentralData>::getInstance().getGidiMap(), *m_pops )),
 m_particles(new GIDI::Transporting::Particles()),
-m_construction(new GIDI::Construction::Settings ( GIDI::Construction::ParseMode::MonteCarloContinuousEnergy, 
+m_construction(new GIDI::Construction::Settings ( GIDI::Construction::ParseMode::all, 
                                               GIDI::Construction::PhotoMode::nuclearAndAtomic )),
 m_domainHash(new MCGIDI::DomainHash ( 4000, 1e-8, 20 ) ),
-m_reactionsToExclude(std::set<int>())
+m_reactionsToExclude(std::set<int>()),
+m_smr1()
 {  
   GIDI::Transporting::Particle neutron(PoPI::IDs::neutron, GIDI::Transporting::Mode::MonteCarloContinuousEnergy);
   m_particles->add(neutron);
@@ -247,9 +249,9 @@ std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIM
     {
       PROMPT_THROW2(DataLoadError, "GIDIFactory failed to load data for " << name);
     }
-    auto *protare = m_map->protare( *m_construction, *m_pops, "n", name, "", "", true, true ) ;
+    auto *gidiprotare =  (GIDI::Protare *) m_map->protare( *m_construction, *m_pops, "n", name, "", "", true, true ) ;
     
-    GIDI::Styles::TemperatureInfos temperatures = protare->temperatures( );
+    GIDI::Styles::TemperatureInfos temperatures = gidiprotare->temperatures( );
     for( GIDI::Styles::TemperatureInfos::const_iterator iter = temperatures.begin( ); iter != temperatures.end( ); ++iter ) {
       std::cout << "label = " << iter->heatedCrossSection( ) << "  temperature = " << iter->temperature( ).value( ) << std::endl;
     }
@@ -257,29 +259,32 @@ std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIM
     std::string label( temperatures[0].heatedCrossSection( ) );
     double temperature_K = temperatures[0].temperature( ).value() * Unit::MeV / const_boltzmann; 
 
-    MCGIDI::Transporting::MC MC( *m_pops, protare->projectile( ).ID( ), &protare->styles( ), label, GIDI::Transporting::DelayedNeutrons::on, 20.0 );
+    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, GIDI::Transporting::DelayedNeutrons::on, 20.0 );
     // MC.setNuclearPlusCoulombInterferenceOnly( false );
     MC.sampleNonTransportingParticles( false );
     // MC.set_ignoreENDF_MT5(true);
+    MC.set_wantRawTNSL_distributionSampling( true );
+
    
 
-    LUPI::StatusMessageReporting smr1;
-    if( protare->protareType( ) != GIDI::ProtareType::single ) {
+    if( gidiprotare->protareType( ) != GIDI::ProtareType::single ) {
         PROMPT_THROW(CalcError, "ProtareType must be single");
     }
-    std::set<int> reactionsToExclude;
 
-    auto mcProtare = std::make_shared<MCGIDI::ProtareSingle>(smr1, static_cast<GIDI::ProtareSingle const &>( *protare), *m_pops, MC, *m_particles, *m_domainHash, temperatures, m_reactionsToExclude );
+    auto mcProtare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+                                                             *m_particles, *m_domainHash, temperatures, m_reactionsToExclude );
+
+    // singleProtares.push_back(std::make_tuple(mcProtare, name, temperature_K, frac));
+    gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare, temperature_K, bias, frac, minEKin, maxEKin));
 
 
-    protares[i]= mcProtare.get();
-    singleProtares.push_back(std::make_tuple(mcProtare, name, temperature_K, frac));
     i++;
+    delete gidiprotare;
   }
 
-  auto URR_protare_infos = std::make_shared<MCGIDI::URR_protareInfos>(protares);
-  for(auto s : singleProtares)
-    gidimodels.emplace_back(std::make_shared<GIDIModel>(std::get<1>(s), std::get<0>(s), URR_protare_infos, std::get<2>(s), bias, std::get<3>(s), minEKin, maxEKin));
+  // auto URR_protare_infos = std::make_shared<MCGIDI::URR_protareInfos>();
+  // for(auto s : singleProtares)
+  //   gidimodels.emplace_back(std::make_shared<GIDIModel>(std::get<1>(s), std::get<0>(s), std::get<2>(s), bias, std::get<3>(s), minEKin, maxEKin));
 
-  return std::move(gidimodels);
+  return (gidimodels);
 }

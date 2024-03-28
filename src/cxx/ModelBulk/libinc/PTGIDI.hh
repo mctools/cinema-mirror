@@ -53,6 +53,11 @@ namespace PoPI
   class Database;
 }
 
+namespace LUPI
+{
+  class StatusMessageReporting;
+}
+
 namespace MCGIDI
 {
   class DomainHash;
@@ -70,7 +75,7 @@ namespace Prompt {
 
   class GIDIModel  : public DiscreteModel {
   public:
-    GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare, std::shared_ptr<MCGIDI::URR_protareInfos> urr_info,
+    GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
               double temperature, double bias=1.0, double frac=1.0, double lowerlimt = 0., double upperlimt = std::numeric_limits<double>::max());
     virtual ~GIDIModel();
 
@@ -110,6 +115,8 @@ namespace Prompt {
     GIDI::Construction::Settings *m_construction;
     MCGIDI::DomainHash *m_domainHash;
     std::set<int> m_reactionsToExclude;
+    LUPI::StatusMessageReporting *m_smr1;
+
 
   };
 }

@@ -6,9 +6,9 @@ from Cinema.Prompt.solid import Box, Sphere
 from Cinema.Prompt.scorer import VolFluenceHelper
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun
+from Cinema.Prompt.centralData import CentralData 
 
-
-
+CentralData().setGidiThreshold(1e-11)
 class MySim(Prompt):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)   
@@ -17,9 +17,9 @@ class MySim(Prompt):
 
         world = Volume("world", Box(400, 400, 400))
 
-        # lw = Material("'LiquidWaterH2O_T293.6K.ncmat;density=1gcm3'") # v2, 4.630884342994241. ml, 4.630884342994241. full spec 4.691033674854935 should 4.7046
-        # lw = Material('freegas::H2O/1gcm3/H_is_1.00_H1/O_is_1.00_O16') # v2, 4.5781432733636525. ml, 4.5781432733636525. full spec 4.638707241003883, should be 4.6490. gidi 3.615059805936363                                           
-        lw = Material('freegas::B/1gcm3') # v2, 4.5781432733636525. ml, 4.5781432733636525. full spec 4.638707241003883, should be 4.6490. gidi 3.615059805936363                                           
+        # lw = Material('freegas::He/1gcm3/He_is_1_He3') 
+        lw = Material('freegas::B/1gcm3/B_is_1_B10') 
+        # lw = Material('freegas::Li/1gcm3/Li_is_1_Li6') 
 
         lw.setBiasScat(1.)
         lw.setBiasAbsp(1.)
@@ -36,9 +36,9 @@ sim.makeWorld()
 
 
 gun = IsotropicGun()
-gun.setEnergy(1e6)
+gun.setEnergy(1e-6)
 
-partnum = 1
+partnum = 100
 # vis or production
 sim.simulate(gun, partnum)
 

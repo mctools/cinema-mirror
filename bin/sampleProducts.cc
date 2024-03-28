@@ -16,6 +16,10 @@ static char const *description = "Loops over each reaction does 1 product sampli
 #include <stdarg.h>
 
 #include "MCGIDI.hpp"
+#include "PTCentralData.hh"
+
+namespace pt = Prompt;
+
 
 /*
 # <<BEGIN-copyright>>
@@ -372,18 +376,31 @@ int main( int argc, char **argv ) {
 /*
 =========================================================
 */
+
+#include "PromptCore.hh"
+
+#include "PTSingleton.hh"
+#include "PTRandCanonical.hh"
+
+inline double getRandNumber(void *obj) 
+{
+  return Prompt::Singleton<Prompt::SingletonPTRand>::getInstance().generate();
+}
+
+
+
 void main2( int argc, char **argv ) {
 
-    PoPI::Database pops( "/home/caixx/git/fudge/rundir/prompt_data/pops.xml" );
-    GIDI::Protare *protare;
+    PoPI::Database m_pops(pt::Singleton<pt::CentralData>::getInstance().getGidiPops());
+    GIDI::Protare *gidiprotare;
     GIDI::Transporting::Particles particles;
-    void *rngState = nullptr;
-    unsigned long long seed = 1;
+
+
     double energyDomainMax = 20.0;
-    std::size_t numberOfFissionSamples = 100 * 1000;
+
     std::set<int> reactionsToExclude;
     LUPI::StatusMessageReporting smr1;
-    GIDI::Construction::PhotoMode photo_mode = GIDI::Construction::PhotoMode::nuclearOnly;
+    GIDI::Construction::PhotoMode photo_mode = GIDI::Construction::PhotoMode::nuclearAndAtomic;
 
     std::cerr << "    " << __FILE__;
     for( int i1 = 1; i1 < argc; i1++ ) std::cerr << " " << argv[i1];
@@ -391,159 +408,120 @@ void main2( int argc, char **argv ) {
 
     argvOptions2 argv_options( "sampleProducts", description );
 
-    argv_options.add( argvOption2( "--map", true, "The map file to use." ) );
     argv_options.add( argvOption2( "--pid", true, "The PoPs id of the projectile." ) );
     argv_options.add( argvOption2( "--tid", true, "The PoPs id of the target." ) );
-    argv_options.add( argvOption2( "--pa", false, "Include photo-atomic protare if relevant. If present, disables photo-nuclear unless *-pn* is specified." ) );
-    argv_options.add( argvOption2( "--pn", false, "Include photo-nuclear protare if relevant. This is the default unless *-pa* is specified." ) );
-    argv_options.add( argvOption2( "-d", false, "If present, fission delayed neutrons are included with product sampling." ) );
-    argv_options.add( argvOption2( "--all", false, "If present, all particles are sampled; otherwise only transporting particles are sampled." ) );
-    argv_options.add( argvOption2( "-n", false, "If present, add neutron as transporting particle." ) );
-    argv_options.add( argvOption2( "-p", false, "If present, add photon as transporting particle." ) );
-    argv_options.add( argvOption2( "--nonRawTNSL", false, "If present, TNSL double differential data (and not distribution data) are used to sample elastic neutrons." ) );
+
     argv_options.add( argvOption2( "--electron", false, "If present and the protare is photo-atomic, electrons are transported." ) );
 
     argv_options.parseArgv( argc, argv );
-    
-    std::string mapFilename = argv_options.find( "--map" )->zeroOrOneOption( argv, "/home/caixx/git/fudge/rundir/prompt_data/neutron.map" );
-    std::string projectileID = argv_options.find( "--pid" )->zeroOrOneOption( argv, PoPI::IDs::neutron );
-    int projectileIndex = pops[projectileID];
+    std::string mapFilename =  pt::Singleton<pt::CentralData>::getInstance().getGidiMap() ;
+
     std::string targetID = argv_options.find( "--tid" )->zeroOrOneOption( argv, "O16" );
 
-    GIDI::Transporting::DelayedNeutrons delayedNeutrons = GIDI::Transporting::DelayedNeutrons::off;
-    if( argv_options.find( "-d" )->present( ) ) delayedNeutrons = GIDI::Transporting::DelayedNeutrons::on;
+    GIDI::Transporting::DelayedNeutrons delayedNeutrons = GIDI::Transporting::DelayedNeutrons::on;
 
-    if( argv_options.find( "--pa" )->present( ) ) {
-        photo_mode = GIDI::Construction::PhotoMode::atomicOnly;
-        if( argv_options.find( "--pn" )->present( ) ) photo_mode = GIDI::Construction::PhotoMode::nuclearAndAtomic;
-    }
 
-    bool transportElectrons = argv_options.find( "--electron" )->present( );
+    // bool transportElectrons = argv_options.find( "--electron" )->present( );
 
-    GIDI::Map::Map map( mapFilename, pops );
+    GIDI::Map::Map map( mapFilename, m_pops );
 
-    MCGIDI_test_rngSetup( seed );
 
     GIDI::Construction::Settings construction( GIDI::Construction::ParseMode::all, photo_mode );
-    protare = (GIDI::Protare *) map.protare( construction, pops, projectileID, targetID );
+    gidiprotare = (GIDI::Protare *) map.protare( construction, m_pops, "n", targetID , "", "", false, false);
 
-    GIDI::Styles::TemperatureInfos temperatures = protare->temperatures( );
+    GIDI::Styles::TemperatureInfos temperatures = gidiprotare->temperatures( );
     for( GIDI::Styles::TemperatureInfos::const_iterator iter = temperatures.begin( ); iter != temperatures.end( ); ++iter ) {
         std::cout << "label = " << iter->heatedCrossSection( ) << "  temperature = " << iter->temperature( ).value( ) << std::endl;
     }
 
     std::string label( temperatures[0].griddedCrossSection( ) );
-    MCGIDI::Transporting::MC MC( pops, projectileID, &protare->styles( ), label, delayedNeutrons, energyDomainMax );
-    MC.sampleNonTransportingParticles( argv_options.find( "--all" )->present( ) );
-    MC.set_wantRawTNSL_distributionSampling( !argv_options.find( "--nonRawTNSL" )->present( ) );
+    MCGIDI::Transporting::MC *MC = new MCGIDI::Transporting::MC( m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, delayedNeutrons, energyDomainMax );
+    MC->sampleNonTransportingParticles( false );
+    MC->set_wantRawTNSL_distributionSampling( true );
 
     // GIDI::Transporting::Groups_from_bdfls groups_from_bdfls( "../../../GIDI/Test/bdfls" );
     // GIDI::Transporting::Fluxes_from_bdfls fluxes_from_bdfls( "../../../GIDI/Test/bdfls", 0 );
 
-    if( ( projectileID == PoPI::IDs::neutron ) || argv_options.find( "-n" )->present( ) ) {
-        GIDI::Transporting::Particle neutron( PoPI::IDs::neutron );
-        particles.add( neutron );
-    }
+    GIDI::Transporting::Particle neutron( PoPI::IDs::neutron , GIDI::Transporting::Mode::MonteCarloContinuousEnergy);
+    particles.add( neutron );
 
-    if( ( projectileID == PoPI::IDs::photon ) || argv_options.find( "-p" )->present( ) ) {
-        GIDI::Transporting::Particle photon( PoPI::IDs::photon );
-        particles.add( photon );
-    }
+    GIDI::Transporting::Particle photon( PoPI::IDs::photon, GIDI::Transporting::Mode::MonteCarloContinuousEnergy );
+    particles.add( photon );
+    
 
-    if( transportElectrons && !particles.hasParticle( PoPI::IDs::electron ) ) {
-        for( std::size_t protareIndex = 0; protareIndex < protare->numberOfProtares( ); ++protareIndex ) {
-            GIDI::ProtareSingle *protareSingle = protare->protare( protareIndex );
+    // if( transportElectrons && !particles.hasParticle( PoPI::IDs::electron ) ) {
+    //     for( std::size_t protareIndex = 0; protareIndex < protare->numberOfProtares( ); ++protareIndex ) {
+    //         GIDI::ProtareSingle *protareSingle = protare->protare( protareIndex );
 
-            if( protareSingle->isPhotoAtomic( ) ) {
-                GIDI::Transporting::Particle electron( PoPI::IDs::electron );
-                particles.add( electron );
-                break;
-            }
-        }
-    }
-
-    MCGIDI::DomainHash domainHash( 4000, 1e-8, 10 );
-    MCGIDI::Protare *MCProtare = MCGIDI::protareFromGIDIProtare( smr1, *protare, pops, MC, particles, domainHash, temperatures, reactionsToExclude );
-
-    MCProtare->setUserParticleIndex( pops[PoPI::IDs::neutron], 0 );
-    MCProtare->setUserParticleIndex( pops["H2"], 10 );
-    MCProtare->setUserParticleIndex( pops[PoPI::IDs::photon], 11 );
-    MCProtare->setUserParticleIndex( pops[PoPI::IDs::electron], 12 );
-
-    MCGIDI::Sampling::Input input( true, MCGIDI::Sampling::Upscatter::Model::B );
-    input.m_temperature = 2.58e-5;                                                     // In keV/k;
-
-    std::size_t numberOfReactions = MCProtare->numberOfReactions( );
-
-    MCGIDI::Sampling::StdVectorProductHandler products;
-    for( std::size_t i1 = 0; i1 < numberOfReactions; ++i1 ) {
-        MCGIDI::Reaction const *reaction = MCProtare->reaction( i1 );
-        double threshold = MCProtare->threshold( i1 );
-
-        std::cout << "reaction (" << std::setw( 3 ) << i1 <<  " ) = " << reaction->label( ).c_str( ) << ", MT_"<< reaction->ENDF_MT() << "  threshold = " << threshold << std::endl;
-        if( threshold < 1e-13 ) threshold = 1e-13;
-        for( double energy = threshold; energy < 100; energy *= 4 ) {
-            products.clear( );
-            std::cout << "Q = " << reaction->finalQ(energy) << std::endl;
-
-
-            std::cout << "    energy = " << energy << std::endl;
-            reaction->sampleProducts( MCProtare, energy, input, float64RNG64, rngState, products );
-            for( std::size_t i2 = 0; i2 < products.size( ); ++i2 ) {
-                MCGIDI::Sampling::Product const &product = products[i2];
-
-                std::cout << "        productIndex " << std::setw( 4 ) << product.m_productIndex << " " << std::setw( 4 ) << product.m_userProductIndex;
-                if( product.m_sampledType == MCGIDI::Sampling::SampledType::unspecified ) {
-                    std::cout << " unspecified distribution" << std::endl; }
-                else {
-                    std::cout << " KE = " << product.m_kineticEnergy << std::endl;
-                }
-            }
-        }
-    }
-
-    // for( std::size_t i1 = 0; i1 < numberOfReactions; ++i1 ) {
-    //     MCGIDI::Reaction const *reaction = MCProtare->reaction( i1 );
-
-    //     if( reaction->hasFission( ) ) {
-    //         double threshold = MCProtare->threshold( i1 );
-    //         if( threshold < 1e-13 ) threshold = 1e-13;
-
-    //         std::cout << std::endl;
-    //         std::cout << "Scanning for delayed fission neutrons" << std::endl;
-    //         std::cout << "    reaction (" << std::setw( 3 ) << i1 << ") = " << reaction->label( ).c_str( ) << "  threshold = " << threshold << std::endl;
-    //         for( double energy = threshold; energy < 100; energy *= 10 ) {
-    //             long totalFissionNeutrons = 0, delayedFissionNeutrons = 0;
-    //             std::vector<long> delayedFissionNeutronIndexCounts( 10, 0 );
-
-    //             for( std::size_t i2 = 0; i2 < numberOfFissionSamples; ++i2 ) {
-    //                 products.clear( );
-    //                 reaction->sampleProducts( MCProtare, energy, input, float64RNG64, rngState, products );
-    //                 for( std::size_t i3 = 0; i3 < products.size( ); ++i3 ) {
-    //                     MCGIDI::Sampling::Product const &product = products[i3];
-
-    //                     if( product.m_productIndex == projectileIndex ) {
-    //                         ++totalFissionNeutrons;
-    //                         if( product.m_delayedNeutronIndex > -1 ) {
-    //                             ++delayedFissionNeutrons;
-    //                             ++delayedFissionNeutronIndexCounts[product.m_delayedNeutronIndex];
-    //                         }
-    //                     }
-    //                 }
-    //             }
-
-    //             double totalMultiplicity = totalFissionNeutrons / (double) numberOfFissionSamples, delayedMultiplicity = delayedFissionNeutrons / (double) numberOfFissionSamples;
-    //             std::cout << "        energy = " << energy << " total neutrons = " << totalFissionNeutrons << " (" << doubleToString2( "%.4f", totalMultiplicity )
-    //                     << ") delayed neutrons = " << delayedFissionNeutrons << " (" << doubleToString2( "%.3e", delayedMultiplicity ) << ")";
-    //             if( delayedFissionNeutrons > 0 ) {
-    //                 for( std::size_t i3 = 0; i3 < delayedFissionNeutronIndexCounts.size( ); ++i3 ) std::cout << " " << delayedFissionNeutronIndexCounts[i3];
-    //             }
-    //             std::cout << std::endl;
+    //         if( protareSingle->isPhotoAtomic( ) ) {
+    //             GIDI::Transporting::Particle electron( PoPI::IDs::electron );
+    //             particles.add( electron );
+    //             break;
     //         }
     //     }
     // }
 
-    delete protare;
+    MCGIDI::DomainHash domainHash( 4000, 1e-8, 20 );
+    MCGIDI::Protare *MCProtare = MCGIDI::protareFromGIDIProtare( smr1, *gidiprotare, m_pops, *MC, particles, domainHash, temperatures, reactionsToExclude );
+    delete gidiprotare;
+    delete MC;
 
+    MCGIDI::Vector<MCGIDI::Protare *> protares(1);
+    protares[0]= MCProtare;
+    MCGIDI::URR_protareInfos URR_protareInfos(protares);
+
+
+    MCProtare->setUserParticleIndex( m_pops[PoPI::IDs::neutron], 1011 );
+    MCProtare->setUserParticleIndex( m_pops["H2"], 10 );
+    MCProtare->setUserParticleIndex( m_pops["B10"], 810 );
+    MCProtare->setUserParticleIndex( m_pops[PoPI::IDs::photon], 11 );
+    MCProtare->setUserParticleIndex( m_pops[PoPI::IDs::electron], 12 );
+
+    MCGIDI::Sampling::Input input( false, MCGIDI::Sampling::Upscatter::Model::B );
+    input.m_temperature = 2.58e-5;  // In keV/k;
+
+    double ekin_MeV = 10; 
+    int hashIndex = domainHash.index(ekin_MeV); 
+    auto *m_products = new MCGIDI::Sampling::StdVectorProductHandler();
+
+
+    for(unsigned i=0;i<100;i++)
+    {
+        double m_cacheGidiXS = MCProtare->crossSection( URR_protareInfos, hashIndex, input.m_temperature, ekin_MeV ); 
+
+        int reactionIndex = MCProtare->sampleReaction( URR_protareInfos, hashIndex, input.m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
+        MCGIDI::Reaction const *reaction = MCProtare->reaction( reactionIndex );
+
+        m_products->clear();
+        reaction->sampleProducts( MCProtare, ekin_MeV, input, getRandNumber, nullptr, *m_products );
+        std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", m_products->size() " <<  m_products->size() << std::endl;
+        
+        std::vector<MCGIDI::Sampling::Product> prod_n;
+        double totalekin = 0;
+        for( std::size_t i = 0; i < m_products->size( ); ++i ) 
+        {
+            if ((*m_products)[i].m_productIndex==11)
+            prod_n.push_back((*m_products)[i]);
+            
+            totalekin += (*m_products)[i].m_kineticEnergy;
+
+            // if(reaction->finalQ(ekin_MeV))
+            std::cout << (*m_products)[i].m_productIndex << " " 
+            << reaction->finalQ(ekin_MeV) << " " 
+            << (*m_products)[i].m_kineticEnergy << "\n";
+        }
+
+        printf("deposition %f\n\n", ekin_MeV+reaction->finalQ(ekin_MeV)-totalekin);
+
+        // std::cout << " total neutrons " << prod_n.size() << "\n";
+
+        // if MC.sampleNonTransportingParticles(true), many of the events are sampled in the centerOfMass
+        // if(input.m_frame == GIDI::Frame::centerOfMass)
+        //     PROMPT_THROW(NotImplemented, "GIDI::Frame::centerOfMass product is not yet implemented");
+        
+    }
+
+
+    delete m_products;
     delete MCProtare;
 }
