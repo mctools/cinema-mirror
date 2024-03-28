@@ -32,6 +32,7 @@ _pt_Cone_new = importFunc('pt_Cone_new', type_voidp, [type_dbl, type_dbl, type_d
 _pt_CutTube_new = importFunc('pt_CutTube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dblp, type_dblp])
 _pt_HypeTube_new = importFunc('pt_HypeTube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 _pt_Orb_new = importFunc('pt_Orb_new', type_voidp, [type_dbl])
+_pt_Paraboloid_new = importFunc('pt_Paraboloid_new', type_voidp, [type_dbl, type_dbl, type_dbl])
 
 #Tessellated
 _pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npsbl2d] )
@@ -157,4 +158,10 @@ class Orb(Solid):
         super().__init__()
         self.sanityCheckBase(r)
         self.cobj = _pt_Orb_new(r)
-        
+
+
+class Paraboloid(Solid):
+    def __init__(self, rbot, rtop, halfHeight) -> None:
+        super().__init__()
+        self.sanityCheckBase(rbot, rtop, halfHeight)
+        self.cobj = _pt_Paraboloid_new(rbot, rtop, halfHeight)

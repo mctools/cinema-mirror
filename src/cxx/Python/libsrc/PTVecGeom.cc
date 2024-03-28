@@ -12,6 +12,7 @@
 #include "VecGeom/volumes/UnplacedCutTube.h"
 #include "VecGeom/volumes/UnplacedHype.h"
 #include "VecGeom/volumes/UnplacedOrb.h"
+#include "VecGeom/volumes/UnplacedParaboloid.h"
 
 
 #include "VecGeom/volumes/UnplacedVolume.h"
@@ -210,6 +211,14 @@ void *pt_HypeTube_new(double rmin, double rmax, double inst, double outst, doubl
   return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedHype>(
     rmin, rmax, inst, outst, halfHeight));
 }
+
+// Paraboloid
+void *pt_Paraboloid_new(double rbot, double rtop, double halfHeight)
+{
+  return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedParaboloid>(
+                      rbot, rtop, halfHeight));
+}
+
 
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume)

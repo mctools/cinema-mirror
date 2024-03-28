@@ -48,6 +48,10 @@ void *pt_CutTube_new(double rmin, double rmax, double halfHeight, double sphi, d
 // Hyperbolic_tube
 void *pt_HypeTube_new(double rmin, double rmax, double inst, double outst, double halfHeight);
 
+// Paraboloid
+void *pt_Paraboloid_new(double rbot, double rtop, double halfHeight);
+
+
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume);
 void pt_Volume_delete(void* obj);
