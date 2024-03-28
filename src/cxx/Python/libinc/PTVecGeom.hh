@@ -13,6 +13,8 @@ void pt_setWorld(void* logicalWorld);
 void* pt_Box_new(double hx, double hy, double hz);
 void pt_Box_delete(void* obj);
 
+// Orb
+void *pt_Orb_new(double r);
 
 // Tube
 void* pt_Tube_new(double rmin, double rmax, double z, double deltaphi, double startphi);

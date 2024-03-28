@@ -31,6 +31,7 @@ _pt_ArbTrapezoid_new = importFunc('pt_ArbTrapezoid_new', type_voidp, [type_dblp,
 _pt_Cone_new = importFunc('pt_Cone_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 _pt_CutTube_new = importFunc('pt_CutTube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dblp, type_dblp])
 _pt_HypeTube_new = importFunc('pt_HypeTube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
+_pt_Orb_new = importFunc('pt_Orb_new', type_voidp, [type_dbl])
 
 #Tessellated
 _pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npsbl2d] )
@@ -149,3 +150,11 @@ class HypebolicTube(Solid):
         for p in args:
             if p > np.pi / 2:
                 raise ValueError(f"Too strong stereo angle {p}! Please check! Must be in unit rad. Less than pi/2 suggested!")
+            
+
+class Orb(Solid):
+    def __init__(self, r) -> None:
+        super().__init__()
+        self.sanityCheckBase(r)
+        self.cobj = _pt_Orb_new(r)
+        

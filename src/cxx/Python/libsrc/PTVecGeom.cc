@@ -11,6 +11,7 @@
 #include "VecGeom/volumes/UnplacedCone.h"
 #include "VecGeom/volumes/UnplacedCutTube.h"
 #include "VecGeom/volumes/UnplacedHype.h"
+#include "VecGeom/volumes/UnplacedOrb.h"
 
 
 #include "VecGeom/volumes/UnplacedVolume.h"
@@ -82,6 +83,13 @@ void* pt_Box_new(double hx, double hy, double hz)
 {
     return static_cast<void *>(new vg::UnplacedBox(hx, hy, hz));
 }
+
+// Orb
+void *pt_Orb_new(double r)
+{
+    return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedOrb>(r));
+}
+
 
 void* pt_Tube_new(double rmin, double rmax, double z, double startphi, double deltaphi)
 {
