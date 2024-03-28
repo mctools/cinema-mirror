@@ -49,7 +49,7 @@ Prompt::GIDIModel::GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Pr
                       bias),
 m_factory(Prompt::Singleton<Prompt::GIDIFactory>::getInstance()), 
 m_mcprotare(mcprotare), 
-m_urr_info(),
+m_urr_info(nullptr),
 m_products(new MCGIDI::Sampling::StdVectorProductHandler()),
 m_cacheEkin(0.), 
 m_cacheGidiXS(0.),
@@ -57,6 +57,12 @@ m_temperature(temperature),
 m_frac(frac),
 m_input(new MCGIDI::Sampling::Input(true, MCGIDI::Sampling::Upscatter::Model::B) )
 { 
+
+
+  MCGIDI::Vector<MCGIDI::Protare *> protares(1);
+  protares[0]= m_mcprotare.get();
+  m_urr_info = new MCGIDI::URR_protareInfos(protares);
+
 
   m_input->m_temperature = const_boltzmann*temperature/Unit::keV;   // In keV/k;
 
@@ -76,6 +82,8 @@ m_input(new MCGIDI::Sampling::Input(true, MCGIDI::Sampling::Upscatter::Model::B)
 Prompt::GIDIModel::~GIDIModel()
 {
   delete m_products;
+  delete m_urr_info;
+  delete m_input;
   std::cout<<"Destructing GIDIModel " << m_modelName <<std::endl;
 }
 
@@ -95,7 +103,7 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
     double gidiEnergy = ekin*1e-6;
     int hashIndex = m_factory.getHashID(gidiEnergy);
     //temperature unit here is MeV/k, not to confuse by the keV/k unit in m_input
-    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info.get(), hashIndex, const_boltzmann*m_temperature*1e-6, gidiEnergy ); 
+    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, const_boltzmann*m_temperature*1e-6, gidiEnergy ); 
 
     // std::cout << "sampled despition " << m_mcprotare->depositionEnergy( hashIndex, const_boltzmann*m_temperature*1e-6, gidiEnergy )  << "\n";
     return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
@@ -120,7 +128,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
   int hashIndex = m_factory.getHashID(ekin_MeV);
 
-  int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info.get(), hashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
+  int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
   MCGIDI::Reaction const *reaction = m_mcprotare->reaction( reactionIndex );
   
   pt_assert_always(m_mcprotare->threshold( reactionIndex ) < ekin_MeV);

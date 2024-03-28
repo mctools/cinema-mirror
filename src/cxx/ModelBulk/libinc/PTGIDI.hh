@@ -86,7 +86,7 @@ namespace Prompt {
   private:
     const GIDIFactory &m_factory;
     std::shared_ptr<MCGIDI::Protare> m_mcprotare;
-    std::shared_ptr<MCGIDI::URR_protareInfos> m_urr_info;
+    MCGIDI::URR_protareInfos *m_urr_info;
     mutable MCGIDI::Sampling::StdVectorProductHandler *m_products;
     mutable double m_cacheEkin, m_cacheGidiXS;
     const double m_temperature, m_frac;
