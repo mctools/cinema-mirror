@@ -201,7 +201,7 @@ m_reactionsToExclude(std::set<int>())
   GIDI::Transporting::Particle photon( PoPI::IDs::photon, GIDI::Transporting::Mode::MonteCarloContinuousEnergy );
   m_particles->add( photon );
 
-  // m_pops->print(true);
+  m_pops->print(true);
   // m_pops->isMetaStableAlias();
 
   // std::cout << "!!!!!!!!!!!!!! "<<(*m_pops)["n"] << std::endl;
