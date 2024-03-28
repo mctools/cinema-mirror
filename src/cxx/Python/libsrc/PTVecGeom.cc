@@ -9,6 +9,7 @@
 #include "VecGeom/volumes/UnplacedPolyhedron.h"
 #include "VecGeom/volumes/UnplacedGenTrap.h"
 #include "VecGeom/volumes/UnplacedCone.h"
+#include "VecGeom/volumes/UnplacedCutTube.h"
 
 
 #include "VecGeom/volumes/UnplacedVolume.h"
@@ -185,6 +186,16 @@ void *pt_Cone_new(double rmin1, double rmax1, double rmin2, double rmax2, double
     return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedCone>(rmin1, rmax1, rmin2, rmax2, dz, phimin,
               deltaphi));
 }
+
+// CutTube
+void *pt_CutTube_new(double rmin, double rmax, double halfHeight, double sphi, double dphi, 
+                  double (*botNormal), double (*topNormal))
+{
+    std::cout << "Having..." << botNormal[0] << " " << botNormal[1] << " " << botNormal[2] << std::endl;
+    return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedCutTube>(rmin, rmax, halfHeight, sphi, dphi, botNormal[0],
+                           botNormal[1], botNormal[2], topNormal[0], topNormal[1], topNormal[2]));
+}
+
 
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume)

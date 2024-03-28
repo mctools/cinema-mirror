@@ -40,6 +40,8 @@ void *pt_ArbTrapezoid_new(double (*v11), double (*v12), double (*v13), double (*
 void *pt_Cone_new(double rmin1, double rmax1, double rmin2, double rmax2, double dz, double phimin,
                double deltaphi);
 
+// CutTube
+void *pt_CutTube_new(double rmin, double rmax, double halfHeight, double sphi, double dphi, double (*botNormal), double (*topNormal));
 
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume);

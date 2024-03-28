@@ -29,9 +29,11 @@ _pt_Sphere_new = importFunc('pt_Sphere_new', type_voidp, [type_dbl, type_dbl, ty
 _pt_Polyhedron_new = importFunc('pt_Polyhedron_new', type_voidp, [type_dbl, type_dbl, type_int, type_int, type_npdbl1d, type_npdbl1d, type_npdbl1d] )
 _pt_ArbTrapezoid_new = importFunc('pt_ArbTrapezoid_new', type_voidp, [type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dbl])
 _pt_Cone_new = importFunc('pt_Cone_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
+_pt_CutTube_new = importFunc('pt_CutTube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dblp, type_dblp])
 
 #Tessellated
 _pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npsbl2d] )
+
 
 
 class Solid:
@@ -42,6 +44,14 @@ class Solid:
         for p in args:
             if p < 0:
                 raise ValueError(f"Invalid input! {p} Should be positive value or zero!")
+            
+    def convert2pointer(self, p : np.ndarray):
+        """
+        If a pointer points to an array, its elements can be read and written using standard subscript and slice accesses
+        Ref: https://docs.python.org/3/library/ctypes.html#ctypes._Pointer
+        """
+        p_c = p.astype(np.double).ctypes.data_as(type_dblp)
+        return p_c
 
 class Box(Solid):
     def __init__(self, hx, hy, hz):
@@ -98,16 +108,11 @@ class ArbTrapezoid(Solid):
         # if not xy1.flags['C_CONTIGUOUS']:         TODO: solid or not when ndarray is not contiguous?
             # xy1 = np.ascontiguousarray(xy1, dtype=xy1.dtype)
         # xy1 = ctypes.cast(xy1.ctypes.data, type_dblp)
-        xy1 = xy1.astype(np.double).ctypes.data_as(type_dblp)
-        xy2 = xy2.astype(np.double).ctypes.data_as(type_dblp)
-        xy3 = xy3.astype(np.double).ctypes.data_as(type_dblp)
-        xy4 = xy4.astype(np.double).ctypes.data_as(type_dblp)
-        xy5 = xy5.astype(np.double).ctypes.data_as(type_dblp)
-        xy6 = xy6.astype(np.double).ctypes.data_as(type_dblp)
-        xy7 = xy7.astype(np.double).ctypes.data_as(type_dblp)
-        xy8 = xy8.astype(np.double).ctypes.data_as(type_dblp)
-
-        self.cobj = _pt_ArbTrapezoid_new(xy1, xy2, xy3, xy4, xy5, xy6, xy7, xy8, halfz)
+        vectors = (xy1, xy2, xy3, xy4, xy5, xy6, xy7, xy8)
+        p_vecs = []
+        for vec in vectors:
+            p_vecs.append(self.convert2pointer(vec))
+        self.cobj = _pt_ArbTrapezoid_new(p_vecs[0], p_vecs[1], p_vecs[2], p_vecs[3], p_vecs[4], p_vecs[5], p_vecs[6], p_vecs[7], halfz)
 
 class Cone(Solid):
     def __init__(self, rmaxBot, rmaxTop, z, rminBot = 0, rminTop = 0, startPhi = 0, deltaPhi = 360) -> None:
@@ -118,4 +123,20 @@ class Cone(Solid):
     
     def sanityCheck(self, rmin, rmax):
         if rmin > rmax:
-            raise ValueError(f"Invalid inputs! rmin ({rmin}) should less than or equal rmax ({rmax}))?")
+            raise ValueError(f"Invalid inputs! rmin ({rmin}) should less than or equal rmax ({rmax}))!")
+        
+
+class CutTube(Solid):
+    def __init__(self, rmax, halfHeight, botNormal, topNormal, rmin = 0, sphi = 0, dphi = 360) -> None:
+        raise NotImplementedError("CutTube got problems, See issue!")
+        # TODO:fix tracing point location problem
+        # super().__init__()
+        # self.sanityCheckBase(rmin, rmax, halfHeight, dphi)
+        # botN = self.convert2pointer(botNormal)
+        # topN = self.convert2pointer(topNormal)
+        # self.sanityCheck(rmin, rmax)
+        # self.cobj = _pt_CutTube_new(rmin, rmax, halfHeight, np.deg2rad(sphi), np.deg2rad(dphi), botN, topN)
+
+    def sanityCheck(self, rmin, rmax):
+        if rmin > rmax:
+            raise ValueError(f"Invalid inputs! rmin ({rmin}) should less than or equal rmax ({rmax}))!")
