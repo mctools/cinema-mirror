@@ -46,6 +46,10 @@ class Solid:
             if p < 0:
                 raise ValueError(f"Invalid input! {p} Should be positive value or zero!")
             
+    def sanityCheckRelation(self, min, max):
+        if min > max:
+            raise ValueError(f"Invalid inputs! rmin ({min}) should less than or equal rmax ({max}))!")
+
     def convert2pointer(self, p : np.ndarray):
         """
         If a pointer points to an array, its elements can be read and written using standard subscript and slice accesses
@@ -117,14 +121,10 @@ class ArbTrapezoid(Solid):
 class Cone(Solid):
     def __init__(self, rmaxBot, rmaxTop, z, rminBot = 0, rminTop = 0, startPhi = 0, deltaPhi = 360) -> None:
         self.sanityCheckBase(rmaxBot, rmaxTop, z, rminBot, rminTop, deltaPhi)
-        self.sanityCheck(rminBot, rmaxBot)
-        self.sanityCheck(rminTop, rmaxTop)
+        self.sanityCheckRelation(rminBot, rmaxBot)
+        self.sanityCheckRelation(rminTop, rmaxTop)
         self.cobj = _pt_Cone_new(rminBot, rmaxBot, rminTop, rmaxTop, z, np.deg2rad(startPhi), np.deg2rad(deltaPhi))
-    
-    def sanityCheck(self, rmin, rmax):
-        if rmin > rmax:
-            raise ValueError(f"Invalid inputs! rmin ({rmin}) should less than or equal rmax ({rmax}))!")
-        
+       
 
 class CutTube(Solid):
     def __init__(self, rmax, halfHeight, botNormal, topNormal, rmin = 0, sphi = 0, dphi = 360) -> None:
@@ -136,13 +136,10 @@ class CutTube(Solid):
         # topN = self.convert2pointer(topNormal)
         # self.sanityCheck(rmin, rmax)
         # self.cobj = _pt_CutTube_new(rmin, rmax, halfHeight, np.deg2rad(sphi), np.deg2rad(dphi), botN, topN)
-
-    def sanityCheck(self, rmin, rmax):
-        if rmin > rmax:
-            raise ValueError(f"Invalid inputs! rmin ({rmin}) should less than or equal rmax ({rmax}))!")
         
 class HypebolicTube(Solid):
     def __init__(self, rmax, inst, outst, halfHeight, rmin = 0) -> None:
         super().__init__()
         self.sanityCheckBase(rmin, rmax, inst, outst, halfHeight)
+        self.sanityCheckRelation(rmin, rmax)
         self.cobj = _pt_HypeTube_new(rmin, rmax, inst, outst, halfHeight)
