@@ -55,7 +55,7 @@ m_cacheEkin(0.),
 m_cacheGidiXS(0.),
 m_temperature(temperature),
 m_frac(frac),
-m_input(new MCGIDI::Sampling::Input(true, MCGIDI::Sampling::Upscatter::Model::B) )
+m_input(new MCGIDI::Sampling::Input(false, MCGIDI::Sampling::Upscatter::Model::B) )
 { 
 
 
