@@ -32,6 +32,7 @@
 #include "PTCfgParser.hh"
 #include "PTMaterialDecomposer.hh"
 #include "PTGIDI.hh"
+#include "PTCentralData.hh"
 
 Prompt::BulkMaterialProcess::BulkMaterialProcess(const std::string &name)
     : m_rng(Singleton<SingletonPTRand>::getInstance()),
@@ -159,7 +160,7 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
   auto &pfact = Singleton<PhysicsFactory>::getInstance();
   PhysicsFactory::PhysicsType type = pfact.checkPhysicsType(cfgstr);
 
-  double gidimin = 10;
+  double gidimin = Singleton<CentralData>::getInstance().getGidiThreshold();
 
   if (type == PhysicsFactory::PhysicsType::NC_RAW)
   {

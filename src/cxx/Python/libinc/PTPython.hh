@@ -113,6 +113,18 @@ void pt_deleteCompoundModel(void* obj);
 double pt_CompoundModel_getxs(void* obj, double ekin);
 double pt_CompoundModel_generate(void* obj, double ekin);
 
+// Prompt::CentralData
+void* pt_CentralData_getInstance();
+
+double pt_CentralData_getGidiThreshold(void* obj);
+void pt_CentralData_setGidiThreshold(void* obj, double t);
+
+const char * pt_CentralData_getGidiPops(void* obj);
+void pt_CentralData_setGidiPops(void* obj, const char *s);
+
+const char * pt_CentralData_getGidiMap(void* obj);
+void pt_CentralData_setGidiMap(void* obj, const char *s);
+
 #ifdef __cplusplus
 }
 #endif

@@ -32,6 +32,8 @@
 #include "PTMaterialDecomposer.hh"
 #include<tuple> // for tuple
 
+#include "PTCentralData.hh"
+
 inline double getRandNumber(void *obj) 
 {
   return Prompt::Singleton<Prompt::SingletonPTRand>::getInstance().generate();
@@ -181,14 +183,11 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
     // //Fixme: mcpl writer will be used to record neutron multiplication for keff application
     PROMPT_THROW(NotImplemented, "neutron multiplication is not yet supported");
   }
-
 }
 
-
 Prompt::GIDIFactory::GIDIFactory()
-:m_pops(new PoPI::Database( "/home/caixx/git/fudge/rundir/prompt_data/pops.xml" )),
-// m_map (new GIDI::Map::Map( "/home/caixx/git/fudge/rundir/prompt_data/neutron.map", *m_pops )),
-m_map (new GIDI::Map::Map( "/home/caixx/git/cinema/external/ptdata/neutron.map", *m_pops )),
+:m_pops(new PoPI::Database( Singleton<CentralData>::getInstance().getGidiPops())),
+m_map (new GIDI::Map::Map( Singleton<CentralData>::getInstance().getGidiMap(), *m_pops )),
 m_particles(new GIDI::Transporting::Particles()),
 m_construction(new GIDI::Construction::Settings ( GIDI::Construction::ParseMode::MonteCarloContinuousEnergy, 
                                               GIDI::Construction::PhotoMode::nuclearAndAtomic )),
