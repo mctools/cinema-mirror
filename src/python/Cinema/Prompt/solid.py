@@ -142,4 +142,10 @@ class HypebolicTube(Solid):
         super().__init__()
         self.sanityCheckBase(rmin, rmax, inst, outst, halfHeight)
         self.sanityCheckRelation(rmin, rmax)
+        self.stereoAngleCheck(inst, outst)
         self.cobj = _pt_HypeTube_new(rmin, rmax, inst, outst, halfHeight)
+
+    def stereoAngleCheck(self, *args):
+        for p in args:
+            if p > np.pi / 2:
+                raise ValueError(f"Too strong stereo angle {p}! Please check! Must be in unit rad. Less than pi/2 suggested!")
