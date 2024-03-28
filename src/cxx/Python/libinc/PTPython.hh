@@ -111,6 +111,7 @@ void pt_MCPLBinaryWrite_write(void* obj, mcpl_particle_t par);
 void* pt_makeCompoundModel(const char * cfg);
 void pt_deleteCompoundModel(void* obj);
 double pt_CompoundModel_getxs(void* obj, double ekin);
+double pt_CompoundModel_generate(void* obj, double ekin);
 
 #ifdef __cplusplus
 }

@@ -21,6 +21,8 @@
 project(prompt_core)
 
 find_package(HDF5 REQUIRED COMPONENTS C)
+message(STATUS "FOUND HDF5:  ${HDF5_INCLUDE_DIR}")
+
 
 option(BUILD_WITH_OPENMP "Build OpenMP" ON)
 find_package(OpenMP REQUIRED)
@@ -42,19 +44,20 @@ file(GLOB RAC_SRC "${PROJECT_SOURCE_DIR}/Process/libsrc/*.cc")
 file(GLOB TRJ_SRC "${PROJECT_SOURCE_DIR}/Trj/libsrc/*.cc")
 file(GLOB MCPL_SRC "${PROJECT_SOURCE_DIR}/MCPL/libsrc/*.cc" )
 
+
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${MCPL_SRC} ${COR_SRC} ${RAC_SRC} ${SUR_SRC} ${RND_SRC} 
                                 ${UTL_SRC} ${RTR_SRC} ${ANA_SRC} ${PAR_SRC} ${BUK_SRC} 
-                                ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC}) 
+                                ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC} ) 
                                 
 find_package(Python REQUIRED COMPONENTS Interpreter)
 
 FIND_LIBRARY(mcpl mcpl ${KDS_LIB})
 FIND_LIBRARY(kdsource kdsource ${KDS_LIB})
 
-FIND_LIBRARY(gidiplus gidiplus ${GIDIPLUS_LIB})
+# FIND_LIBRARY(gidiplus gidiplus ${GIDIPLUS_LIB})
 
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${gidiplus} NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml fftw3 ${HDF5_LIBRARIES} OpenMP::OpenMP_CXX  ${mcpl} ${kdsource})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${GIDIPLUS_LIB}/libgidiplus.a NCrystal::NCrystal VecGeom::vecgeom VecGeom::vgdml fftw3 ${HDF5_LIBRARIES} OpenMP::OpenMP_CXX  ${mcpl} ${kdsource})
 
 #fixme remove openmp
 target_include_directories( ${PROJECT_NAME}

@@ -27,6 +27,7 @@ from ctypes import Structure, c_int32, c_uint64
 _pt_makeCompoundModel = importFunc('pt_makeCompoundModel', type_voidp, [type_cstr] )
 _pt_deleteCompoundModel = importFunc('pt_deleteCompoundModel', None, [type_voidp] )
 _pt_CompoundModel_getxs = importFunc('pt_CompoundModel_getxs', type_dbl, [type_voidp, type_dbl] )
+_pt_CompoundModel_generate = importFunc('pt_CompoundModel_generate', type_dbl, [type_voidp, type_dbl] )
 
 class CompoundModel:
     def __init__(self, cfg) -> None:
@@ -37,3 +38,6 @@ class CompoundModel:
     
     def xs(self, ekin):
         return _pt_CompoundModel_getxs(self.cobj, ekin)
+
+    def generate(self, ekin):
+        return _pt_CompoundModel_generate(self.cobj, ekin)

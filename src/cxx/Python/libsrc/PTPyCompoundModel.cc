@@ -28,6 +28,7 @@ void* pt_makeCompoundModel(const char * cfg)
   return static_cast<void *>(proc);
 }
 
+
 void pt_deleteCompoundModel(void* obj)
 {
   delete static_cast<Prompt::BulkMaterialProcess *>(obj);
@@ -40,3 +41,13 @@ double pt_CompoundModel_getxs(void* obj, double ekin)
       ->getCompoundModel()->totalCrossSection(ekin, dir)/Prompt::Unit::barn;
 }
 
+double pt_CompoundModel_generate(void* obj, double ekin)
+{
+  Prompt::Vector dir;
+  double final_ekin(0); 
+  Prompt::Vector final_dir;
+
+  static_cast<Prompt::BulkMaterialProcess *>(obj)
+      ->getCompoundModel()->generate(ekin, dir, final_ekin, final_dir);
+  return 0;
+}
