@@ -30,6 +30,7 @@ _pt_Polyhedron_new = importFunc('pt_Polyhedron_new', type_voidp, [type_dbl, type
 _pt_ArbTrapezoid_new = importFunc('pt_ArbTrapezoid_new', type_voidp, [type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dbl])
 _pt_Cone_new = importFunc('pt_Cone_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 _pt_CutTube_new = importFunc('pt_CutTube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dblp, type_dblp])
+_pt_HypeTube_new = importFunc('pt_HypeTube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 
 #Tessellated
 _pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npsbl2d] )
@@ -139,3 +140,9 @@ class CutTube(Solid):
     def sanityCheck(self, rmin, rmax):
         if rmin > rmax:
             raise ValueError(f"Invalid inputs! rmin ({rmin}) should less than or equal rmax ({rmax}))!")
+        
+class HypebolicTube(Solid):
+    def __init__(self, rmax, inst, outst, halfHeight, rmin = 0) -> None:
+        super().__init__()
+        self.sanityCheckBase(rmin, rmax, inst, outst, halfHeight)
+        self.cobj = _pt_HypeTube_new(rmin, rmax, inst, outst, halfHeight)

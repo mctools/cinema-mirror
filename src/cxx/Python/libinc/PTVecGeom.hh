@@ -43,6 +43,9 @@ void *pt_Cone_new(double rmin1, double rmax1, double rmin2, double rmax2, double
 // CutTube
 void *pt_CutTube_new(double rmin, double rmax, double halfHeight, double sphi, double dphi, double (*botNormal), double (*topNormal));
 
+// Hyperbolic_tube
+void *pt_HypeTube_new(double rmin, double rmax, double inst, double outst, double halfHeight);
+
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume);
 void pt_Volume_delete(void* obj);
