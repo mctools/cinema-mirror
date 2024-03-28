@@ -43,7 +43,7 @@ class Solid:
     def __init__(self) -> None:
         pass
 
-    def sanityCheckBase(self, *args): 
+    def sanityCheckPositive(self, *args): 
         for p in args:
             if p < 0:
                 raise ValueError(f"Invalid input! {p} Should be positive value or zero!")
@@ -62,7 +62,7 @@ class Solid:
 
 class Box(Solid):
     def __init__(self, hx, hy, hz):
-        self.sanityCheckBase(hx, hy, hz)
+        self.sanityCheckPositive(hx, hy, hz)
         self.cobj = _pt_Box_new(hx, hy, hz)
         self.hx = hx
         self.hy = hy
@@ -76,23 +76,23 @@ class Box(Solid):
 
 class Tube(Solid):
     def __init__(self, rmin, rmax, z, startphi = 0, deltaphi = 360):
-        self.sanityCheckBase(rmin, rmax, z, deltaphi)
+        self.sanityCheckPositive(rmin, rmax, z, deltaphi)
         self.cobj = _pt_Tube_new(rmin, rmax, z, np.deg2rad(startphi), np.deg2rad(deltaphi))
 
 class Sphere(Solid):
     def __init__(self, rmin, rmax, startphi=0., deltaphi=2*np.pi, starttheta=0., deltatheta=np.pi):
-        self.sanityCheckBase(rmin, rmax, deltaphi, deltatheta)
+        self.sanityCheckPositive(rmin, rmax, deltaphi, deltatheta)
         self.cobj = _pt_Sphere_new(rmin, rmax, startphi, deltaphi, starttheta, deltatheta)
 
 class Trapezoid(Solid):
     def __init__(self, x1, x2, y1, y2, z) -> None:
-        self.sanityCheckBase(x1, x2, y1, y2, z)
+        self.sanityCheckPositive(x1, x2, y1, y2, z)
         self.cobj = _pt_Trapezoid_new(x1, x2, y1, y2, z)
 
 class Polyhedron(Solid):
     def __init__(self, zPlanes, rMin, rMax, sideCount=6,
                  phiStart_deg=0, phiDelta_deg=360) -> None:
-        self.sanityCheckBase(zPlanes, rMin, rMax, sideCount,phiDelta_deg)
+        self.sanityCheckPositive(zPlanes, rMin, rMax, sideCount,phiDelta_deg)
         zp, rmin, rmax = np.array(zPlanes), np.array(rMin), np.array(rMax)
         if zp.size!=rmin.size or rmin.size!=rmax.size:
             raise RuntimeError('the sizes of zPlanes, rMin and rMax are not equal')    
@@ -110,7 +110,7 @@ class Tessellated(Solid): #this one is not working
 class ArbTrapezoid(Solid):
     def __init__(self, xy1 : np.ndarray, xy2 : np.ndarray, xy3 : np.ndarray, xy4 : np.ndarray,
                  xy5 : np.ndarray, xy6 : np.ndarray, xy7 : np.ndarray, xy8 : np.ndarray, halfz) -> None:
-        self.sanityCheckBase(halfz)
+        self.sanityCheckPositive(halfz)
         # if not xy1.flags['C_CONTIGUOUS']:         TODO: solid or not when ndarray is not contiguous?
             # xy1 = np.ascontiguousarray(xy1, dtype=xy1.dtype)
         # xy1 = ctypes.cast(xy1.ctypes.data, type_dblp)
@@ -122,7 +122,7 @@ class ArbTrapezoid(Solid):
 
 class Cone(Solid):
     def __init__(self, rmaxBot, rmaxTop, z, rminBot = 0, rminTop = 0, startPhi = 0, deltaPhi = 360) -> None:
-        self.sanityCheckBase(rmaxBot, rmaxTop, z, rminBot, rminTop, deltaPhi)
+        self.sanityCheckPositive(rmaxBot, rmaxTop, z, rminBot, rminTop, deltaPhi)
         self.sanityCheckRelation(rminBot, rmaxBot)
         self.sanityCheckRelation(rminTop, rmaxTop)
         self.cobj = _pt_Cone_new(rminBot, rmaxBot, rminTop, rmaxTop, z, np.deg2rad(startPhi), np.deg2rad(deltaPhi))
@@ -133,7 +133,7 @@ class CutTube(Solid):
         raise NotImplementedError("CutTube got problems, See issue!")
         # TODO:fix tracing point location problem
         # super().__init__()
-        # self.sanityCheckBase(rmin, rmax, halfHeight, dphi)
+        # self.sanityCheckPositive(rmin, rmax, halfHeight, dphi)
         # botN = self.convert2pointer(botNormal)
         # topN = self.convert2pointer(topNormal)
         # self.sanityCheck(rmin, rmax)
@@ -142,7 +142,7 @@ class CutTube(Solid):
 class HypebolicTube(Solid):
     def __init__(self, rmax, inst, outst, halfHeight, rmin = 0) -> None:
         super().__init__()
-        self.sanityCheckBase(rmin, rmax, inst, outst, halfHeight)
+        self.sanityCheckPositive(rmin, rmax, inst, outst, halfHeight)
         self.sanityCheckRelation(rmin, rmax)
         self.stereoAngleCheck(inst, outst)
         self.cobj = _pt_HypeTube_new(rmin, rmax, inst, outst, halfHeight)
@@ -156,12 +156,12 @@ class HypebolicTube(Solid):
 class Orb(Solid):
     def __init__(self, r) -> None:
         super().__init__()
-        self.sanityCheckBase(r)
+        self.sanityCheckPositive(r)
         self.cobj = _pt_Orb_new(r)
 
 
 class Paraboloid(Solid):
     def __init__(self, rbot, rtop, halfHeight) -> None:
         super().__init__()
-        self.sanityCheckBase(rbot, rtop, halfHeight)
+        self.sanityCheckPositive(rbot, rtop, halfHeight)
         self.cobj = _pt_Paraboloid_new(rbot, rtop, halfHeight)
