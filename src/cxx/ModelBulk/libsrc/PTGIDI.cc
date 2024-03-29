@@ -54,8 +54,7 @@ m_cacheEkin(0.),
 m_cacheGidiXS(0.),
 m_temperature(temperature),
 m_frac(frac),
-m_input(new MCGIDI::Sampling::Input(false, MCGIDI::Sampling::Upscatter::Model::B) ),
-m_elasticReactionIndex(-1)
+m_input(new MCGIDI::Sampling::Input(false, MCGIDI::Sampling::Upscatter::Model::B) )
 { 
 
 
@@ -75,16 +74,8 @@ m_elasticReactionIndex(-1)
   {
     auto reaction =  m_mcprotare->reaction(i);
     // The type of ENDF_MT can be found at https://t2.lanl.gov/nis/endf/mts.html
-    if(reaction->ENDF_MT()==2)
-    {
-      m_elasticReactionIndex = i;
-    }
     std::cout << "Reaction " << i << ", ENDF_MT=" << reaction->ENDF_MT()  << std::endl;
   }
-
-  if(m_elasticReactionIndex < 0)
-    PROMPT_THROW2(BadInput, "Elastic scattering reaction (MT2, see https://t2.lanl.gov/nis/endf/mts.html) is missing in " << name);
-
 }
 
 Prompt::GIDIModel::~GIDIModel()
@@ -112,13 +103,7 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
     double ekin_MeV = ekin*1e-6;
     int hashIndex = m_factory.getHashID(ekin_MeV);
     //temperature unit here is MeV/k, not to confuse by the keV/k unit in m_input
-    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, const_boltzmann*m_temperature*1e-6, ekin_MeV ); 
-    if( m_factory.NCrystal4Elastic(ekin) ) // This is the energy region for ncrystal to perform scattering calculation
-    {
-      double mt2xs = m_mcprotare->reactionCrossSection( m_elasticReactionIndex, *m_urr_info, hashIndex, const_boltzmann*m_temperature*1e-6, ekin_MeV );
-      m_cacheGidiXS -= mt2xs;
-    }
-    
+    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, const_boltzmann*m_temperature*1e-6, ekin_MeV );    
     // std::cout << "sampled despition " << m_mcprotare->depositionEnergy( hashIndex, const_boltzmann*m_temperature*1e-6, gidiEnergy )  << "\n";
     return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
@@ -141,21 +126,8 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   //fixme, do not care about temperature at the moment
 
   int hashIndex = m_factory.getHashID(ekin_MeV);
-
-  int reactionIndex(m_elasticReactionIndex);
-
-  if(m_factory.NCrystal4Elastic(ekin))
-  {
-    // elastic is treated by NCrystal, remove it from here
-    while(reactionIndex==m_elasticReactionIndex)
-    {
-      reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
-    }
-  }
-  else
-    reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
+  int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
   
- 
   MCGIDI::Reaction const *reaction = m_mcprotare->reaction( reactionIndex );
   pt_assert_always(m_mcprotare->threshold( reactionIndex ) < ekin_MeV);
 
@@ -163,7 +135,6 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   reaction->sampleProducts( m_mcprotare.get(), ekin_MeV, *m_input, getRandNumber, nullptr, *m_products );
 
   pt_assert_always(m_input->m_reaction==reaction);
-
 
   // debug and looking for the MT value for the selected reaction
   // std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", m_products->size() " <<  m_products->size() << std::endl;
@@ -180,21 +151,17 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
     }
       
 
-    // // if(reaction->finalQ(ekin_MeV))
-    std::cout << (*m_products)[i].m_productIndex << " " 
-    << reaction->finalQ(ekin_MeV) << " " 
-    << (*m_products)[i].m_kineticEnergy << "\n";
+    // std::cout << (*m_products)[i].m_productIndex << " " 
+    // << reaction->finalQ(ekin_MeV) << " " 
+    // << (*m_products)[i].m_kineticEnergy << "\n";
   }
-  //   std::cout <<"incident " << ekin_MeV;
-  // std::cout <<", total neutron energy " << totalekin << "\n";
 
   // All secondary particles that are not simulated by prompt are contributed to the "energy deposition".
   // So, in the case that neutron is the only transporting particle, the energy deposition is calculated as incident neutorn kinetic energy 
   // plus Q and substrcut the total kinetic energy of all the tracking particles. 
 
-  printf("MT%d, deposition %f\n\n", reaction->ENDF_MT(), ekin_MeV+reaction->finalQ(ekin_MeV)-totalekin);
+  // printf("MT%d, deposition %e\n\n", reaction->ENDF_MT(), ekin_MeV+reaction->finalQ(ekin_MeV)-totalekin);
 
-  // std::cout << " total neutrons " << prod_n.size() << "\n";
 
   // if MC.sampleNonTransportingParticles(true), many of the events are sampled in the centerOfMass
   if(m_input->m_frame == GIDI::Frame::centerOfMass)
@@ -252,7 +219,6 @@ m_particles(new GIDI::Transporting::Particles()),
 m_construction(new GIDI::Construction::Settings ( GIDI::Construction::ParseMode::all, 
                                               GIDI::Construction::PhotoMode::nuclearAndAtomic )),
 m_domainHash(new MCGIDI::DomainHash ( 4000, 1e-8, 20 ) ),
-m_reactionsToExclude(std::set<int>()),
 m_smr1()
 {  
   GIDI::Transporting::Particle neutron(PoPI::IDs::neutron, GIDI::Transporting::Mode::MonteCarloContinuousEnergy);
@@ -294,7 +260,8 @@ bool Prompt::GIDIFactory::available() const
   return true;
 }
 
-std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIModel(std::vector<Prompt::IsotopeComposition> vecComp, double bias, double minEKin, double maxEKin) const
+std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIModel(std::vector<Prompt::IsotopeComposition> vecComp, 
+double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelastic, double maxEKinNonelastic) const
 {
   std::vector<std::shared_ptr<GIDIModel>> gidimodels;
   MCGIDI::Vector<MCGIDI::Protare *> protares(vecComp.size());
@@ -333,12 +300,32 @@ std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIM
     if( gidiprotare->protareType( ) != GIDI::ProtareType::single ) {
         PROMPT_THROW(CalcError, "ProtareType must be single");
     }
+    
+    std::set<int> nonElastic, elastic;
+    int numberOfReactions = gidiprotare->numberOfReactions();
+    std::cout <<"Isotope " << name << " has " << numberOfReactions << " reactions"<< "\n";
+      
+    for( int i = 0; i < numberOfReactions; ++i ) 
+    {
+      // The type of ENDF_MT can be found at https://t2.lanl.gov/nis/endf/mts.html
+      if(gidiprotare->reaction(i)->ENDF_MT()==2)
+      {
+        elastic.emplace(i);
+      }
+      else
+      {
+        nonElastic.emplace(i);
+      }
+    }
 
-    auto mcProtare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
-                                                             *m_particles, *m_domainHash, temperatures, m_reactionsToExclude );
+    auto mcProtare_elastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+                                                             *m_particles, *m_domainHash, temperatures, nonElastic );
 
-    // singleProtares.push_back(std::make_tuple(mcProtare, name, temperature_K, frac));
-    gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare, temperature_K, bias, frac, minEKin, maxEKin));
+    auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+                                                                *m_particles, *m_domainHash, temperatures, elastic );
+
+    gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare_elastic,    temperature_K, bias, frac, minEKinElastic, maxEKinElastic));
+    gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare_nonelastic, temperature_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
 
     i++;
     delete gidiprotare;
@@ -348,5 +335,5 @@ std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIM
   // for(auto s : singleProtares)
   //   gidimodels.emplace_back(std::make_shared<GIDIModel>(std::get<1>(s), std::get<0>(s), std::get<2>(s), bias, std::get<3>(s), minEKin, maxEKin));
 
-  return (gidimodels);
+  return std::move(gidimodels);
 }

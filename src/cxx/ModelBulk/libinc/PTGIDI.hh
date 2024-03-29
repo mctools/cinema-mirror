@@ -92,7 +92,6 @@ namespace Prompt {
     mutable double m_cacheEkin, m_cacheGidiXS;
     const double m_temperature, m_frac;
     MCGIDI::Sampling::Input *m_input;
-    int m_elasticReactionIndex;
   };
 
   
@@ -101,7 +100,9 @@ namespace Prompt {
 
   class GIDIFactory {
   public:
-    std::vector<std::shared_ptr<GIDIModel>> createGIDIModel(std::vector<IsotopeComposition> iso,  double bias=1. , double minEKin=10., double maxEKin=std::numeric_limits<double>::max()) const;
+    std::vector<std::shared_ptr<GIDIModel>> createGIDIModel(std::vector<IsotopeComposition> iso,  double bias=1. , 
+                            double minEKinElastic=0, double maxEKinElastic=std::numeric_limits<double>::max(),
+                            double minEKinNonelastic=0, double maxEKinNonelastic=std::numeric_limits<double>::max()) const;
 
     int getHashID(double energy) const;
     bool available() const;
@@ -125,9 +126,7 @@ namespace Prompt {
     GIDI::Transporting::Particles *m_particles;
     GIDI::Construction::Settings *m_construction;
     MCGIDI::DomainHash *m_domainHash;
-    std::set<int> m_reactionsToExclude;
     LUPI::StatusMessageReporting *m_smr1;
-
 
   };
 }

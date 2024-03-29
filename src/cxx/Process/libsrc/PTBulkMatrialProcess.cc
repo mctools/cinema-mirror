@@ -177,7 +177,7 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
       std::cout << v << std::endl;
 
     auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-    auto models = gidifactory.createGIDIModel(isotopes, 1., 0);
+    auto models = gidifactory.createGIDIModel(isotopes, 1., gidimin);
 
     for(const auto &v: models)
       m_compModel->addPhysicsModel(v);
@@ -199,8 +199,11 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
     for(const auto &v: isotopes)
       std::cout << v << std::endl;
 
+    double abs_bias = 1.0;
+    cfg.getDoubleIfExist("abs_bias", abs_bias);
+
     auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-    auto models = gidifactory.createGIDIModel(isotopes, scatter_bias, 0);
+    auto models = gidifactory.createGIDIModel(isotopes, abs_bias, gidimin);
 
     for(const auto &v: models)
       m_compModel->addPhysicsModel(v);
