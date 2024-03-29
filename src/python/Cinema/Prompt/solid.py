@@ -45,10 +45,14 @@ class Solid:
     def __init__(self) -> None:
         pass
 
-    def sanityCheckPositive(self, *args): 
+    def sanityCheckPositive(self, *args: float | int | np.ndarray): 
         for p in args:
-            if p < 0:
-                raise ValueError(f"Invalid input! {p} Should be positive value or zero!")
+            if isinstance(p, np.ndarray):
+                if any(p < 0):
+                    raise ValueError(
+                        f"Invalid input! Each element of {p} should be positive value or zero!")
+            elif p < 0:
+                raise ValueError(f"Invalid input! {p} should be positive value or zero!")
             
     def sanityCheckRelation(self, min, max):
         if min > max:
@@ -172,7 +176,7 @@ class Paraboloid(Solid):
 class PolyCone(Solid):
     def __init__(self, vec_z : np.ndarray, vec_rmin : np.ndarray, vec_rmax : np.ndarray, sphi = 0, dphi = 360) -> None:
         super().__init__()
-        self.sanityCheckPositive(sphi, dphi)
+        self.sanityCheckPositive(sphi, dphi, vec_rmin, vec_rmax)
         self.sizeConsistencyCheck(vec_z, vec_rmin, vec_rmax)
         planeNum = len(vec_z)
         pot_z = self.convert2pointer(vec_z)
