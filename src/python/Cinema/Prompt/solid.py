@@ -179,6 +179,7 @@ class PolyCone(Solid):
         self.sanityCheckPositive(sphi, dphi, vec_rmin, vec_rmax)
         self.sizeConsistencyCheck(vec_z, vec_rmin, vec_rmax)
         self.sanityCheckRelation(vec_rmin, vec_rmax)
+        self.monotonicCheck(vec_z)
         planeNum = len(vec_z)
         pot_z = self.convert2pointer(vec_z)
         pot_rmin = self.convert2pointer(vec_rmin)
@@ -193,3 +194,8 @@ class PolyCone(Solid):
     def sanityCheckRelation(self, min : np.ndarray, max : np.ndarray):
         for mmin, mmax in zip(min, max):
             super().sanityCheckRelation(mmin, mmax)
+
+    def monotonicCheck(self, *arg : np.ndarray):
+        for p in arg:
+            if not ((p == np.sort(p)).all() or (p == np.sort(p)[::-1]).all()):
+                raise ValueError(f"Plane location inputs should be monotonic! {p}")
