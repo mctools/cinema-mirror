@@ -109,6 +109,16 @@ void* pt_Trapezoid_new(double x1, double x2, double y1, double y2, double z)
     return static_cast<void *>(new vg::UnplacedTrapezoid(x1, x2, y1, y2, z));
 }
 
+// General_Trapezoid
+void* pt_GenTrapezoid_new(double dz, double theta, double phi, double dy1, double dx1, 
+                    double dx2, double Alpha1, double dy2, double dx3, double dx4, double Alpha2)
+{
+    return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedTrapezoid>(
+                       dz,  theta,  phi,  dy1,  dx1, 
+                     dx2,  Alpha1,  dy2,  dx3,  dx4,  Alpha2));
+  }
+
+
 
 void pt_Box_delete(void* obj)
 {

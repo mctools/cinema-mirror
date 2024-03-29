@@ -25,6 +25,7 @@ _pt_Box_new = importFunc('pt_Box_new', type_voidp, [type_dbl, type_dbl, type_dbl
 _pt_Box_delete = importFunc('pt_Box_delete', None, [type_voidp] )
 _pt_Tube_new = importFunc('pt_Tube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 _pt_Trapezoid_new = importFunc('pt_Trapezoid_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
+_pt_GenTrapezoid_new = importFunc('pt_GenTrapezoid_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl,type_dbl,type_dbl,type_dbl,type_dbl,type_dbl] )
 _pt_Sphere_new = importFunc('pt_Sphere_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 _pt_Polyhedron_new = importFunc('pt_Polyhedron_new', type_voidp, [type_dbl, type_dbl, type_int, type_int, type_npdbl1d, type_npdbl1d, type_npdbl1d] )
 _pt_ArbTrapezoid_new = importFunc('pt_ArbTrapezoid_new', type_voidp, [type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d, type_dbl])
@@ -217,3 +218,14 @@ class Tetrahedron(Solid):
         for p in args:
             ps.append(super().arrayCheck(p))
         return ps
+
+
+class GenTrapezoid(Solid):
+    def __init__(self, dz, theta, phi, dy1, dx1, dx2, Alpha1, dy2, dx3, dx4, Alpha2) -> None:
+        super().__init__()
+        self.sanityCheckPositive(dz, theta, phi, dy1, dx1, dx2, Alpha1, dy2, dx3, dx4, Alpha2)
+        self.sanityCheckRelation(theta, 90)
+        self.sanityCheckRelation(phi, 90)
+        self.sanityCheckRelation(Alpha1, 90)
+        self.sanityCheckRelation(Alpha2, 90)
+        self.cobj = _pt_GenTrapezoid_new(dz, np.deg2rad(theta), np.deg2rad(phi), dy1, dx1, dx2, np.deg2rad(Alpha1), dy2, dx3, dx4, np.deg2rad(Alpha2))

@@ -25,6 +25,9 @@ void* pt_Sphere_new(double rmin, double rmax, double startphi, double deltaphi ,
 //Trapezoid
 void* pt_Trapezoid_new(double x1, double x2, double y1, double y2, double z);
 
+// General_Trapezoid
+void* pt_GenTrapezoid_new(double dz, double theta, double phi, double dy1, double dx1, 
+                    double dx2, double Alpha1, double dy2, double dx3, double dx4, double Alpha2);
 
 // Tessellated
 void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, float *point);
