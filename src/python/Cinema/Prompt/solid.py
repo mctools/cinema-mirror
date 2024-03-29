@@ -27,14 +27,14 @@ _pt_Tube_new = importFunc('pt_Tube_new', type_voidp, [type_dbl, type_dbl, type_d
 _pt_Trapezoid_new = importFunc('pt_Trapezoid_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 _pt_Sphere_new = importFunc('pt_Sphere_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
 _pt_Polyhedron_new = importFunc('pt_Polyhedron_new', type_voidp, [type_dbl, type_dbl, type_int, type_int, type_npdbl1d, type_npdbl1d, type_npdbl1d] )
-_pt_ArbTrapezoid_new = importFunc('pt_ArbTrapezoid_new', type_voidp, [type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dblp, type_dbl])
+_pt_ArbTrapezoid_new = importFunc('pt_ArbTrapezoid_new', type_voidp, [type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d, type_dbl])
 _pt_Cone_new = importFunc('pt_Cone_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
-_pt_CutTube_new = importFunc('pt_CutTube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dblp, type_dblp])
+_pt_CutTube_new = importFunc('pt_CutTube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_npdbl1d, type_npdbl1d])
 _pt_HypeTube_new = importFunc('pt_HypeTube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 _pt_Orb_new = importFunc('pt_Orb_new', type_voidp, [type_dbl])
 _pt_Paraboloid_new = importFunc('pt_Paraboloid_new', type_voidp, [type_dbl, type_dbl, type_dbl])
-_pt_Polycone_new = importFunc('pt_Polycone_new', type_voidp, [type_dbl, type_dbl, type_int, type_dblp, type_dblp, type_dblp])
-_pt_Tet_new = importFunc('pt_Tet_new', type_voidp, [type_dblp, type_dblp, type_dblp, type_dblp])
+_pt_Polycone_new = importFunc('pt_Polycone_new', type_voidp, [type_dbl, type_dbl, type_int, type_npdbl1d, type_npdbl1d, type_npdbl1d])
+_pt_Tet_new = importFunc('pt_Tet_new', type_voidp, [type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d])
 
 
 #Tessellated
@@ -59,12 +59,14 @@ class Solid:
         if min > max:
             raise ValueError(f"Invalid inputs! rmin ({min}) should less than or equal rmax ({max}))!")
 
-    def convert2pointer(self, p : np.ndarray):
+    def arrayCheck(self, p):
         """
         If a pointer points to an array, its elements can be read and written using standard subscript and slice accesses
         Ref: https://docs.python.org/3/library/ctypes.html#ctypes._Pointer
         """
-        p_c = p.astype(np.double).ctypes.data_as(type_dblp)
+        if isinstance(p, list):
+            p = np.array(p)
+        p_c = p.astype(np.double)
         return p_c
 
 class Box(Solid):
@@ -124,8 +126,10 @@ class ArbTrapezoid(Solid):
         vectors = (xy1, xy2, xy3, xy4, xy5, xy6, xy7, xy8)
         p_vecs = []
         for vec in vectors:
-            p_vecs.append(self.convert2pointer(vec))
+            p_vecs.append(self.arrayCheck(vec))
         self.cobj = _pt_ArbTrapezoid_new(p_vecs[0], p_vecs[1], p_vecs[2], p_vecs[3], p_vecs[4], p_vecs[5], p_vecs[6], p_vecs[7], halfz)
+
+        # self.cobj = _pt_ArbTrapezoid_new( xy1, xy2, xy3, xy4, xy5, xy6, xy7, xy8, halfz)
 
 class Cone(Solid):
     def __init__(self, rmaxBot, rmaxTop, z, rminBot = 0, rminTop = 0, startPhi = 0, deltaPhi = 360) -> None:
@@ -141,8 +145,8 @@ class CutTube(Solid):
         # TODO:fix tracing point location problem
         # super().__init__()
         # self.sanityCheckPositive(rmin, rmax, halfHeight, dphi)
-        # botN = self.convert2pointer(botNormal)
-        # topN = self.convert2pointer(topNormal)
+        # botN = self.arrayCheck(botNormal)
+        # topN = self.arrayCheck(topNormal)
         # self.sanityCheck(rmin, rmax)
         # self.cobj = _pt_CutTube_new(rmin, rmax, halfHeight, np.deg2rad(sphi), np.deg2rad(dphi), botN, topN)
         
@@ -182,9 +186,9 @@ class PolyCone(Solid):
         self.sanityCheckRelation(vec_rmin, vec_rmax)
         self.monotonicCheck(vec_z)
         planeNum = len(vec_z)
-        pot_z = self.convert2pointer(vec_z)
-        pot_rmin = self.convert2pointer(vec_rmin)
-        pot_rmax = self.convert2pointer(vec_rmax)
+        pot_z = self.arrayCheck(vec_z)
+        pot_rmin = self.arrayCheck(vec_rmin)
+        pot_rmax = self.arrayCheck(vec_rmax)
         self.cobj = _pt_Polycone_new(np.deg2rad(sphi), np.deg2rad(dphi), planeNum, pot_z, pot_rmin, pot_rmax)
 
     def sizeConsistencyCheck(self, *arg):
@@ -205,11 +209,11 @@ class PolyCone(Solid):
 class Tetrahedron(Solid):
     def __init__(self, p1, p2, p3, p4) -> None:
         super().__init__()
-        ps = self.convert2pointer(p1, p2, p3, p4)
+        ps = self.arrayCheck(p1, p2, p3, p4)
         self.cobj = _pt_Tet_new(ps[0], ps[1], ps[2], ps[3])
     
-    def convert2pointer(self, *args):
+    def arrayCheck(self, *args):
         ps = []
         for p in args:
-            ps.append(super().convert2pointer(p))
+            ps.append(super().arrayCheck(p))
         return ps
