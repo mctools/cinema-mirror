@@ -27,10 +27,17 @@
 
 namespace Prompt
 {
+  //fixme: add locker to disable modification when MC loop starts 
   class CentralData {
   public:
     double getGidiThreshold() const { return m_gidithreshold; };
     void setGidiThreshold(double t ) { m_gidithreshold = t; };
+
+    bool getGidiSampleNTP() const { return m_gidiSampleNonTransportingParticles; };
+    void setGidiSampleNTP(bool t ) { m_gidiSampleNonTransportingParticles = t; };
+
+    bool getGammaTransport() const { return m_gidiEnableGamma; }
+    void setGammaTransport(bool t) { m_gidiEnableGamma=t; }
 
     std::string getGidiPops() const {return m_gidipops;};
     void setGidiPops(const std::string &s ) { m_gidipops = s; };
@@ -43,6 +50,8 @@ namespace Prompt
     CentralData();
     ~CentralData();
     double m_gidithreshold;
+    bool m_gidiSampleNonTransportingParticles;
+    bool m_gidiEnableGamma;
     std::string m_gidipops, m_gidimap;    
   };
 

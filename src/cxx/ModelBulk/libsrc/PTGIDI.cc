@@ -21,7 +21,7 @@
 
 #include "LUPI.hpp"
 #include "MCGIDI.hpp"
-
+#include "MCGIDI_sampling.hpp"
 #include <limits>
 
 #include "PTGIDI.hh"
@@ -32,7 +32,6 @@
 #include "PTMaterialDecomposer.hh"
 #include <tuple> // for tuple
 
-#include "PTCentralData.hh"
 
 inline double getRandNumber(void *obj) 
 {
@@ -55,7 +54,8 @@ m_cacheEkin(0.),
 m_cacheGidiXS(0.),
 m_temperature(temperature),
 m_frac(frac),
-m_input(new MCGIDI::Sampling::Input(false, MCGIDI::Sampling::Upscatter::Model::B) )
+m_input(new MCGIDI::Sampling::Input(false, MCGIDI::Sampling::Upscatter::Model::B) ),
+m_elasticReactionIndex(-1)
 { 
 
 
@@ -74,9 +74,17 @@ m_input(new MCGIDI::Sampling::Input(false, MCGIDI::Sampling::Upscatter::Model::B
   for( int i = 0; i < numberOfReactions; ++i ) 
   {
     auto reaction =  m_mcprotare->reaction(i);
+    // The type of ENDF_MT can be found at https://t2.lanl.gov/nis/endf/mts.html
+    if(reaction->ENDF_MT()==2)
+    {
+      m_elasticReactionIndex = i;
+    }
     std::cout << "Reaction " << i << ", ENDF_MT=" << reaction->ENDF_MT()  << std::endl;
   }
-  // The type of ENDF_MT can be found at https://t2.lanl.gov/nis/endf/mts.html
+
+  if(m_elasticReactionIndex < 0)
+    PROMPT_THROW2(BadInput, "Elastic scattering reaction (MT2, see https://t2.lanl.gov/nis/endf/mts.html) is missing in " << name);
+
 }
 
 Prompt::GIDIModel::~GIDIModel()
@@ -99,12 +107,18 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
   }
   else
   {
+    
     m_cacheEkin = ekin;
-    double gidiEnergy = ekin*1e-6;
-    int hashIndex = m_factory.getHashID(gidiEnergy);
+    double ekin_MeV = ekin*1e-6;
+    int hashIndex = m_factory.getHashID(ekin_MeV);
     //temperature unit here is MeV/k, not to confuse by the keV/k unit in m_input
-    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, const_boltzmann*m_temperature*1e-6, gidiEnergy ); 
-
+    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, const_boltzmann*m_temperature*1e-6, ekin_MeV ); 
+    if( m_factory.NCrystal4Elastic(ekin) ) // This is the energy region for ncrystal to perform scattering calculation
+    {
+      double mt2xs = m_mcprotare->reactionCrossSection( m_elasticReactionIndex, *m_urr_info, hashIndex, const_boltzmann*m_temperature*1e-6, ekin_MeV );
+      m_cacheGidiXS -= mt2xs;
+    }
+    
     // std::cout << "sampled despition " << m_mcprotare->depositionEnergy( hashIndex, const_boltzmann*m_temperature*1e-6, gidiEnergy )  << "\n";
     return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
@@ -128,28 +142,48 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
   int hashIndex = m_factory.getHashID(ekin_MeV);
 
-  int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
-  MCGIDI::Reaction const *reaction = m_mcprotare->reaction( reactionIndex );
+  int reactionIndex(m_elasticReactionIndex);
+
+  if(m_factory.NCrystal4Elastic(ekin))
+  {
+    // elastic is treated by NCrystal, remove it from here
+    while(reactionIndex==m_elasticReactionIndex)
+    {
+      reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
+    }
+  }
+  else
+    reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
   
+ 
+  MCGIDI::Reaction const *reaction = m_mcprotare->reaction( reactionIndex );
   pt_assert_always(m_mcprotare->threshold( reactionIndex ) < ekin_MeV);
+
   m_products->clear();
   reaction->sampleProducts( m_mcprotare.get(), ekin_MeV, *m_input, getRandNumber, nullptr, *m_products );
+
+  pt_assert_always(m_input->m_reaction==reaction);
+
 
   // debug and looking for the MT value for the selected reaction
   // std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", m_products->size() " <<  m_products->size() << std::endl;
   std::vector<MCGIDI::Sampling::Product> prod_n;
+
+
   double totalekin = 0;
   for( std::size_t i = 0; i < m_products->size( ); ++i ) 
   {
-    if ((*m_products)[i].m_productIndex==11)
+    if ((*m_products)[i].m_productIndex==11) //neutron
+    {
       prod_n.push_back((*m_products)[i]);
-    
-    totalekin += (*m_products)[i].m_kineticEnergy;
+      totalekin += (*m_products)[i].m_kineticEnergy;
+    }
+      
 
     // // if(reaction->finalQ(ekin_MeV))
-    // std::cout << (*m_products)[i].m_productIndex << " " 
-    // << reaction->finalQ(ekin_MeV) << " " 
-    // << (*m_products)[i].m_kineticEnergy << "\n";
+    std::cout << (*m_products)[i].m_productIndex << " " 
+    << reaction->finalQ(ekin_MeV) << " " 
+    << (*m_products)[i].m_kineticEnergy << "\n";
   }
   //   std::cout <<"incident " << ekin_MeV;
   // std::cout <<", total neutron energy " << totalekin << "\n";
@@ -164,8 +198,24 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
   // if MC.sampleNonTransportingParticles(true), many of the events are sampled in the centerOfMass
   if(m_input->m_frame == GIDI::Frame::centerOfMass)
-    PROMPT_THROW(NotImplemented, "GIDI::Frame::centerOfMass product is not yet implemented");
+  {
+    if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::firstTwoBody)
+      std::cout << "MCGIDI::Sampling::SampledType::firstTwoBody\n";
+    else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::secondTwoBody)
+      std::cout << "MCGIDI::Sampling::SampledType::secondTwoBody\n";
+    else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::uncorrelatedBody)
+      std::cout << "MCGIDI::Sampling::SampledType::uncorrelatedBody\n";
+    else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::unspecified)
+      std::cout << "MCGIDI::Sampling::SampledType::unspecified\n";
+    else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::photon)
+      std::cout << "MCGIDI::Sampling::SampledType::photon\n";
+    else
+      PROMPT_THROW(CalcError, "unknown m_input->m_sampledType");
+
   
+    // PROMPT_THROW(NotImplemented, "GIDI::Frame::centerOfMass product is not yet implemented");
+  }
+
   // Neutron die as absorption
   if(prod_n.size()==0)
   {
@@ -195,8 +245,9 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 }
 
 Prompt::GIDIFactory::GIDIFactory()
-:m_pops(new PoPI::Database( Singleton<CentralData>::getInstance().getGidiPops())),
-m_map (new GIDI::Map::Map( Singleton<CentralData>::getInstance().getGidiMap(), *m_pops )),
+:m_ctrdata(Singleton<Prompt::CentralData>::getInstance()),
+m_pops(new PoPI::Database( m_ctrdata.getGidiPops())),
+m_map (new GIDI::Map::Map( m_ctrdata.getGidiMap(), *m_pops )),
 m_particles(new GIDI::Transporting::Particles()),
 m_construction(new GIDI::Construction::Settings ( GIDI::Construction::ParseMode::all, 
                                               GIDI::Construction::PhotoMode::nuclearAndAtomic )),
@@ -207,9 +258,12 @@ m_smr1()
   GIDI::Transporting::Particle neutron(PoPI::IDs::neutron, GIDI::Transporting::Mode::MonteCarloContinuousEnergy);
   m_particles->add(neutron);
   pt_assert_always((*m_pops)["n"] == 11);
-
-  GIDI::Transporting::Particle photon( PoPI::IDs::photon, GIDI::Transporting::Mode::MonteCarloContinuousEnergy );
-  m_particles->add( photon );
+ 
+  if(m_ctrdata.getGammaTransport())
+  {
+    GIDI::Transporting::Particle photon( PoPI::IDs::photon, GIDI::Transporting::Mode::MonteCarloContinuousEnergy );
+    m_particles->add( photon );
+  }
 
   m_pops->print(true);
   // m_pops->isMetaStableAlias();
@@ -248,6 +302,8 @@ std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIM
 
   size_t i = 0;
 
+  // fixme: make shared pointer map to cache MCGIDI::ProtareSingle for repeated isotopes
+  // the key should be the label (i.e. iter->heatedCrossSection( )) plus the  isotope name
   for(const auto& isotope : vecComp)
   {
     const std::string &name = isotope.name;
@@ -269,9 +325,8 @@ std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIM
 
     MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, GIDI::Transporting::DelayedNeutrons::on, 20.0 );
     // MC.setNuclearPlusCoulombInterferenceOnly( false );
-    MC.sampleNonTransportingParticles( false );
+    MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
     // MC.set_ignoreENDF_MT5(true);
-    MC.set_wantRawTNSL_distributionSampling( true );
 
    
 
@@ -284,7 +339,6 @@ std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIM
 
     // singleProtares.push_back(std::make_tuple(mcProtare, name, temperature_K, frac));
     gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare, temperature_K, bias, frac, minEKin, maxEKin));
-
 
     i++;
     delete gidiprotare;

@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 from Cinema.Interface import plotStyle
+from Cinema.Prompt.centralData import CentralData 
 
 plotStyle()
 
@@ -12,24 +13,28 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('cfg', metavar='N', type=str, nargs='+', help='Prompt materil config')
 
-parser.add_argument('-e', '--energy', action='store', type=float, default=1.,
-                    dest='energy', help='incident kinetic energy')
+parser.add_argument('-c', '--switchingenergy', action='store',  nargs='+', type=float, default=10.,
+                    dest='switchingenergy', help='model switching energy')
 
 
+
+cdata=CentralData()
 args=parser.parse_args()
+print(args.switchingenergy)
+
+
 
 ekin = np.logspace(-5, np.log10(20e6), 1000)
 
 for cfg in args.cfg:
-    comp = CompoundModel(cfg)
-    xs = np.zeros_like(ekin)
-    for i in range(ekin.size):
-        xs[i] = comp.xs(ekin[i])
-
-
-    
-    np.save('xs', xs)
-    plt.loglog(ekin, xs, label=cfg)
+    for sen in args.switchingenergy:
+        cdata.setGidiThreshold(sen)
+        comp = CompoundModel(cfg)
+        xs = np.zeros_like(ekin)
+        for i in range(ekin.size):
+            xs[i] = comp.xs(ekin[i])        
+        np.save('xs', xs)
+        plt.loglog(ekin, xs, label=cfg+', switching@'+str(sen))
     
 plt.legend(loc=0)
 plt.grid('both')

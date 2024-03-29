@@ -8,7 +8,10 @@ from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun
 from Cinema.Prompt.centralData import CentralData 
 
-CentralData().setGidiThreshold(1e-11)
+cdata=CentralData()
+cdata.setGidiThreshold(1e-11)
+
+
 class MySim(Prompt):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)   
@@ -17,8 +20,8 @@ class MySim(Prompt):
 
         world = Volume("world", Box(400, 400, 400))
 
-        # lw = Material('freegas::He/1gcm3/He_is_1_He3') 
-        lw = Material('freegas::B/1gcm3/B_is_1_B10') 
+        lw = Material('freegas::He/1gcm3/He_is_1_He3') 
+        # lw = Material('freegas::B/1gcm3/B_is_1_B10') 
         # lw = Material('freegas::Li/1gcm3/Li_is_1_Li6') 
 
         lw.setBiasScat(1.)
