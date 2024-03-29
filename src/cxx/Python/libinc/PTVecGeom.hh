@@ -51,6 +51,8 @@ void *pt_HypeTube_new(double rmin, double rmax, double inst, double outst, doubl
 // Paraboloid
 void *pt_Paraboloid_new(double rbot, double rtop, double halfHeight);
 
+// Polycone
+void *pt_Polycone_new(double sphi, double dphi, int planeNum, double (*z), double (*rmin), double (*rmax));
 
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume);

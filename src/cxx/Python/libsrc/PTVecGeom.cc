@@ -13,6 +13,7 @@
 #include "VecGeom/volumes/UnplacedHype.h"
 #include "VecGeom/volumes/UnplacedOrb.h"
 #include "VecGeom/volumes/UnplacedParaboloid.h"
+#include "VecGeom/volumes/UnplacedPolycone.h"
 
 
 #include "VecGeom/volumes/UnplacedVolume.h"
@@ -219,6 +220,12 @@ void *pt_Paraboloid_new(double rbot, double rtop, double halfHeight)
                       rbot, rtop, halfHeight));
 }
 
+// Polycone
+void *pt_Polycone_new(double sphi, double dphi, int planeNum, double (*z), double (*rmin), double (*rmax))
+{
+  return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedPolycone>(
+                      sphi, dphi, planeNum, z, rmin, rmax));
+}
 
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume)

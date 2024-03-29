@@ -33,6 +33,8 @@ _pt_CutTube_new = importFunc('pt_CutTube_new', type_voidp, [type_dbl, type_dbl, 
 _pt_HypeTube_new = importFunc('pt_HypeTube_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 _pt_Orb_new = importFunc('pt_Orb_new', type_voidp, [type_dbl])
 _pt_Paraboloid_new = importFunc('pt_Paraboloid_new', type_voidp, [type_dbl, type_dbl, type_dbl])
+_pt_Polycone_new = importFunc('pt_Polycone_new', type_voidp, [type_dbl, type_dbl, type_int, type_dblp, type_dblp, type_dblp])
+
 
 #Tessellated
 _pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npsbl2d] )
@@ -165,3 +167,20 @@ class Paraboloid(Solid):
         super().__init__()
         self.sanityCheckPositive(rbot, rtop, halfHeight)
         self.cobj = _pt_Paraboloid_new(rbot, rtop, halfHeight)
+
+
+class PolyCone(Solid):
+    def __init__(self, vec_z : np.ndarray, vec_rmin : np.ndarray, vec_rmax : np.ndarray, sphi = 0, dphi = 360) -> None:
+        super().__init__()
+        self.sanityCheckPositive(sphi, dphi)
+        self.sizeConsistencyCheck(vec_z, vec_rmin, vec_rmax)
+        planeNum = len(vec_z)
+        pot_z = self.convert2pointer(vec_z)
+        pot_rmin = self.convert2pointer(vec_rmin)
+        pot_rmax = self.convert2pointer(vec_rmax)
+        self.cobj = _pt_Polycone_new(np.deg2rad(sphi), np.deg2rad(dphi), planeNum, pot_z, pot_rmin, pot_rmax)
+
+    def sizeConsistencyCheck(self, *arg):
+        vec_size = len(arg[0])
+        if any([len(p) != vec_size for p in arg]):
+            raise ValueError("Input vector size for planes not consistent!")
