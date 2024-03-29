@@ -47,7 +47,7 @@ class Solid:
     def __init__(self) -> None:
         pass
 
-    def sanityCheckPositive(self, *args: float | int | np.ndarray): 
+    def sanityCheckPositive(self, *args: float or int or np.ndarray): 
         for p in args:
             if isinstance(p, np.ndarray):
                 if any(p < 0):

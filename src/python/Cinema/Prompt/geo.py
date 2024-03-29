@@ -266,7 +266,7 @@ class Volume:
     def setMaterial(self, cfg : str):
         _pt_ResourceManager_addPhysics(self.volid, cfg.encode('utf-8')) # set as the universe
 
-    def addScorer(self, scorer : Scorer|str):
+    def addScorer(self, scorer : Scorer or str):
         import re
         if isinstance(scorer, str):
             nameList = scorer.split(';')
