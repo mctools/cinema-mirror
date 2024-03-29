@@ -178,6 +178,7 @@ class PolyCone(Solid):
         super().__init__()
         self.sanityCheckPositive(sphi, dphi, vec_rmin, vec_rmax)
         self.sizeConsistencyCheck(vec_z, vec_rmin, vec_rmax)
+        self.sanityCheckRelation(vec_rmin, vec_rmax)
         planeNum = len(vec_z)
         pot_z = self.convert2pointer(vec_z)
         pot_rmin = self.convert2pointer(vec_rmin)
@@ -188,3 +189,7 @@ class PolyCone(Solid):
         vec_size = len(arg[0])
         if any([len(p) != vec_size for p in arg]):
             raise ValueError("Input vector size for planes not consistent!")
+        
+    def sanityCheckRelation(self, min : np.ndarray, max : np.ndarray):
+        for mmin, mmax in zip(min, max):
+            super().sanityCheckRelation(mmin, mmax)
