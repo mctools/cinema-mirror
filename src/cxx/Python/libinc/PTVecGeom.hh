@@ -54,6 +54,9 @@ void *pt_Paraboloid_new(double rbot, double rtop, double halfHeight);
 // Polycone
 void *pt_Polycone_new(double sphi, double dphi, int planeNum, double (*z), double (*rmin), double (*rmax));
 
+// Tet
+void *pt_Tet_new(double (*p1), double (*p2), double (*p3), double (*p4));
+
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume);
 void pt_Volume_delete(void* obj);

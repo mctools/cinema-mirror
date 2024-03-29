@@ -14,7 +14,7 @@
 #include "VecGeom/volumes/UnplacedOrb.h"
 #include "VecGeom/volumes/UnplacedParaboloid.h"
 #include "VecGeom/volumes/UnplacedPolycone.h"
-
+#include "VecGeom/volumes/UnplacedTet.h"
 
 #include "VecGeom/volumes/UnplacedVolume.h"
 #include "VecGeom/volumes/SpecializedTessellated.h"
@@ -225,6 +225,13 @@ void *pt_Polycone_new(double sphi, double dphi, int planeNum, double (*z), doubl
 {
   return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedPolycone>(
                       sphi, dphi, planeNum, z, rmin, rmax));
+}
+
+// Tet
+void *pt_Tet_new(double (*p1), double (*p2), double (*p3), double (*p4))
+{
+  return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedTet>(
+                      p1, p2, p3, p4));
 }
 
 // Volume 

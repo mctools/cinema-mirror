@@ -34,6 +34,7 @@ _pt_HypeTube_new = importFunc('pt_HypeTube_new', type_voidp, [type_dbl, type_dbl
 _pt_Orb_new = importFunc('pt_Orb_new', type_voidp, [type_dbl])
 _pt_Paraboloid_new = importFunc('pt_Paraboloid_new', type_voidp, [type_dbl, type_dbl, type_dbl])
 _pt_Polycone_new = importFunc('pt_Polycone_new', type_voidp, [type_dbl, type_dbl, type_int, type_dblp, type_dblp, type_dblp])
+_pt_Tet_new = importFunc('pt_Tet_new', type_voidp, [type_dblp, type_dblp, type_dblp, type_dblp])
 
 
 #Tessellated
@@ -199,3 +200,16 @@ class PolyCone(Solid):
         for p in arg:
             if not ((p == np.sort(p)).all() or (p == np.sort(p)[::-1]).all()):
                 raise ValueError(f"Plane location inputs should be monotonic! {p}")
+            
+
+class Tetrahedron(Solid):
+    def __init__(self, p1, p2, p3, p4) -> None:
+        super().__init__()
+        ps = self.convert2pointer(p1, p2, p3, p4)
+        self.cobj = _pt_Tet_new(ps[0], ps[1], ps[2], ps[3])
+    
+    def convert2pointer(self, *args):
+        ps = []
+        for p in args:
+            ps.append(super().convert2pointer(p))
+        return ps
