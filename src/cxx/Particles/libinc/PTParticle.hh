@@ -57,6 +57,8 @@ namespace Prompt {
     const Vector &getPosition() const { return m_pos; }
 
     double getTime() const { return m_time; }
+    void setTime(double time) { m_time =time; }
+
     double getStep() const { return m_step; }
     double getEnergyChange() const { return m_deltaEn; }
     void setEKin(double ekin);

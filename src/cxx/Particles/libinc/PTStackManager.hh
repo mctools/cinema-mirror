@@ -40,7 +40,7 @@ namespace Prompt {
   public:
     void add(std::unique_ptr<Particle> aparticle);
     void add(const Particle& aparticle, unsigned number);
-    void addSecondary(std::unique_ptr<Particle> aparticle);
+    void addSecondary(const Prompt::Particle& aparticle);
 
     std::unique_ptr<Particle> pop();
     bool empty() const;

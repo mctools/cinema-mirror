@@ -19,11 +19,10 @@ class MySim(Prompt):
     def makeWorld(self):
 
         world = Volume("world", Box(1, 1, 1.1e5))
-
         # lw = Material('freegas::He/1gcm3/He_is_1_He3') 
         # lw = Material('freegas::B/1gcm3/B_is_1_B10') 
         # lw = Material('freegas::Li/1gcm3/Li_is_1_Li6') 
-        lw = Material('freegas::H2O/1gcm3') 
+        lw = Material('freegas::Si/1gcm3') 
         lw.setBiasAbsp(10)
         lw.setBiasScat(1)
         media = Volume("media", Box(1, 1, 1.1e5), matCfg= lw)
@@ -40,7 +39,7 @@ sim.makeWorld()
 
 
 gun = SimpleThermalGun()
-gun.setEnergy(1e6)
+gun.setEnergy(10e6)
 gun.setPosition([0,0,-1e5])
 
 partnum = 1e5

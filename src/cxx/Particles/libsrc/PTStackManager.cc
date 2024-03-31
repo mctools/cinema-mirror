@@ -43,9 +43,9 @@ void Prompt::StackManager::add(std::unique_ptr<Prompt::Particle> aParticle)
   m_stack.emplace_back(std::move(aParticle));
 }
 
-void Prompt::StackManager::addSecondary(std::unique_ptr<Prompt::Particle> aParticle)
+void Prompt::StackManager::addSecondary(const Prompt::Particle& aparticle)
 {
-  m_stack.emplace_back(std::move(aParticle));
+  m_stack.emplace_back(std::make_unique<Particle>(aparticle));
   m_unweighted++;
 }
     
@@ -74,7 +74,7 @@ std::unique_ptr<Prompt::Particle> Prompt::StackManager::pop()
   }
   auto p = std::move(m_stack.back());
   m_stack.pop_back();
-  return p;
+  return std::move(p);
 }
 
 

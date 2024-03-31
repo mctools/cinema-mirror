@@ -95,7 +95,8 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
       //add a primary particle into the stack
     while(!m_stackManager.empty())
     {
-      auto particle = *(m_stackManager.pop()).get();
+      m_curParicle = m_stackManager.pop();
+      auto particle = *m_curParicle.get();
 
       // allocate the point in a volume,
       // returns ture when the particle is outside the world

@@ -47,6 +47,7 @@ Prompt::GIDIModel::GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Pr
                       upperlimt, 
                       bias),
 m_factory(Prompt::Singleton<Prompt::GIDIFactory>::getInstance()), 
+m_launcher(Singleton<Launcher>::getInstance()),
 m_mcprotare(mcprotare), 
 m_urr_info(nullptr),
 m_products(new MCGIDI::Sampling::StdVectorProductHandler()),
@@ -179,7 +180,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
     else
       PROMPT_THROW(CalcError, "unknown m_input->m_sampledType");
 
-  
+    // fixme
     // PROMPT_THROW(NotImplemented, "GIDI::Frame::centerOfMass product is not yet implemented");
   }
 
@@ -198,16 +199,34 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   }
   else
   {
+    //fixme: double chek all parameters are set and do center of mass calculation
     final_ekin=ENERGYTOKEN_ABSORB;
 
-    for(auto v: prod_n)
+    for(auto sec: prod_n)
     {
-        std::cout << "prd idx " << v.m_productIndex << " "
-        << v.m_kineticEnergy << std::endl;
+      Particle p; 
+      m_launcher.copyCurrentParticle(p); 
+      pt_assert_always(p.getPGD()==2112); // it must be a neutron for now
+
+      p.setEKin(sec.m_kineticEnergy*1e6);
+      
+      Vector secdir;
+      secdir.x() = sec.m_px_vx;
+      secdir.y() = sec.m_py_vy;
+      secdir.z() = sec.m_pz_vz;
+      secdir.setMag(1.);
+      p.setDirection(secdir);
+      p.setTime(p.getTime()+sec.m_birthTimeSec);
+
+      
+      // std::cout << "prd idx " << sec.m_productIndex << " "
+      // << sec.m_kineticEnergy << std::endl;
+
+      Singleton<StackManager>::getInstance().addSecondary(p);
     }
-    std::cout << std::endl;
+    // std::cout << std::endl;
     // //Fixme: mcpl writer will be used to record neutron multiplication for keff application
-    PROMPT_THROW(NotImplemented, "neutron multiplication is not yet supported");
+    // PROMPT_THROW(NotImplemented, "neutron multiplication is not yet supported");
   }
 }
 

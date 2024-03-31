@@ -43,6 +43,7 @@ namespace Prompt {
     std::shared_ptr<PrimaryGun> getGun() const { return m_gun; }
     const std::vector<Vector> &getTrajectory() { return m_trajectory; }
     size_t getTrajSize() { return m_trajectory.size(); }
+    void copyCurrentParticle(Particle &p) const { p = *m_curParicle.get(); };
 
 
   private:
@@ -50,6 +51,7 @@ namespace Prompt {
     Launcher();
     ~Launcher();
     std::shared_ptr<PrimaryGun> m_gun;
+    std::unique_ptr<Particle> m_curParicle;
     std::vector<Vector> m_trajectory;
     ActiveVolume &m_activeVolume;
     StackManager &m_stackManager;

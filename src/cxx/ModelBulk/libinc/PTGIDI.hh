@@ -29,6 +29,7 @@
 #include "PTDiscreteModel.hh"
 #include "PTSingleton.hh"
 #include "PTCentralData.hh"
+#include "PTLauncher.hh"
 
 
 namespace GIDI
@@ -86,6 +87,7 @@ namespace Prompt {
 
   private:
     const GIDIFactory &m_factory;
+    Launcher &m_launcher; 
     std::shared_ptr<MCGIDI::Protare> m_mcprotare;
     MCGIDI::URR_protareInfos *m_urr_info;
     mutable MCGIDI::Sampling::StdVectorProductHandler *m_products;
