@@ -28,20 +28,32 @@
 
 namespace Prompt {
 
+  // The mechanism for treating secondaries:
+  // int m_unweighted is added as a member of StackManager. 
+  // It is increasing with the times of calling addSecondary to indicate the number
+  // of secondary particles have been added to stack. The weights of the particles are 
+  // scaled by Prompt::BulkMaterialProcess::sampleFinalState for the cross section biasing. 
+  // Before the correction is complete, StackManager::pop will forbit the action of  
+  // poping a particle from the stack. 
+
   class StackManager {
   public:
     void add(std::unique_ptr<Particle> aparticle);
     void add(const Particle& aparticle, unsigned number);
+    void addSecondary(std::unique_ptr<Particle> aparticle);
+
     std::unique_ptr<Particle> pop();
     bool empty() const;
+    int getUnweightedNum() const { return m_unweighted; };
+    void scalceSecondary(int lastidx, double factor);
 
     friend std::ostream& operator << (std::ostream &, const StackManager&);
 
-
   private:
     friend class Singleton<StackManager>;
-    StackManager() = default;
+    StackManager();
     ~StackManager() = default;
+    int m_unweighted;
     std::vector<std::unique_ptr<Particle> > m_stack;
   };
 

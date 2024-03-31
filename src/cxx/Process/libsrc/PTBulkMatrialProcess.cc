@@ -33,6 +33,7 @@
 #include "PTMaterialDecomposer.hh"
 #include "PTGIDI.hh"
 #include "PTCentralData.hh"
+#include "PTStackManager.hh"
 
 Prompt::BulkMaterialProcess::BulkMaterialProcess(const std::string &name)
     : m_rng(Singleton<SingletonPTRand>::getInstance()),
@@ -122,6 +123,16 @@ void Prompt::BulkMaterialProcess::sampleFinalState(Prompt::Particle &particle, d
   // std::cout << particle.getEventID() << ", is alive? " << particle.isAlive() << ", wall? "<< hitWall<<
   //  ", labEkin " << lab_ekin   << ", effEkin " << particle.getEffEKin() << "\n";
 
+  double weightCorrection = m_compModel->calculateWeight(stepLength * m_numdensity, false);
+
+  // treating secondaries
+  auto &stm = Singleton<StackManager>::getInstance();
+  int secNum = stm.getUnweightedNum();
+  for(int i=0; i<secNum; i++)
+  {
+    stm.scalceSecondary(i, weightCorrection);
+  }
+
   // if it is an absorption reaction, the state of the particle is set,
   // but the energy and direction are kept for the subsequent capture scorers.
   if (lab_ekin == -1. || comove_ekin == -1.)
@@ -133,7 +144,7 @@ void Prompt::BulkMaterialProcess::sampleFinalState(Prompt::Particle &particle, d
     particle.setEKin(lab_ekin);
     particle.setDirection(lab_dir);
   }
-  particle.scaleWeight(m_compModel->calculateWeight(stepLength * m_numdensity, false));
+  particle.scaleWeight(weightCorrection);
 }
 
 double Prompt::BulkMaterialProcess::sampleStepLength(const Prompt::Particle &particle) const

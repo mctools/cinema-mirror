@@ -33,9 +33,26 @@ std::ostream& Prompt::operator << (std::ostream &o, const StackManager&s)
   return o;
 }
 
+Prompt::StackManager::StackManager(): m_unweighted(0)
+{
+
+}
+
 void Prompt::StackManager::add(std::unique_ptr<Prompt::Particle> aParticle)
 {
   m_stack.emplace_back(std::move(aParticle));
+}
+
+void Prompt::StackManager::addSecondary(std::unique_ptr<Prompt::Particle> aParticle)
+{
+  m_stack.emplace_back(std::move(aParticle));
+  m_unweighted++;
+}
+    
+void Prompt::StackManager::scalceSecondary(int lastidx, double factor)
+{
+  m_stack[m_stack.size()-1-lastidx]->scaleWeight(factor);
+  m_unweighted--;
 }
 
 void Prompt::StackManager::add(const Prompt::Particle& aparticle, unsigned number)
@@ -51,6 +68,10 @@ void Prompt::StackManager::add(const Prompt::Particle& aparticle, unsigned numbe
 
 std::unique_ptr<Prompt::Particle> Prompt::StackManager::pop()
 {
+  if(m_unweighted)
+  {
+    PROMPT_THROW2(CalcError, "The weight of " << m_unweighted << " particles in the particle stack are not corrected");
+  }
   auto p = std::move(m_stack.back());
   m_stack.pop_back();
   return p;
