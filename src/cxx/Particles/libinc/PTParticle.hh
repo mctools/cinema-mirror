@@ -26,7 +26,7 @@
 #include "PTUnitSystem.hh"
 #include <ostream>
 
-//! Particle is neutron with pgd code of 2112 by defult. Proton (2212) is also supported.
+//! Particle pgd code is zero by default.  neutron(2112). Proton (2212) is also supported.
 //! fixme: support Gamma (22) as well.
 namespace Prompt {
 
@@ -82,7 +82,6 @@ namespace Prompt {
     friend std::ostream& operator << (std::ostream &, const Particle&);
 
   protected:
-    friend class DeltaParticle;
     Vector m_dir, m_pos;
     double m_ekin0, m_ekin, m_time;
     double m_step, m_deltaEn;
