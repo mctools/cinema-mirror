@@ -281,6 +281,17 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
       PROMPT_THROW2(DataLoadError, "GIDIFactory failed to load data for " << name);
     }
     auto *gidiprotare =  (GIDI::Protare *) m_map->protare( *m_construction, *m_pops, "n", name, "", "", true, true ) ;
+
+    GIDI::Transporting::Settings incompleteParticlesSetting( gidiprotare->projectile( ).ID( ), GIDI::Transporting::DelayedNeutrons::on );
+    std::set<std::string> incompleteParticles;
+    gidiprotare->incompleteParticles( incompleteParticlesSetting, incompleteParticles );
+    std::cout << "# List of incomplete particles:";
+    for( auto iter = incompleteParticles.begin( ); iter != incompleteParticles.end( ); ++iter ) {
+        std::cout << " " << *iter;
+    }
+    std::cout << std::endl;
+
+
     
     GIDI::Styles::TemperatureInfos temperatures = gidiprotare->temperatures( );
     for( GIDI::Styles::TemperatureInfos::const_iterator iter = temperatures.begin( ); iter != temperatures.end( ); ++iter ) {
