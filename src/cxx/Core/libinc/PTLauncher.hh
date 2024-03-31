@@ -40,6 +40,7 @@ namespace Prompt {
     uint64_t getSeed() { return Singleton<SingletonPTRand>::getInstance().getSeed(); }
     void setGun(std::shared_ptr<PrimaryGun> gun) { m_gun=gun; }
     void setGun(const char* cfg);
+    std::shared_ptr<PrimaryGun> getGun() const { return m_gun; }
     const std::vector<Vector> &getTrajectory() { return m_trajectory; }
     size_t getTrajSize() { return m_trajectory.size(); }
 

@@ -29,7 +29,7 @@ class MySim(Prompt):
         media = Volume("media", Box(1, 1, 1.1e5), matCfg= lw)
         world.placeChild('media', media)
 
-        VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
+        # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
         ESpectrumHelper('ESpec', min=1, max=10, numbin=300, ptstate='EXIT').make(media)
         self.setWorld(world)
 
