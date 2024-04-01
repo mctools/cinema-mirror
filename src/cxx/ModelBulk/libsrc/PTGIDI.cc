@@ -121,11 +121,9 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
   pt_assert_always(ekin==m_cacheEkin);
 
-  double ekin_MeV = ekin*1e-6;
-
+  const double ekin_MeV = ekin*1e-6;
 
   //fixme, do not care about temperature at the moment
-
   int hashIndex = m_factory.getHashID(ekin_MeV);
   int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
   
@@ -137,96 +135,143 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
   pt_assert_always(m_input->m_reaction==reaction);
 
+
+  // // if MC.sampleNonTransportingParticles(true), many of the events are sampled in the centerOfMass
+  // if(m_input->m_frame == GIDI::Frame::centerOfMass)
+  // {
+  //   if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::firstTwoBody)
+  //     std::cout << "MCGIDI::Sampling::SampledType::firstTwoBody\n";
+  //   else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::secondTwoBody)
+  //     std::cout << "MCGIDI::Sampling::SampledType::secondTwoBody\n";
+  //   else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::uncorrelatedBody)
+  //     std::cout << "MCGIDI::Sampling::SampledType::uncorrelatedBody\n";
+  //   else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::unspecified)
+  //     std::cout << "MCGIDI::Sampling::SampledType::unspecified\n";
+  //   else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::photon)
+  //     std::cout << "MCGIDI::Sampling::SampledType::photon\n";
+  //   else
+  //     PROMPT_THROW(CalcError, "unknown m_input->m_sampledType");
+
+  //   // fixme
+  //   // PROMPT_THROW(NotImplemented, "GIDI::Frame::centerOfMass product is not yet implemented");
+  // }
+
+
   // debug and looking for the MT value for the selected reaction
   // std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", m_products->size() " <<  m_products->size() << std::endl;
-  std::vector<MCGIDI::Sampling::Product> prod_n;
-
+  std::vector<Particle> secondaries;
 
   double totalekin = 0;
+  double mu_cm = m_input->m_mu;
+  double phi_cm = m_input->m_phi;
+
   for( std::size_t i = 0; i < m_products->size( ); ++i ) 
   {
-    if ((*m_products)[i].m_productIndex==11) //neutron
-    {
-      prod_n.push_back((*m_products)[i]);
-      totalekin += (*m_products)[i].m_kineticEnergy;
-    }
-      
+    MCGIDI::Sampling::Product &aproduct = (*m_products)[i];
 
-    // std::cout << (*m_products)[i].m_productIndex << ", Q " 
-    // << reaction->finalQ(ekin_MeV) << ", mass " 
-    // << (*m_products)[i].m_productMass<< ", ekin "
-    // << (*m_products)[i].m_kineticEnergy << "\n";
+    if (aproduct.m_productIndex==11 || aproduct.m_productIndex==8) //neutron or gamma
+    {
+      Vector labdir;     
+      double labekin(0);
+
+      if(m_input->m_frame == GIDI::Frame::centerOfMass)
+      {
+        // recepice from https://docs.openmc.org/en/stable/methods/neutron_physics.html#transforming-a-particle-s-coordinates
+        // also see P129, eq. 6.5, ENDF-6 Formats Manual CSEWG Document ENDF-102, Report BNL-90365-2009 Rev.1
+        // work around for 0,0,1 direction case, where mu_wfactor is infinity   
+        Vector swapdir(dir);
+        if(dir.z()==1.)
+        {
+          std::swap(swapdir.x(), swapdir.z());
+        }
+
+        double A =  aproduct.m_productMass/m_input->m_projectileMass;
+        double Ap1 = A+1;
+        double i_Ap1 = 1./Ap1;
+
+        // dir, labdir
+        double labekin_MeV = aproduct.m_kineticEnergy + (ekin_MeV + 2*mu_cm*Ap1*sqrt(ekin_MeV*aproduct.m_kineticEnergy))*i_Ap1*i_Ap1;
+        labekin = labekin_MeV*1e6;
+        pt_assert_always(labekin_MeV);
+
+        double i_labekin_MeV = 1./labekin_MeV;
+        double mu_lab = m_input->m_mu*sqrt(aproduct.m_kineticEnergy*i_labekin_MeV) + i_Ap1*sqrt(ekin_MeV*i_labekin_MeV);
+
+        double cosphi_com = cos(m_input->m_phi);
+        double sinphi_com = sin(m_input->m_phi);
+        double mufactor = sqrt(1-mu_lab*mu_lab);
+        double wfactor = sqrt(1-swapdir.z()*swapdir.z());
+        double mu_wfactor = mufactor/wfactor;
+        
+        Vector dircm(aproduct.m_px_vx, aproduct.m_py_vy, aproduct.m_pz_vz);
+        dircm.setMag(1);
+
+        // std::cout << "center of mass dir " << dircm << "\n";
+
+        labdir.set((mu_lab*swapdir.x() +  mu_wfactor*( swapdir.x()*swapdir.z()*cosphi_com - swapdir.y()*sinphi_com)),
+                   (mu_lab*swapdir.y() +  mu_wfactor*( swapdir.y()*swapdir.z()*cosphi_com - swapdir.x()*sinphi_com)),
+                   (mu_lab*swapdir.z() -  mufactor * wfactor * cosphi_com ));
+
+        if(dir.z()==1.)
+        {
+          std::swap(labdir.x(), labdir.z());
+          std::swap(labdir.x(), labdir.y());
+        }
+
+        // std::cout << "cm " << aproduct.m_kineticEnergy << ", lab " << labekin_MeV << ", ratio " << aproduct.m_kineticEnergy/labekin_MeV 
+        //           <<", lab direction mag " << labdir.mag() << " "  << dir << " " << labdir <<"\n";
+      }
+      else
+      {
+        labekin = aproduct.m_kineticEnergy*1e6;
+        labdir.set(aproduct.m_px_vx, aproduct.m_py_vy, aproduct.m_pz_vz);
+        labdir.setMag(1.);
+      }
+
+      totalekin += labekin; // accumulate the energy that will be carried by a particle in the later simulation. 
+
+      // make secondary
+      Particle primary; 
+      m_launcher.copyCurrentParticle(primary);
+
+      primary.setEKin(labekin);
+      primary.setDirection(labdir);
+      primary.setTime(primary.getTime()+aproduct.m_birthTimeSec);
+
+      if(aproduct.m_productIndex==11) // fixme: only neutron to the stack for now
+        secondaries.push_back(primary);
+
+    }
+    
   }
 
   // All secondary particles that are not simulated by prompt are contributed to the "energy deposition".
   // So, in the case that neutron is the only transporting particle, the energy deposition is calculated as incident neutorn kinetic energy 
   // plus Q and substrcut the total kinetic energy of all the tracking particles. 
 
-  // printf("MT%d, deposition %e\n\n", reaction->ENDF_MT(), ekin_MeV+reaction->finalQ(ekin_MeV)-totalekin);
+  // printf("MT%d, deposition %e\n\n", reaction->ENDF_MT(), ekin+reaction->finalQ(ekin_MeV)*1e6-totalekin);
 
-
-  // if MC.sampleNonTransportingParticles(true), many of the events are sampled in the centerOfMass
-  if(m_input->m_frame == GIDI::Frame::centerOfMass)
-  {
-    if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::firstTwoBody)
-      std::cout << "MCGIDI::Sampling::SampledType::firstTwoBody\n";
-    else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::secondTwoBody)
-      std::cout << "MCGIDI::Sampling::SampledType::secondTwoBody\n";
-    else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::uncorrelatedBody)
-      std::cout << "MCGIDI::Sampling::SampledType::uncorrelatedBody\n";
-    else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::unspecified)
-      std::cout << "MCGIDI::Sampling::SampledType::unspecified\n";
-    else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::photon)
-      std::cout << "MCGIDI::Sampling::SampledType::photon\n";
-    else
-      PROMPT_THROW(CalcError, "unknown m_input->m_sampledType");
-
-    // fixme
-    // PROMPT_THROW(NotImplemented, "GIDI::Frame::centerOfMass product is not yet implemented");
-  }
 
   // Neutron die as absorption
-  if(prod_n.size()==0)
+  if(secondaries.size()==0)
   {
     // essentially killing the current active particle in the launcher
     final_ekin=ENERGYTOKEN_ABSORB;
   }
-  else if(prod_n.size()==1)
+  else if(secondaries.size()==1)
   {
     // essentially modifying the current active particle in the launcher
-    final_ekin = prod_n[0].m_kineticEnergy*1e6;
-    final_dir.x() = prod_n[0].m_px_vx;
-    final_dir.y() = prod_n[0].m_py_vy;
-    final_dir.z() = prod_n[0].m_pz_vz;
-    final_dir.setMag(1.);
+    final_ekin = secondaries[0].getEKin();
+    final_dir = secondaries[0].getDirection();
   }
   else
   {
     // essentially killing the current active particle in the launcher
-
     //fixme: double chek all parameters are set and do center of mass calculation
     final_ekin=ENERGYTOKEN_ABSORB;
 
-    for(auto sec: prod_n)
+    for(auto p: secondaries)
     {
-      Particle p; 
-      m_launcher.copyCurrentParticle(p); 
-      pt_assert_always(p.getPGD()==2112); // it must be a neutron for now
-
-      p.setEKin(sec.m_kineticEnergy*1e6);
-      
-      Vector secdir;
-      secdir.x() = sec.m_px_vx;
-      secdir.y() = sec.m_py_vy;
-      secdir.z() = sec.m_pz_vz;
-      secdir.setMag(1.);
-      p.setDirection(secdir);
-      p.setTime(p.getTime()+sec.m_birthTimeSec);
-
-      
-      // std::cout << "prd idx " << sec.m_productIndex << " "
-      // << sec.m_kineticEnergy << std::endl;
-
       Singleton<StackManager>::getInstance().addSecondary(p);
     }
     // std::cout << std::endl;

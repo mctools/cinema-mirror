@@ -22,10 +22,10 @@
    
 Prompt::CentralData::CentralData()
 : m_gidithreshold(10.), 
-m_gidiSampleNonTransportingParticles(false), 
+m_gidiSampleNonTransportingParticles(true), 
 m_gidiEnableGamma(false),
-m_gidipops("/home/caixx/git/fudge/rundir/prompt_data/pops.xml"), 
-m_gidimap("/home/caixx/git/cinema/external/ptdata/neutron.map")
+m_gidipops("/home/caixx/git/cinema/external/ptdata/pops.xml"), 
+m_gidimap("/home/caixx/git/cinema/external/ptdata/all.map")
 {
 }
 

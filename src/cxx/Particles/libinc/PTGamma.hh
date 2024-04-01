@@ -1,3 +1,6 @@
+#ifndef Prompt_Gamma_hh
+#define Prompt_Gamma_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,51 +21,48 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTPythonGun.hh"
-#include "PTNeutron.hh"
-#include "PTGamma.hh"
-#include "PTPython.hh"
+#include "PTParticle.hh"
+#include "PTMath.hh"
+//! Gamma pgd code  22 
+namespace Prompt {
+  class Gamma : public Particle {
+  public:
+    Gamma();
+    Gamma(double ekin, const Vector& dir, const Vector& pos);
+    virtual ~Gamma(){};
 
-Prompt::PythonGun::PythonGun()
-    : PrimaryGun(Neutron()), m_stackManager(Singleton<StackManager>::getInstance())
-{  
+    double calcSpeed() const override;
+    double calcEffSpeed() const override;
+
+  };
 }
 
-Prompt::PythonGun::~PythonGun()
-{ 
-}
-
-
-void Prompt::PythonGun::pushToStack(double *pdata)
+inline Prompt::Gamma::Gamma()
+:Particle()
 {
-    m_ekin = pdata[0];
-    m_weight = pdata[1];
-    m_time = pdata[2];
-    m_pos.x() = pdata[3];
-    m_pos.y() = pdata[4];
-    m_pos.z() = pdata[5];
-    m_dir.x() = pdata[6];
-    m_dir.y() = pdata[7];
-    m_dir.z() = pdata[8];
-
-    m_ekin0=m_ekin;
-    m_eventid++;
-    m_alive = true;
-    m_stackManager.add(std::make_unique<Particle>(*this));
+   m_pgd = const_gamma_pgd;
+   m_rest_mass = 0;
 }
 
-
-void* pt_PythonGun_new()
+inline Prompt::Gamma::Gamma(double ekin, const Vector& dir, const Vector& pos)
+:Particle(ekin, dir, pos)
 {
-    return static_cast<void *> (new Prompt::PythonGun()) ;
+  m_pgd = const_gamma_pgd;
+  m_rest_mass = 0;
 }
 
-void pt_PythonGun_delete(void *obj)
+double Prompt::Gamma::calcSpeed() const 
 {
-    delete static_cast<Prompt::PythonGun *> (obj);
+  PROMPT_THROW(NotImplemented, "Prompt::Gamma::calcSpeed()");
+  return 0;
 }
 
-void pt_PythonGun_pushToStack(void *obj, double *pdata)
+double Prompt::Gamma::calcEffSpeed() const 
 {
-    static_cast<Prompt::PythonGun *> (obj)->pushToStack(pdata);
+  PROMPT_THROW(NotImplemented, "Prompt::Gamma::calcSpeed()");
+  return 0;
 }
+
+
+
+#endif

@@ -49,13 +49,13 @@ gun.setPosition([0,0,-99])
 
 partnum = 1e7
 # vis or production
-sim.show(gun, 100)
+# sim.show(gun, 100)
 
-# sim.simulate(gun, partnum)
-# sim.gatherHistData('TOF').plot(show=False, log=False)
-# plt.figure()
-# plt.xlabel('energy, eV')
-# plt.ylabel('count')
-# sim.gatherHistData('ESpec').plot(show=True, log=True)
+sim.simulate(gun, partnum)
+sim.gatherHistData('TOF').plot(show=False, log=False)
+plt.figure()
+plt.xlabel('energy, eV')
+plt.ylabel('count')
+sim.gatherHistData('ESpec').plot(show=True, log=True)
 
 

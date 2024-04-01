@@ -85,7 +85,7 @@ namespace Prompt {
     virtual double getCrossSection(double ekin, const Vector &dir) const override;
     virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
 
-  private:
+  protected:
     const GIDIFactory &m_factory;
     Launcher &m_launcher; 
     std::shared_ptr<MCGIDI::Protare> m_mcprotare;
@@ -94,6 +94,9 @@ namespace Prompt {
     mutable double m_cacheEkin, m_cacheGidiXS;
     const double m_temperature, m_frac;
     MCGIDI::Sampling::Input *m_input;
+
+    // void com2lab(double ekin, double ekoutcm, double mu_cm, double phi_cm, double )
+
   };
 
   

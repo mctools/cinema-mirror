@@ -5,7 +5,7 @@ from Cinema.Prompt.geo import Volume
 from Cinema.Prompt.solid import Box, Sphere
 from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper
 from Cinema.Prompt.physics import Material
-from Cinema.Prompt.gun import IsotropicGun, SimpleThermalGun
+from Cinema.Prompt.gun import IsotropicGun, SimpleThermalGun, PythonGun
 from Cinema.Prompt.centralData import CentralData 
 
 cdata=CentralData()
@@ -20,9 +20,9 @@ class MySim(Prompt):
 
         world = Volume("world", Box(1, 1, 1.1e5))
         # lw = Material('freegas::He/1gcm3/He_is_1_He3') 
-        # lw = Material('freegas::B/1gcm3/B_is_1_B10') 
+        lw = Material('freegas::B/1gcm3/B_is_1_B10') 
         # lw = Material('freegas::Li/1gcm3/Li_is_1_Li6') 
-        lw = Material('freegas::Si/1gcm3') 
+        # lw = Material('freegas::Si/1gcm3') 
         lw.setBiasAbsp(10)
         lw.setBiasScat(1)
         media = Volume("media", Box(1, 1, 1.1e5), matCfg= lw)
@@ -37,12 +37,23 @@ class MySim(Prompt):
 sim = MySim(seed=1010)
 sim.makeWorld()
 
+class MyGun(PythonGun):
+    def __init__(self):
+        super().__init__()
 
-gun = SimpleThermalGun()
-gun.setEnergy(10e6)
-gun.setPosition([0,0,-1e5])
+    def samplePosition(self):
+        return 0,0,-1e5
+    
+    def sampleEnergy(self):
+        return 10e-6
 
-partnum = 1e5
+
+gun = MyGun()
+# gun = SimpleThermalGun()
+# gun.setEnergy(10e6)
+# gun.setPosition([0,0,-1e5])
+
+partnum = 1e3
 # vis or production
 sim.simulate(gun, partnum)
 
