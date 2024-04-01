@@ -8,7 +8,7 @@ Introduction of system can be found at [arXiv](https://arxiv.org/abs/2304.06226)
 
 To build Prompt, several prerequisites are needed.
 ```
-sudo apt install g++ cmake python3-dev python3-pip python3-venv libxml2-dev libhdf5-dev libfftw3-dev
+sudo apt install g++ cmake python3-dev python3-pip python3-venv libxml2-dev libhdf5-dev libfftw3-dev libopenmpi-dev
 ```
 
 Clone the source and compile it as
