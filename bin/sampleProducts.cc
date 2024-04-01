@@ -417,6 +417,7 @@ void main2( int argc, char **argv ) {
     std::string mapFilename =  pt::Singleton<pt::CentralData>::getInstance().getGidiMap() ;
 
     std::string targetID = argv_options.find( "--tid" )->zeroOrOneOption( argv, "O16" );
+    std::string ProjectileID = argv_options.find( "--pid" )->zeroOrOneOption( argv, "n" );
 
     GIDI::Transporting::DelayedNeutrons delayedNeutrons = GIDI::Transporting::DelayedNeutrons::on;
 
@@ -427,7 +428,7 @@ void main2( int argc, char **argv ) {
 
 
     GIDI::Construction::Settings construction( GIDI::Construction::ParseMode::all, photo_mode );
-    gidiprotare = (GIDI::Protare *) map.protare( construction, m_pops, "n", targetID , "", "", false, false);
+    gidiprotare = (GIDI::Protare *) map.protare( construction, m_pops, ProjectileID, targetID , "", "", false, false);
 
     GIDI::Styles::TemperatureInfos temperatures = gidiprotare->temperatures( );
     for( GIDI::Styles::TemperatureInfos::const_iterator iter = temperatures.begin( ); iter != temperatures.end( ); ++iter ) {
@@ -479,6 +480,7 @@ void main2( int argc, char **argv ) {
 
     MCGIDI::Sampling::Input input( false, MCGIDI::Sampling::Upscatter::Model::B );
     input.m_temperature = 2.58e-5;  // In keV/k;
+    
 
     double ekin_MeV = 10; 
     int hashIndex = domainHash.index(ekin_MeV); 
@@ -506,7 +508,8 @@ void main2( int argc, char **argv ) {
             totalekin += (*m_products)[i].m_kineticEnergy;
 
             // if(reaction->finalQ(ekin_MeV))
-            std::cout << (*m_products)[i].m_productIndex << " " 
+            std::cout <<"m_projectileMass " << input.m_projectileMass << ", "
+            << (*m_products)[i].m_productIndex << " " 
             << reaction->finalQ(ekin_MeV) << " " 
             << (*m_products)[i].m_kineticEnergy << "\n";
         }

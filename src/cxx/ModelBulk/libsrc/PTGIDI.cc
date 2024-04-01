@@ -152,8 +152,9 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
     }
       
 
-    // std::cout << (*m_products)[i].m_productIndex << " " 
-    // << reaction->finalQ(ekin_MeV) << " " 
+    // std::cout << (*m_products)[i].m_productIndex << ", Q " 
+    // << reaction->finalQ(ekin_MeV) << ", mass " 
+    // << (*m_products)[i].m_productMass<< ", ekin "
     // << (*m_products)[i].m_kineticEnergy << "\n";
   }
 
@@ -187,10 +188,12 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   // Neutron die as absorption
   if(prod_n.size()==0)
   {
+    // essentially killing the current active particle in the launcher
     final_ekin=ENERGYTOKEN_ABSORB;
   }
   else if(prod_n.size()==1)
   {
+    // essentially modifying the current active particle in the launcher
     final_ekin = prod_n[0].m_kineticEnergy*1e6;
     final_dir.x() = prod_n[0].m_px_vx;
     final_dir.y() = prod_n[0].m_py_vy;
@@ -199,6 +202,8 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   }
   else
   {
+    // essentially killing the current active particle in the launcher
+
     //fixme: double chek all parameters are set and do center of mass calculation
     final_ekin=ENERGYTOKEN_ABSORB;
 
@@ -301,7 +306,16 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     }
     auto *gidiprotare =  (GIDI::Protare *) m_map->protare( *m_construction, *m_pops, "n", name, "", "", true, true ) ;
 
-    GIDI::Transporting::Settings incompleteParticlesSetting( gidiprotare->projectile( ).ID( ), GIDI::Transporting::DelayedNeutrons::on );
+    auto delay = GIDI::Transporting::DelayedNeutrons::on;
+    if( !gidiprotare->isDelayedFissionNeutronComplete( ) ) 
+    {
+        std::cout << "WARNING: delayed neutron fission data for "<< name<< " are incomplete and are not included." << std::endl;
+        delay = GIDI::Transporting::DelayedNeutrons::off;
+    }
+    else
+      std::cout << "Delayed neutron fission data for "<< name<< " are included." << std::endl;
+
+    GIDI::Transporting::Settings incompleteParticlesSetting( gidiprotare->projectile( ).ID( ),  delay);
     std::set<std::string> incompleteParticles;
     gidiprotare->incompleteParticles( incompleteParticlesSetting, incompleteParticles );
     std::cout << "# List of incomplete particles:";
@@ -320,7 +334,7 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     std::string label( temperatures[0].heatedCrossSection( ) );
     double temperature_K = temperatures[0].temperature( ).value() * Unit::MeV / const_boltzmann; 
 
-    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, GIDI::Transporting::DelayedNeutrons::on, 20.0 );
+    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, delay, 20.0 );
     // MC.setNuclearPlusCoulombInterferenceOnly( false );
     MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
     // MC.set_ignoreENDF_MT5(true);
