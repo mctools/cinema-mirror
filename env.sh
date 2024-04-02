@@ -28,11 +28,11 @@ then
     return
 fi
 
-if ! hash pw.x 2>/dev/null
-then
-    echo "pw.x is required to continue the installation of Cinema"
-    return
-fi
+#if ! hash pw.x 2>/dev/null
+#then
+#    echo "pw.x is required to continue the installation of Cinema"
+#    return
+#fi
 
 . "$( dirname "${BASH_SOURCE[0]}" )"/install.sh
 

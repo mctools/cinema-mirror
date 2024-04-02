@@ -145,7 +145,7 @@ if [ ! -f $CINEMAPATH/external/gidiplus/lib/libgidiplus.a ]; then
     cd $CINEMAPATH/external/gidiplus
     wget https://github.com/zeux/pugixml/releases/download/v1.13/pugixml-1.13.zip 
     mv pugixml-1.13.zip Misc
-    make -s -j${NUMCPU} CXXFLAGS="-std=c++11 -fPIC"  CFLAGS="-fPIC"
+    make -s -j${NUMCPU} CXXFLAGS="-std=c++11 -fPIC"  CFLAGS="-fPIC" HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so HDF5_PATH=/usr/lib/x86_64-linux-gnu/hdf5/serial/
     cd -
     echo "installed gidiplus"
   fi
