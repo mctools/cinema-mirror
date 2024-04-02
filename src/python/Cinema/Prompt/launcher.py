@@ -67,23 +67,30 @@ class Launcher():
         if particles is None:
             v.show()
         else:
-            for i in range(particles):
-                if hasattr(gun, 'items'):
-                    self.setGun(gun.cfg)
+            if hasattr(gun, 'items'):
+                self.setGun(gun.cfg)
+                for i in range(particles):
                     self.go(1, recordTrj=True, timer=False, save2Dis=False)
-                elif isinstance(gun, str):
-                    self.setGun(gun)
-                    self.go(1, recordTrj=True, timer=False, save2Dis=False)
-                else:
-                    gun.generate()
-                    self.simOneEvent(recordTrj=True)                    
-                trj = self.getTrajectory()
-                try:
+                    trj = self.getTrajectory()
                     v.addTrj(trj)
-                except ValueError:
-                    # print(trj)
-                    # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
-                    pass
+            elif isinstance(gun, str):
+                self.setGun(gun)
+                for i in range(particles):
+                    self.go(1, recordTrj=True, timer=False, save2Dis=False)
+                    trj = self.getTrajectory()
+                    v.addTrj(trj)
+            else:
+                gun.generate()
+                for i in range(particles):
+                    self.simOneEvent(recordTrj=True)                    
+                    trj = self.getTrajectory()
+                    v.addTrj(trj)
+            # try:
+            #     v.addTrj(trj)
+            # except ValueError:
+            #     # print(trj)
+            #     # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
+            #     pass
             v.show()
 
     def setGun(self, cfg):

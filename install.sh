@@ -78,7 +78,7 @@ if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libmcpl.so ]; then
       # cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/mcpl/install ..
       # make -j ${NUMCPU} && make install
       # cd -
-      echo "installed  MCPL"
+      echo "Cloned MCPL, not built"
     else
       echo "Found MCPL"
     fi
@@ -117,7 +117,7 @@ if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libkdsource.so ]; then
       if [ -d KDSource ]; then
         rm -rf KDSource
       fi
-      git clone https://gitlab.com/cinema-developers/KDSource.git
+      git clone ${PREFIX}/KDSource.git
       cd -
       mkdir $CINEMAPATH/external/KDSource/build $CINEMAPATH/external/KDSource/install && cd $CINEMAPATH/external/KDSource/build
       rm -rf $CINEMAPATH/external/KDSource/mcpl

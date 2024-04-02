@@ -3,7 +3,7 @@
 from Cinema.Prompt import Prompt, PromptMPI, Optimiser
 from Cinema.Prompt.solid import Box, Tube, Trapezoid, Sphere
 from Cinema.Prompt.geo import Volume, Transformation3D
-from Cinema.Prompt.scorer import makeFlatPSD
+from Cinema.Prompt.scorer import makePSD
 from Cinema.Prompt.component import EntityArray, FlatAnalyser, makeTrapezoidGuide, makeDiskChopper, make2CurveAnalyser
 
 
@@ -63,11 +63,7 @@ class MySim(PromptMPI):
         
     def makeWorld(self,pos_ana, pos_det, curve_h, curve_v):
 
-        # gunCfg = "gun=MaxwellianGun;src_w=40;src_h=40;src_z=0;slit_w=40;slit_h=40;slit_z=1e99;temperature=293;"
-        gunCfg = "gun=UniModeratorGun;mean_wl=1.1;range_wl=1.0;src_w=2;src_h=2;src_z=0;slit_w=2;slit_h=2;slit_z=1e99"
-        # gunCfg = "gun=SimpleThermalGun;energy=0.000002045105;position=0,0,-1500;direction=0,0,1"
-        # gunCfg = "gun=IsotropicGun;energy=0.1;position=0,0,17000"
-        self.setGun(gunCfg)
+        # self.l.setGun(gunCfg)
 
         world = Volume("world", Box(3000, 3000, 18000))
 
@@ -103,16 +99,16 @@ class MySim(PromptMPI):
         # world.placeChild("guide5", guide5, self.translationZ(2700. * 0.5 + dist_z_g5))
         # world.placeChild("guide6", guide6, self.translationZ(5800. * 0.5 + dist_z_g6))
 
-        self.scorer['GUIDE_P'], vol_a_guide = makeFlatPSD('GUIDE_P', 100, 100, 1e-3, 100, 100)
-        vol_a_guide.addScorer("Scorer=WlSpectrum; name=wlAfterGuide; min=0.0; max=7.2; numbin=100")
-        vol_a_guide.addScorer("Scorer=TOF; name=tofAfterGuide; min=0.0025; max=0.008; numbin=500")
-        vol_a_guide.addScorer("Scorer=ESpectrum; name=EnBfSample; min=0.0; max=0.25; numbin=100")
-        self.scorer['NORM_TOF'] = "Scorer=TOF; name=tofAfterGuide; min=0.0025; max=0.008; numbin=500"
-        self.scorer['GUIDE_WL'] = "Scorer=WlSpectrum; name=wlAfterGuide; min=0.0; max=7.2; numbin=100"
-        self.scorer['GUIDE_EN'] = "Scorer=ESpectrum; name=EnBfSample; min=0.0; max=0.25; numbin=100"
-        self.scorer['GUIDE_M'], vol_b_guide = makeFlatPSD('GUIDE_M', 200, 200, 1e-3, 100, 100)
-        world.placeChild("monitor_bf", vol_b_guide, self.translationZ(2300.))
-        world.placeChild("monitor_af", vol_a_guide, self.translationZ(16500.))
+        # self.scorer['GUIDE_P'], vol_a_guide = makeFlatPSD('GUIDE_P', 100, 100, 1e-3, 100, 100)
+        # vol_a_guide.addScorer("Scorer=WlSpectrum; name=wlAfterGuide; min=0.0; max=7.2; numbin=100")
+        # vol_a_guide.addScorer("Scorer=TOF; name=tofAfterGuide; min=0.0025; max=0.008; numbin=500")
+        # vol_a_guide.addScorer("Scorer=ESpectrum; name=EnBfSample; min=0.0; max=0.25; numbin=100")
+        # self.scorer['NORM_TOF'] = "Scorer=TOF; name=tofAfterGuide; min=0.0025; max=0.008; numbin=500"
+        # self.scorer['GUIDE_WL'] = "Scorer=WlSpectrum; name=wlAfterGuide; min=0.0; max=7.2; numbin=100"
+        # self.scorer['GUIDE_EN'] = "Scorer=ESpectrum; name=EnBfSample; min=0.0; max=0.25; numbin=100"
+        # self.scorer['GUIDE_M'], vol_b_guide = makeFlatPSD('GUIDE_M', 200, 200, 1e-3, 100, 100)
+        # world.placeChild("monitor_bf", vol_b_guide, self.translationZ(2300.))
+        # world.placeChild("monitor_af", vol_a_guide, self.translationZ(16500.))
         
         # --------------- chopper --------------------
         # chopper1 = makeDiskChopper(300, 300 - 74.7, 44.22, 1, 25, 82.94)
@@ -133,30 +129,31 @@ class MySim(PromptMPI):
         # sample_mat = "physics=ncrystal;nccfg='Polyethylene_CH2.ncmat;temp=30'"
         sample_mat = "physics=idealElaScat;xs_barn=5;density_per_aa3=0.5;energy_transfer_eV=0.038"
         sample = Volume("sample", Box(2, 2, 2), sample_mat)
-        hwCfg = "Scorer=ESpectrum; scoreTransfer=1; name=sampleHW; min=0.0; max=0.25; numbin=500"
+        hwCfg = "Scorer=ESpectrum; scoreTransfer=1; name=sampleHW; min=0.1; max=0.25; numbin=500"
         split = "Scorer=Split;name=split_hist;split=250"
         sample.addScorer(split)
         sample.addScorer(hwCfg)
-        self.scorer["hw"] = hwCfg
+        # self.scorer["hw"] = hwCfg
         world.placeChild("sample", sample, Transformation3D(0., 0., 17000.))
 
         # ----------adding a sphere around sample--------------
         sphere = Volume("Mon_af_sample", Sphere(80,85, starttheta=45/180*np.pi, deltatheta=90/180*np.pi))
-        sphereCfgEn = "Scorer=ESpectrum; name=sphereEn; min=0.0; max=0.25; numbin=100"
-        sphereCfgWl = "Scorer=WlSpectrum; name=spherewl; min=0.0; max=10; numbin=100"
+        sphereCfgEn = "Scorer=ESpectrum; name=sphereEn; min=0.1; max=0.25; numbin=100"
+        sphereCfgWl = "Scorer=WlSpectrum; name=spherewl; min=0.01; max=10; numbin=100"
         sphereCfgTof = f"Scorer=TOF; name=spheretof; min=0.0025; max=0.008; numbin=1000"
         sphere.addScorer(sphereCfgEn)
         sphere.addScorer(sphereCfgWl)
         sphere.addScorer(sphereCfgTof)
-        self.scorer['sphereEn'] = sphereCfgEn
-        self.scorer['sphereWl'] = sphereCfgWl
-        self.scorer['spheretof'] = sphereCfgTof
+        # self.scorer['sphereEn'] = sphereCfgEn
+        # self.scorer['sphereWl'] = sphereCfgWl
+        # self.scorer['spheretof'] = sphereCfgTof
         world.placeChild("spheres", sphere, Transformation3D(0., 0., 17000.))
 
         # ----------adding sheilding between sample and detecters--------------
         sheild_mat = "physics=ncrystal;nccfg='Cd.ncmat;inelas=0'"
         sheild = Volume("sheild", Box(45, 80, 30), sheild_mat)
-        self.addPSD(sheild, "sheild_sam_det", -50, 50, -100, 100, ptstate='EXIT')
+        # self.addPSD(sheild, "sheild_sam_det", -50, 50, -100, 100, ptstate='EXIT')
+        makePSD("sheild_sam_det", sheild, 100, 100, ptstate='EXIT')
         sheildArray = EntityArray(sheild, refFrame=Transformation3D(0., - (pos_det-140), 17000.).applyRotxyz(90,90,0))
         sheildArray.make()
         sheildArray.make_rotate_z(45,6)
@@ -177,7 +174,7 @@ class MySim(PromptMPI):
         arrayAna.make()
         arrayAna.make_rotate_z(45, 6, 0, 0)
         arrayAna.rotate_z(-135)
-        arrayAna.reflect('XY', 17000)
+        # arrayAna.reflect('XY', 17000)
         # arrayAna.selectByZ(17000, np.inf)
         world.placeArray(arrayAna)
 
@@ -202,7 +199,8 @@ class MySim(PromptMPI):
         # ----------- sheild between forward and back detectors -----------
         midSheildMat = "physics=ncrystal;nccfg='Cd.ncmat;inelas=0'"
         midSheild = Volume("sheild", Tube(pos_det-400, pos_det+300, 12.5), midSheildMat)
-        self.addPSD(midSheild, 'sheild_forw_backw', -1000, 1000, -1000, 1000, ptstate='ABSORB')
+        # self.addPSD(midSheild, 'sheild_forw_backw', -1000, 1000, -1000, 1000, ptstate='ABSORB')
+        # makePSD('sheild_forw_backw', midSheild, 100, 100, ptstate='ABSORB')
         world.placeChild("midSheild", midSheild, Transformation3D(0, 0, 17000))
 
         self.l.setWorld(world)
@@ -215,13 +213,16 @@ class MySim(PromptMPI):
             location = [f'{x: .2f}' for x in loc_world.translation]
             name = f'BankNo.{i_scor + 1}@{location}'
             element = self.makeDetBank(name)
-            # self.scorer[name], vol = makeFlatPSD(name, 120, 200, 100, 100)
+            # # self.scorer[name], vol = makeFlatPSD(name, 120, 200, 100, 100)
             world.placeChild(name, element, loc_world)
 
     def makeDetBank(self, name):
         vol_bank = Volume('vol_bank', Box(63.5, 100, 12.7))
         bankname = f'BankPSD@{name}'
-        self.addPSD(vol_bank, bankname, -70, 70, -110, 110)
+        # self.addPSD(vol_bank, bankname, -70, 70, -110, 110)
+        print(vol_bank)
+        print(bankname)
+        makePSD(bankname, vol_bank, 100, 100)
 
         for i_tube in np.arange(1, 6):
             vol_in = Volume('internal', Tube(0, 12.2, 100),"physics=ncrystal;nccfg='He3_Gas_10bar.ncmat;inelas=false'")
@@ -230,23 +231,23 @@ class MySim(PromptMPI):
             psdCfg = f"Scorer=PSD;name={psdname};xmin=-12.2;xmax=12.2;numbin_x=10;ymin=-100;ymax=100;numbin_y=150; ptstate=ABSORB;type=YZ"
             vol_in.addScorer(psdCfg)
             enname = f'EN@{name}_TubeNo.{i_tube}'
-            encfg = f"Scorer=ESpectrum; name={enname}; min=0.0; max=0.13; numbin=100; ptstate=ABSORB"
+            encfg = f"Scorer=ESpectrum; name={enname}; min=0.01; max=0.13; numbin=100; ptstate=ABSORB"
             vol_in.addScorer(encfg)
             wlname = f'WL@{name}_TubeNo.{i_tube}'
-            wlcfg = f"Scorer=WlSpectrum; name={wlname}; min=0.0; max=7.2; numbin=100; ptstate=ABSORB"
+            wlcfg = f"Scorer=WlSpectrum; name={wlname}; min=0.01; max=7.2; numbin=100; ptstate=ABSORB"
             vol_in.addScorer(wlcfg)
             tofname = f'TOF@{name}_TubeNo.{i_tube}'
             tofCfg = f"Scorer=TOF; name={tofname}; min=0.0025; max=0.008; numbin=1000; ptstate=ABSORB"
             vol_in.addScorer(tofCfg)
-            self.scorer[enname] = encfg
-            self.scorer[wlname] = wlcfg
-            self.scorer[psdname] = psdCfg
-            self.scorer[tofname] = tofCfg
+            # self.scorer[enname] = encfg
+            # self.scorer[wlname] = wlcfg
+            # self.scorer[psdname] = psdCfg
+            # self.scorer[tofname] = tofCfg
             
             tube = vol_out.placeChild('phy_tube', vol_in)
             # psdCfg = f"Scorer=PSD;name={name};xmin=-270;xmax=270;numbin_x=108;ymin=-125;ymax=125;numbin_y=50;type=YZ"
             # vol_in.addScorer(psdCfg)
-            # self.scorer[name], vol_bank = makeFlatPSD(name, 63.5, 100, 12.7, 100, 100)
+            # # self.scorer[name], vol_bank = makeFlatPSD(name, 63.5, 100, 12.7, 100, 100)
             # vol_bank = Volume('bank', Box(63.5, 100, 12.7))
             vol_bank.placeChild('phy_bank', tube, Transformation3D(((i_tube-3) * 12.7 * 2), 0, 0).applyRotX(90))
         return vol_bank
@@ -291,8 +292,8 @@ class MySim(PromptMPI):
 # control paras
 OPT = False
 VIZ = False
-num_neutrons = 100
-viz_num_neutrons = 100
+num_neutrons = 100000
+viz_num_neutrons = 1000
 
 if not OPT:
     sim = MySim(seed=1050)
@@ -306,13 +307,18 @@ if not OPT:
         300, 600, 0, 0 #372.8
 
     )
+    # gunCfg = "gun=MaxwellianGun;src_w=40;src_h=40;src_z=0;slit_w=40;slit_h=40;slit_z=1e99;temperature=293;"
+    gunCfg = "gun=UniModeratorGun;mean_wl=1;range_wl=0.001;src_w=2;src_h=2;src_z=0;slit_w=2;slit_h=2;slit_z=1e99"
+    # gunCfg = "gun=SimpleThermalGun;energy=0.000002045105;position=0,0,-1500;direction=0,0,1"
+    # gunCfg = "gun=IsotropicGun;energy=0.1;position=0,0,17000"
+
     # vis or production
     if VIZ:
         n_num = viz_num_neutrons
-        sim.show(n_num)
+        sim.show(gunCfg, n_num)
     else:
         n_num = num_neutrons
-        sim.simulate(n_num)
+        sim.simulate(gunCfg, n_num)
     
     totweight = 0
     tothit = 0
@@ -327,7 +333,7 @@ if not OPT:
     tofy = 0
 
     m = 0
-    from Cinema.Prompt.histogram import Hist2D, Hist1D
+    from Cinema.Prompt.histogram.Hist import Hist2D, Hist1D
     blankHist = Hist2D(-12.2,12.2,10,-100,100,150)
 
     wlHist=None

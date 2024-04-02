@@ -18,6 +18,7 @@
 ##  limitations under the License.                                            ##
 ##                                                                            ##
 ################################################################################
+from .solid import Box
 
 from .configstr import ConfigString
 
@@ -131,6 +132,8 @@ class VolFluenceHelper(ScorerHelper):
 
 
 def makePSD(name, vol, numbin_dim1=1, numbin_dim2=1, ptstate : str = 'ENTRY', type : str = 'XY'):
+    if not isinstance(vol.solid, Box):
+        raise TypeError('makePSD only used for "Box" type volume')
     det = PSD()
     det.cfg_name = name
     det.cfg_numbin_x = numbin_dim1 
