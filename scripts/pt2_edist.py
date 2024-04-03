@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from Cinema.Prompt import Prompt
+from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.geo import Volume
 from Cinema.Prompt.solid import Box, Sphere, Tube
 from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper
@@ -14,21 +14,21 @@ plotStyle()
 
 cdata=CentralData()
 cdata.setGidiThreshold(10)
-
+cdata.setEnableGidi(True)
 
 class MySim(Prompt):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)   
 
     def makeWorld(self):
-        size = 1e-5
+        size = 1e-12
 
         world = Volume("world", Tube(0, size, 1.1e5))
         # lw = Material('freegas::He/1gcm3/He_is_1_He3') 
-        lw = Material('freegas::B/1gcm3/B_is_1_B10') 
+        # lw = Material('freegas::B/1gcm3/B_is_1_B10') 
         # lw = Material('freegas::Li/1gcm3/Li_is_1_Li6') 
-        # lw = Material('freegas::C/1gcm3') 
-        lw.setBiasAbsp(10)
+        lw = Material('freegas::V/1gcm3') 
+        lw.setBiasAbsp(1)
         lw.setBiasScat(1)
         media = Volume("media", Tube(0, size*0.5, 1e5), matCfg= lw)
         world.placeChild('media', media)
@@ -63,13 +63,13 @@ gun.setPosition([0,0,-1e5])
 # sim.show(gun, 1)
 
 
-partnum = 1e6
+partnum = 1e5
 # vis or production
 sim.simulate(gun, partnum)
 
 # sim.gatherHistData('volFlux').plot(show=False, log=True)
 
-espec = sim.gatherHistData('ESpec')
+sim.gatherHistData('ESpec').plot(show=True, log=True)
 
 # w=espec.getWeight()
 # hit=espec.getHit()
@@ -79,6 +79,6 @@ espec = sim.gatherHistData('ESpec')
 # plt.title(str(w.sum()))
 # plt.show()
 
-espec.plot(show=True, log=True)
+
 
 
