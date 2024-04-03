@@ -129,6 +129,30 @@ if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libkdsource.so ]; then
     fi
 fi
 
+# gidipuls
+if [ ! -f $CINEMAPATH/external/gidiplus/lib/libgidiplus.a ]; then
+  read -r -p "Do you want to install gidiplus into $CINEMAPATH/external? [y/N] " response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    if [ ! -d $CINEMAPATH/external ]; then
+      mkdir $CINEMAPATH/external
+    fi
+    cd $CINEMAPATH/external
+    if [ -d gidiplus ]; then
+      rm -rf gidiplus
+    fi
+    git clone -b pt --single-branch ${PREFIX}/gidiplus.git
+    cd -
+    cd $CINEMAPATH/external/gidiplus
+    wget https://github.com/zeux/pugixml/releases/download/v1.13/pugixml-1.13.zip 
+    mv pugixml-1.13.zip Misc
+    make -s -j${NUMCPU} CXXFLAGS="-std=c++11 -fPIC"  CFLAGS="-fPIC"
+    cd -
+    echo "installed gidiplus"
+  fi
+fi
+
+
+
 #install VecGeom
 
 if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
@@ -222,9 +246,6 @@ if [ ! -f $CINEMAPATH/src/python/ptgeo/__init__.py ]; then
   git submodule update --init --recursive
   cd -
 fi
-
-# gidipuls
-# fixme: to be added
 
 
 export PATH="$CINEMAPATH/src/python/ptgeo/examples:$PATH"
