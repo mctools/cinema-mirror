@@ -39,4 +39,14 @@ void pt_CentralData_setGidiMap(void* obj, const char *s)
     static_cast<pt::CentralData *>(obj)->setGidiMap(s);
 }
 
+bool pt_CentralData_getEnableGidi(void* obj)
+{
+    return static_cast<pt::CentralData *>(obj)->getEnableGidi();
+}
+
+void pt_CentralData_setEnableGidi(void* obj, bool t)
+{
+    return static_cast<pt::CentralData *>(obj)->setEnableGidi(t);
+}
+
 

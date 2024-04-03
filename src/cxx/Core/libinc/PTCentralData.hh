@@ -39,8 +39,8 @@ namespace Prompt
     bool getGammaTransport() const { return m_gidiEnableGamma; }
     void setGammaTransport(bool t) { m_gidiEnableGamma=t; }
 
-    bool getenablegidi() const { return m_enablegidi; }
-    void setenablegidi(bool t) { m_enablegidi=t; }
+    bool getEnableGidi() const { return m_enablegidi; }
+    void setEnableGidi(bool t) { m_enablegidi=t; }
 
     std::string getGidiPops() const {return m_gidipops;};
     void setGidiPops(const std::string &s ) { m_gidipops = s; };

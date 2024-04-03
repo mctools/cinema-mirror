@@ -37,7 +37,7 @@
 
 Prompt::BulkMaterialProcess::BulkMaterialProcess(const std::string &name, int pdg)
     : m_rng(Singleton<SingletonPTRand>::getInstance()),
-      m_compModel(std::make_unique<CompoundModel>(pdg)), // fixme:  neutron only for now, should be a dict later
+      m_compModel(std::make_unique<CompoundModel>(pdg)),
       m_numdensity(0.), m_name(name)
 {
   cfgPhysicsModel(name);
@@ -173,7 +173,7 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
 
   auto &cd = Singleton<CentralData>::getInstance();
 
-  const bool enablegidi = cd.getenablegidi();
+  const bool enablegidi = cd.getEnableGidi();
   const double gidimin = cd.getGidiThreshold();
   if (type == PhysicsFactory::PhysicsType::NC_RAW)
   {

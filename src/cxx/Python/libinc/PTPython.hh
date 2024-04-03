@@ -125,6 +125,9 @@ void pt_CentralData_setGidiPops(void* obj, const char *s);
 const char * pt_CentralData_getGidiMap(void* obj);
 void pt_CentralData_setGidiMap(void* obj, const char *s);
 
+bool pt_CentralData_getEnableGidi(void* obj); 
+void pt_CentralData_setEnableGidi(void* obj, bool t);
+
 #ifdef __cplusplus
 }
 #endif

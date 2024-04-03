@@ -68,11 +68,16 @@ double Prompt::CompoundModel::totalCrossSection(double ekin, const Vector &dir) 
       }
       else  {
         channelxs = m_models[i]->getCrossSection(ekin);
+        // std::cout << "model name: " << m_models[i]->getName()
+        // << ", ekin=" << ekin
+        // << ", biasing=" << m_models[i]->getBias() << ", channelxs=" << channelxs << "\n";
       }
       m_cache.cache_xs[i] = channelxs;
       m_cache.bias[i] = m_models[i]->getBias();
       xs += channelxs;
     }
+    // std::cout << "total xs " << xs << "\n\n";
+
     m_cache.tot = xs;
     m_cache.ekin = ekin;
     m_cache.dir = dir;
@@ -119,8 +124,9 @@ void Prompt::CompoundModel::generate(double ekin, const Vector &dir, double &fin
     m_models[i]->generate(ekin, dir, final_ekin, final_dir);
     
   m_cache.selectedBias = m_models[i]->getBias();
-  // std::cout << "selected model " << m_models[i]->getName() << " "
-  // << " total model num " << m_models.size() << std::endl;
+  // std::cout << "selected model " << m_models[i]->getName() 
+  // << ", biasing " << m_cache.selectedBias
+  // << ", total model num " << m_models.size() << std::endl;
 
 }
 

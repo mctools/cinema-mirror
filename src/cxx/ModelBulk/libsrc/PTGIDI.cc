@@ -42,7 +42,7 @@ inline double getRandNumber(void *obj)
 Prompt::GIDIModel::GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
                              double temperature, 
                              double bias, double frac, double lowerlimt, double upperlimt)
-:Prompt::DiscreteModel(name, const_neutron_pgd,
+:Prompt::DiscreteModel(name+"_Gidi_"+std::to_string(mcprotare->numberOfReactions()), const_neutron_pgd,
                       lowerlimt,
                       upperlimt, 
                       bias),
@@ -69,7 +69,7 @@ m_input(new MCGIDI::Sampling::Input(false, MCGIDI::Sampling::Upscatter::Model::B
     // std::cout << "!!!!!!!!! " << temperature_K << " " << const_boltzmann*293.15/Unit::MeV << std::endl;
 
   int numberOfReactions = m_mcprotare->numberOfReactions();
-  std::cout <<"Isotope " << name << " has " << numberOfReactions << " reactions"<< "\n";
+  std::cout <<"Model " << m_modelName << " has " << numberOfReactions << " reactions"<< "\n";
      
   for( int i = 0; i < numberOfReactions; ++i ) 
   {
@@ -84,7 +84,7 @@ Prompt::GIDIModel::~GIDIModel()
   delete m_products;
   delete m_urr_info;
   delete m_input;
-  std::cout<<"Destructing GIDIModel " << m_modelName <<std::endl;
+  std::cout<<"Destructing GIDIModel " << m_modelName << " containing " << m_mcprotare->numberOfReactions() << " reactions" <<std::endl;
 }
 
 
@@ -106,6 +106,7 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
     //temperature unit here is MeV/k, not to confuse by the keV/k unit in m_input
     m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, const_boltzmann*m_temperature*1e-6, ekin_MeV );    
     // std::cout << "sampled despition " << m_mcprotare->depositionEnergy( hashIndex, const_boltzmann*m_temperature*1e-6, gidiEnergy )  << "\n";
+
     return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
 }
@@ -124,7 +125,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   const double ekin_MeV = ekin*1e-6;
 
   //fixme, do not care about temperature at the moment
-  int hashIndex = m_factory.getHashID(ekin_MeV);
+  int hashIndex = m_factory.getHashID(ekin_MeV); //fixme, to remove if   pt_assert_always(ekin==m_cacheEkin)
   int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
   
   MCGIDI::Reaction const *reaction = m_mcprotare->reaction( reactionIndex );
@@ -390,7 +391,7 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     
     std::set<int> nonElastic, elastic;
     int numberOfReactions = gidiprotare->numberOfReactions();
-    std::cout <<"Isotope " << name << " has " << numberOfReactions << " reactions"<< "\n";
+    std::cout <<"Isotope " << name << " has " << numberOfReactions << " reactions in total"<< "\n";
       
     for( int i = 0; i < numberOfReactions; ++i ) 
     {
