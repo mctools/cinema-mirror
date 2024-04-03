@@ -27,7 +27,7 @@
 
 Prompt::NCrystalScat::NCrystalScat(const std::string &cfgstring, double bias,
     double lowerlimt, double upperlimt)
-:Prompt::DiscreteModel(cfgstring, const_neutron_pgd,
+:Prompt::DiscreteModel(cfgstring+"_scat", const_neutron_pgd,
                       lowerlimt, upperlimt, bias),
                       m_scat(NCrystal::createScatter(cfgstring))
 {
