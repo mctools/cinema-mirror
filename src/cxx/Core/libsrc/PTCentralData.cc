@@ -21,7 +21,7 @@
 #include "PTCentralData.hh"
    
 Prompt::CentralData::CentralData()
-: m_enablegidi(true), m_gidithreshold(10.), 
+: m_enablegidi(false), m_gidithreshold(10.), 
 m_gidiSampleNonTransportingParticles(true), 
 m_gidiEnableGamma(false),
 m_gidipops("/home/caixx/git/cinema/external/ptdata/pops.xml"), 
