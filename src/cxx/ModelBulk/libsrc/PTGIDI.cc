@@ -236,11 +236,10 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
       primary.setEKin(labekin);
       primary.setDirection(labdir);
-      primary.setTime(primary.getTime()+aproduct.m_birthTimeSec);
+      primary.setTime(primary.getTime() + aproduct.m_birthTimeSec);
 
       if(aproduct.m_productIndex==11) // fixme: only neutron to the stack for now
         secondaries.push_back(primary);
-
     }
     
   }
@@ -261,16 +260,16 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   else if(secondaries.size()==1)
   {
     // essentially modifying the current active particle in the launcher
+    //fixme: how about a reaction produce only one delayed particle? there is no way to treat the time in this function
     final_ekin = secondaries[0].getEKin();
     final_dir = secondaries[0].getDirection();
   }
   else
   {
     // essentially killing the current active particle in the launcher
-    //fixme: double chek all parameters are set and do center of mass calculation
     final_ekin=ENERGYTOKEN_ABSORB;
 
-    for(auto p: secondaries)
+    for(const auto &p: secondaries)
     {
       Singleton<StackManager>::getInstance().addSecondary(p);
     }
@@ -336,7 +335,6 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
   MCGIDI::Vector<MCGIDI::Protare *> protares(vecComp.size());
   std::vector<std::tuple<std::shared_ptr<MCGIDI::ProtareSingle>, std::string, double, double>> singleProtares;
 
-  size_t i = 0;
 
   // fixme: make shared pointer map to cache MCGIDI::ProtareSingle for repeated isotopes
   // the key should be the label (i.e. iter->heatedCrossSection( )) plus the  isotope name
@@ -416,7 +414,6 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare_elastic,    temperature_K, bias, frac, minEKinElastic, maxEKinElastic));
     gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare_nonelastic, temperature_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
 
-    i++;
     delete gidiprotare;
   }
 

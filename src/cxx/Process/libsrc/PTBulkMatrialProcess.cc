@@ -35,9 +35,9 @@
 #include "PTCentralData.hh"
 #include "PTStackManager.hh"
 
-Prompt::BulkMaterialProcess::BulkMaterialProcess(const std::string &name)
+Prompt::BulkMaterialProcess::BulkMaterialProcess(const std::string &name, int pdg)
     : m_rng(Singleton<SingletonPTRand>::getInstance()),
-      m_compModel(std::make_unique<CompoundModel>(const_neutron_pgd)), // fixme:  neutron only for now, should be a dict later
+      m_compModel(std::make_unique<CompoundModel>(pdg)), // fixme:  neutron only for now, should be a dict later
       m_numdensity(0.), m_name(name)
 {
   cfgPhysicsModel(name);
@@ -171,27 +171,35 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
   auto &pfact = Singleton<PhysicsFactory>::getInstance();
   PhysicsFactory::PhysicsType type = pfact.checkPhysicsType(cfgstr);
 
-  double gidimin = Singleton<CentralData>::getInstance().getGidiThreshold();
+  auto &cd = Singleton<CentralData>::getInstance();
 
+  const bool enablegidi = cd.getenablegidi();
+  const double gidimin = cd.getGidiThreshold();
   if (type == PhysicsFactory::PhysicsType::NC_RAW)
   {
     m_numdensity = pfact.nccalNumDensity(cfgstr);
 
-    // NCrystal models
-    m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0, gidimin));
-    // m_compModel->addPhysicsModel(std::make_shared<NCrystalAbs>(cfgstr, 1.0, 0, gidimin));
+    if(enablegidi)
+    {
+      // NCrystal models
+      m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0, gidimin));    
+      // GIDI models 
+      auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
+      auto isotopes = nm.decompose(cfgstr);
+      for(const auto &v: isotopes)
+        std::cout << v << std::endl;
 
-    // GIDI models 
-    auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
-    auto isotopes = nm.decompose(cfgstr);
-    for(const auto &v: isotopes)
-      std::cout << v << std::endl;
+      auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
+      auto models = gidifactory.createGIDIModel(isotopes, 1., gidimin);
 
-    auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-    auto models = gidifactory.createGIDIModel(isotopes, 1., gidimin);
-
-    for(const auto &v: models)
-      m_compModel->addPhysicsModel(v);
+      for(const auto &v: models)
+        m_compModel->addPhysicsModel(v);
+    }
+    else
+    {
+      m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0));
+      m_compModel->addPhysicsModel(std::make_shared<NCrystalAbs>(cfgstr, 1.0, 0));
+    }
 
   }
   else if (type == PhysicsFactory::PhysicsType::NC_SCATTER)
@@ -200,31 +208,38 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
     double scatter_bias = 1.0;
     cfg.getDoubleIfExist("scatter_bias", scatter_bias);
 
+    double abs_bias = 1.0;
+    cfg.getDoubleIfExist("abs_bias", abs_bias);
+
     std::string nccfg;
     cfg.getStringIfExist("nccfg", nccfg);
     m_numdensity = pfact.nccalNumDensity(nccfg);
 
-    // GIDI models
-    auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
-    auto isotopes = nm.decompose(nccfg);
-    for(const auto &v: isotopes)
-      std::cout << v << std::endl;
 
-    double abs_bias = 1.0;
-    cfg.getDoubleIfExist("abs_bias", abs_bias);
+    if(enablegidi)
+    {
+      // GIDI models
+      auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
+      auto isotopes = nm.decompose(nccfg);
+      for(const auto &v: isotopes)
+        std::cout << v << std::endl;
 
-    auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-    auto models = gidifactory.createGIDIModel(isotopes, abs_bias, gidimin);
 
-    for(const auto &v: models)
-      m_compModel->addPhysicsModel(v);
+      auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
+      auto models = gidifactory.createGIDIModel(isotopes, abs_bias, gidimin);
 
-    // NCrystal models 
-    m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0, gidimin));
+      for(const auto &v: models)
+        m_compModel->addPhysicsModel(v);
 
-    // double abs_bias = 1.0;
-    // cfg.getDoubleIfExist("abs_bias", abs_bias);
-    // m_compModel->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias, 0, gidimin));
+      // NCrystal models 
+      m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0, gidimin));
+    }
+    else
+    {
+      m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0));
+      m_compModel->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias, 0));
+    }
+
   }
   else if (type == PhysicsFactory::PhysicsType::NC_IDEALSCAT)
   {

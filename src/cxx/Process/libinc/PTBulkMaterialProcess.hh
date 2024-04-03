@@ -29,7 +29,7 @@
 namespace Prompt {
   class BulkMaterialProcess  {
   public:
-    BulkMaterialProcess(const std::string& name);
+    BulkMaterialProcess(const std::string& name, int pdg = const_neutron_pgd);
     const std::string& getName() const { return m_name; }
     virtual ~BulkMaterialProcess();
     CompoundModel* getCompoundModel() {return m_compModel.get(); }
