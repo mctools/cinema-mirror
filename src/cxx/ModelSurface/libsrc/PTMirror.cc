@@ -46,6 +46,12 @@ void Prompt::Mirror::sampleFinalState(Prompt::Particle &particle) const
   Vector newDir = nDirInLab - m_refNorm*(2*(nDirInLab.dot(m_refNorm)));
   double angleCos = newDir.angleCos(nDirInLab);
 
+  if(m_m==-1.)
+  {
+    particle.setDirection(newDir);
+    return;
+  }
+
   double Q = neutronAngleCosine2Q(angleCos, ekin, ekin); // elastic reflection
   m_wAtQ = Q<m_Qc ? m_R0 : 0.5*m_R0*(1-tanh(( Q-m_m*m_Qc)*m_i_W))*(1-m_alpha*( Q-m_Qc));
 
