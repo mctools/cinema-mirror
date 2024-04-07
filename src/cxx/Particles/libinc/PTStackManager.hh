@@ -46,6 +46,8 @@ namespace Prompt {
     bool empty() const;
     int getUnweightedNum() const { return m_unweighted; };
     void scalceSecondary(int lastidx, double factor);
+
+    void normaliseSecondStack(long unsigned num);
     void swapStack();
 
     unsigned getNumParticleInStack() const { return m_stack.size(); }

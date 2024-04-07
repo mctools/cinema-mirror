@@ -165,18 +165,9 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
 
 void Prompt::Launcher::goWithSecondStack(uint64_t numParticle)
 {
+  m_stackManager.normaliseSecondStack(numParticle);
   m_stackManager.swapStack();
-  std::cout << "Secondary stack contains " << m_stackManager.getNumParticleInStack() << " particles.\n";
-  int toAdd = numParticle - m_stackManager.getNumParticleInStack() ;
-  if(toAdd < 0)
-  {
-    std::cout << "Shrinking the stack...\n";
-  }
-  else if(toAdd > 0)
-  {
-    std::cout << "Expanding the stack...\n";
-  }
-  std::cout << "Simulating " << m_stackManager.getNumParticleInStack() << " particles using the secondary stack.\n";
+  std::cout << "Simulating " << m_stackManager.getNumParticleInStack()<< " particles using the swapped secondary stack.\n";
   simOneEvent(false);
 }
 

@@ -19,7 +19,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTStackManager.hh"
-
+#include "PTRandCanonical.hh"
+#include <bits/stdc++.h> 
 
 std::ostream& Prompt::operator << (std::ostream &o, const StackManager&s)
 {
@@ -56,7 +57,6 @@ void Prompt::StackManager::addSecondary(const Prompt::Particle& aparticle, bool 
     m_unweighted++;
   }
 }
-
     
 void Prompt::StackManager::scalceSecondary(int lastidx, double factor)
 {
@@ -64,11 +64,59 @@ void Prompt::StackManager::scalceSecondary(int lastidx, double factor)
   m_unweighted--;
 }
 
+void Prompt::StackManager::normaliseSecondStack(long unsigned num)
+{
+  std::cout << "Normalising second stack (containing " << m_stack_second.size() << " particle )\n";
+  int toAdd = num - m_stack_second.size();
+  if(toAdd)
+  {
+    // auto &rd = Singleton<SingletonPTRand>::getInstance();
+    // std::uniform_int_distribution<> distrib(0, m_stack_second.size()-1);
+
+    // fixme: use rand of prompt
+
+    std::random_device rd;  // a seed source for the random number engine
+    std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
+    std::uniform_int_distribution<> distrib(0, m_stack_second.size()-1);
+
+    std::vector<int> id2Process;
+    for(int i=0; i < abs(toAdd); i++)
+    {
+      id2Process.push_back(distrib(gen));
+    }
+
+    sort(id2Process.begin(), id2Process.end(), std::greater<int>()); 
+
+
+    // prints all elements in reverse order 
+    // using rbegin() and rend() methods 
+    for (auto rit = id2Process.begin(); rit != id2Process.end(); rit++) 
+    {
+      if(toAdd < 0)
+      {
+        // std::cout << "Shrinking the stack by " << id2Process.size() << " particles...\n";
+        if(*rit!=m_stack_second.size()-1) // not the last element
+            std::swap(m_stack_second[*rit], m_stack_second.back());
+
+        // delete the last element  
+        m_stack_second.pop_back();
+
+      }
+      else if(toAdd > 0)
+      {
+        // std::cout << "Expanding the stack by " << id2Process.size() << " particles...\n";
+        m_stack_second.emplace_back(std::make_unique<Particle>(*m_stack_second[*rit].get()) );
+      }
+
+    }      
+  }
+}
+
 void Prompt::StackManager::swapStack()
 {
   if(!m_stack.empty())
     PROMPT_THROW2(CalcError, "stack must be empty when swaping with the secondary stack");
-  std::swap(m_stack, m_stack_second);
+  m_stack.swap(m_stack_second);
 }
 
 

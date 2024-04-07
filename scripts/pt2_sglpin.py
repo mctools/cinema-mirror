@@ -21,14 +21,19 @@ class MySim(PromptMPI):
     def makeWorld(self):
 
         boxhsize = 25.4 # 1 inch
-        hlength = 50
+        hlength = 500
         reflhthick = 1
-        fradius = 6.35
 
+        problemlist = []
+        problemlist.append([12.70, 'freegas::U/18.8gcm3/U_is_0.9902_U238_0.0098_U235'])
+        problemlist.append([6.350, 'freegas::U/18.8gcm3/U_is_0.9650_U238_0.0350_U235'])
+        problemlist.append([3.175, 'freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235'])
 
+        idx = 2
+        fradius = problemlist[idx][0]
         lw = Material('freegas::H2O/1gcm3/H_is_1_H1/O_is_1_O16') 
 
-        fuel = Material('freegas::U/18.8gcm3/U_is_0.9902_U238_0.0098_U235') 
+        fuel = Material(problemlist[idx][1]) 
 
         world = Volume("world", Box(boxhsize + reflhthick*2, boxhsize + reflhthick*2, hlength + reflhthick*2), matCfg=lw)
 
@@ -67,7 +72,7 @@ sim.makeWorld()
 
 gun = IsotropicGun()
 gun.setEnergy(1e6)
-gun.setPosition([0,0,-2.5])
+gun.setPosition([0,0,0])
 
 partnum = 1e4
 # vis or production
@@ -75,7 +80,7 @@ partnum = 1e4
 # sim.show(gun, 1)
 
 sim.simulate(gun, partnum)
-for i in range(10):
+for i in range(100):
     sim.simulateSecondStack(partnum)
 
 # destination = 0
