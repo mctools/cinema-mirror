@@ -19,6 +19,8 @@ parser.add_argument('-c', '--switchingenergy', action='store',  nargs='+', type=
 
 
 cdata=CentralData()
+cdata.setEnableGidi(True)
+
 args=parser.parse_args()
 print(args.switchingenergy)
 

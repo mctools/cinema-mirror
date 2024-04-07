@@ -50,3 +50,13 @@ void pt_CentralData_setEnableGidi(void* obj, bool t)
 }
 
 
+bool pt_CentralData_getEnableGidiPowerIteration(void* obj)
+{
+    return static_cast<pt::CentralData *>(obj)->getEnableGidiPowerIteration();
+}
+
+void pt_CentralData_setEnableGidiPowerIteration(void* obj, bool t)
+{
+    return static_cast<pt::CentralData *>(obj)->setEnableGidiPowerIteration(t);
+}
+

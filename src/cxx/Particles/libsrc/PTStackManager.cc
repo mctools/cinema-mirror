@@ -43,17 +43,34 @@ void Prompt::StackManager::add(std::unique_ptr<Prompt::Particle> aParticle)
   m_stack.emplace_back(std::move(aParticle));
 }
 
-void Prompt::StackManager::addSecondary(const Prompt::Particle& aparticle)
+void Prompt::StackManager::addSecondary(const Prompt::Particle& aparticle, bool tosecond)
 {
-  m_stack.emplace_back(std::make_unique<Particle>(aparticle));
-  m_unweighted++;
+  if(tosecond)
+  {
+    //fixme it is here breaks the xs biasing mechanism and the weight is not corrected 
+    m_stack_second.emplace_back(std::make_unique<Particle>(aparticle));
+  }
+  else
+  {
+    m_stack.emplace_back(std::make_unique<Particle>(aparticle));
+    m_unweighted++;
+  }
 }
+
     
 void Prompt::StackManager::scalceSecondary(int lastidx, double factor)
 {
   m_stack[m_stack.size()-1-lastidx]->scaleWeight(factor);
   m_unweighted--;
 }
+
+void Prompt::StackManager::swapStack()
+{
+  if(!m_stack.empty())
+    PROMPT_THROW2(CalcError, "stack must be empty when swaping with the secondary stack");
+  std::swap(m_stack, m_stack_second);
+}
+
 
 void Prompt::StackManager::add(const Prompt::Particle& aparticle, unsigned number)
 {

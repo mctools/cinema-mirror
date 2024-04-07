@@ -40,12 +40,15 @@ namespace Prompt {
   public:
     void add(std::unique_ptr<Particle> aparticle);
     void add(const Particle& aparticle, unsigned number);
-    void addSecondary(const Prompt::Particle& aparticle);
+    void addSecondary(const Prompt::Particle& aparticle, bool tosecond=false);
 
     std::unique_ptr<Particle> pop();
     bool empty() const;
     int getUnweightedNum() const { return m_unweighted; };
     void scalceSecondary(int lastidx, double factor);
+    void swapStack();
+
+    unsigned getNumParticleInStack() const { return m_stack.size(); }
 
     friend std::ostream& operator << (std::ostream &, const StackManager&);
 
@@ -55,6 +58,7 @@ namespace Prompt {
     ~StackManager() = default;
     int m_unweighted;
     std::vector<std::unique_ptr<Particle> > m_stack;
+    std::vector<std::unique_ptr<Particle> > m_stack_second;
   };
 
   std::ostream& operator << (std::ostream &, const StackManager&);

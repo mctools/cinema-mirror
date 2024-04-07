@@ -42,6 +42,9 @@ namespace Prompt
     bool getEnableGidi() const { return m_enablegidi; }
     void setEnableGidi(bool t) { m_enablegidi=t; }
 
+    bool getEnableGidiPowerIteration() const { return m_gidiPowerIteration; }
+    void setEnableGidiPowerIteration(bool t) { m_gidiPowerIteration=t; }
+
     std::string getGidiPops() const {return m_gidipops;};
     void setGidiPops(const std::string &s ) { m_gidipops = s; };
 
@@ -56,6 +59,7 @@ namespace Prompt
     double m_gidithreshold;
     bool m_gidiSampleNonTransportingParticles;
     bool m_gidiEnableGamma;
+    bool m_gidiPowerIteration;
     std::string m_gidipops, m_gidimap;    
   };
 

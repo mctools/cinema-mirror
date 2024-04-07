@@ -272,9 +272,9 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
     for(const auto &p: secondaries)
     {
-      Singleton<StackManager>::getInstance().addSecondary(p);
+      Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getCentralData().getEnableGidiPowerIteration());
     }
-    // std::cout << std::endl;
+    // std::cout << p << std::endl;
     // //Fixme: mcpl writer will be used to record neutron multiplication for keff application
     // PROMPT_THROW(NotImplemented, "neutron multiplication is not yet supported");
   }

@@ -227,6 +227,10 @@ class Prompt:
     def show(self, gun, num : int = 0):
         self.l.showWorld(gun, num)
 
+    def simulateSecondStack(self, num):
+        self.l.goWithSecondStack(int(num))
+
+
     def simulate(self, gun, num : int = 0, timer=True, save2Disk=False):
         if hasattr(gun, 'items'):
             self.l.setGun(gun.cfg)
