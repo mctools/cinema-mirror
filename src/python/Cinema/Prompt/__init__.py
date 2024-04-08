@@ -228,7 +228,7 @@ class Prompt:
         self.l.showWorld(gun, num)
 
     def simulateSecondStack(self, num):
-        self.l.goWithSecondStack(int(num))
+        return self.l.goWithSecondStack(int(num))
 
 
     def simulate(self, gun, num : int = 0, timer=True, save2Disk=False):

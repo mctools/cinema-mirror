@@ -33,7 +33,7 @@ _pt_Launcher_getTrajSize = importFunc('pt_Launcher_getTrajSize', type_sizet, [ty
 _pt_Launcher_getTrajectory = importFunc('pt_Launcher_getTrajectory', None, [type_voidp, type_npdbl2d])
 _pt_Launcher_go = importFunc('pt_Launcher_go', None, [type_voidp, type_sizet, type_dbl, type_bool, type_bool, type_bool])
 _pt_Launcher_setGun = importFunc('pt_Launcher_setGun', None, [type_voidp, type_cstr])
-_pt_Launcher_goWithSecondStack = importFunc('pt_Launcher_goWithSecondStack', None, [type_voidp, type_sizet])
+_pt_Launcher_goWithSecondStack = importFunc('pt_Launcher_goWithSecondStack', type_sizet, [type_voidp, type_sizet])
 
 _pt_ResourceManager_getHist = importFunc('pt_ResourceManager_getHist', type_voidp, [type_cstr])
 
@@ -111,7 +111,7 @@ class Launcher():
         _pt_Launcher_go(self.cobj, numPrimary, printPrecent, recordTrj, timer, save2Dis)
 
     def goWithSecondStack(self, numPrimary):
-        _pt_Launcher_goWithSecondStack(self.cobj, numPrimary)
+        return _pt_Launcher_goWithSecondStack(self.cobj, numPrimary)
 
 
     def getHist(self, cfg):

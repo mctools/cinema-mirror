@@ -66,9 +66,9 @@ void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool r
   static_cast<pt::Launcher *>(obj)->go(numParticle, printPrecent, recordTrj, timer, save2Disk);
 }
 
-void pt_Launcher_goWithSecondStack(void *obj, uint64_t numParticle)
+size_t pt_Launcher_goWithSecondStack(void *obj, uint64_t numParticle)
 {
-  static_cast<pt::Launcher *>(obj)->goWithSecondStack(numParticle);
+  return static_cast<pt::Launcher *>(obj)->goWithSecondStack(numParticle);
 }
 
 

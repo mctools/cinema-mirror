@@ -30,7 +30,7 @@ namespace Prompt {
   class Launcher {
   public:
     void go(uint64_t numParticle, double printPrecent, bool recordTrj=false, bool timer=true, bool save2Disk=true);
-    void goWithSecondStack(uint64_t numParticle);
+    size_t goWithSecondStack(uint64_t numParticle);
 
     void loadGeometry(const std::string &geofile); 
 

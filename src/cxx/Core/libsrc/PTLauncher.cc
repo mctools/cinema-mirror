@@ -163,12 +163,13 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
     }
 }
 
-void Prompt::Launcher::goWithSecondStack(uint64_t numParticle)
+size_t Prompt::Launcher::goWithSecondStack(uint64_t numParticle)
 {
   m_stackManager.normaliseSecondStack(numParticle);
   m_stackManager.swapStack();
   std::cout << "Simulating " << m_stackManager.getNumParticleInStack()<< " particles using the swapped secondary stack.\n";
   simOneEvent(false);
+  return m_stackManager.getNumParticleInSecondStack();
 }
 
 void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj, bool timer, bool save)

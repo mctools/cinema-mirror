@@ -50,7 +50,8 @@ namespace Prompt {
     void normaliseSecondStack(long unsigned num);
     void swapStack();
 
-    unsigned getNumParticleInStack() const { return m_stack.size(); }
+    size_t getNumParticleInStack() const { return m_stack.size(); }
+    size_t getNumParticleInSecondStack() const { return m_stack_second.size(); }
 
     friend std::ostream& operator << (std::ostream &, const StackManager&);
 
