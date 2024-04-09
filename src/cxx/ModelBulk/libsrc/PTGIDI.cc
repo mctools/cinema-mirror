@@ -422,12 +422,6 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare_elastic,    temperature_K, bias, frac, minEKinElastic, maxEKinElastic));
     gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare_nonelastic, temperature_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
 
-    // std::set<int> all;
-    // auto allreaction = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
-    //                                                         *m_particles, *m_domainHash, temperatures, all );
-
-    // gidimodels.emplace_back(std::make_shared<GIDIModel>(name, allreaction,    temperature_K, bias, frac, minEKinElastic, maxEKinNonelastic));
-
     delete gidiprotare;
   }
 

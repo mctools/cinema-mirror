@@ -13,7 +13,7 @@ from Cinema.Interface import plotStyle
 plotStyle()
 
 cdata=CentralData()
-cdata.setGidiThreshold(1e-10)
+cdata.setGidiThreshold(10)
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(False)
 
