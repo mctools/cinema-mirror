@@ -10,9 +10,9 @@ from Cinema.Prompt.centralData import CentralData
 import matplotlib.pyplot as plt
 
 cdata=CentralData()
-cdata.setGidiThreshold(10)
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(True)
+cdata.setGidiThreshold(10)
 
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
@@ -21,19 +21,19 @@ class MySim(PromptMPI):
     def makeWorld(self):
 
         boxhsize = 25.4 # 1 inch
-        hlength = 500
+        hlength = 600000
         reflhthick = 1
 
         problemlist = []
         # fuel rod radius and composition 
-        problemlist.append([12.70, 'freegas::U/18.8gcm3/U_is_0.9902_U238_0.0098_U235'])
-        problemlist.append([6.350, 'freegas::U/18.8gcm3/U_is_0.9650_U238_0.0350_U235'])
-        problemlist.append([3.175, 'freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235'])
+        problemlist.append([12.70, 'freegas::U/18.8gcm3/U_is_0.9902_U238_0.0098_U235;temp=293.6'])
+        problemlist.append([6.350, 'freegas::U/18.8gcm3/U_is_0.9650_U238_0.0350_U235;temp=293.6'])
+        problemlist.append([3.175, 'freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'])
 
-        idx = 1
+        idx = 2
         fradius = problemlist[idx][0]
-        lw = Material('freegas::H2O/1gcm3/H_is_1_H1/O_is_1_O16') 
-        # lw = Material('LiquidWaterH2O_T293.6K.ncmat')      
+        # lw = Material('freegas::H2O/1gcm3/H_is_1_H1/O_is_1_O16;temp=293.6') 
+        lw = Material('LiquidWaterH2O_T293.6K.ncmat;density=1gcm3;temp=293.6')      
 
         fuel = Material(problemlist[idx][1]) 
 
@@ -96,6 +96,9 @@ for i in range(10000):
 
 
 print('keff', totneutron/(totCycle-settleCycle+1)/batchsize)
+
+
+
 
 # destination = 0
 # spct = sim.gatherHistData('spct', dst=destination)

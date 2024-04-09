@@ -57,8 +57,6 @@ m_temperature(temperature),
 m_frac(frac),
 m_input(new MCGIDI::Sampling::Input(false, MCGIDI::Sampling::Upscatter::Model::B) )
 { 
-
-
   MCGIDI::Vector<MCGIDI::Protare *> protares(1);
   protares[0]= m_mcprotare.get();
   m_urr_info = new MCGIDI::URR_protareInfos(protares);
@@ -84,6 +82,7 @@ Prompt::GIDIModel::~GIDIModel()
   delete m_products;
   delete m_urr_info;
   delete m_input;
+
   std::cout<<"Destructing GIDIModel " << m_modelName << " containing " << m_mcprotare->numberOfReactions() << " reactions" <<std::endl;
 }
 
@@ -103,9 +102,8 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
     m_cacheEkin = ekin;
     double ekin_MeV = ekin*1e-6;
     int hashIndex = m_factory.getHashID(ekin_MeV);
-    //temperature unit here is MeV/k, not to confuse by the keV/k unit in m_input
-    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, const_boltzmann*m_temperature*1e-6, ekin_MeV );    
-    // std::cout << "sampled despition " << m_mcprotare->depositionEnergy( hashIndex, const_boltzmann*m_temperature*1e-6, gidiEnergy )  << "\n";
+    //temperature unit here is keV/k 
+    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, const_boltzmann*m_temperature*1e-3, ekin_MeV );  
 
     return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
@@ -119,14 +117,38 @@ double Prompt::GIDIModel::getCrossSection(double ekin, const Prompt::Vector &dir
 
 void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
 {
-
   pt_assert_always(ekin==m_cacheEkin);
-
   const double ekin_MeV = ekin*1e-6;
 
-  //fixme, do not care about temperature at the moment
+  // int count=0;
+  // int ahashIndex = m_factory.getHashID(ekin_MeV); //fixme, to remove if   pt_assert_always(ekin==m_cacheEkin)
+  // for(unsigned i=0;i<100000;i++)
+  // {
+  //   int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, ahashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
+  //   MCGIDI::Reaction const *reaction = m_mcprotare->reaction( reactionIndex );
+
+  //   m_products->clear();
+  //   reaction->sampleProducts( m_mcprotare.get(), ekin_MeV, *m_input, getRandNumber, nullptr, *m_products );
+  //   for( std::size_t i = 0; i < m_products->size( ); i++ ) 
+  //   {
+  //     MCGIDI::Sampling::Product &aproduct = (*m_products)[i];
+  //     if(aproduct.m_productIndex==11)
+  //       count++;
+  //   }
+  // }
+  // std::cout <<"aaaa "<< count << std::endl;
+  // abort();
+
+  // int count=0;
+  std::vector<Particle> secondaries;
+
+  // for(int i=0;i<100000;i++)
+  // {
+  //   secondaries.clear();
+
   int hashIndex = m_factory.getHashID(ekin_MeV); //fixme, to remove if   pt_assert_always(ekin==m_cacheEkin)
   int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
+  
   
   MCGIDI::Reaction const *reaction = m_mcprotare->reaction( reactionIndex );
   pt_assert_always(m_mcprotare->threshold( reactionIndex ) < ekin_MeV);
@@ -137,36 +159,14 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   pt_assert_always(m_input->m_reaction==reaction);
 
 
-  // // if MC.sampleNonTransportingParticles(true), many of the events are sampled in the centerOfMass
-  // if(m_input->m_frame == GIDI::Frame::centerOfMass)
-  // {
-  //   if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::firstTwoBody)
-  //     std::cout << "MCGIDI::Sampling::SampledType::firstTwoBody\n";
-  //   else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::secondTwoBody)
-  //     std::cout << "MCGIDI::Sampling::SampledType::secondTwoBody\n";
-  //   else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::uncorrelatedBody)
-  //     std::cout << "MCGIDI::Sampling::SampledType::uncorrelatedBody\n";
-  //   else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::unspecified)
-  //     std::cout << "MCGIDI::Sampling::SampledType::unspecified\n";
-  //   else if(m_input->m_sampledType == MCGIDI::Sampling::SampledType::photon)
-  //     std::cout << "MCGIDI::Sampling::SampledType::photon\n";
-  //   else
-  //     PROMPT_THROW(CalcError, "unknown m_input->m_sampledType");
-
-  //   // fixme
-  //   // PROMPT_THROW(NotImplemented, "GIDI::Frame::centerOfMass product is not yet implemented");
-  // }
-
-
   // debug and looking for the MT value for the selected reaction
   // std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", m_products->size() " <<  m_products->size() << std::endl;
-  std::vector<Particle> secondaries;
 
   double totalekin = 0;
   double mu_cm = m_input->m_mu;
   double phi_cm = m_input->m_phi;
 
-  for( std::size_t i = 0; i < m_products->size( ); ++i ) 
+  for( std::size_t i = 0; i < m_products->size( ); i++ ) 
   {
     MCGIDI::Sampling::Product &aproduct = (*m_products)[i];
 
@@ -175,7 +175,8 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
       Vector labdir;     
       double labekin(0);
 
-      if(m_input->m_frame == GIDI::Frame::centerOfMass)
+      // if(m_input->m_frame == GIDI::Frame::centerOfMass)
+      if(false)
       {
         // recepice from https://docs.openmc.org/en/stable/methods/neutron_physics.html#transforming-a-particle-s-coordinates
         // also see P129, eq. 6.5, ENDF-6 Formats Manual CSEWG Document ENDF-102, Report BNL-90365-2009 Rev.1
@@ -240,10 +241,16 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
       primary.setTime(primary.getTime() + aproduct.m_birthTimeSec);
 
       if(aproduct.m_productIndex==11) // fixme: only neutron to the stack for now
+      {
         secondaries.push_back(primary);
+      }
     }
     
   }
+  
+  // }
+  // std::cout <<"aaaa "<< seccount << std::endl;
+  // abort();
 
   // All secondary particles that are not simulated by prompt are contributed to the "energy deposition".
   // So, in the case that neutron is the only transporting particle, the energy deposition is calculated as incident neutorn kinetic energy 
@@ -274,9 +281,6 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
     {
       Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getCentralData().getEnableGidiPowerIteration());
     }
-    // std::cout << p << std::endl;
-    // //Fixme: mcpl writer will be used to record neutron multiplication for keff application
-    // PROMPT_THROW(NotImplemented, "neutron multiplication is not yet supported");
   }
 }
 
@@ -300,7 +304,7 @@ m_smr1()
     m_particles->add( photon );
   }
 
-  m_pops->print(true);
+  // m_pops->print(true);
   // m_pops->isMetaStableAlias();
 
   // std::cout << "!!!!!!!!!!!!!! "<<(*m_pops)["n"] << std::endl;
@@ -375,13 +379,16 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
       std::cout << "label = " << iter->heatedCrossSection( ) << "  temperature = " << iter->temperature( ).value( ) << std::endl;
     }
 
-    std::string label( temperatures[0].heatedCrossSection( ) );
+    // std::string label( temperatures[0].heatedCrossSection( ) ); // fixme: heated? gridded
+    std::string label( temperatures[0].griddedCrossSection( ) );
+
     double temperature_K = temperatures[0].temperature( ).value() * Unit::MeV / const_boltzmann; 
 
     MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, delay, 20.0 );
     // MC.setNuclearPlusCoulombInterferenceOnly( false );
     MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
-    // MC.set_ignoreENDF_MT5(true);
+    MC.set_ignoreENDF_MT5(true);
+
 
    
 
@@ -414,6 +421,12 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
 
     gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare_elastic,    temperature_K, bias, frac, minEKinElastic, maxEKinElastic));
     gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare_nonelastic, temperature_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
+
+    // std::set<int> all;
+    // auto allreaction = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+    //                                                         *m_particles, *m_domainHash, temperatures, all );
+
+    // gidimodels.emplace_back(std::make_shared<GIDIModel>(name, allreaction,    temperature_K, bias, frac, minEKinElastic, maxEKinNonelastic));
 
     delete gidiprotare;
   }

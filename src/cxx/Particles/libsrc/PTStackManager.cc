@@ -70,46 +70,19 @@ void Prompt::StackManager::normaliseSecondStack(long unsigned num)
   int toAdd = num - m_stack_second.size();
   if(toAdd)
   {
-    // auto &rd = Singleton<SingletonPTRand>::getInstance();
-    // std::uniform_int_distribution<> distrib(0, m_stack_second.size()-1);
-
-    // fixme: use rand of prompt
-
-    std::random_device rd;  // a seed source for the random number engine
-    std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
-    std::uniform_int_distribution<> distrib(0, m_stack_second.size()-1);
-
-    std::vector<int> id2Process;
-    for(int i=0; i < abs(toAdd); i++)
+    if(toAdd < 0) // deleting
+      m_stack_second.resize(num);
+    else // adding random neutrons
     {
-      id2Process.push_back(distrib(gen));
+      auto gen = Singleton<SingletonPTRand>::getInstance().getGenerator();
+
+      std::uniform_int_distribution<> distrib(0, m_stack_second.size()-1);
+
+      for(int i=0;i<toAdd;i++)
+        m_stack_second.emplace_back(std::make_unique<Particle>(*m_stack_second[distrib(*gen)].get()) );
     }
-
-    sort(id2Process.begin(), id2Process.end(), std::greater<int>()); 
-
-
-    // prints all elements in reverse order 
-    // using rbegin() and rend() methods 
-    for (auto rit = id2Process.begin(); rit != id2Process.end(); rit++) 
-    {
-      if(toAdd < 0)
-      {
-        // std::cout << "Shrinking the stack by " << id2Process.size() << " particles...\n";
-        if(*rit!=m_stack_second.size()-1) // not the last element
-            std::swap(m_stack_second[*rit], m_stack_second.back());
-
-        // delete the last element  
-        m_stack_second.pop_back();
-
-      }
-      else if(toAdd > 0)
-      {
-        // std::cout << "Expanding the stack by " << id2Process.size() << " particles...\n";
-        m_stack_second.emplace_back(std::make_unique<Particle>(*m_stack_second[*rit].get()) );
-      }
-
-    }      
   }
+  std::cout << "Done normalisation\n";
 }
 
 void Prompt::StackManager::swapStack()

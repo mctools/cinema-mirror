@@ -1,91 +1,4 @@
 #!/usr/bin/env python3
-
-from Cinema.Prompt import Prompt, PromptMPI
-from Cinema.Prompt.geo import Volume
-from Cinema.Prompt.solid import Box, Sphere, Tube
-from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper
-from Cinema.Prompt.physics import Material
-from Cinema.Prompt.gun import IsotropicGun, SimpleThermalGun, PythonGun
-from Cinema.Prompt.centralData import CentralData 
-import matplotlib.pyplot as plt
-from Cinema.Interface import plotStyle
-
-plotStyle()
-
-cdata=CentralData()
-cdata.setGidiThreshold(1e-10)
-cdata.setEnableGidi(True)
-cdata.setEnableGidiPowerIteration(False)
-
-energy = 15e6
-partnum = 1e5
-
-class MySim(Prompt):
-    def __init__(self, seed=4096) -> None:
-        super().__init__(seed)   
-
-    def makeWorld(self):
-        size = 1e-12
-
-        world = Volume("world", Tube(0, size, 1.1e50))
-        # lw = Material('freegas::He/1gcm3/He_is_1_He3') 
-        # lw = Material('freegas::B/1gcm3/B_is_1_B10') 
-        # lw = Material('freegas::Li/1gcm3/Li_is_1_Li6') 
-        # lw = Material('freegas::H/1gcm3/H_is_H1') 
-        lw = Material('freegas::U/20gcm3/U_is_U238') 
-        # lw = Material('freegas::O/1gcm3/O_is_O16') 
-        lw.setBiasAbsp(1)
-        lw.setBiasScat(1)
-        media = Volume("media", Tube(0, size*0.5, 1e50), matCfg= lw)
-        world.placeChild('media', media)
-
-        # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
-        ESpectrumHelper('ESpec', min=1e-6, max=20e6, numbin=300, ptstate='EXIT').make(media)
-        self.setWorld(world)
-
-
-
-sim = MySim(seed=1010)
-sim.makeWorld()
-
-# class MyGun(PythonGun):
-#     def __init__(self):
-#         super().__init__()
-
-#     def samplePosition(self):
-#         return 0,0,-1.e5
-    
-#     def sampleEnergy(self):
-#         return 1
-
-
-# gun = MyGun()
-
-gun = SimpleThermalGun()
-
-gun.setEnergy(energy)
-gun.setPosition([0,0,-1e50])
-
-
-# sim.show(gun, 1)
-
-
-# vis or production
-sim.simulate(gun, partnum)
-
-# sim.gatherHistData('volFlux').plot(show=False, log=True)
-
-sim.gatherHistData('ESpec').plot(show=False, log=True)
-
-# w=espec.getWeight()
-# hit=espec.getHit()
-# centre = espec.getCentre()
-
-# plt.loglog(centre, w)
-# plt.title(str(w.sum()))
-# plt.show()
-
-
 import openmc
 from openmc.data import K_BOLTZMANN, NEUTRON_MASS
 import numpy as np
@@ -96,15 +9,17 @@ import matplotlib.pyplot as plt
 
 
 def run(energy, numPart):
-    mat = openmc.Material(1, "uo2")
-    # Add nuclides to uo2
-    mat.add_nuclide('U238', 1.0)
-    mat.set_density('g/cm3', 1.0)
-
-    # mat = openmc.Material(1, "h")
+    # mat = openmc.Material(1, "uo2")
     # # Add nuclides to uo2
-    # mat.add_nuclide('H1', 1.0)
-    # mat.set_density('g/cm3', 1.0)
+    # mat.add_nuclide('U235', 0.03)
+    # mat.add_nuclide('U238', 0.97)
+    # mat.add_nuclide('O16', 2.0)
+    # mat.set_density('g/cm3', 10.0)
+
+    mat = openmc.Material(1, "h")
+    # Add nuclides to uo2
+    mat.add_nuclide('H1', 1.0)
+    mat.set_density('g/cm3', 1.0)
 
     print(mat)
     materials = openmc.Materials()
@@ -159,7 +74,7 @@ def run(energy, numPart):
     surface_filter = openmc.SurfaceFilter(cyl)
     particle_filter = openmc.ParticleFilter('neutron')
     energy_bins = np.logspace(np.log10(1e-6),
-                                np.log10(20e6), 300+1)
+                                np.log10(20e6), 300)
     energy_filter = openmc.EnergyFilter(energy_bins)
 
     # Create tallies and export to XML
@@ -173,11 +88,10 @@ def run(energy, numPart):
     tally2.filters = [ mufilter, particle_filter]
     tally2.scores = ['events']
 
+
+
     tallies = openmc.Tallies([tally, tally2])
     tallies.export_to_xml('tallies.xml')
-
-    openmc.run(tracks=False)
-
 
 
 def read_results(filename):
@@ -203,9 +117,7 @@ def read_results(filename):
     with openmc.StatePoint(filename) as sp:
         t = sp.get_tally(name='tally')
         # print(t.__dict__)
-        # print(t.find_filter(openmc.EnergyFilter).bins.shape)
-        # raise RuntimeError()
-        x = 0.5*(t.find_filter(openmc.EnergyFilter).bins[:,1]+t.find_filter(openmc.EnergyFilter).bins[:,0])
+        x = t.find_filter(openmc.EnergyFilter).bins[:,1]
         y = t.mean[:,0,0]
         std_dev = t.std_dev[:,0,0]
 
@@ -223,14 +135,13 @@ def plot():
     print('y sum()', y1.sum())
 
     # Set up the figure
-    # plt.figure(1, facecolor='w', figsize=(8,8))
-    plt.loglog(x1, y1*partnum,'o', label=f'openmc {y1.sum()*partnum}')
-    plt.legend(loc=0)
+    plt.figure(1, facecolor='w', figsize=(8,8))
+    plt.loglog(x1, y1)
     plt.show()
 
-run(energy, int(partnum))
+run(1e6, int(1e4))
+openmc.run(tracks=False)
 
 # import os
 # os.system(f'openmc' )
 plot()
-

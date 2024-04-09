@@ -246,7 +246,7 @@ class Volume:
         _pt_ResourceManager_addNewVolume(self.volid)
         
         if matCfg is None:
-            self.setMaterial('freegas::H1/1e-26kgm3') # set as the universe
+            self.setMaterial('freegas::H1/1e-26kgm3/H_is_1_H1') # set as the universe
         else:
             if isinstance(matCfg, str):
                 self.setMaterial(matCfg) 
