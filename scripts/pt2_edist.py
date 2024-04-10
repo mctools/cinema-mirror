@@ -13,11 +13,11 @@ from Cinema.Interface import plotStyle
 plotStyle()
 
 cdata=CentralData()
-cdata.setGidiThreshold(10)
+cdata.setGidiThreshold(4)
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(False)
 
-energy = 15e6
+energy = 0.1e6
 partnum = 1e5
 
 class MySim(Prompt):
@@ -32,7 +32,7 @@ class MySim(Prompt):
         # lw = Material('freegas::B/1gcm3/B_is_1_B10') 
         # lw = Material('freegas::Li/1gcm3/Li_is_1_Li6') 
         # lw = Material('freegas::H/1gcm3/H_is_H1') 
-        lw = Material('freegas::U/20gcm3/U_is_U238') 
+        lw = Material('freegas::U/20gcm3/U_is_U235') 
         # lw = Material('freegas::O/1gcm3/O_is_O16') 
         lw.setBiasAbsp(1)
         lw.setBiasScat(1)
@@ -98,7 +98,7 @@ import matplotlib.pyplot as plt
 def run(energy, numPart):
     mat = openmc.Material(1, "uo2")
     # Add nuclides to uo2
-    mat.add_nuclide('U238', 1.0)
+    mat.add_nuclide('U235', 1.0)
     mat.set_density('g/cm3', 1.0)
 
     # mat = openmc.Material(1, "h")

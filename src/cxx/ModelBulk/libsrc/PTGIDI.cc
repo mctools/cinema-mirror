@@ -62,10 +62,10 @@ m_input(new MCGIDI::Sampling::Input(false, MCGIDI::Sampling::Upscatter::Model::B
   m_urr_info = new MCGIDI::URR_protareInfos(protares);
 
 
-  m_input->m_temperature = const_boltzmann*temperature/Unit::keV;   // In keV/k;
+  m_input->m_temperature = const_boltzmann*temperature*Unit::keV;   // In keV/k;
 
-    // std::cout << "!!!!!!!!! " << temperature_K << " " << const_boltzmann*293.15/Unit::MeV << std::endl;
-
+//     std::cout << "!!!!!!!!! m_input->m_temperature "  << m_input->m_temperature << std::endl;
+// abort();
   int numberOfReactions = m_mcprotare->numberOfReactions();
   std::cout <<"Model " << m_modelName << " has " << numberOfReactions << " reactions"<< "\n";
      
@@ -103,7 +103,7 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
     double ekin_MeV = ekin*1e-6;
     int hashIndex = m_factory.getHashID(ekin_MeV);
     //temperature unit here is keV/k 
-    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, const_boltzmann*m_temperature*1e-3, ekin_MeV );  
+    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV );  
 
     return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
@@ -112,6 +112,30 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
 double Prompt::GIDIModel::getCrossSection(double ekin, const Prompt::Vector &dir) const
 {
   return getCrossSection(ekin);
+}
+
+
+Prompt::Vector rotate_angle(
+  const Prompt::Vector& u, double mu, double phi)
+{
+  // Precompute factors to save flops
+  double sinphi = std::sin(phi);
+  double cosphi = std::cos(phi);
+  double a = std::sqrt(std::fmax(0., 1. - mu * mu));
+  double b = std::sqrt(std::fmax(0., 1. - u.z() * u.z()));
+
+  // Need to treat special case where sqrt(1 - w**2) is close to zero by
+  // expanding about the v component rather than the w component
+  if (b > 1e-10) {
+    return {mu * u.x() + a * (u.x() * u.z() * cosphi - u.y() * sinphi) / b,
+      mu * u.y() + a * (u.y() * u.z() * cosphi + u.x() * sinphi) / b,
+      mu * u.z() - a * b * cosphi};
+  } else {
+    b = std::sqrt(1. - u.y() * u.y());
+    return {mu * u.x() + a * (-u.x() * u.y() * sinphi + u.z() * cosphi) / b,
+      mu * u.y() + a * b * sinphi,
+      mu * u.z() - a * (u.y() * u.z() * sinphi + u.x() * cosphi) / b};
+  }
 }
 
 
@@ -170,7 +194,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   {
     MCGIDI::Sampling::Product &aproduct = (*m_products)[i];
 
-    if (aproduct.m_productIndex==11 || aproduct.m_productIndex==8) //neutron or gamma
+    if (aproduct.m_productIndex==11 ) //neutron or gamma
     {
       Vector labdir;     
       double labekin(0);
@@ -181,11 +205,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
         // recepice from https://docs.openmc.org/en/stable/methods/neutron_physics.html#transforming-a-particle-s-coordinates
         // also see P129, eq. 6.5, ENDF-6 Formats Manual CSEWG Document ENDF-102, Report BNL-90365-2009 Rev.1
         // work around for 0,0,1 direction case, where mu_wfactor is infinity   
-        Vector swapdir(dir);
-        if(dir.z()==1.)
-        {
-          std::swap(swapdir.x(), swapdir.z());
-        }
+
 
         double A =  aproduct.m_productMass/m_input->m_projectileMass;
         double Ap1 = A+1;
@@ -199,26 +219,39 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
         double i_labekin_MeV = 1./labekin_MeV;
         double mu_lab = m_input->m_mu*sqrt(aproduct.m_kineticEnergy*i_labekin_MeV) + i_Ap1*sqrt(ekin_MeV*i_labekin_MeV);
 
-        double cosphi_com = cos(m_input->m_phi);
-        double sinphi_com = sin(m_input->m_phi);
-        double mufactor = sqrt(1-mu_lab*mu_lab);
-        double wfactor = sqrt(1-swapdir.z()*swapdir.z());
-        double mu_wfactor = mufactor/wfactor;
-        
         Vector dircm(aproduct.m_px_vx, aproduct.m_py_vy, aproduct.m_pz_vz);
         dircm.setMag(1);
 
-        // std::cout << "center of mass dir " << dircm << "\n";
+        labdir = rotate_angle(dircm, mu_lab, m_input->m_phi);
+        // OR using the comment out code, fixme tobetested
+        // Vector swapdir(dir);
+        // if(dir.z()==1.)
+        // {
+        //   std::swap(swapdir.x(), swapdir.z());
+        // }
 
-        labdir.set((mu_lab*swapdir.x() +  mu_wfactor*( swapdir.x()*swapdir.z()*cosphi_com - swapdir.y()*sinphi_com)),
-                   (mu_lab*swapdir.y() +  mu_wfactor*( swapdir.y()*swapdir.z()*cosphi_com - swapdir.x()*sinphi_com)),
-                   (mu_lab*swapdir.z() -  mufactor * wfactor * cosphi_com ));
 
-        if(dir.z()==1.)
-        {
-          std::swap(labdir.x(), labdir.z());
-          std::swap(labdir.x(), labdir.y());
-        }
+        // double cosphi_com = cos(m_input->m_phi);
+        // double sinphi_com = sin(m_input->m_phi);
+        // double mufactor = sqrt(1-mu_lab*mu_lab);
+        // double wfactor = sqrt(1-dir.z()*dir.z());
+        // double mu_wfactor = mufactor/wfactor;
+        
+        // Vector dircm(aproduct.m_px_vx, aproduct.m_py_vy, aproduct.m_pz_vz);
+        // dircm.setMag(1);
+
+        // // std::cout << "center of mass dir " << dircm << "\n";
+
+        // labdir.set((mu_lab*dir.x() +  mu_wfactor*( dir.x()*dir.z()*cosphi_com - dir.y()*sinphi_com)),
+        //            (mu_lab*dir.y() +  mu_wfactor*( dir.y()*dir.z()*cosphi_com - dir.x()*sinphi_com)),
+        //            (mu_lab*dir.z() -  mufactor * wfactor * cosphi_com ));
+
+        // if(dir.z()==1.)
+        // {
+        //   std::swap(labdir.x(), labdir.z());
+        //   std::swap(labdir.x(), labdir.y());
+        // }
+        // labdir.setMag(1);
 
         // std::cout << "cm " << aproduct.m_kineticEnergy << ", lab " << labekin_MeV << ", ratio " << aproduct.m_kineticEnergy/labekin_MeV 
         //           <<", lab direction mag " << labdir.mag() << " "  << dir << " " << labdir <<"\n";
@@ -245,7 +278,9 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
         secondaries.push_back(primary);
       }
     }
-    
+    // if(m_input->m_frame == GIDI::Frame::centerOfMass)
+    // std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", secondaries->size() " <<  secondaries.size() << std::endl;
+   
   }
   
   // }
@@ -382,12 +417,13 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     // std::string label( temperatures[0].heatedCrossSection( ) ); // fixme: heated? gridded
     std::string label( temperatures[0].griddedCrossSection( ) );
 
-    double temperature_K = temperatures[0].temperature( ).value() * Unit::MeV / const_boltzmann; 
+    double temperature_K = temperatures[0].temperature( ).value()*Unit::MeV / const_boltzmann; 
 
     MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, delay, 20.0 );
     // MC.setNuclearPlusCoulombInterferenceOnly( false );
     MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
     MC.set_ignoreENDF_MT5(true);
+    MC.want_URR_probabilityTables(true);
 
 
    
