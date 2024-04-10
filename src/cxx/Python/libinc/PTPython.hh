@@ -132,7 +132,7 @@ void pt_CentralData_setEnableGidi(void* obj, bool t);
 bool pt_CentralData_getEnableGidiPowerIteration(void* obj);
 void pt_CentralData_setEnableGidiPowerIteration(void* obj, bool t);
 
-
+double pt_nccalNumDensity(const char *s);  
 
 #ifdef __cplusplus
 }

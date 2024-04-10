@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import argparse
 from Cinema.Interface import plotStyle
 from Cinema.Prompt.centralData import CentralData 
+from Cinema.Prompt.utils import nccalNumDensity
 
 plotStyle()
 
@@ -16,6 +17,7 @@ parser.add_argument('cfg', metavar='N', type=str, nargs='+', help='Prompt materi
 parser.add_argument('-c', '--switchingenergy', action='store',  nargs='+', type=float, default=10.,
                     dest='switchingenergy', help='model switching energy')
 
+import openmc
 
 
 cdata=CentralData()
@@ -26,18 +28,25 @@ print(args.switchingenergy)
 
 
 
-ekin = np.logspace(-5, np.log10(20e6), 1000)
+ekin = np.logspace(-5, np.log10(20e6), 100000)
 
 for cfg in args.cfg:
+    m1 = openmc.Material.from_ncrystal(cfg)
+    m1.name = cfg
+    fig = openmc.plot_xs({m1:['total']})
+    
+    numberdensity = nccalNumDensity(cfg)
+    print('number density', )    
+
     for sen in args.switchingenergy:
         cdata.setGidiThreshold(sen)
         comp = CompoundModel(cfg)
         xs = np.zeros_like(ekin)
         for i in range(ekin.size):
             xs[i] = comp.xs(ekin[i])        
-        np.save('xs', xs)
-        plt.loglog(ekin, xs, label=cfg+', switching@'+str(sen))
-    
+        macroxs = numberdensity*xs*1e-21
+        plt.loglog(ekin, macroxs, label=cfg+', switching@'+str(sen))
+
 plt.legend(loc=0)
 plt.grid('both')
 plt.show()
