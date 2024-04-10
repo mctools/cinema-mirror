@@ -12,18 +12,16 @@ import matplotlib.pyplot as plt
 cdata=CentralData()
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(True)
-cdata.setGidiThreshold(4)
+cdata.setGidiThreshold(5)
 
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)   
 
     def makeWorld(self):
-
-        boxhsize = 9000 # 1 inch
-        radius = 8740.7
-        fuel = Material('freegas::U/0.188gcm3/U_is_U235;temp=293.6') 
-        world = Volume("world", Box(boxhsize, boxhsize, boxhsize))
+        radius = 87.407
+        fuel = Material('freegas::U/18.8gcm3/U_is_U235;temp=293.6') 
+        world = Volume("world", Sphere(0, radius))
         godiva = Volume('Godiva', Sphere(0, radius), matCfg=fuel)
         world.placeChild('frod', godiva)     
 
@@ -55,5 +53,5 @@ for i in range(totCycle):
         print('keff', totneutron/(i-settleCycle+1)/batchsize)
 
 
-print('keff', totneutron/(totCycle-settleCycle+1)/batchsize)
+print('keff', totneutron/(totCycle-settleCycle)/batchsize)
 

@@ -10,8 +10,8 @@ from Cinema.Prompt.centralData import CentralData
 import matplotlib.pyplot as plt
 
 cdata=CentralData()
-cdata.setGidiThreshold(10)
-cdata.setEnableGidi(False)
+cdata.setGidiThreshold(5)
+cdata.setEnableGidi(True)
 
 
 class MySim(PromptMPI):
@@ -41,7 +41,7 @@ sim = MySim(seed=1010)
 sim.makeWorld()
 
 gun = IsotropicGun()
-gun.setEnergy(1e5)
+gun.setEnergy(1)
 
 partnum = 1e5
 # vis or production

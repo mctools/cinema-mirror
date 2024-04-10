@@ -25,7 +25,7 @@
 #include <limits>
 
 #include "PTGIDI.hh"
-
+#include "PTGIDIElasticModel.hh"
 #include <iostream>
 #include <iomanip>
 #include <functional>
@@ -186,6 +186,12 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   // debug and looking for the MT value for the selected reaction
   // std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", m_products->size() " <<  m_products->size() << std::endl;
 
+  // if(reaction->ENDF_MT()==2)
+  // {
+  //   final_ekin=ENERGYTOKEN_ABSORB;
+  //   return;
+  // }
+
   double totalekin = 0;
   double mu_cm = m_input->m_mu;
   double phi_cm = m_input->m_phi;
@@ -194,12 +200,12 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   {
     MCGIDI::Sampling::Product &aproduct = (*m_products)[i];
 
-    if (aproduct.m_productIndex==11 ) //neutron or gamma
+    if (aproduct.m_productIndex==11 ) //neutron 11 or gamma 8
     {
       Vector labdir;     
       double labekin(0);
 
-      // if(m_input->m_frame == GIDI::Frame::centerOfMass)
+      // if(m_input->m_frame == GIDI::Frame::centerOfMass )
       if(false)
       {
         // recepice from https://docs.openmc.org/en/stable/methods/neutron_physics.html#transforming-a-particle-s-coordinates
@@ -273,10 +279,8 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
       primary.setDirection(labdir);
       primary.setTime(primary.getTime() + aproduct.m_birthTimeSec);
 
-      if(aproduct.m_productIndex==11) // fixme: only neutron to the stack for now
-      {
-        secondaries.push_back(primary);
-      }
+      secondaries.push_back(primary);
+      
     }
     // if(m_input->m_frame == GIDI::Frame::centerOfMass)
     // std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", secondaries->size() " <<  secondaries.size() << std::endl;
@@ -314,7 +318,10 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
     for(const auto &p: secondaries)
     {
-      Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getCentralData().getEnableGidiPowerIteration());
+      if(reaction->ENDF_MT()==18)
+        Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getCentralData().getEnableGidiPowerIteration());
+      else
+        Singleton<StackManager>::getInstance().addSecondary(p, false);
     }
   }
 }
@@ -422,8 +429,8 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, delay, 20.0 );
     // MC.setNuclearPlusCoulombInterferenceOnly( false );
     MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
-    MC.set_ignoreENDF_MT5(true);
-    MC.want_URR_probabilityTables(true);
+    // MC.set_ignoreENDF_MT5(true);
+    // MC.want_URR_probabilityTables(true);
 
 
    
@@ -455,7 +462,7 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
                                                                 *m_particles, *m_domainHash, temperatures, elastic );
 
-    gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare_elastic,    temperature_K, bias, frac, minEKinElastic, maxEKinElastic));
+    gidimodels.emplace_back(std::make_shared<GIDIElasticModel>(name, mcProtare_elastic,    temperature_K, bias, frac, minEKinElastic, maxEKinElastic));
     gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare_nonelastic, temperature_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
 
     delete gidiprotare;

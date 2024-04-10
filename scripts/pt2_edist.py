@@ -9,16 +9,27 @@ from Cinema.Prompt.gun import IsotropicGun, SimpleThermalGun, PythonGun
 from Cinema.Prompt.centralData import CentralData 
 import matplotlib.pyplot as plt
 from Cinema.Interface import plotStyle
+import numpy as np
 
 plotStyle()
 
 cdata=CentralData()
-cdata.setGidiThreshold(4)
+cdata.setGidiThreshold(5)
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(False)
 
-energy = 0.1e6
+energy = [5e6, 6e6]
+# energy=6e6
 partnum = 1e5
+loweredge=1e-3
+upperedge=30e6
+
+# loweredge=850
+# upperedge=1100
+
+numbin=1000
+cfg='freegas::U/18gcm3/U_is_U235'
+# cfg='LiquidWaterH2O_T293.6K.ncmat;density=1gcm3;temp=293.6'
 
 class MySim(Prompt):
     def __init__(self, seed=4096) -> None:
@@ -32,7 +43,7 @@ class MySim(Prompt):
         # lw = Material('freegas::B/1gcm3/B_is_1_B10') 
         # lw = Material('freegas::Li/1gcm3/Li_is_1_Li6') 
         # lw = Material('freegas::H/1gcm3/H_is_H1') 
-        lw = Material('freegas::U/20gcm3/U_is_U235') 
+        lw = Material(cfg) 
         # lw = Material('freegas::O/1gcm3/O_is_O16') 
         lw.setBiasAbsp(1)
         lw.setBiasScat(1)
@@ -40,7 +51,7 @@ class MySim(Prompt):
         world.placeChild('media', media)
 
         # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
-        ESpectrumHelper('ESpec', min=1e-6, max=20e6, numbin=300, ptstate='EXIT').make(media)
+        ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin, ptstate='EXIT').make(media)
         self.setWorld(world)
 
 
@@ -48,23 +59,27 @@ class MySim(Prompt):
 sim = MySim(seed=1010)
 sim.makeWorld()
 
-# class MyGun(PythonGun):
-#     def __init__(self):
-#         super().__init__()
+class MyGun(PythonGun):
+    def __init__(self, ekin):
+        super().__init__()
+        self.ekin = ekin
 
-#     def samplePosition(self):
-#         return 0,0,-1.e5
+    def samplePosition(self):
+        return 0,0,-1.e5
     
-#     def sampleEnergy(self):
-#         return 1
+    def sampleEnergy(self):
+        if isinstance(self.ekin, list):
+            r=np.random.uniform(self.ekin[0], self.ekin[1], 1)[0]
+            return r
+        else:
+            return self.ekin
 
 
-# gun = MyGun()
+gun = MyGun(energy)
 
-gun = SimpleThermalGun()
-
-gun.setEnergy(energy)
-gun.setPosition([0,0,-1e50])
+# gun = SimpleThermalGun()
+# gun.setEnergy(energy)
+# gun.setPosition([0,0,-1e50])
 
 
 # sim.show(gun, 1)
@@ -96,10 +111,7 @@ import matplotlib.pyplot as plt
 
 
 def run(energy, numPart):
-    mat = openmc.Material(1, "uo2")
-    # Add nuclides to uo2
-    mat.add_nuclide('U235', 1.0)
-    mat.set_density('g/cm3', 1.0)
+    mat = openmc.Material.from_ncrystal(cfg)
 
     # mat = openmc.Material(1, "h")
     # # Add nuclides to uo2
@@ -137,8 +149,12 @@ def run(energy, numPart):
     source = openmc.IndependentSource()
     source.space = openmc.stats.Point((0,0,0))
     source.angle = openmc.stats.Monodirectional()
-    energy=energy
-    source.energy = openmc.stats.Discrete([energy], [1.])
+    
+    if isinstance(energy, list):
+        source.energy = openmc.stats.Uniform(energy[0], energy[1])
+    else:
+        source.energy = openmc.stats.Discrete([energy], [1.])
+    
     source.particle = 'neutron'
 
     # Settings
@@ -158,8 +174,8 @@ def run(energy, numPart):
     # Define filters
     surface_filter = openmc.SurfaceFilter(cyl)
     particle_filter = openmc.ParticleFilter('neutron')
-    energy_bins = np.logspace(np.log10(1e-6),
-                                np.log10(20e6), 300+1)
+    energy_bins = np.logspace(np.log10(loweredge),
+                                np.log10(upperedge), numbin+1)
     energy_filter = openmc.EnergyFilter(energy_bins)
 
     # Create tallies and export to XML
@@ -224,7 +240,7 @@ def plot():
 
     # Set up the figure
     # plt.figure(1, facecolor='w', figsize=(8,8))
-    plt.loglog(x1, y1*partnum,'o', label=f'openmc {y1.sum()*partnum}')
+    plt.loglog(x1, y1*partnum,'-o', label=f'openmc {y1.sum()*partnum}')
     plt.legend(loc=0)
     plt.show()
 
