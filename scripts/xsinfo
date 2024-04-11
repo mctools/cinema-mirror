@@ -8,16 +8,24 @@ from Cinema.Interface import plotStyle
 from Cinema.Prompt.centralData import CentralData 
 from Cinema.Prompt.utils import nccalNumDensity
 
+try:
+    import openmc
+    openmcfound = True
+except ModuleNotFoundError:
+    print('OpenMC is not found')
+    openmcfound = False
+
+
+
 plotStyle()
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument('cfg', metavar='N', type=str, nargs='+', help='Prompt materil config')
 
-parser.add_argument('-c', '--switchingenergy', action='store',  nargs='+', type=float, default=10.,
+parser.add_argument('-c', '--switchingenergy', action='store',  nargs='+', type=float, default=[5],
                     dest='switchingenergy', help='model switching energy')
 
-import openmc
 
 
 cdata=CentralData()
@@ -31,9 +39,10 @@ print(args.switchingenergy)
 ekin = np.logspace(-5, np.log10(20e6), 100000)
 
 for cfg in args.cfg:
-    m1 = openmc.Material.from_ncrystal(cfg)
-    m1.name = cfg
-    fig = openmc.plot_xs({m1:['total']})
+    if openmcfound:
+        m1 = openmc.Material.from_ncrystal(cfg)
+        m1.name = cfg
+        fig = openmc.plot_xs({m1:['total']})
     
     numberdensity = nccalNumDensity(cfg)
     print('number density', )    
