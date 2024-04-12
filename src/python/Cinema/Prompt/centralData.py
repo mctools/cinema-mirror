@@ -61,7 +61,7 @@ class CentralData():
         _pt_CentralData_setGidiPops(self.cobj, s.encode('utf-8'))
 
     def getGidiMap(self):
-        return _pt_CentralData_getGidiMap(self.cobj).decode('utf-8').replace('', '')
+        return _pt_CentralData_getGidiMap(self.cobj).decode('utf-8')
     
     def setGidiMap(self, s):
         _pt_CentralData_setGidiMap(self.cobj, s.encode('utf-8'))

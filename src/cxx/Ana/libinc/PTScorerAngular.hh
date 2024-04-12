@@ -29,7 +29,7 @@ namespace Prompt {
   class ScorerAngular  : public Scorer1D {
   public:
     ScorerAngular(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double angle_min, double angle_max, unsigned numbin,
+      double sourceSampleDist, double mu_min, double mu_max, unsigned numbin,
       ScorerType stype=Scorer::ScorerType::ENTRY, bool linear=true);
     virtual ~ScorerAngular();
     virtual void score(Particle &particle) override;

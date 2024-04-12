@@ -57,6 +57,8 @@ m_temperature(temperature),
 m_frac(frac),
 m_input(new MCGIDI::Sampling::Input(false, MCGIDI::Sampling::Upscatter::Model::B) )
 { 
+  MCGIDI::Sampling::ClientCodeRNGData clientCodeRNGData( getRandNumber, nullptr );  //??? fixme
+
   MCGIDI::Vector<MCGIDI::Protare *> protares(1);
   protares[0]= m_mcprotare.get();
   m_urr_info = new MCGIDI::URR_protareInfos(protares);
@@ -103,7 +105,7 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
     double ekin_MeV = ekin*1e-6;
     int hashIndex = m_factory.getHashID(ekin_MeV);
     //temperature unit here is keV/k 
-    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV );  
+    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, m_input->m_temperature, ekin_MeV, true );  
 
     return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
@@ -112,30 +114,6 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
 double Prompt::GIDIModel::getCrossSection(double ekin, const Prompt::Vector &dir) const
 {
   return getCrossSection(ekin);
-}
-
-
-Prompt::Vector rotate_angle(
-  const Prompt::Vector& u, double mu, double phi)
-{
-  // Precompute factors to save flops
-  double sinphi = std::sin(phi);
-  double cosphi = std::cos(phi);
-  double a = std::sqrt(std::fmax(0., 1. - mu * mu));
-  double b = std::sqrt(std::fmax(0., 1. - u.z() * u.z()));
-
-  // Need to treat special case where sqrt(1 - w**2) is close to zero by
-  // expanding about the v component rather than the w component
-  if (b > 1e-10) {
-    return {mu * u.x() + a * (u.x() * u.z() * cosphi - u.y() * sinphi) / b,
-      mu * u.y() + a * (u.y() * u.z() * cosphi + u.x() * sinphi) / b,
-      mu * u.z() - a * b * cosphi};
-  } else {
-    b = std::sqrt(1. - u.y() * u.y());
-    return {mu * u.x() + a * (-u.x() * u.y() * sinphi + u.z() * cosphi) / b,
-      mu * u.y() + a * b * sinphi,
-      mu * u.z() - a * (u.y() * u.z() * sinphi + u.x() * cosphi) / b};
-  }
 }
 
 
@@ -202,72 +180,18 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
     if (aproduct.m_productIndex==11 ) //neutron 11 or gamma 8
     {
-      Vector labdir;     
       double labekin(0);
+      labekin = aproduct.m_kineticEnergy*1e6;
+      double speed = sqrt( aproduct.m_px_vx * aproduct.m_px_vx + aproduct.m_py_vy * aproduct.m_py_vy + aproduct.m_pz_vz * aproduct.m_pz_vz );
+      double i_speed = 1./speed;
 
-      // if(m_input->m_frame == GIDI::Frame::centerOfMass )
-      if(false)
-      {
-        // recepice from https://docs.openmc.org/en/stable/methods/neutron_physics.html#transforming-a-particle-s-coordinates
-        // also see P129, eq. 6.5, ENDF-6 Formats Manual CSEWG Document ENDF-102, Report BNL-90365-2009 Rev.1
-        // work around for 0,0,1 direction case, where mu_wfactor is infinity   
+      Vector labdir(aproduct.m_px_vx*i_speed, aproduct.m_py_vy*i_speed, aproduct.m_pz_vz*i_speed);
+      // double mu = 0.0;
+      // if( speed != 0.0 ) mu = aproduct.m_pz_vz / speed;
+      // std::cout << mu << std::endl;
 
+      // labdir.normalise();
 
-        double A =  aproduct.m_productMass/m_input->m_projectileMass;
-        double Ap1 = A+1;
-        double i_Ap1 = 1./Ap1;
-
-        // dir, labdir
-        double labekin_MeV = aproduct.m_kineticEnergy + (ekin_MeV + 2*mu_cm*Ap1*sqrt(ekin_MeV*aproduct.m_kineticEnergy))*i_Ap1*i_Ap1;
-        labekin = labekin_MeV*1e6;
-        pt_assert_always(labekin_MeV);
-
-        double i_labekin_MeV = 1./labekin_MeV;
-        double mu_lab = m_input->m_mu*sqrt(aproduct.m_kineticEnergy*i_labekin_MeV) + i_Ap1*sqrt(ekin_MeV*i_labekin_MeV);
-
-        Vector dircm(aproduct.m_px_vx, aproduct.m_py_vy, aproduct.m_pz_vz);
-        dircm.setMag(1);
-
-        labdir = rotate_angle(dircm, mu_lab, m_input->m_phi);
-        // OR using the comment out code, fixme tobetested
-        // Vector swapdir(dir);
-        // if(dir.z()==1.)
-        // {
-        //   std::swap(swapdir.x(), swapdir.z());
-        // }
-
-
-        // double cosphi_com = cos(m_input->m_phi);
-        // double sinphi_com = sin(m_input->m_phi);
-        // double mufactor = sqrt(1-mu_lab*mu_lab);
-        // double wfactor = sqrt(1-dir.z()*dir.z());
-        // double mu_wfactor = mufactor/wfactor;
-        
-        // Vector dircm(aproduct.m_px_vx, aproduct.m_py_vy, aproduct.m_pz_vz);
-        // dircm.setMag(1);
-
-        // // std::cout << "center of mass dir " << dircm << "\n";
-
-        // labdir.set((mu_lab*dir.x() +  mu_wfactor*( dir.x()*dir.z()*cosphi_com - dir.y()*sinphi_com)),
-        //            (mu_lab*dir.y() +  mu_wfactor*( dir.y()*dir.z()*cosphi_com - dir.x()*sinphi_com)),
-        //            (mu_lab*dir.z() -  mufactor * wfactor * cosphi_com ));
-
-        // if(dir.z()==1.)
-        // {
-        //   std::swap(labdir.x(), labdir.z());
-        //   std::swap(labdir.x(), labdir.y());
-        // }
-        // labdir.setMag(1);
-
-        // std::cout << "cm " << aproduct.m_kineticEnergy << ", lab " << labekin_MeV << ", ratio " << aproduct.m_kineticEnergy/labekin_MeV 
-        //           <<", lab direction mag " << labdir.mag() << " "  << dir << " " << labdir <<"\n";
-      }
-      else
-      {
-        labekin = aproduct.m_kineticEnergy*1e6;
-        labdir.set(aproduct.m_px_vx, aproduct.m_py_vy, aproduct.m_pz_vz);
-        labdir.setMag(1.);
-      }
 
       totalekin += labekin; // accumulate the energy that will be carried by a particle in the later simulation. 
 
@@ -335,7 +259,8 @@ m_construction(new GIDI::Construction::Settings ( GIDI::Construction::ParseMode:
                                               GIDI::Construction::PhotoMode::nuclearAndAtomic )),
 m_domainHash(new MCGIDI::DomainHash ( 4000, 1e-8, 20 ) ),
 m_smr1()
-{  
+{ 
+ 
   GIDI::Transporting::Particle neutron(PoPI::IDs::neutron, GIDI::Transporting::Mode::MonteCarloContinuousEnergy);
   m_particles->add(neutron);
   pt_assert_always((*m_pops)["n"] == 11);

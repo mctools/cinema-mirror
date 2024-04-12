@@ -21,11 +21,11 @@
 #include "PTScorerAngular.hh"
 
 Prompt::ScorerAngular::ScorerAngular(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double angle_min, double angle_max, unsigned numbin, ScorerType stype, bool linear)
-:Scorer1D("ScorerAngular_" + name, stype, std::make_unique<Hist1D>("ScorerAngular_" + name, angle_min, angle_max, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir), 
+      double sourceSampleDist, double mu_min, double mu_max, unsigned numbin, ScorerType stype, bool linear)
+:Scorer1D("ScorerAngular_" + name, stype, std::make_unique<Hist1D>("ScorerAngular_" + name, mu_min, mu_max, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir.unit()), 
 m_sourceSampleDist(sourceSampleDist)
 {
-  if(angle_max>180 || angle_min<0 || angle_min>=angle_max)
+  if(mu_max>1 || mu_min<-1 || mu_min>=mu_max)
     PROMPT_THROW2(BadInput, "angular range should be within 0 to 180 degrees" )
 }
 
@@ -36,7 +36,12 @@ Prompt::ScorerAngular::~ScorerAngular()
 
 void Prompt::ScorerAngular::score(Prompt::Particle &particle)
 {
-    
-  double angle_cos = (m_samplePos-particle.getPosition()).angleCos(m_refDir);
-  m_hist->fill(180-std::acos(angle_cos)*const_rad2deg, particle.getWeight());
+  if((m_refDir.angleCos(particle.getDirection()))>1)
+  {
+    std::cout << "wrong mu " << m_refDir.angleCos(particle.getDirection()) << std::endl;
+
+  }
+  m_hist->fill(m_refDir.angleCos(particle.getDirection()), particle.getWeight());  
+  // double angle_cos = (m_samplePos-particle.getPosition()).angleCos(m_refDir);
+  // m_hist->fill(180-std::acos(angle_cos)*const_rad2deg, particle.getWeight());
 }

@@ -175,61 +175,6 @@ class Transformation3D:
     def transformInplace(self, input):
         _pt_Transformation3D_transform(self.cobj, input.shape[0], input, input)
         return input
-
-# class Transformation3D:
-#     def __init__(self, x=0., y=0., z=0., rot_z=0., rot_new_x=0., rot_new_z=0.):
-#         # RScale followed by rotation followed by translation.
-#         self.cobj = _pt_Transformation3D_newfromdata(x, y, z, rot_z, rot_new_x, rot_new_z, 1.,1.,1.)
-#         self.rotation = scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees=True)
-#         self.translation = np.array([x, y, z])
-
-#     def __del__(self):
-#         _pt_Transformation3D_delete(self.cobj)
-
-#     def _setRot(self, rot : scipyRot):
-#         mat = self.rotation_matrix = rot.as_matrix()
-#         _pt_Transformlation3D_setRotation(self.cobj, mat[0,0], mat[0,1], mat[0,2],
-#                                           mat[1,0], mat[1,1], mat[1,2],
-#                                           mat[2,0], mat[2,1], mat[2,2])
-        
-#     def rotAxis(self, angle, axis, degrees=True):
-#         self._setRot(scipyRot.from_rotvec(angle * axis/np.linalg.norm(axis), degrees=degrees)) # fixme: axis/np.linalg.norm(axis) seems to be broadcasted
-#         return self
-    
-#     def rotxyz(self, rotx, roty, rotz, degrees=True):
-#         self._setRot(scipyRot.from_euler('xyz', [rotx, roty, rotz], degrees=degrees))
-#         return self
-    
-#     def rotX(self, angle, degrees=True):
-#         self._setRot(scipyRot.from_rotvec(angle * np.array([1,0,0.]), degrees=degrees))
-#         return self
-    
-#     def rotY(self, angle, degrees=True):
-#         self._setRot(scipyRot.from_rotvec(angle * np.array([0,1.,0.]), degrees=degrees))
-#         return self
-    
-#     def rotZ(self, angle, degrees=True):
-#         self._setRot(scipyRot.from_rotvec(angle * np.array([0,0.,1.]), degrees=degrees))
-#         return self
-        
-#     #  a wrapper of scipy.spatial.transform.Rotation    
-#     def setRot(self, rot_z=0., rot_new_x=0., rot_new_z=0., degrees = True):
-#         self._setRot(scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees=degrees))
-#         return self
-
-#     def rotMatix(self, matrix):
-#         self._setRot(scipyRot.from_matrix(matrix))
-#         return self
-    
-#     def getRot(self):
-#         return self.
-
-#     def getRotMatix(self):
-#         return self.rotation_matrix
-    
-#     def transformInplace(self, input):
-#         _pt_Transformation3D_transform(self.cobj, input.shape[0], input, input)
-#         return input
         
 class Volume:
     scorerDict = {}
