@@ -66,6 +66,12 @@ void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool r
   static_cast<pt::Launcher *>(obj)->go(numParticle, printPrecent, recordTrj, timer, save2Disk);
 }
 
+size_t pt_Launcher_goWithSecondStack(void *obj, uint64_t numParticle)
+{
+  return static_cast<pt::Launcher *>(obj)->goWithSecondStack(numParticle);
+}
+
+
 void pt_Launcher_setGun(void *obj, const char* cfg)
 {
   static_cast<pt::Launcher *>(obj)->setGun(cfg);

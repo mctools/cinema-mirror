@@ -97,6 +97,7 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
     {
       m_curParicle = m_stackManager.pop();
       auto particle = *m_curParicle.get();
+      bool isFirstStep(true);
 
       // allocate the point in a volume,
       // returns ture when the particle is outside the world
@@ -118,12 +119,14 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
         }
 
         m_activeVolume.setupVolPhysAndGeoTrans();
-        m_activeVolume.scoreSurface(particle);
-
-        //if reflected, absorbed, transmitted
-        if(m_activeVolume.surfaceReaction(particle))
+        if(!isFirstStep)
         {
-          // std::cout << "reflection weight " << particle.getWeight() << "\n";
+          m_activeVolume.scoreSurface(particle);
+          //if reflected, absorbed, transmitted
+          if(m_activeVolume.surfaceReaction(particle))
+          {
+            // std::cout << "reflection weight " << particle.getWeight() << "\n";
+          }
         }
         m_activeVolume.scoreEntry(particle);
 
@@ -138,6 +141,9 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
           if(recordTrj)
             m_trajectory.push_back(particle.getPosition());
         }
+        // particle is moved
+        isFirstStep=false; //set to false, so the surfaceReaction() can be triggered at everytime particle reaching a boundary 
+
         if(particle.isAlive())
           m_activeVolume.scoreExit(particle);
       }
@@ -155,6 +161,15 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
         m_trajectory.push_back(particle.getPosition());
       }
     }
+}
+
+size_t Prompt::Launcher::goWithSecondStack(uint64_t numParticle)
+{
+  m_stackManager.normaliseSecondStack(numParticle);
+  m_stackManager.swapStack();
+  std::cout << "Simulating " << m_stackManager.getNumParticleInStack()<< " particles using the swapped secondary stack.\n";
+  simOneEvent(false);
+  return m_stackManager.getNumParticleInSecondStack();
 }
 
 void Prompt::Launcher::go(uint64_t numParticle, double printPrecent, bool recordTrj, bool timer, bool save)

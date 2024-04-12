@@ -1,35 +1,57 @@
 #!/usr/bin/env python3
 
-from Cinema.Prompt import Prompt
+from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.geo import Volume
-from Cinema.Prompt.solid import Box, Sphere
+from Cinema.Prompt.solid import Box, Sphere, Tube
 from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun, SimpleThermalGun, PythonGun
 from Cinema.Prompt.centralData import CentralData 
+import matplotlib.pyplot as plt
+from Cinema.Interface import plotStyle
+import numpy as np
+
+plotStyle()
 
 cdata=CentralData()
-cdata.setGidiThreshold(10)
+cdata.setGidiThreshold(5)
+cdata.setEnableGidi(True)
+cdata.setEnableGidiPowerIteration(False)
 
+energy = [5e6, 6e6]
+# energy=6e6
+partnum = 1e5
+loweredge=1e-3
+upperedge=30e6
+
+# loweredge=850
+# upperedge=1100
+
+numbin=1000
+cfg='freegas::U/18gcm3/U_is_U235'
+# cfg='LiquidWaterH2O_T293.6K.ncmat;density=1gcm3;temp=293.6'
 
 class MySim(Prompt):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)   
 
     def makeWorld(self):
+        size = 1e-12
 
-        world = Volume("world", Box(1, 1, 1.1e5))
+        world = Volume("world", Tube(0, size, 1.1e50))
         # lw = Material('freegas::He/1gcm3/He_is_1_He3') 
-        lw = Material('freegas::B/1gcm3/B_is_1_B10') 
+        # lw = Material('freegas::B/1gcm3/B_is_1_B10') 
         # lw = Material('freegas::Li/1gcm3/Li_is_1_Li6') 
-        # lw = Material('freegas::Si/1gcm3') 
-        lw.setBiasAbsp(10)
+        # lw = Material('freegas::H/1gcm3/H_is_H1') 
+        lw = Material(cfg) 
+        # lw = Material('freegas::O/1gcm3/O_is_O16') 
+        lw.setBiasAbsp(1)
         lw.setBiasScat(1)
-        media = Volume("media", Box(1, 1, 1.1e5), matCfg= lw)
+        media = Volume("media", Tube(0, size*0.5, 1e50), matCfg= lw)
         world.placeChild('media', media)
 
         # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
-        ESpectrumHelper('ESpec', min=1, max=10, numbin=300, ptstate='EXIT').make(media)
+        ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin, ptstate='EXIT').make(media)
         self.setWorld(world)
 
 
@@ -38,27 +60,193 @@ sim = MySim(seed=1010)
 sim.makeWorld()
 
 class MyGun(PythonGun):
-    def __init__(self):
+    def __init__(self, ekin):
         super().__init__()
+        self.ekin = ekin
 
     def samplePosition(self):
-        return 0,0,-1e5
+        return 0,0,-1.e5
     
     def sampleEnergy(self):
-        return 10e-6
+        if isinstance(self.ekin, list):
+            r=np.random.uniform(self.ekin[0], self.ekin[1], 1)[0]
+            return r
+        else:
+            return self.ekin
 
 
-gun = MyGun()
+gun = MyGun(energy)
+
 # gun = SimpleThermalGun()
-# gun.setEnergy(10e6)
-# gun.setPosition([0,0,-1e5])
+# gun.setEnergy(energy)
+# gun.setPosition([0,0,-1e50])
 
-partnum = 1e3
+
+# sim.show(gun, 1)
+
+
 # vis or production
 sim.simulate(gun, partnum)
 
 # sim.gatherHistData('volFlux').plot(show=False, log=True)
 
-sim.gatherHistData('ESpec').plot(show=True, log=False)
+sim.gatherHistData('ESpec').plot(show=False, log=True)
 
+# w=espec.getWeight()
+# hit=espec.getHit()
+# centre = espec.getCentre()
+
+# plt.loglog(centre, w)
+# plt.title(str(w.sum()))
+# plt.show()
+
+
+import openmc
+from openmc.data import K_BOLTZMANN, NEUTRON_MASS
+import numpy as np
+import matplotlib.pyplot as plt
+
+# export PATH="/home/caixx/git/openmc/build/bin:$PATH"
+# (cinemavirenv) caixx@x:~/git/cinema/rundir/del$ export OPENMC_CROSS_SECTIONS=~/git/openmc/build/data/endfb-viii.0-hdf5/cross_sections.xml
+
+
+def run(energy, numPart):
+    mat = openmc.Material.from_ncrystal(cfg)
+
+    # mat = openmc.Material(1, "h")
+    # # Add nuclides to uo2
+    # mat.add_nuclide('H1', 1.0)
+    # mat.set_density('g/cm3', 1.0)
+
+    print(mat)
+    materials = openmc.Materials()
+    materials.append(mat)
+    materials.export_to_xml()
+
+
+    # Instantiate surfaces
+    cyl = openmc.XCylinder(boundary_type='vacuum', r=1.e-6)
+    px1 = openmc.XPlane(boundary_type='vacuum', x0=-1.)
+    px2 = openmc.XPlane(boundary_type='transmission', x0=1.)
+    px3 = openmc.XPlane(boundary_type='vacuum', x0=1.e9)
+
+    # Instantiate cells
+    inner_cyl_left = openmc.Cell()
+    inner_cyl_right = openmc.Cell()
+    outer_cyl = openmc.Cell()
+
+    # Set cells regions and materials
+    inner_cyl_left.region = -cyl & +px1 & -px2
+    inner_cyl_right.region = -cyl & +px2 & -px3
+    outer_cyl.region = ~(-cyl & +px1 & -px3)
+    inner_cyl_right.fill = mat
+
+    # Create root universe and export to XML
+    geometry = openmc.Geometry([inner_cyl_left, inner_cyl_right, outer_cyl])
+    geometry.export_to_xml('geometry.xml')
+
+    # Define source
+    source = openmc.IndependentSource()
+    source.space = openmc.stats.Point((0,0,0))
+    source.angle = openmc.stats.Monodirectional()
+    
+    if isinstance(energy, list):
+        source.energy = openmc.stats.Uniform(energy[0], energy[1])
+    else:
+        source.energy = openmc.stats.Discrete([energy], [1.])
+    
+    source.particle = 'neutron'
+
+    # Settings
+    settings = openmc.Settings()
+    # settings.temperature = 293.6
+    settings.source = source
+    settings.particles = numPart
+    settings.run_mode = 'fixed source'
+    settings.batches = 1
+    settings.photon_transport = True
+    cutoff=0.05
+    settings.cutoff = {'energy_photon' : cutoff}
+    settings.export_to_xml( 'settings.xml')
+    settings.max_tracks = settings.particles
+
+
+    # Define filters
+    surface_filter = openmc.SurfaceFilter(cyl)
+    particle_filter = openmc.ParticleFilter('neutron')
+    energy_bins = np.logspace(np.log10(loweredge),
+                                np.log10(upperedge), numbin+1)
+    energy_filter = openmc.EnergyFilter(energy_bins)
+
+    # Create tallies and export to XML
+    tally = openmc.Tally(name='tally')
+    tally.filters = [surface_filter, energy_filter, particle_filter]
+    tally.scores = ['current']
+
+
+    mufilter = openmc.MuFilter(300)
+    tally2 = openmc.Tally(name='tally2')
+    tally2.filters = [ mufilter, particle_filter]
+    tally2.scores = ['events']
+
+    tallies = openmc.Tallies([tally, tally2])
+    tallies.export_to_xml('tallies.xml')
+
+    openmc.run(tracks=False)
+
+
+
+def read_results(filename):
+    """Read the energy, mean, and standard deviation from the output
+
+    Parameters
+    ----------
+    code : {'openmc', 'mcnp', 'serpent'}
+        Code which produced the output file
+    filename : str
+        Path to the output file
+
+    Returns
+    -------
+    energy : numpy.ndarray
+        Energy bin values [MeV]
+    mean : numpy.ndarray
+        Sample mean of the tally
+    std_dev : numpy.ndarray
+        Sample standard deviation of the tally
+
+    """
+    with openmc.StatePoint(filename) as sp:
+        t = sp.get_tally(name='tally')
+        # print(t.__dict__)
+        # print(t.find_filter(openmc.EnergyFilter).bins.shape)
+        # raise RuntimeError()
+        x = 0.5*(t.find_filter(openmc.EnergyFilter).bins[:,1]+t.find_filter(openmc.EnergyFilter).bins[:,0])
+        y = t.mean[:,0,0]
+        std_dev = t.std_dev[:,0,0]
+
+    return x, y, std_dev
+ 
+def plot():
+    """Extract and plot the results
+
+    """
+    # Read results
+    path =  f'statepoint.1.h5'
+    x1, y1, sd = read_results(path)
+
+    # y1 /= np.diff(x1)*sum(y1)
+    print('y sum()', y1.sum())
+
+    # Set up the figure
+    # plt.figure(1, facecolor='w', figsize=(8,8))
+    plt.loglog(x1, y1*partnum,'-o', label=f'openmc {y1.sum()*partnum}')
+    plt.legend(loc=0)
+    plt.show()
+
+run(energy, int(partnum))
+
+# import os
+# os.system(f'openmc' )
+plot()
 

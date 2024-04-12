@@ -1,5 +1,5 @@
-#ifndef Prompt_BulkMaterialProcess_hh
-#define Prompt_BulkMaterialProcess_hh
+#ifndef Prompt_PTGIDIElasticModel_hh
+#define Prompt_PTGIDIElasticModel_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -22,33 +22,51 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <string>
+#include <memory>
+#include <set>
+
 #include "PromptCore.hh"
-#include "PTCompoundModel.hh"
-#include "PTParticle.hh"
+#include "PTDiscreteModel.hh"
+#include "PTSingleton.hh"
+#include "PTCentralData.hh"
+#include "PTLauncher.hh"
+
+
+namespace MCGIDI
+{
+  class Protare;
+}  
+#include "PTNCrystalScat.hh"
 
 namespace Prompt {
-  class BulkMaterialProcess  {
+
+
+  class GIDIElasticModel: public GIDIModel{
   public:
-    BulkMaterialProcess(const std::string& name, int pdg = const_neutron_pgd);
-    const std::string& getName() const { return m_name; }
-    virtual ~BulkMaterialProcess();
-    CompoundModel* getCompoundModel() {return m_compModel.get(); }
-    double getNumDensity() {return m_numdensity; }
+    GIDIElasticModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
+              double temperature, double bias=1.0, double frac=1.0, double lowerlimt = 0., double upperlimt = std::numeric_limits<double>::max())
+    :GIDIModel(name, mcprotare, temperature, bias=1.0, frac, lowerlimt, upperlimt), m_ncscatt(nullptr)
+    {
+      unsigned numDigit = std::count_if(name.begin(), name.end(), 
+            [](unsigned char c){ return std::isdigit(c); } );
 
-    double sampleStepLength(const Prompt::Particle &particle) const;
-    void sampleFinalState(Prompt::Particle &particle, double stepLength=0., bool hitWall=false) const;
-    void cfgPhysicsModel(const std::string &cfg);
-    bool containOrentied() const { return m_compModel->containOriented(); }
+      // freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6
+      std::string element = name.substr(0, name.size()-numDigit);
+      std::string cfgstr = "freegas::" + element + "/1gcm3/" + element + "_is_"+name+";temp="+std::to_string(temperature);
+      m_ncscatt = std::make_shared<NCrystalScat>(cfgstr);
 
-  private:
-    double macroCrossSection(const Prompt::Particle &particle) const;
-    std::string m_name;
-    SingletonPTRand &m_rng;
-    std::unique_ptr<CompoundModel> m_compModel;
-    double m_numdensity;
+      std::cout << "GIDIElasticModel created " << cfgstr << std::endl;
+    }
+    virtual ~GIDIElasticModel() = default;
 
+    virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override
+    {
+      m_ncscatt->generate(ekin, dir, final_ekin, final_dir);
+    }
+
+  protected:
+    std::shared_ptr<NCrystalScat> m_ncscatt;
   };
-
 }
 
 #endif

@@ -29,11 +29,11 @@
 
 namespace pt = Prompt;
 
-TEST_CASE("GeoLoader")
+TEST_CASE("Gidi")
 {
   // auto &fac = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-  // std::shared_ptr<Prompt::GIDIModel> gidimodel = fac.createGIDIModel("C12", 1., 1.0);
-  // double ekin(0.0253);
+  // std::shared_ptr<Prompt::GIDIModel> gidimodel = fac.createGIDIModel("u235");
+  // double ekin(1e6);
 
   // std::cout << "Gidi xs "<<gidimodel->getCrossSection(ekin)/Prompt::Unit::barn << std::endl;
 
@@ -53,19 +53,19 @@ TEST_CASE("GeoLoader")
   // std::cout << "gidiekin " << gidiekin/loop << std::endl;
   // hist1.save("histgidi.mcpl");
 
-  // auto pc = Prompt::NCrystalScat( "freegas::C/1.225kgm3/C_is_1.00_C12;temp=299.397" );
-  // std::cout << "NCrystal xs " <<pc.getCrossSection(ekin)/Prompt::Unit::barn << std::endl;
-  // gidiekin = 0;
+  // // auto pc = Prompt::NCrystalScat( "freegas::C/1.225kgm3/C_is_1.00_C12;temp=299.397" );
+  // // std::cout << "NCrystal xs " <<pc.getCrossSection(ekin)/Prompt::Unit::barn << std::endl;
+  // // gidiekin = 0;
 
-  // auto hist2 = pt::Hist1D("ncrystal_hist", 0, 0.1, 100);
+  // // auto hist2 = pt::Hist1D("ncrystal_hist", 0, 0.1, 100);
 
-  // for(int i=0;i<loop;i++)
-  // {
-  //   pc.generate(ekin, in, ekin_out, out );
-  //   gidiekin += ekin_out;
-  //   hist2.fill(ekin_out);
-  // }
-  // std::cout << "gidiekin ncrystal " << gidiekin/loop << std::endl;
+  // // for(int i=0;i<loop;i++)
+  // // {
+  // //   pc.generate(ekin, in, ekin_out, out );
+  // //   gidiekin += ekin_out;
+  // //   hist2.fill(ekin_out);
+  // // }
+  // // std::cout << "gidiekin ncrystal " << gidiekin/loop << std::endl;
   // hist2.save("histnc.mcpl");
 
 }

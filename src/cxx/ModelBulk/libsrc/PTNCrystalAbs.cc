@@ -27,7 +27,7 @@
 
 Prompt::NCrystalAbs::NCrystalAbs(const std::string &cfgstring, double bias,
     double lowerlimt, double upperlimt)
-:Prompt::DiscreteModel(cfgstring, const_neutron_pgd, lowerlimt, upperlimt),
+:Prompt::DiscreteModel(cfgstring+"_abs", const_neutron_pgd, lowerlimt, upperlimt, bias),
                       m_abs(NCrystal::createAbsorption(cfgstring))
 {
   if( m_abs.isOriented() ) {

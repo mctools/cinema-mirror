@@ -174,8 +174,9 @@ std::vector<Prompt::IsotopeComposition> Prompt::MaterialDecomposer::decompose(co
         auto &com = atomdata.getComponent(i);
         std::cout << atomdata.elementName()+std::to_string(com.data->A())
         << ", fraction: " << com.fraction;
-        std::cout << ". A: " <<  com.data->A();
-        std::cout << ", Z: " <<  com.data->Z() << std::endl;
+        std::cout << ". A: " <<  com.data->A()
+        << ", Z: " <<  com.data->Z()
+        << ", number density: " << info->getNumberDensity().get()*com.fraction*v.fraction / Unit::Aa3  << std::endl;
         isocomp.emplace_back(IsotopeComposition{ com.data->Z(), com.data->A(), com.fraction*v.fraction, atomdata.elementName()+std::to_string(com.data->A())  });
       }      
     }

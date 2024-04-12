@@ -7,7 +7,14 @@
 #include "VecGeom/volumes/UnplacedTube.h"
 #include "VecGeom/volumes/UnplacedTrapezoid.h"
 #include "VecGeom/volumes/UnplacedPolyhedron.h"
-
+#include "VecGeom/volumes/UnplacedGenTrap.h"
+#include "VecGeom/volumes/UnplacedCone.h"
+#include "VecGeom/volumes/UnplacedCutTube.h"
+#include "VecGeom/volumes/UnplacedHype.h"
+#include "VecGeom/volumes/UnplacedOrb.h"
+#include "VecGeom/volumes/UnplacedParaboloid.h"
+#include "VecGeom/volumes/UnplacedPolycone.h"
+#include "VecGeom/volumes/UnplacedTet.h"
 
 #include "VecGeom/volumes/UnplacedVolume.h"
 #include "VecGeom/volumes/SpecializedTessellated.h"
@@ -79,6 +86,13 @@ void* pt_Box_new(double hx, double hy, double hz)
     return static_cast<void *>(new vg::UnplacedBox(hx, hy, hz));
 }
 
+// Orb
+void *pt_Orb_new(double r)
+{
+    return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedOrb>(r));
+}
+
+
 void* pt_Tube_new(double rmin, double rmax, double z, double startphi, double deltaphi)
 {
     return static_cast<void *>(new vg::SUnplacedTube<>(rmin, rmax, z, startphi, deltaphi));
@@ -94,6 +108,16 @@ void* pt_Trapezoid_new(double x1, double x2, double y1, double y2, double z)
 {
     return static_cast<void *>(new vg::UnplacedTrapezoid(x1, x2, y1, y2, z));
 }
+
+// General_Trapezoid
+void* pt_GenTrapezoid_new(double dz, double theta, double phi, double dy1, double dx1, 
+                    double dx2, double Alpha1, double dy2, double dx3, double dx4, double Alpha2)
+{
+    return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedTrapezoid>(
+                       dz,  theta,  phi,  dy1,  dx1, 
+                     dx2,  Alpha1,  dy2,  dx3,  dx4,  Alpha2));
+  }
+
 
 
 void pt_Box_delete(void* obj)
@@ -151,6 +175,74 @@ void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, float *point)
     return static_cast<void *>(tsl);
 }
 
+void *pt_ArbTrapezoid_new(double (*v11), double (*v12), double (*v13), double (*v14), 
+                        double (*v21), double (*v22), double (*v23), double (*v24),
+                        double halfHeight)
+{
+    std::vector<double> verticesx;
+    verticesx.push_back(v11[0]);
+    verticesx.push_back(v12[0]);
+    verticesx.push_back(v13[0]);
+    verticesx.push_back(v14[0]);
+    verticesx.push_back(v21[0]);
+    verticesx.push_back(v22[0]);
+    verticesx.push_back(v23[0]);
+    verticesx.push_back(v24[0]);
+    std::vector<double> verticesy;
+    verticesy.push_back(v11[1]);
+    verticesy.push_back(v12[1]);
+    verticesy.push_back(v13[1]);
+    verticesy.push_back(v14[1]);
+    verticesy.push_back(v21[1]);
+    verticesy.push_back(v22[1]);
+    verticesy.push_back(v23[1]);
+    verticesy.push_back(v24[1]);
+    return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedGenTrap>(verticesx.data(), verticesy.data(), halfHeight));
+}
+
+// Cone
+void *pt_Cone_new(double rmin1, double rmax1, double rmin2, double rmax2, double dz, double phimin,
+               double deltaphi)
+{
+    return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedCone>(rmin1, rmax1, rmin2, rmax2, dz, phimin,
+              deltaphi));
+}
+
+// CutTube
+void *pt_CutTube_new(double rmin, double rmax, double halfHeight, double sphi, double dphi, 
+                  double (*botNormal), double (*topNormal))
+{
+    return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedCutTube>(rmin, rmax, halfHeight, sphi, dphi, botNormal[0],
+                           botNormal[1], botNormal[2], topNormal[0], topNormal[1], topNormal[2]));
+}
+
+// Hyperbolic_tube
+void *pt_HypeTube_new(double rmin, double rmax, double inst, double outst, double halfHeight)
+{
+  return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedHype>(
+    rmin, rmax, inst, outst, halfHeight));
+}
+
+// Paraboloid
+void *pt_Paraboloid_new(double rbot, double rtop, double halfHeight)
+{
+  return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedParaboloid>(
+                      rbot, rtop, halfHeight));
+}
+
+// Polycone
+void *pt_Polycone_new(double sphi, double dphi, int planeNum, double (*z), double (*rmin), double (*rmax))
+{
+  return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedPolycone>(
+                      sphi, dphi, planeNum, z, rmin, rmax));
+}
+
+// Tet
+void *pt_Tet_new(double (*p1), double (*p2), double (*p3), double (*p4))
+{
+  return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedTet>(
+                      p1, p2, p3, p4));
+}
 
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume)

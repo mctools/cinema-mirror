@@ -19,7 +19,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTStackManager.hh"
-
+#include "PTRandCanonical.hh"
+#include <bits/stdc++.h> 
 
 std::ostream& Prompt::operator << (std::ostream &o, const StackManager&s)
 {
@@ -43,10 +44,18 @@ void Prompt::StackManager::add(std::unique_ptr<Prompt::Particle> aParticle)
   m_stack.emplace_back(std::move(aParticle));
 }
 
-void Prompt::StackManager::addSecondary(const Prompt::Particle& aparticle)
+void Prompt::StackManager::addSecondary(const Prompt::Particle& aparticle, bool tosecond)
 {
-  m_stack.emplace_back(std::make_unique<Particle>(aparticle));
-  m_unweighted++;
+  if(tosecond)
+  {
+    //fixme it is here breaks the xs biasing mechanism and the weight is not corrected 
+    m_stack_second.emplace_back(std::make_unique<Particle>(aparticle));
+  }
+  else
+  {
+    m_stack.emplace_back(std::make_unique<Particle>(aparticle));
+    m_unweighted++;
+  }
 }
     
 void Prompt::StackManager::scalceSecondary(int lastidx, double factor)
@@ -54,6 +63,35 @@ void Prompt::StackManager::scalceSecondary(int lastidx, double factor)
   m_stack[m_stack.size()-1-lastidx]->scaleWeight(factor);
   m_unweighted--;
 }
+
+void Prompt::StackManager::normaliseSecondStack(long unsigned num)
+{
+  std::cout << "Normalising second stack (containing " << m_stack_second.size() << " particle )\n";
+  int toAdd = num - m_stack_second.size();
+  if(toAdd)
+  {
+    if(toAdd < 0) // deleting
+      m_stack_second.resize(num);
+    else // adding random neutrons
+    {
+      auto gen = Singleton<SingletonPTRand>::getInstance().getGenerator();
+
+      std::uniform_int_distribution<> distrib(0, m_stack_second.size()-1);
+
+      for(int i=0;i<toAdd;i++)
+        m_stack_second.emplace_back(std::make_unique<Particle>(*m_stack_second[distrib(*gen)].get()) );
+    }
+  }
+  std::cout << "Done normalisation\n";
+}
+
+void Prompt::StackManager::swapStack()
+{
+  if(!m_stack.empty())
+    PROMPT_THROW2(CalcError, "stack must be empty when swaping with the secondary stack");
+  m_stack.swap(m_stack_second);
+}
+
 
 void Prompt::StackManager::add(const Prompt::Particle& aparticle, unsigned number)
 {

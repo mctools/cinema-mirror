@@ -2,7 +2,7 @@
 ##                                                                            ##
 ##  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        ##
 ##                                                                            ##
-##  Copyright 2021-2024 Prompt developers                                     ##
+##  Copyright 2021-2022 Prompt developers                                     ##
 ##                                                                            ##
 ##  Licensed under the Apache License, Version 2.0 (the "License");           ##
 ##  you may not use this file except in compliance with the License.          ##
@@ -23,7 +23,6 @@ from ..Interface import *
 from .Mesh import _pt_Transformation3D_transform
 from copy import deepcopy
 from .scorer import Scorer
-from .solid import Solid
 
 __all__ = ['Volume', 'Transformation3D']
 
@@ -235,7 +234,7 @@ class Transformation3D:
 class Volume:
     scorerDict = {}
 
-    def __init__(self, volname, solid : Solid, matCfg=None, surfaceCfg=None):
+    def __init__(self, volname, solid, matCfg=None, surfaceCfg=None):
         self.volname = volname
         self.solid = solid
         self.child = []
@@ -247,7 +246,7 @@ class Volume:
         _pt_ResourceManager_addNewVolume(self.volid)
         
         if matCfg is None:
-            self.setMaterial('freegas::H1/1e-26kgm3') # set as the universe
+            self.setMaterial('freegas::H1/1e-26kgm3/H_is_1_H1') # set as the universe
         else:
             if isinstance(matCfg, str):
                 self.setMaterial(matCfg) 
@@ -270,9 +269,10 @@ class Volume:
     def addScorer(self, scorer : Scorer or str):
         import re
         if isinstance(scorer, str):
-            name = re.search(r'\s*name\s*=\s*\w*\s*;', scorer)
-            name = re.search(r'=.*;', name.group())
-            name = re.sub(r'[^\w]', '', name.group())
+            nameList = scorer.split(';')
+            name = [n for n in nameList if 'name' in n][0]
+            name = re.search(r'=.*', name)
+            name = re.sub(r'=', '', name.group()).strip()
             self.__class__.scorerDict[name] = scorer
             _pt_ResourceManager_addScorer(self.volid, scorer.encode('utf-8')) 
         else:
@@ -284,8 +284,6 @@ class Volume:
         _pt_ResourceManager_addSurface(self.volid, cfg.encode('utf-8')) 
 
     def placeChild(self, name, logVolume, transf=Transformation3D(0,0,0), scorerGroup=0):
-        if not isinstance(logVolume, Volume):
-            raise RuntimeError('logVolume is not an instance of class Volume')
         self.child.append(logVolume)
         _pt_Volume_placeChild(self.cobj, name.encode('utf-8'), logVolume.cobj, transf.cobj, scorerGroup)
         return self

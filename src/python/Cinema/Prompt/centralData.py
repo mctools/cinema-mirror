@@ -35,6 +35,12 @@ _pt_CentralData_setGidiPops = importFunc('pt_CentralData_setGidiPops', None, [ty
 _pt_CentralData_getGidiMap = importFunc('pt_CentralData_getGidiMap', type_cstr, [type_voidp] )
 _pt_CentralData_setGidiMap = importFunc('pt_CentralData_setGidiMap', None, [type_voidp, type_cstr] )
 
+_pt_CentralData_getEnableGidi = importFunc('pt_CentralData_getEnableGidi', type_bool, [type_voidp] )
+_pt_CentralData_setEnableGidi = importFunc('pt_CentralData_setEnableGidi', None, [type_voidp, type_bool] )
+
+_pt_CentralData_getEnableGidiPowerIteration = importFunc('pt_CentralData_getEnableGidiPowerIteration', type_bool, [type_voidp] )
+_pt_CentralData_setEnableGidiPowerIteration = importFunc('pt_CentralData_setEnableGidiPowerIteration', None, [type_voidp, type_bool] )
+
 
 @singleton
 class CentralData():
@@ -59,3 +65,17 @@ class CentralData():
     
     def setGidiMap(self, s):
         _pt_CentralData_setGidiMap(self.cobj, s.encode('utf-8'))
+
+    def getEnableGidi(self):
+        return _pt_CentralData_getEnableGidi(self.cobj)
+    
+    def setEnableGidi(self, b):
+        _pt_CentralData_setEnableGidi(self.cobj, b)
+
+    def getEnableGidiPowerIteration(self):
+        return _pt_CentralData_getEnableGidiPowerIteration(self.cobj)
+    
+    def setEnableGidiPowerIteration(self, b):
+        _pt_CentralData_setEnableGidiPowerIteration(self.cobj, b)
+    
+    

@@ -33,6 +33,7 @@ _pt_Launcher_getTrajSize = importFunc('pt_Launcher_getTrajSize', type_sizet, [ty
 _pt_Launcher_getTrajectory = importFunc('pt_Launcher_getTrajectory', None, [type_voidp, type_npdbl2d])
 _pt_Launcher_go = importFunc('pt_Launcher_go', None, [type_voidp, type_sizet, type_dbl, type_bool, type_bool, type_bool])
 _pt_Launcher_setGun = importFunc('pt_Launcher_setGun', None, [type_voidp, type_cstr])
+_pt_Launcher_goWithSecondStack = importFunc('pt_Launcher_goWithSecondStack', type_sizet, [type_voidp, type_sizet])
 
 _pt_ResourceManager_getHist = importFunc('pt_ResourceManager_getHist', type_voidp, [type_cstr])
 
@@ -67,23 +68,30 @@ class Launcher():
         if particles is None:
             v.show()
         else:
-            for i in range(particles):
-                if hasattr(gun, 'items'):
-                    self.setGun(gun.cfg)
+            if hasattr(gun, 'items'):
+                self.setGun(gun.cfg)
+                for i in range(particles):
                     self.go(1, recordTrj=True, timer=False, save2Dis=False)
-                elif isinstance(gun, str):
-                    self.setGun(gun)
-                    self.go(1, recordTrj=True, timer=False, save2Dis=False)
-                else:
-                    gun.generate()
-                    self.simOneEvent(recordTrj=True)                    
-                trj = self.getTrajectory()
-                try:
+                    trj = self.getTrajectory()
                     v.addTrj(trj)
-                except ValueError:
-                    # print(trj)
-                    # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
-                    pass
+            elif isinstance(gun, str):
+                self.setGun(gun)
+                for i in range(particles):
+                    self.go(1, recordTrj=True, timer=False, save2Dis=False)
+                    trj = self.getTrajectory()
+                    v.addTrj(trj)
+            else:
+                gun.generate()
+                for i in range(particles):
+                    self.simOneEvent(recordTrj=True)                    
+                    trj = self.getTrajectory()
+                    v.addTrj(trj)
+            # try:
+            #     v.addTrj(trj)
+            # except ValueError:
+            #     # print(trj)
+            #     # print("skip ValueError in File '/Prompt/scripts/prompt', in <module>, v.addLine(trj)")
+            #     pass
             v.show()
 
     def setGun(self, cfg):
@@ -101,6 +109,9 @@ class Launcher():
 
     def go(self, numPrimary, printPrecent=0.1, recordTrj=False, timer=True, save2Dis=True):
         _pt_Launcher_go(self.cobj, numPrimary, printPrecent, recordTrj, timer, save2Dis)
+
+    def goWithSecondStack(self, numPrimary):
+        return _pt_Launcher_goWithSecondStack(self.cobj, numPrimary)
 
 
     def getHist(self, cfg):

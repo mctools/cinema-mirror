@@ -61,7 +61,7 @@ set(Python_FIND_STRATEGY LOCATION)
 set(Python_ROOT_DIR ${PROJECT_SOURCE_DIR}/cinemavirenv/bin/python)
 find_package(Python REQUIRED COMPONENTS Interpreter)
 
-file(GLOB TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontests/*.py")
+file(GLOB_RECURSE TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontests/*.py")
 foreach(TS ${TESTFILES})
 	message(STATUS "Running ${Python_EXECUTABLE} ${TS}")
 	get_filename_component(EXCNAME  ${TS}  NAME_WE)

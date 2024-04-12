@@ -48,6 +48,7 @@ void pt_Launcher_getTrajectory(void* obj, double *trj);
 void pt_Launcher_go(void* obj, uint64_t numParticle, double printPrecent, bool recordTrj, bool timer, bool save2Disk);
 void pt_Launcher_setGun(void *obj, const char* cfg);
 void pt_Launcher_simOneEvent(void *obj, bool recordTrj);
+size_t pt_Launcher_goWithSecondStack(void *obj, uint64_t numParticle);
 
 // Prompt::HistBase
 void pt_HistBase_merge(void* obj, void* obj2);
@@ -124,6 +125,14 @@ void pt_CentralData_setGidiPops(void* obj, const char *s);
 
 const char * pt_CentralData_getGidiMap(void* obj);
 void pt_CentralData_setGidiMap(void* obj, const char *s);
+
+bool pt_CentralData_getEnableGidi(void* obj); 
+void pt_CentralData_setEnableGidi(void* obj, bool t);
+
+bool pt_CentralData_getEnableGidiPowerIteration(void* obj);
+void pt_CentralData_setEnableGidiPowerIteration(void* obj, bool t);
+
+double pt_nccalNumDensity(const char *s);  
 
 #ifdef __cplusplus
 }

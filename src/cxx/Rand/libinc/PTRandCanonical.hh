@@ -40,6 +40,7 @@ namespace Prompt {
     ~RandCanonical();
     double generate() const;
     void setSeed(uint64_t seed);
+    T*  getGenerator() { return m_generator.get(); }
     uint64_t getSeed() { return m_seed; };
 
   private:
