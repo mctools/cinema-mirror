@@ -29,10 +29,10 @@ class MySim(PromptMPI):
         problemlist.append([6.350, 'freegas::U/18.8gcm3/U_is_0.9650_U238_0.0350_U235;temp=293.6'])
         problemlist.append([3.175, 'freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'])
 
-        idx = 2
+        idx = 0
         fradius = problemlist[idx][0]
-        # lw = Material('freegas::H2O/1gcm3/H_is_H1/O_is_O16;temp=293.6') 
-        lw = Material('LiquidWaterH2O_T293.6K.ncmat;density=1gcm3;temp=293.6')      
+        lw = Material('freegas::H2O/1gcm3/H_is_H1/O_is_O16;temp=293.6') 
+        # lw = Material('LiquidWaterH2O_T293.6K.ncmat;density=1gcm3;temp=293.6')      
 
         fuel = Material(problemlist[idx][1]) 
 

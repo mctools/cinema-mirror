@@ -94,7 +94,6 @@ namespace Prompt {
     mutable double m_cacheEkin, m_cacheGidiXS;
     const double m_temperature, m_frac;
     MCGIDI::Sampling::Input *m_input;
-    // void com2lab(double ekin, double ekoutcm, double mu_cm, double phi_cm, double )
 
   };
 

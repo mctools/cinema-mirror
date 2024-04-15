@@ -30,7 +30,7 @@
 #include "PTSingleton.hh"
 #include "PTCentralData.hh"
 #include "PTLauncher.hh"
-
+#include "PTGIDI.hh"
 
 namespace MCGIDI
 {
@@ -44,25 +44,11 @@ namespace Prompt {
   class GIDIElasticModel: public GIDIModel{
   public:
     GIDIElasticModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
-              double temperature, double bias=1.0, double frac=1.0, double lowerlimt = 0., double upperlimt = std::numeric_limits<double>::max())
-    :GIDIModel(name, mcprotare, temperature, bias=1.0, frac, lowerlimt, upperlimt), m_ncscatt(nullptr)
-    {
-      unsigned numDigit = std::count_if(name.begin(), name.end(), 
-            [](unsigned char c){ return std::isdigit(c); } );
-
-      // freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6
-      std::string element = name.substr(0, name.size()-numDigit);
-      std::string cfgstr = "freegas::" + element + "/1gcm3/" + element + "_is_"+name+";temp="+std::to_string(temperature);
-      m_ncscatt = std::make_shared<NCrystalScat>(cfgstr);
-
-      std::cout << "GIDIElasticModel created " << cfgstr << std::endl;
-    }
+                    double temperature, double bias=1.0, double frac=1.0,
+                    double lowerlimt = 0., double upperlimt = std::numeric_limits<double>::max());
     virtual ~GIDIElasticModel() = default;
 
-    virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override
-    {
-      m_ncscatt->generate(ekin, dir, final_ekin, final_dir);
-    }
+    virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
 
   protected:
     std::shared_ptr<NCrystalScat> m_ncscatt;

@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from Cinema.Interface import plotStyle
 import numpy as np
 
+import os
+os.environ['OPENMC_CROSS_SECTIONS']='/home/caixx/git/openmc/data/endfb-viii.0-hdf5/cross_sections.xml'
 plotStyle()
 
 cdata=CentralData()
@@ -18,17 +20,22 @@ cdata.setGidiThreshold(5)
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(False)
 
-energy = [5e6, 6e6]
-# energy=6e6
+energy = [1e6, 10e6]
+energy=5e6
 partnum = 1e5
 loweredge=1e-3
 upperedge=30e6
 
-# loweredge=850
-# upperedge=1100
+numbin=3000
+numbin_mu=50
+# cfg='freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'
+# cfg='freegas::H/18gcm3/H_is_H1'
+cfg='freegas::U/18gcm3/U_is_U238'
+# cfg='freegas::C/18gcm3/C_is_C13'
+# cfg='freegas::Ag/18gcm3'
 
-numbin=1000
-cfg='freegas::U/18gcm3/U_is_U235'
+
+# cfg='Al_sg225.ncmat'
 # cfg='LiquidWaterH2O_T293.6K.ncmat;density=1gcm3;temp=293.6'
 
 class MySim(Prompt):
@@ -52,6 +59,7 @@ class MySim(Prompt):
 
         # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
         ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin, ptstate='EXIT').make(media)
+        media.addScorer(f'Scorer=Angular;name=SofAngle;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;ptstate=EXIT;linear=yes;min=-1;max=1;numbin={numbin_mu}')
         self.setWorld(world)
 
 
@@ -88,18 +96,9 @@ gun = MyGun(energy)
 # vis or production
 sim.simulate(gun, partnum)
 
-# sim.gatherHistData('volFlux').plot(show=False, log=True)
 
-sim.gatherHistData('ESpec').plot(show=False, log=True)
-
-# w=espec.getWeight()
-# hit=espec.getHit()
-# centre = espec.getCentre()
-
-# plt.loglog(centre, w)
-# plt.title(str(w.sum()))
-# plt.show()
-
+###############################################################################################
+# openmc
 
 import openmc
 from openmc.data import K_BOLTZMANN, NEUTRON_MASS
@@ -184,10 +183,10 @@ def run(energy, numPart):
     tally.scores = ['current']
 
 
-    mufilter = openmc.MuFilter(300)
+    mufilter = openmc.MuFilter(numbin_mu)
     tally2 = openmc.Tally(name='tally2')
-    tally2.filters = [ mufilter, particle_filter]
-    tally2.scores = ['events']
+    tally2.filters = [ surface_filter, mufilter, particle_filter]
+    tally2.scores = ['current']
 
     tallies = openmc.Tallies([tally, tally2])
     tallies.export_to_xml('tallies.xml')
@@ -196,57 +195,61 @@ def run(energy, numPart):
 
 
 
-def read_results(filename):
-    """Read the energy, mean, and standard deviation from the output
+def read_results(filename, tally, filter):
+    with openmc.StatePoint(filename) as sp:        
+        t = sp.get_tally(name=tally)
+        x = 0.5*(t.find_filter(filter).bins[:,1]+t.find_filter(filter).bins[:,0])
 
-    Parameters
-    ----------
-    code : {'openmc', 'mcnp', 'serpent'}
-        Code which produced the output file
-    filename : str
-        Path to the output file
+        # t = sp.get_tally(name='tally')
+        # x = 0.5*(t.find_filter(openmc.EnergyFilter).bins[:,1]+t.find_filter(openmc.EnergyFilter).bins[:,0])
 
-    Returns
-    -------
-    energy : numpy.ndarray
-        Energy bin values [MeV]
-    mean : numpy.ndarray
-        Sample mean of the tally
-    std_dev : numpy.ndarray
-        Sample standard deviation of the tally
-
-    """
-    with openmc.StatePoint(filename) as sp:
-        t = sp.get_tally(name='tally')
-        # print(t.__dict__)
-        # print(t.find_filter(openmc.EnergyFilter).bins.shape)
-        # raise RuntimeError()
-        x = 0.5*(t.find_filter(openmc.EnergyFilter).bins[:,1]+t.find_filter(openmc.EnergyFilter).bins[:,0])
         y = t.mean[:,0,0]
         std_dev = t.std_dev[:,0,0]
 
     return x, y, std_dev
- 
-def plot():
-    """Extract and plot the results
 
-    """
-    # Read results
-    path =  f'statepoint.1.h5'
-    x1, y1, sd = read_results(path)
 
-    # y1 /= np.diff(x1)*sum(y1)
-    print('y sum()', y1.sum())
+# def plot():
+#     """Extract and plot the results
 
-    # Set up the figure
-    # plt.figure(1, facecolor='w', figsize=(8,8))
-    plt.loglog(x1, y1*partnum,'-o', label=f'openmc {y1.sum()*partnum}')
-    plt.legend(loc=0)
-    plt.show()
+#     """
+#     # Read results
+#     path =  f'statepoint.1.h5'
+#     x1, y1, sd = read_results(path)
+
+#     # y1 /= np.diff(x1)*sum(y1)
+#     print('y sum()', y1.sum())
+
+#     # Set up the figure
+#     # plt.figure(1, facecolor='w', figsize=(8,8))
+#     plt.plot(x1, y1*partnum,'-o', label=f'openmc {y1.sum()*partnum}')
+#     plt.legend(loc=0)
+#     plt.show()
 
 run(energy, int(partnum))
 
+
+#################################################################################################################################
 # import os
 # os.system(f'openmc' )
-plot()
+# plot()
+
+sp = 'statepoint.1.h5' 
+# mu
+sim.gatherHistData('SofAngle').plot(show=False, log=False)
+
+x, y, std = read_results(sp, 'tally2', openmc.MuFilter) 
+plt.plot(x, y*partnum,'-o', label=f'openmc {y.sum()*partnum}')
+plt.legend(loc=0)
+
+
+##########################################################
+# energy
+plt.figure()
+sim.gatherHistData('ESpec').plot(show=False, log=True)
+x, y, std = read_results(sp, 'tally', openmc.EnergyFilter) 
+plt.plot(x, y*partnum,'-o', label=f'openmc {y.sum()*partnum}')
+plt.legend(loc=0)
+
+plt.show()
 

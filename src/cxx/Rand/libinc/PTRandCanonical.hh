@@ -60,4 +60,11 @@ namespace Prompt {
 #include "PTRandCanonical.tpp"
 
 
+inline double getRandNumber(void *obj) 
+{
+  return Prompt::Singleton<Prompt::SingletonPTRand>::getInstance().generate();
+}
+
+
+
 #endif
