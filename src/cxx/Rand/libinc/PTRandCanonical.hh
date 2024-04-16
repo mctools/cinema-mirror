@@ -65,6 +65,12 @@ inline double getRandNumber(void *obj)
   return Prompt::Singleton<Prompt::SingletonPTRand>::getInstance().generate();
 }
 
+inline double getZero(void *obj) 
+{
+  return 0.;
+}
+
+
 
 
 #endif

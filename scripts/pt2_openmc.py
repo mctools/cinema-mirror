@@ -66,8 +66,8 @@ def run(energy, numPart):
     settings.photon_transport = True
     cutoff=0.05
     settings.cutoff = {'energy_photon' : cutoff}
-    settings.export_to_xml( 'settings.xml')
     settings.max_tracks = settings.particles
+    settings.export_to_xml( 'settings.xml')
 
 
     # Define filters

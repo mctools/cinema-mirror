@@ -16,23 +16,29 @@ os.environ['OPENMC_CROSS_SECTIONS']='/home/caixx/git/openmc/data/endfb-viii.0-hd
 plotStyle()
 
 cdata=CentralData()
-cdata.setGidiThreshold(5)
+cdata.setGidiThreshold(-5)
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(False)
 
-energy = [1e6, 10e6]
-energy=5e6
-partnum = 1e5
-loweredge=1e-3
+energy = [5e6, 10e6]
+
+# energy=10e6
+partnum = 100000
+loweredge=1e-5
 upperedge=30e6
 
-numbin=3000
-numbin_mu=50
+numbin_en=3000
+numbin_mu=3000
+
+# cfg='freegas::Si/18gcm3'
+
 # cfg='freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'
-# cfg='freegas::H/18gcm3/H_is_H1'
+# cfg='freegas::H2O/1gcm3/H_is_H1/O_is_O16;temp=293.6'
+# cfg='freegas::H/1gcm3/H_is_H1;temp=293.6'
+
 cfg='freegas::U/18gcm3/U_is_U238'
 # cfg='freegas::C/18gcm3/C_is_C13'
-# cfg='freegas::Ag/18gcm3'
+# cfg='freegas::Bi/18gcm3'
 
 
 # cfg='Al_sg225.ncmat'
@@ -58,7 +64,7 @@ class MySim(Prompt):
         world.placeChild('media', media)
 
         # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
-        ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin, ptstate='EXIT').make(media)
+        ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='EXIT').make(media)
         media.addScorer(f'Scorer=Angular;name=SofAngle;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;ptstate=EXIT;linear=yes;min=-1;max=1;numbin={numbin_mu}')
         self.setWorld(world)
 
@@ -163,18 +169,19 @@ def run(energy, numPart):
     settings.particles = numPart
     settings.run_mode = 'fixed source'
     settings.batches = 1
-    settings.photon_transport = True
+    settings.photon_transport = False
     cutoff=0.05
     settings.cutoff = {'energy_photon' : cutoff}
     settings.export_to_xml( 'settings.xml')
     settings.max_tracks = settings.particles
+    
 
 
     # Define filters
     surface_filter = openmc.SurfaceFilter(cyl)
     particle_filter = openmc.ParticleFilter('neutron')
     energy_bins = np.logspace(np.log10(loweredge),
-                                np.log10(upperedge), numbin+1)
+                                np.log10(upperedge), numbin_en+1)
     energy_filter = openmc.EnergyFilter(energy_bins)
 
     # Create tallies and export to XML

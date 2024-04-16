@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 cdata=CentralData()
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(True)
+cdata.setGidiThreshold(-10)
 
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
@@ -20,8 +21,8 @@ class MySim(PromptMPI):
     def makeWorld(self):
 
         boxhsize = 25.4 # 1 inch
-        hlength = 1000
-        reflhthick = 10
+        hlength = 10000
+        reflhthick = 1
 
         problemlist = []
         # fuel rod radius and composition 

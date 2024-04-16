@@ -50,21 +50,21 @@ m_cacheEkin(0.),
 m_cacheGidiXS(0.),
 m_temperature(temperature),
 m_frac(frac),
-m_input(new MCGIDI::Sampling::Input(true, MCGIDI::Sampling::Upscatter::Model::none) )
+m_input(new MCGIDI::Sampling::Input(true, MCGIDI::Sampling::Upscatter::Model::B) )
 { 
 
   MCGIDI::Vector<MCGIDI::Protare *> protares(1);
   protares[0]= m_mcprotare.get();
   m_urr_info = new MCGIDI::URR_protareInfos(protares);
 
-
   m_input->m_temperature = const_boltzmann*temperature/Unit::keV;   // In keV/k;
 
 //     std::cout << "!!!!!!!!! m_input->m_temperature "  << m_input->m_temperature << std::endl;
 // abort();
   int numberOfReactions = m_mcprotare->numberOfReactions();
-  std::cout <<"Model " << m_modelName << " has " << numberOfReactions << " reactions"<< "\n";
-     
+  std::cout <<"Model " << m_modelName << " has " << numberOfReactions << " reactions"<< ". " ;
+  std::cout <<"URR_domainMin " << m_mcprotare->URR_domainMin( )  << "MeV,  URR_domainMax " << m_mcprotare->URR_domainMax()<< "MeV.\n " ;
+
   for( int i = 0; i < numberOfReactions; ++i ) 
   {
     auto reaction =  m_mcprotare->reaction(i);
@@ -93,19 +93,25 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
     return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
   else
-  {
-    
+  {    
     m_cacheEkin = ekin;
     double ekin_MeV = ekin*1e-6;
     int hashIndex = m_factory.getHashID(ekin_MeV);
-    //temperature unit here is keV/k 
-    // if( m_mcprotare->hasURR_probabilityTables( ) && ekin_MeV>m_mcprotare->URR_domainMin( ) && ekin_MeV<m_mcprotare->URR_domainMax( ) ) 
-    // {
-    //   m_urr_info->updateProtare(m_mcprotare.get(), ekin_MeV, getRandNumber, nullptr);
-    //   m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, 0, ekin_MeV, true );  
-    // }
-    // else
-    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, m_input->m_temperature*1e-3, ekin_MeV, true );  
+    if(m_mcprotare->hasURR_probabilityTables())
+    {
+      if(ekin_MeV>m_mcprotare->URR_domainMin() && ekin_MeV<m_mcprotare->URR_domainMax()) 
+      {
+        m_urr_info->updateProtare(m_mcprotare.get(), ekin_MeV, getRandNumber, nullptr);
+        m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex,  0, ekin_MeV, true );  
+      }
+      else
+      {
+        m_urr_info->updateProtare(m_mcprotare.get(), ekin_MeV, getZero, nullptr);
+        m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, 0, ekin_MeV, true );  
+      }
+    }
+    else
+      m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, m_input->m_temperature*1e-3, ekin_MeV, true );  
 
     return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
@@ -127,7 +133,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
   int hashIndex = m_factory.getHashID(ekin_MeV); //fixme, to remove if   pt_assert_always(ekin==m_cacheEkin)
   int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature*1e-3, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
-  
+
   MCGIDI::Reaction const *reaction = m_mcprotare->reaction( reactionIndex );
   pt_assert_always(m_mcprotare->threshold( reactionIndex ) < ekin_MeV);
 
@@ -147,8 +153,8 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
     {
      
       double labekin = aproduct.m_kineticEnergy*1e6;
-      Vector labdir(aproduct.m_px_vx, aproduct.m_py_vy, aproduct.m_pz_vz);
-      labdir.setMag(1.);
+      double i_speed= 1./sqrt(aproduct.m_px_vx*aproduct.m_px_vx + aproduct.m_py_vy*aproduct.m_py_vy + aproduct.m_pz_vz*aproduct.m_pz_vz);
+      Vector labdir(aproduct.m_px_vx*i_speed, aproduct.m_py_vy*i_speed, aproduct.m_pz_vz*i_speed);
 
       totalekin += labekin; // accumulate the energy that will be carried by a particle in the later simulation. 
 
@@ -168,10 +174,6 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
    
   }
   
-  // }
-  // std::cout <<"aaaa "<< seccount << std::endl;
-  // abort();
-
   // All secondary particles that are not simulated by prompt are contributed to the "energy deposition".
   // So, in the case that neutron is the only transporting particle, the energy deposition is calculated as incident neutorn kinetic energy 
   // plus Q and substrcut the total kinetic energy of all the tracking particles. 
@@ -179,7 +181,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   // printf("MT%d, deposition %e\n\n", reaction->ENDF_MT(), ekin+reaction->finalQ(ekin_MeV)*1e6-totalekin);
 
 
-  // Neutron die as absorption
+  // Kill neutron in an absorption
   if(secondaries.size()==0)
   {
     // essentially killing the current active particle in the launcher
@@ -197,8 +199,15 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
     // essentially killing the current active particle in the launcher
     final_ekin=ENERGYTOKEN_ABSORB;
 
+
+
     for(const auto &p: secondaries)
     {
+      if(m_factory.getCentralData().getEnableGidiPowerIteration() && p.getWeight()!=1.) 
+      {
+        PROMPT_THROW2(CalcError, "particle weight in gidi model is not unity.") 
+      }
+
       Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getCentralData().getEnableGidiPowerIteration());
     }
   }
@@ -300,15 +309,17 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
       std::cout << "label = " << iter->heatedCrossSection( ) << "  temperature = " << iter->temperature( ).value( ) << std::endl;
     }
 
+    
+
     // std::string label( temperatures[0].heatedCrossSection( ) ); // fixme: heated? gridded
     std::string label( temperatures[0].griddedCrossSection( ) );
 
     double temperature_K = temperatures[0].temperature( ).value()*Unit::MeV / const_boltzmann; 
 
     MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, delay, 20.0 );
-    // MC.setNuclearPlusCoulombInterferenceOnly( false );
+    // MC.setNuclearPlusCoulombInterferenceOnly( true );
     MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
-    // MC.set_ignoreENDF_MT5(true);
+    MC.set_ignoreENDF_MT5(false);
     MC.want_URR_probabilityTables(true);
 
 

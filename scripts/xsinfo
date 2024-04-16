@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('cfg', metavar='N', type=str, nargs='+', help='Prompt materil config')
 
-parser.add_argument('-c', '--switchingenergy', action='store',  nargs='+', type=float, default=[5],
+parser.add_argument('-c', '--switchingenergy', action='store',  nargs='+', type=float, default=[-5],
                     dest='switchingenergy', help='model switching energy')
 
 
@@ -36,7 +36,7 @@ print(args.switchingenergy)
 
 
 
-ekin = np.logspace(-5, np.log10(20e6), 100000)
+ekin = np.logspace(np.log10(20e6), -5, 100000)
 
 for cfg in args.cfg:
     if openmcfound:

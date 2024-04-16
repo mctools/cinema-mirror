@@ -181,8 +181,12 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
 
     if(enablegidi)
     {
+      std::cout << "enabled gidi model for " << cfgstr 
+      << ", the switching energy at " << gidimin << "eV\n.";
       // NCrystal models
-      m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0, gidimin));    
+      if(gidimin>0)
+         m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0, gidimin));    
+      
       // GIDI models 
       auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
       auto isotopes = nm.decompose(cfgstr);
@@ -190,7 +194,7 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
         std::cout << v << std::endl;
 
       auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-      auto models = gidifactory.createGIDIModel(isotopes, 1., gidimin);
+      auto models = gidifactory.createGIDIModel(isotopes, 1., gidimin<=0.?0:gidimin);
 
       for(const auto &v: models)
         m_compModel->addPhysicsModel(v);
@@ -218,6 +222,9 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
 
     if(enablegidi)
     {
+      std::cout << "enabled gidi model for " << cfgstr 
+      << ", the switching energy at " << gidimin << "eV\n.";
+
       // GIDI models
       auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
       auto isotopes = nm.decompose(nccfg);
@@ -226,13 +233,18 @@ void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
 
 
       auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-      auto models = gidifactory.createGIDIModel(isotopes, abs_bias, gidimin);
+      auto models = gidifactory.createGIDIModel(isotopes, abs_bias, gidimin<=0.?0:gidimin);
 
       for(const auto &v: models)
         m_compModel->addPhysicsModel(v);
 
       // NCrystal models 
-      m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0, gidimin));
+      if(gidimin>0.)
+      {
+        m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0, gidimin));
+      }
+      else
+        std::cout << "!The ncrystal elastic scatter is not created!\n";
     }
     else
     {

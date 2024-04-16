@@ -66,22 +66,31 @@ void Prompt::StackManager::scalceSecondary(int lastidx, double factor)
 
 void Prompt::StackManager::normaliseSecondStack(long unsigned num)
 {
+  if(m_stack_second.empty())
+    PROMPT_THROW(CalcError, "secondary stack is empty");
   std::cout << "Normalising second stack (containing " << m_stack_second.size() << " particle )\n";
   int toAdd = num - m_stack_second.size();
-  if(toAdd)
+
+  auto gen = Singleton<SingletonPTRand>::getInstance().getGenerator();
+
+  
+  if(toAdd < 0) // deleting
   {
-    if(toAdd < 0) // deleting
-      m_stack_second.resize(num);
-    else // adding random neutrons
+    std::shuffle(m_stack_second.begin(), m_stack_second.end(), *gen);
+    m_stack_second.resize(num);
+  }
+  else if(toAdd > 0)// adding random neutrons
+  {
+
+    std::uniform_int_distribution<> distrib(0, m_stack_second.size()-1);
+
+    for(int i=0;i<toAdd;i++)
     {
-      auto gen = Singleton<SingletonPTRand>::getInstance().getGenerator();
-
-      std::uniform_int_distribution<> distrib(0, m_stack_second.size()-1);
-
-      for(int i=0;i<toAdd;i++)
-        m_stack_second.emplace_back(std::make_unique<Particle>(*m_stack_second[distrib(*gen)].get()) );
+      Particle ap = *m_stack_second[distrib(*gen)].get();
+      m_stack_second.emplace_back(std::make_unique<Particle>(ap) );
     }
   }
+  
   std::cout << "Done normalisation\n";
 }
 

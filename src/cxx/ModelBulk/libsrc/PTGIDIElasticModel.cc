@@ -29,14 +29,14 @@ void Prompt::GIDIElasticModel::generate(double ekin, const Vector &dir, double &
 
     // m_ncscatt->generate(ekin, dir, final_ekin, final_dir);
 
-  // if(ekin<m_mcprotare->URR_domainMin( )*2)
-  //   m_ncscatt->generate(ekin, dir, final_ekin, final_dir);
-  // else
+  if(ekin<2)
+    m_ncscatt->generate(ekin, dir, final_ekin, final_dir);
+  else
   {
     GIDIModel::generate(ekin, dir, final_ekin, final_dir);
   }
 
-  // final_dir.normalise();
+  // final_ekin=-1.;
 
 
 }
