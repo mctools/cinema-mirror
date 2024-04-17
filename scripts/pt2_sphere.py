@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from Cinema.Interface import plotStyle
 
 plotStyle()
+import os
+os.environ['OPENMC_CROSS_SECTIONS']='/home/caixx/git/openmc/data/endfb-viii.0-hdf5/cross_sections.xml'
 
 cdata=CentralData()
 cdata.setGidiThreshold(-5)
@@ -25,10 +27,11 @@ upperedge=30e6
 numbin_en=300
 # cfg='freegas::H2O/1gcm3/H_is_1_H1/O_is_1_O16'
 # cfg='freegas::H/1gcm3/H_is_1_H1'
-# cfg='freegas::O/1gcm3/O_is_O16'
+cfg='freegas::O/1e-1gcm3/O_is_O16'
 # cfg='freegas::U/1gcm3/U_is_U235'
-cfg='freegas::U/1gcm3/U_is_U238'
+# cfg='freegas::U/1gcm3/U_is_U238'
 # cfg='freegas::C/1gcm3/C_is_1_C13;temp=293.6'
+# cfg='freegas::Ag/1gcm3'
 
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:

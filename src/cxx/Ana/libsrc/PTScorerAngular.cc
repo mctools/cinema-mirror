@@ -22,11 +22,14 @@
 
 Prompt::ScorerAngular::ScorerAngular(const std::string &name, const Vector &samplePos, const Vector &refDir,
       double sourceSampleDist, double mu_min, double mu_max, unsigned numbin, ScorerType stype, bool linear)
-:Scorer1D("ScorerAngular_" + name, stype, std::make_unique<Hist1D>("ScorerAngular_" + name, mu_min, mu_max, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir.unit()), 
+:Scorer1D("ScorerAngular_" + name, stype, std::make_unique<Hist1D>("ScorerAngular_" + name, 
+mu_min==-1?mu_min-1e-14:mu_min, 
+mu_max==1?mu_max+1e-14:mu_max, 
+numbin, linear)), m_samplePos(samplePos), m_refDir(refDir.unit()), 
 m_sourceSampleDist(sourceSampleDist)
 {
-  if(mu_max>1 || mu_min<-1 || mu_min>=mu_max)
-    PROMPT_THROW2(BadInput, "angular range should be within 0 to 180 degrees" )
+  // if(mu_max>1 || mu_min<-1 || mu_min>=mu_max)
+  //   PROMPT_THROW2(BadInput, "angular range should be within 0 to 180 degrees" )
 }
 
 Prompt::ScorerAngular::~ScorerAngular()

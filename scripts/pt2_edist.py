@@ -23,12 +23,12 @@ cdata.setEnableGidiPowerIteration(False)
 # energy = [5e6, 10e6]
 
 energy=10e6
-partnum = 100000
+partnum = 1e6
 loweredge=1e-5
 upperedge=30e6
 
 numbin_en=300
-numbin_mu=10
+numbin_mu=300
 
 # cfg='freegas::Th/18gcm3'
 
@@ -37,12 +37,12 @@ numbin_mu=10
 # cfg='freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'
 # cfg='freegas::H2O/1gcm3/H_is_H1/O_is_O16;temp=293.6'
 # cfg='freegas::H/1gcm3/H_is_H1;temp=293.6'
-# cfg='freegas::O/18gcm3/O_is_O16'
+cfg='freegas::O/1gcm3/O_is_O16'
 
 # cfg='freegas::U/18gcm3/U_is_U235'
 # cfg='freegas::C/18gcm3/C_is_C13'
 # cfg='freegas::Bi/18gcm3'
-cfg='freegas::U/18gcm3/U_is_U235'
+# cfg='freegas::U/18gcm3/U_is_U235'
 
 
 # cfg='Al_sg225.ncmat'
@@ -53,7 +53,7 @@ class MySim(Prompt):
         super().__init__(seed)   
 
     def makeWorld(self):
-        size = 1e-12
+        size = 1e-6
 
         world = Volume("world", Tube(0, size, 1.1e50))
         # lw = Material('freegas::He/1gcm3/He_is_1_He3') 
