@@ -20,25 +20,29 @@ cdata.setGidiThreshold(-5)
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(False)
 
-energy = [5e6, 10e6]
+# energy = [5e6, 10e6]
 
-# energy=10e6
+energy=10e6
 partnum = 100000
 loweredge=1e-5
 upperedge=30e6
 
-numbin_en=3000
-numbin_mu=3000
+numbin_en=300
+numbin_mu=10
+
+# cfg='freegas::Th/18gcm3'
 
 # cfg='freegas::Si/18gcm3'
 
 # cfg='freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'
 # cfg='freegas::H2O/1gcm3/H_is_H1/O_is_O16;temp=293.6'
 # cfg='freegas::H/1gcm3/H_is_H1;temp=293.6'
+# cfg='freegas::O/18gcm3/O_is_O16'
 
-cfg='freegas::U/18gcm3/U_is_U238'
+# cfg='freegas::U/18gcm3/U_is_U235'
 # cfg='freegas::C/18gcm3/C_is_C13'
 # cfg='freegas::Bi/18gcm3'
+cfg='freegas::U/18gcm3/U_is_U235'
 
 
 # cfg='Al_sg225.ncmat'

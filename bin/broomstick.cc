@@ -232,7 +232,7 @@ void main2( int argc, char **argv ) {
 
     GIDI::Map::Map map( "/home/caixx/git/cinema/external/ptdata/all.map", pops );
 
-    GIDI::Protare *protare =  (GIDI::Protare *) map.protare( construction, pops, "n", "U235" ) ;
+    GIDI::Protare *protare =  (GIDI::Protare *) map.protare( construction, pops, "n", "U236" ) ;
 
     // GIDI::Transporting::Settings incompleteParticlesSetting( protare->projectile( ).ID( ), GIDI::Transporting::DelayedNeutrons::on );
     // std::set<std::string> incompleteParticles;
@@ -244,11 +244,11 @@ void main2( int argc, char **argv ) {
     // std::cout << std::endl;
 
     std::string productID = "n";
-    long numberOfSamples = 100000;
+    long numberOfSamples = 1000000;
     long numberOfBins = 10;
 
     int reactionIndex = -1;
-    double energy_in = 1;
+    double energy_in = 10;
 
     GIDI::Styles::TemperatureInfos temperatures = protare->temperatures( );
     std::string label( temperatures[0].heatedCrossSection( ) );

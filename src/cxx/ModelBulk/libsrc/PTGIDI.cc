@@ -321,8 +321,7 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
     MC.set_ignoreENDF_MT5(false);
     MC.want_URR_probabilityTables(true);
-
-
+    MC.setThrowOnError( false );
    
 
     if( gidiprotare->protareType( ) != GIDI::ProtareType::single ) {

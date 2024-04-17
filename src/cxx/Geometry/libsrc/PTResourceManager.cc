@@ -152,6 +152,7 @@ void Prompt::ResourceManager::addScorer(size_t volID, const std::string& cfg)
     it_vol->second->entry_scorers.push_back(sc);
     it_vol->second->propagate_scorers.push_back(sc);
     it_vol->second->exit_scorers.push_back(sc);
+    it_vol->second->absorb_scorers.push_back(sc);
     std::cout << "Added ENTRY2EXIT type scorer: " << sc->getName() << std::endl;
   }
   else
