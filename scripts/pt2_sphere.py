@@ -27,11 +27,12 @@ upperedge=30e6
 numbin_en=300
 # cfg='freegas::H2O/1gcm3/H_is_1_H1/O_is_1_O16'
 # cfg='freegas::H/1gcm3/H_is_1_H1'
-cfg='freegas::O/1e-1gcm3/O_is_O16'
+cfg='freegas::O/1gcm3/O_is_O16'
 # cfg='freegas::U/1gcm3/U_is_U235'
 # cfg='freegas::U/1gcm3/U_is_U238'
 # cfg='freegas::C/1gcm3/C_is_1_C13;temp=293.6'
 # cfg='freegas::Ag/1gcm3'
+# cfg='freegas::H/.1gcm3/H_is_H1'
 
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
@@ -39,19 +40,14 @@ class MySim(PromptMPI):
 
     def makeWorld(self):
 
-        world = Volume("world", Box(400, 400, 400))
-
-        # lw = Material('freegas::He/1gcm3/He_is_1_He3') 
-        # lw = Material('freegas::B/1gcm3/B_is_1_B10') 
-        # lw = Material('freegas::Li/1gcm3/Li_is_1_Li6') 
+        # world = Volume("world", Box(400, 400, 400))
         lw = Material(cfg) 
+        world = Volume("sphere", Sphere(0, 300), matCfg=lw)
 
-        lw.setBiasScat(1.)
-        lw.setBiasAbsp(1)
-        sphere = Volume("sphere", Sphere(0, 300), matCfg=lw)
-        world.placeChild('sphere', sphere)
+        # sphere = Volume("sphere", Sphere(0, 300), matCfg=lw)
+        # world.placeChild('sphere', sphere)
 
-        VolFluenceHelper('spct', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='ENTRY2EXIT').make(sphere)
+        VolFluenceHelper('spct', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='ENTRY2EXIT').make(world)
         # ESpectrumHelper('escap', min=1e-5, max=20e6, ptstate='EXIT').make(sphere)
 
         self.setWorld(world)

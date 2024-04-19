@@ -186,7 +186,7 @@ class Hist1D(HistBase):
             if label is None:
                 label = f'Weight {w.sum()}'
             # plt.errorbar(center, w, yerr=err, fmt='-', label=label)
-            plt.plot(center, w, label=label)
+            plt.plot(center, w, '-s', label=label)
             if log:
                 plt.yscale('log')
                 plt.xscale('log')

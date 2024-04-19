@@ -319,7 +319,7 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, delay, 20.0 );
     // MC.setNuclearPlusCoulombInterferenceOnly( true );
     MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
-    MC.set_ignoreENDF_MT5(false);
+    MC.set_ignoreENDF_MT5(true);
     MC.want_URR_probabilityTables(true);
     MC.setThrowOnError( false );
    
