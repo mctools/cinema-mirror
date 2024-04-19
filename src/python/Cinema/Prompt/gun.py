@@ -20,14 +20,14 @@
 
 from ..Interface import *
 
-_pt_PythonGun_new = importFunc('pt_PythonGun_new', type_voidp, [type_pyobject])
+_pt_PythonGun_new = importFunc('pt_PythonGun_new', type_voidp, [type_pyobject, type_int])
 _pt_PythonGun_delete = importFunc('pt_PythonGun_delete', None, [type_voidp])
 _pt_PythonGun_pushToStack = importFunc('pt_PythonGun_pushToStack', None, [type_voidp, type_npdbl1d])
 
 
 class PythonGun():
-    def __init__(self):
-        self.cobj = _pt_PythonGun_new(self)
+    def __init__(self, pdg):
+        self.cobj = _pt_PythonGun_new(self, pdg)
         
     def __del__(self):
         _pt_PythonGun_delete(self.cobj)

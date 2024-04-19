@@ -47,17 +47,6 @@ Prompt::BulkMaterialProcess::~BulkMaterialProcess() {}
 
 double Prompt::BulkMaterialProcess::macroCrossSection(const Prompt::Particle &particle) const
 {
-  // if(m_compModel->containOriented())
-  // {
-  //   auto &activeVolume = Singleton<ActiveVolume>::getInstance();
-  //
-  //   std::cout << "global dir " << particle.getDirection() << ", pos " << particle.getPosition() << std::endl;
-  //   std::cout << "local dir " << activeVolume.getTranslator().global2Local_direction(particle.getDirection())
-  //             << ", pos " << activeVolume.getTranslator().global2Local(particle.getPosition()) << std::endl;
-  //   std::cout << "local dir back " << activeVolume.getTranslator().local2Global_direction(particle.getDirection())
-  //         << ", pos " << activeVolume.getTranslator().local2Global(particle.getPosition()) << std::endl;
-  // }
-
   double ekin = particle.hasEffEnergy() ? particle.getEffEKin() : particle.getEKin();
   const auto &dir = particle.hasEffEnergy() ? particle.getEffDirection() : particle.getDirection();
   return m_numdensity * m_compModel->totalCrossSection(ekin, dir);
@@ -66,7 +55,7 @@ double Prompt::BulkMaterialProcess::macroCrossSection(const Prompt::Particle &pa
 void Prompt::BulkMaterialProcess::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
 {
   if (m_compModel->getSupportedGPD() != particle.getPGD())
-    PROMPT_THROW2(CalcError, "BulkMaterialProcess " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
+    PROMPT_THROW2(CalcError, "BulkMaterialProcess::sampleFinalState " << m_name << " does not support particle " << particle.getPGD() << ", " << m_compModel->getSupportedGPD());
 
   if (!particle.isAlive())
     PROMPT_THROW(CalcError, "Particle is not alive");
@@ -150,7 +139,7 @@ void Prompt::BulkMaterialProcess::sampleFinalState(Prompt::Particle &particle, d
 double Prompt::BulkMaterialProcess::sampleStepLength(const Prompt::Particle &particle) const
 {
   if (m_compModel->getSupportedGPD() != particle.getPGD())
-    PROMPT_THROW2(CalcError, "BulkMaterialProcess " << m_name << " does not support particle " << particle.getPGD() << " " << m_compModel->getSupportedGPD());
+    PROMPT_THROW2(CalcError, "BulkMaterialProcess::sampleStepLength " << m_name << " does not support particle " << particle.getPGD() << ", " << m_compModel->getSupportedGPD());
 
   double mxs = macroCrossSection(particle);
   if (mxs)

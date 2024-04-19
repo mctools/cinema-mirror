@@ -78,8 +78,8 @@ sim = MySim(seed=1010)
 sim.makeWorld()
 
 class MyGun(PythonGun):
-    def __init__(self, ekin):
-        super().__init__()
+    def __init__(self, pdg, ekin):
+        super().__init__(pdg)
         self.ekin = ekin
 
     def samplePosition(self):
@@ -93,7 +93,7 @@ class MyGun(PythonGun):
             return self.ekin
 
 
-gun = MyGun(energy)
+gun = MyGun(22, energy)
 
 # gun = SimpleThermalGun()
 # gun.setEnergy(energy)

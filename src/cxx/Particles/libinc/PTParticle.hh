@@ -36,8 +36,8 @@ namespace Prompt {
   public:
     enum class KillType {ABSORB, BIAS, SCORE, RT_ABSORB };
   public:
-    Particle();
-    Particle(double ekin, const Vector& dir, const Vector& pos);
+    Particle(int pdg=const_neutron_pgd);
+    Particle(double ekin, const Vector& dir, const Vector& pos, int pdg=const_neutron_pgd);
     Particle(const Particle& p);
 
     virtual ~Particle(){};
@@ -104,15 +104,21 @@ namespace Prompt {
 }
 
 
-inline Prompt::Particle::Particle()
-  :m_ekin0(0.), m_ekin(0.), m_effekin(0.), m_time(0.), m_dir(), m_effdir(), m_pos(), m_pgd(0),
+inline Prompt::Particle::Particle(int pdg)
+  :m_ekin0(0.), m_ekin(0.), m_effekin(0.), m_time(0.), m_dir(), m_effdir(), m_pos(), m_pgd(pdg),
   m_weight(1.), m_rest_mass(0.), m_alive(true), m_eventid(0), m_id(0), m_parentid(0), m_counter(0)
-{}
+{
+  if(m_pgd == const_neutron_pgd)
+    m_rest_mass = const_neutron_mass_evc2;
+}
 
-inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& pos)
-  :m_ekin0(ekin), m_ekin(ekin), m_effekin(0.), m_time(0.), m_dir(dir), m_effdir(), m_pos(pos), m_pgd(0),
+inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& pos, int pdg)
+  :m_ekin0(ekin), m_ekin(ekin), m_effekin(0.), m_time(0.), m_dir(dir), m_effdir(), m_pos(pos), m_pgd(pdg),
   m_weight(1.), m_rest_mass(0), m_alive(true), m_eventid(0), m_id(0), m_parentid(0), m_counter(0)
 {
+  if(m_pgd == const_neutron_pgd)
+    m_rest_mass = const_neutron_mass_evc2;
+
   m_dir.normalise();
 }
 

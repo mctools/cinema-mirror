@@ -53,7 +53,7 @@ namespace Prompt {
 
   constexpr int const_neutron_pgd = 2112;
   constexpr int const_proton_pgd = 2212;
-  constexpr int const_gamma_pgd = 22;
+  constexpr int const_photon_pgd = 22;
   constexpr double const_deg2rad = M_PI/180;
   constexpr double const_rad2deg = 180/M_PI;
 

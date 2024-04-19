@@ -7,7 +7,7 @@
 namespace Prompt {
   class PythonGun : public PrimaryGun {
   public:
-    PythonGun();
+    PythonGun(int pdg);
     virtual ~PythonGun(); 
     virtual std::unique_ptr<Particle> generate() override
     { PROMPT_THROW(CalcError, "std::unique_ptr<Particle> generate()  is not implemented"); };
@@ -29,7 +29,7 @@ namespace Prompt {
 extern "C" {
 #endif
 
-  void* pt_PythonGun_new();
+  void* pt_PythonGun_new(const int pdg);
   void pt_PythonGun_delete(void *obj);
   void pt_PythonGun_pushToStack(void *obj, double *pdata);
 
