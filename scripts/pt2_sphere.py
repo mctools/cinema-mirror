@@ -19,7 +19,7 @@ cdata.setGidiThreshold(-5)
 cdata.setEnableGidi(True)
 
 partnum = int(1e6)
-energy = 1e7
+energy = 1e4
 
 loweredge=1e-5
 upperedge=30e6

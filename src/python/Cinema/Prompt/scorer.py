@@ -69,7 +69,7 @@ class TOF(ConfigString):
         self.cfg_max = 0.008
         self.cfg_numbin = 100
         self.cfg_ptstate = 'ENTRY'
-        
+
 class VolFluence(ConfigString):
     def __init__(self) -> None:
         super().__init__()
@@ -135,12 +135,47 @@ class VolFluenceHelper(ScorerHelper):
 
 # DepositionHelper is a special class that skipped the traditional string based initialisation.
 # A C++ object is directly created in  
-class DepositionHelper(ScorerHelper):
-    def __init__(self, name, min, max, numbin, ptstate) -> None:
-        super().__init__(name, min, max, numbin, ptstate)
+from ..Interface import *
+_pt_ScorerDeposition_new = importFunc('pt_ScorerDeposition_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_int, type_bool])
+
+
+
+class DepositionHelper():
+    def __init__(self, name, min, max, numbin, ptstate, linear=False) -> None:
+        self.name = name
+        self.min =min
+        self.max = max
+        self.numbin = numbin
+        self.ptstate = ptstate
+        self.linear = linear
 
     def make(self, vol):
-        vol.addScorer(self.score.cfg)
+        # enum class ScorerType {SURFACE, ENTRY, PROPAGATE, EXIT, ENTRY2EXIT, ABSORB};
+
+        if self.ptstate=='SURFACE':
+            ptstate=0
+        elif self.ptstate=='ENTRY':
+            ptstate=1
+        elif self.ptstate=='PROPAGATE':
+            ptstate=2
+        elif self.ptstate=='EXIT':
+            ptstate=3
+        elif self.ptstate=='ENTRY2EXIT':
+            ptstate=4
+        elif self.ptstate=='ABSORB':
+            ptstate=5
+        else:
+            raise RuntimeError(f'scorer type {self.score.cfg_ptstate} is undifined') 
+        
+        cobj = _pt_ScorerDeposition_new(self.name.encode('utf-8'), 
+                                        self.min,
+                                        self.max,
+                                        self.numbin,
+                                        ptstate,
+                                        self.linear)
+
+
+        vol.addScorer(self, cobj)
 
 
 

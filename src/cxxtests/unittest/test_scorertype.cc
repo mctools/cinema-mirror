@@ -18,47 +18,27 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <limits>
+#include "../doctest.h"
 
-#include "PTNCrystalAbs.hh"
-#include "PTUnitSystem.hh"
-#include "PTRandCanonical.hh"
-#include "PTLauncher.hh"
+#include "PTCfgParser.hh"
+#include "PTSingleton.hh"
+#include "PTUtils.hh"
 
+namespace pt = Prompt;
+#include <typeinfo>
+#include <iostream>
+#include <vector>
 
-Prompt::NCrystalAbs::NCrystalAbs(const std::string &cfgstring, double bias,
-    double lowerlimt, double upperlimt)
-:Prompt::DiscreteModel(cfgstring+"_abs", const_neutron_pgd, lowerlimt, upperlimt, bias),
-                      m_abs(NCrystal::createAbsorption(cfgstring))
+#include "PTScorer.hh"
+// the order of scorer type is fixed, so that C++ and python can communicate.
+// Don't change the order for nothing. 
+TEST_CASE("ScorerType")
 {
-  if( m_abs.isOriented() ) {
-    PROMPT_THROW(CalcError, "Absorption process is not oriented");
-  }
-}
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::SURFACE) == 0 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::ENTRY) ==  1 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::PROPAGATE) ==  2 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::EXIT) ==  3 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::ENTRY2EXIT) ==  4 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::ABSORB) ==  5 );
 
-Prompt::NCrystalAbs::~NCrystalAbs()
-{
-  std::cout<<"Destructing absorption physics " << m_modelName <<std::endl;
-}
-
-
-double Prompt::NCrystalAbs::getCrossSection(double ekin) const
-{
-  if (!m_modelvalid.ekinValid(ekin))
-     return 0.;
-
-  return m_abs.crossSectionIsotropic(NCrystal::NeutronEnergy(ekin)).get()*Unit::barn*m_bias;
-}
-
-double Prompt::NCrystalAbs::getCrossSection(double ekin, const Prompt::Vector &dir) const
-{
-  return getCrossSection(ekin);
-}
-
-
-void Prompt::NCrystalAbs::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
-{
-  // fixme: this model does not include the Q valude
-  Singleton<Launcher>::getInstance().getCurrentParticle().setDeposition(ekin);
-  final_ekin=ENERGYTOKEN_ABSORB;
 }

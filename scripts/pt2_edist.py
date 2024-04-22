@@ -3,7 +3,7 @@
 from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.geo import Volume
 from Cinema.Prompt.solid import Box, Sphere, Tube
-from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper
+from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper, DepositionHelper
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun, SimpleThermalGun, PythonGun
 from Cinema.Prompt.centralData import CentralData 
@@ -13,6 +13,9 @@ import numpy as np
 
 import os
 os.environ['OPENMC_CROSS_SECTIONS']='/home/caixx/git/openmc/data/endfb-viii.0-hdf5/cross_sections.xml'
+
+# export PATH="/home/caixx/git/openmc/build/bin/:$PATH" 
+
 plotStyle()
 
 cdata=CentralData()
@@ -22,13 +25,13 @@ cdata.setEnableGidiPowerIteration(False)
 
 # energy = [5e6, 10e6]
 
-energy=10e6
-partnum = 1e6
+energy=1000
+partnum = 1e3
 loweredge=1e-5
 upperedge=30e6
 
 numbin_en=300
-numbin_mu=300
+numbin_mu=10
 
 # cfg='freegas::Th/18gcm3'
 
@@ -70,6 +73,8 @@ class MySim(Prompt):
         # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
         ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='EXIT').make(media)
         media.addScorer(f'Scorer=Angular;name=SofAngle;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;ptstate=EXIT;linear=yes;min=-1;max=1;numbin={numbin_mu}')
+
+        DepositionHelper('dep', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='PROPAGATE', linear=False).make(media)
         self.setWorld(world)
 
 
@@ -93,7 +98,7 @@ class MyGun(PythonGun):
             return self.ekin
 
 
-gun = MyGun(22, energy)
+gun = MyGun(int(2112), energy)
 
 # gun = SimpleThermalGun()
 # gun.setEnergy(energy)
@@ -199,7 +204,12 @@ def run(energy, numPart):
     tally2.filters = [ surface_filter, mufilter, particle_filter]
     tally2.scores = ['current']
 
-    tallies = openmc.Tallies([tally, tally2])
+    cellfilter = openmc.CellFilter(inner_cyl_right)
+    tally3 = openmc.Tally(name='tally3')
+    tally3.filters = [ energy_filter, cellfilter, particle_filter ]
+    tally3.scores = ['flux']
+
+    tallies = openmc.Tallies([tally, tally2, tally3])
     tallies.export_to_xml('tallies.xml')
 
     openmc.run(tracks=False)
@@ -261,6 +271,14 @@ sim.gatherHistData('ESpec').plot(show=False, log=True)
 x, y, std = read_results(sp, 'tally', openmc.EnergyFilter) 
 plt.plot(x, y*partnum,'-o', label=f'openmc {y.sum()*partnum}')
 plt.legend(loc=0)
+
+
+plt.figure()
+sim.gatherHistData('dep').plot(show=False, log=True)
+x, y, std = read_results(sp, 'tally3', openmc.EnergyFilter) 
+plt.plot(x, y*partnum,'-o', label=f'openmc {y.sum()*partnum}')
+plt.legend(loc=0)
+
 
 plt.show()
 

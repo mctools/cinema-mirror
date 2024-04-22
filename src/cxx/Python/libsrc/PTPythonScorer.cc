@@ -18,47 +18,17 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <limits>
+#include "PTPythonScorer.hh"
+#include "PTScorerDeposition.hh"
 
-#include "PTNCrystalAbs.hh"
-#include "PTUnitSystem.hh"
-#include "PTRandCanonical.hh"
-#include "PTLauncher.hh"
+namespace pt = Prompt;
 
 
-Prompt::NCrystalAbs::NCrystalAbs(const std::string &cfgstring, double bias,
-    double lowerlimt, double upperlimt)
-:Prompt::DiscreteModel(cfgstring+"_abs", const_neutron_pgd, lowerlimt, upperlimt, bias),
-                      m_abs(NCrystal::createAbsorption(cfgstring))
+//ScorerDeposition
+void* pt_ScorerDeposition_new(const char* name, double xmin, double xmax, unsigned nbins, int type, bool linear)
 {
-  if( m_abs.isOriented() ) {
-    PROMPT_THROW(CalcError, "Absorption process is not oriented");
-  }
-}
-
-Prompt::NCrystalAbs::~NCrystalAbs()
-{
-  std::cout<<"Destructing absorption physics " << m_modelName <<std::endl;
+  pt::ScorerDeposition::ScorerType t = static_cast<pt::ScorerDeposition::ScorerType>(type); 
+  return static_cast<void *>(new pt::ScorerDeposition(name, xmin, xmax, nbins, t, linear));
 }
 
 
-double Prompt::NCrystalAbs::getCrossSection(double ekin) const
-{
-  if (!m_modelvalid.ekinValid(ekin))
-     return 0.;
-
-  return m_abs.crossSectionIsotropic(NCrystal::NeutronEnergy(ekin)).get()*Unit::barn*m_bias;
-}
-
-double Prompt::NCrystalAbs::getCrossSection(double ekin, const Prompt::Vector &dir) const
-{
-  return getCrossSection(ekin);
-}
-
-
-void Prompt::NCrystalAbs::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
-{
-  // fixme: this model does not include the Q valude
-  Singleton<Launcher>::getInstance().getCurrentParticle().setDeposition(ekin);
-  final_ekin=ENERGYTOKEN_ABSORB;
-}

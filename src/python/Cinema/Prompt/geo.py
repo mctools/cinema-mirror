@@ -40,7 +40,7 @@ _pt_Transformlation3D_setRotation  = importFunc('pt_Transformlation3D_setRotatio
 
 #resource manager 
 _pt_ResourceManager_addNewVolume = importFunc('pt_ResourceManager_addNewVolume', None, [type_uint])
-_pt_ResourceManager_addScorer = importFunc('pt_ResourceManager_addScorer', None, [type_uint, type_cstr])
+_pt_ResourceManager_addScorer = importFunc('pt_ResourceManager_addScorer', None, [type_uint, type_cstr, type_voidp])
 _pt_ResourceManager_addSurface = importFunc('pt_ResourceManager_addSurface', None, [type_uint, type_cstr])
 _pt_ResourceManager_addPhysics = importFunc('pt_ResourceManager_addPhysics', None, [type_uint, type_cstr])
 
@@ -211,19 +211,23 @@ class Volume:
     def setMaterial(self, cfg : str):
         _pt_ResourceManager_addPhysics(self.volid, cfg.encode('utf-8')) # set as the universe
 
-    def addScorer(self, scorer : Scorer or str):
-        import re
-        if isinstance(scorer, str):
-            nameList = scorer.split(';')
-            name = [n for n in nameList if 'name' in n][0]
-            name = re.search(r'=.*', name)
-            name = re.sub(r'=', '', name.group()).strip()
-            self.__class__.scorerDict[name] = scorer
-            _pt_ResourceManager_addScorer(self.volid, scorer.encode('utf-8')) 
+    def addScorer(self, scorer : Scorer or str, cppScorer=ctypes.c_voidp()):
+        if isinstance(cppScorer, int):
+            self.__class__.scorerDict[scorer.name] = scorer.name
+            _pt_ResourceManager_addScorer(self.volid, scorer.name.encode('utf-8'), cppScorer) 
         else:
-            cfg = scorer.cfg
-            self.__class__.scorerDict[scorer.cfg_name] = cfg
-            _pt_ResourceManager_addScorer(self.volid, cfg.encode('utf-8')) 
+            import re
+            if isinstance(scorer, str):
+                nameList = scorer.split(';')
+                name = [n for n in nameList if 'name' in n][0]
+                name = re.search(r'=.*', name)
+                name = re.sub(r'=', '', name.group()).strip()
+                self.__class__.scorerDict[name] = scorer
+                _pt_ResourceManager_addScorer(self.volid, scorer.encode('utf-8'), cppScorer) 
+            else:
+                cfg = scorer.cfg
+                self.__class__.scorerDict[scorer.cfg_name] = cfg
+                _pt_ResourceManager_addScorer(self.volid, cfg.encode('utf-8'), cppScorer) 
 
     def setSurface(self, cfg : str):
         _pt_ResourceManager_addSurface(self.volid, cfg.encode('utf-8')) 

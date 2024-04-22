@@ -8,9 +8,10 @@ void pt_ResourceManager_addNewVolume(unsigned volID)
     pt::Singleton<pt::ResourceManager>::getInstance().addNewVolume(volID);
 }
 
-void pt_ResourceManager_addScorer(unsigned volID, const char* cfg)
+void pt_ResourceManager_addScorer(unsigned volID, const char* cfg, void *scorer)
 {
-    pt::Singleton<pt::ResourceManager>::getInstance().addScorer(volID, cfg);
+    auto *s = static_cast<Prompt::Scorer *>(scorer);
+    pt::Singleton<pt::ResourceManager>::getInstance().addScorer(volID, cfg, s);
 }
 
 void pt_ResourceManager_addSurface(unsigned volID, const char* cfg)

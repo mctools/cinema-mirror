@@ -23,7 +23,7 @@
 #include "PTNCrystalScat.hh"
 #include "PTUnitSystem.hh"
 #include "PTRandCanonical.hh"
-
+#include "PTLauncher.hh"
 
 Prompt::NCrystalScat::NCrystalScat(const std::string &cfgstring, double bias,
     double lowerlimt, double upperlimt)
@@ -82,4 +82,7 @@ void Prompt::NCrystalScat::generate(double ekin, const Prompt::Vector &dir, doub
   final_dir.x() = outdir[0];
   final_dir.y() = outdir[1];
   final_dir.z() = outdir[2];
+
+  Singleton<Launcher>::getInstance().getCurrentParticle().setDeposition(ekin-final_ekin);
+
 }

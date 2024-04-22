@@ -96,12 +96,12 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
     while(!m_stackManager.empty())
     {
       m_curParicle = m_stackManager.pop();
-      auto particle = *m_curParicle.get();
+      auto *particle = m_curParicle.get();
       bool isFirstStep(true);
 
       // allocate the point in a volume,
       // returns ture when the particle is outside the world
-      if(m_activeVolume.locateActiveVolume(particle.getPosition()))
+      if(m_activeVolume.locateActiveVolume(particle->getPosition()))
         continue;
 
       if(recordTrj)
@@ -111,54 +111,54 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
         m_trajectory.swap(tmp);
       } 
 
-      while(!m_activeVolume.exitWorld() && particle.isAlive() )
+      while(!m_activeVolume.exitWorld() && particle->isAlive() )
       {
         if(recordTrj)
         {
-          m_trajectory.push_back(particle.getPosition());
+          m_trajectory.push_back(particle->getPosition());
         }
 
         m_activeVolume.setupVolPhysAndGeoTrans();
         if(!isFirstStep)
         {
-          m_activeVolume.scoreSurface(particle);
+          m_activeVolume.scoreSurface(*particle);
           //if reflected, absorbed, transmitted
-          if(m_activeVolume.surfaceReaction(particle))
+          if(m_activeVolume.surfaceReaction(*particle))
           {
-            // std::cout << "reflection weight " << particle.getWeight() << "\n";
+            // std::cout << "reflection weight " << particle->getWeight() << "\n";
           }
         }
-        m_activeVolume.scoreEntry(particle);
+        m_activeVolume.scoreEntry(*particle);
 
         //! within the next while loop, particle should move in the same volume
-        while(m_activeVolume.proprogateInAVolume(particle) )
+        while(m_activeVolume.proprogateInAVolume(*particle) )
         {
           // score if any scorer is available
           if(m_activeVolume.hasPropagateScorer())
           {
-            m_activeVolume.scorePropagate(particle);
+            m_activeVolume.scorePropagate(*particle);
           }
           if(recordTrj)
-            m_trajectory.push_back(particle.getPosition());
+            m_trajectory.push_back(particle->getPosition());
         }
         // particle is moved
         isFirstStep=false; //set to false, so the surfaceReaction() can be triggered at everytime particle reaching a boundary 
 
-        if(particle.isAlive())
-          m_activeVolume.scoreExit(particle);
+        if(particle->isAlive())
+          m_activeVolume.scoreExit(*particle);
       }
 
-      if(!particle.isAlive())
+      if(!particle->isAlive())
       {
-        if(particle.getKillType()==Particle::KillType::ABSORB)
+        if(particle->getKillType()==Particle::KillType::ABSORB)
         {
-          m_activeVolume.scoreAbsorb(particle);
+          m_activeVolume.scoreAbsorb(*particle);
         }
       }
 
       if(recordTrj)
       {
-        m_trajectory.push_back(particle.getPosition());
+        m_trajectory.push_back(particle->getPosition());
       }
     }
 }
