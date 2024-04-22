@@ -11,6 +11,17 @@ Prompt::ResourceManager::ResourceManager()
 
 Prompt::ResourceManager::~ResourceManager()
 { 
+  // delete all scorers in m_globelScorers;
+
+
+  auto iter = m_globelScorers.begin();
+  while (iter != m_globelScorers.end()) {
+    // std::cout << "[" << iter->first << "," << iter->second << "]\n";
+    delete iter->second;
+    ++iter;
+  }
+
+
   // std::cout << "Simulation completed!\n";
   // std::cout << "Simulation created " << numBulkMaterialProcess() << " material physics\n";
   // std::cout << "There are " << numScorer() << " scorers in total\n";
@@ -93,7 +104,7 @@ Prompt::CfgScorerMap::const_iterator Prompt::ResourceManager::endScorer() const
   return m_globelScorers.end();
 }
 
-void Prompt::ResourceManager::addScorer(size_t volID, const std::string& cfg)
+void Prompt::ResourceManager::addScorer(size_t volID, const std::string& cfg, Scorer *scorer)
 {
   auto it_vol = m_volumes.find(volID);
   if(it_vol == m_volumes.end())
@@ -102,16 +113,24 @@ void Prompt::ResourceManager::addScorer(size_t volID, const std::string& cfg)
   auto it = m_globelScorers.find(cfg);
 
   // not exist
-  std::shared_ptr<Prompt::Scorer> sc(nullptr);
+  Scorer *sc(nullptr);
   if(it==m_globelScorers.end())
   {
+
     auto &geoManager = vecgeom::GeoManager::Instance();
     auto volume = geoManager.FindLogicalVolume(volID);
     double capacity = volume->GetUnplacedVolume()->Capacity();
-
-    auto &scorerFactory = Singleton<ScorerFactory>::getInstance();
-    sc = scorerFactory.createScorer(cfg, capacity );
-    m_globelScorers[cfg] = sc;
+    if(scorer==nullptr)
+    {
+      auto &scorerFactory = Singleton<ScorerFactory>::getInstance();
+      sc = scorerFactory.createScorer(cfg, capacity );
+      m_globelScorers[cfg] = sc;
+    }
+    else
+    {
+      sc = scorer; 
+      m_globelScorers[cfg] = sc;
+    }
 
   }
   else

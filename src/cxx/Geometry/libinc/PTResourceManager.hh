@@ -37,20 +37,20 @@ namespace Prompt {
         //bulk physics
         std::shared_ptr<BulkMaterialProcess> bulkMaterialProcess; 
         std::shared_ptr<SurfaceProcess> surfaceProcess; //surface physics
-        std::vector< std::shared_ptr<Scorer> >  scorers; /*Scorer*/
+        std::vector< Scorer * >  scorers; /*Scorer*/
 
-        std::vector< std::shared_ptr<Scorer> >  surface_scorers;
-        std::vector< std::shared_ptr<Scorer> >  entry_scorers;
-        std::vector< std::shared_ptr<Scorer> >  propagate_scorers;
-        std::vector< std::shared_ptr<Scorer> >  exit_scorers;
-        std::vector< std::shared_ptr<Scorer> >  absorb_scorers;
+        std::vector< Scorer * >  surface_scorers;
+        std::vector< Scorer * >  entry_scorers;
+        std::vector< Scorer * >  propagate_scorers;
+        std::vector< Scorer * >  exit_scorers;
+        std::vector< Scorer * >  absorb_scorers;
         
     };
     
 
     using VolMap = std::unordered_map<size_t, std::shared_ptr<VolumePhysicsScorer>>;
     using CfgPhysMap = std::unordered_map<std::string /*material name*/, std::shared_ptr<BulkMaterialProcess> > ;
-    using CfgScorerMap = std::unordered_map<std::string /*scorer name*/, std::shared_ptr<Scorer> > ;
+    using CfgScorerMap = std::unordered_map<std::string /*scorer name*/, Scorer * > ;
     using CfgSurfaceMap = std::unordered_map<std::string /*surface name*/, std::shared_ptr<SurfaceProcess> > ;
 
     class ResourceManager {
@@ -66,7 +66,7 @@ namespace Prompt {
             bool hasScorer(const std::string& cfg) const;
             CfgScorerMap::const_iterator findGlobalScorer(const std::string& cfg) const;
             CfgScorerMap::const_iterator endScorer() const;
-            void addScorer(size_t volID, const std::string& cfg);
+            void addScorer(size_t volID, const std::string& cfg, Scorer *scorer=nullptr);
             void addSurface(size_t volID, const std::string& cfg);
             void addPhysics(size_t volID, const std::string& cfg);
 

@@ -180,6 +180,8 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
   // printf("MT%d, deposition %e\n\n", reaction->ENDF_MT(), ekin+reaction->finalQ(ekin_MeV)*1e6-totalekin);
 
+  double deposition = ekin + reaction->finalQ(ekin_MeV)*1e6-totalekin;
+  m_launcher.getCurrentParticle().setDeposition(deposition);
 
   // Kill neutron in an absorption
   if(secondaries.size()==0)

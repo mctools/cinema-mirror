@@ -1,3 +1,6 @@
+#ifndef Prompt_ScorerDeposition_hh
+#define Prompt_ScorerDeposition_hh
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,50 +21,19 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTPythonGun.hh"
-#include "PTNeutron.hh"
-#include "PTGamma.hh"
-#include "PTPython.hh"
+#include "PromptCore.hh"
+#include "PTScorer.hh"
 
-Prompt::PythonGun::PythonGun(int pdg)
-    : PrimaryGun(Particle(pdg)), m_stackManager(Singleton<StackManager>::getInstance())
-{  
+namespace Prompt {
+
+  class ScorerDeposition  : public Scorer1D {
+  public:
+    ScorerDeposition(const std::string &name, double e_min, double e_max, unsigned numbin,
+      ScorerType stype=Scorer::ScorerType::ENTRY, bool linear=true);
+    virtual ~ScorerDeposition();
+    virtual void score(Particle &particle) override;
+
+  protected:
+  };
 }
-
-Prompt::PythonGun::~PythonGun()
-{ 
-}
-
-
-void Prompt::PythonGun::pushToStack(double *pdata)
-{
-    m_ekin = pdata[0];
-    m_weight = pdata[1];
-    m_time = pdata[2];
-    m_pos.x() = pdata[3];
-    m_pos.y() = pdata[4];
-    m_pos.z() = pdata[5];
-    m_dir.x() = pdata[6];
-    m_dir.y() = pdata[7];
-    m_dir.z() = pdata[8];
-
-    m_ekin0=m_ekin;
-    m_eventid++;
-    m_alive = true;
-    m_stackManager.add(std::make_unique<Particle>(*this));
-}
-
-void* pt_PythonGun_new(int pdg)
-{
-    return static_cast<void *> (new Prompt::PythonGun(pdg)) ; 
-}
-
-void pt_PythonGun_delete(void *obj)
-{
-    delete static_cast<Prompt::PythonGun *> (obj);
-}
-
-void pt_PythonGun_pushToStack(void *obj, double *pdata)
-{
-    static_cast<Prompt::PythonGun *> (obj)->pushToStack(pdata);
-}
+#endif

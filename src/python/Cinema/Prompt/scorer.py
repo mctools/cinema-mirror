@@ -69,6 +69,7 @@ class TOF(ConfigString):
         self.cfg_max = 0.008
         self.cfg_numbin = 100
         self.cfg_ptstate = 'ENTRY'
+        
 class VolFluence(ConfigString):
     def __init__(self) -> None:
         super().__init__()
@@ -79,6 +80,7 @@ class VolFluence(ConfigString):
         self.cfg_numbin = 100
         self.cfg_ptstate = 'ENTRY'
         self.cfg_linear = 'yes'
+
 class ScorerHelper:
     def __init__(self, name, min, max, numbin, ptstate) -> None:
         self.name = name
@@ -96,6 +98,7 @@ class ScorerHelper:
 
     def make(self, vol):
         vol.addScorer(self.score.cfg)
+
 
 class ESpectrumHelper(ScorerHelper): 
     def __init__(self, name, min=1e-5, max=1, numbin = 100, ptstate: str = 'ENTRY', energyTransfer=False) -> None:
@@ -130,7 +133,19 @@ class VolFluenceHelper(ScorerHelper):
         self._ScorerHelper__realinit()
 
 
+# DepositionHelper is a special class that skipped the traditional string based initialisation.
+# A C++ object is directly created in  
+class DepositionHelper(ScorerHelper):
+    def __init__(self, name, min, max, numbin, ptstate) -> None:
+        super().__init__(name, min, max, numbin, ptstate)
 
+    def make(self, vol):
+        vol.addScorer(self.score.cfg)
+
+
+
+
+# fixme: what is the function followed used for??? x.
 def makePSD(name, vol, numbin_dim1=1, numbin_dim2=1, ptstate : str = 'ENTRY', type : str = 'XY'):
     if not isinstance(vol.solid, Box):
         raise TypeError('makePSD only used for "Box" type volume')

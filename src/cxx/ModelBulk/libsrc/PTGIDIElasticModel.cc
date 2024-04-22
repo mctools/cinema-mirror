@@ -29,7 +29,7 @@ void Prompt::GIDIElasticModel::generate(double ekin, const Vector &dir, double &
 
     // m_ncscatt->generate(ekin, dir, final_ekin, final_dir);
 
-  if(ekin<2)
+  if(ekin<m_input->m_temperature*1e3*400)
     m_ncscatt->generate(ekin, dir, final_ekin, final_dir);
   else
   {

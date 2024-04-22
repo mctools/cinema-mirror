@@ -20,13 +20,16 @@
 
 #include "../doctest.h"
 #include "PTBulkMaterialProcess.hh"
+#include "PTPhoton.hh"
 #include "PTNeutron.hh"
 
 TEST_CASE("BulkMaterialProcess")
 {
-  auto mat = Prompt::BulkMaterialProcess("LiquidWaterH2O_T293.6K.ncmat") ;
+  auto mat = Prompt::BulkMaterialProcess("freegas::H/1gcm3") ;
   double ekin  = 0.0253;
   auto n = Prompt::Neutron(ekin, Prompt::Vector(1,0,0), Prompt::Vector(0,0,0) );
+  // auto n = Prompt::Photon(ekin, Prompt::Vector(1,0,0), Prompt::Vector(0,0,0) );
+
   double totlength(0.);
   unsigned loop(100000);
   for(unsigned i=0;i<loop;i++)

@@ -61,7 +61,7 @@ namespace Prompt {
   constexpr double const_eV2kk = 1.0/2.072124652399821e-3;
 
   ///！ constants are directly obtained from NCrystal's source code
-  constexpr double const_c  = 299792458*Unit::m/Unit::s ;// speed of light in Aa/s
+  constexpr double const_c  = 299792458*Unit::m/Unit::s ;// speed of light 
   constexpr double const_dalton2kg =  1.660539040e-27*Unit::kg; // amu to kg (source: NIST/CODATA 2018)
   constexpr double const_dalton2eVc2 =  931494095.17*Unit::eV; // amu to eV/c^2 (source: NIST/CODATA 2018)
   constexpr double const_avogadro = 6.022140857e23; // mol^-1 (source: NIST/CODATA 2018)

@@ -38,7 +38,7 @@ Prompt::ScorerFactory::ScorerFactory()
 {}
 
 
-std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::string &cfgstr, double vol)
+Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, double vol)
 {
   std::cout << "Parsing scorer with config string: \n";
   std::cout << cfgstr << "\n";
@@ -147,7 +147,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type DeltaMomentum is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerDeltaMomentum>(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, ptstate, method, scatnum, linear);
+      return new ScorerDeltaMomentum(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, ptstate, method, scatnum, linear);
     }
     if(ScorDef == "Angular")
     {
@@ -209,7 +209,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       {
         PROMPT_THROW2(BadInput, "Scorer type Angular is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
-      return std::make_shared<Prompt::ScorerAngular>(name, samplePos, beamDir, moderator2SampleDist, angle_min, angle_max, numBin, ptstate);
+      return new ScorerAngular(name, samplePos, beamDir, moderator2SampleDist, angle_min, angle_max, numBin, ptstate);
     }
 
     else if(ScorDef == "PSD")
@@ -279,7 +279,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type PSD is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerPSD>(name, xmin, xmax, nxbins, ymin, ymax, nybins, ptstate,type);
+      return new ScorerPSD(name, xmin, xmax, nxbins, ymin, ymax, nybins, ptstate,type);
     }
 
     else if(ScorDef == "ESpectrum")
@@ -340,7 +340,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type ESpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerESpectrum>(name, scoreTransfer, minE, maxE, numBin, ptstate);
+      return new ScorerESpectrum(name, scoreTransfer, minE, maxE, numBin, ptstate);
     }
     else if(ScorDef == "WlSpectrum")
     {
@@ -378,7 +378,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type WlSpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerWlSpectrum>(name, minWl, maxWl, numBin, ptstate);
+      return new ScorerWlSpectrum(name, minWl, maxWl, numBin, ptstate);
     }
     else if(ScorDef == "TOF")
     {
@@ -416,7 +416,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type TOF is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerTOF>(name, minT, maxT, numBin, ptstate);
+      return new ScorerTOF(name, minT, maxT, numBin, ptstate);
     }
     else if(ScorDef == "MultiScat")
     {
@@ -486,7 +486,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type MultiScat is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<ScorerMultiScat>(name, minNumber-0.5, maxNumber+0.5, numBin, ptstate, linear);
+      return new ScorerMultiScat(name, minNumber-0.5, maxNumber+0.5, numBin, ptstate, linear);
     }
     else if(ScorDef == "VolFluence")
     {
@@ -539,14 +539,14 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type VolFluence is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerVolFluence>(name, xmin, xmax, nxbins, vol, ptstate, linear);
+      return new ScorerVolFluence(name, xmin, xmax, nxbins, vol, ptstate, linear);
 
     }
     else if(ScorDef == "Split")
     {
       std::string name = cfg.find("name", true);
       int split = ptstoi(cfg.find("split", true));
-      return std::make_shared<Prompt::ScorerSplit>(name, split);
+      return new ScorerSplit(name, split);
     }
     else if(ScorDef == "RotatingObj")
     {
@@ -559,7 +559,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
       auto rotAxis = string2vec(cfg.find("rotation_axis", force));
       auto pointAxis = string2vec(cfg.find("point_on_axis", force));
       double rotFreq = ptstod(cfg.find("rot_fre", force));
-      return std::make_shared<Prompt::ScorerRotatingObj>(name, rotAxis, pointAxis, rotFreq);
+      return new ScorerRotatingObj(name, rotAxis, pointAxis, rotFreq);
     }
     else if(ScorDef == "WlAngle")
     {
@@ -626,7 +626,7 @@ std::shared_ptr<Prompt::Scorer> Prompt::ScorerFactory::createScorer(const std::s
         PROMPT_THROW2(BadInput, "Scorer type WlAngle is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
-      return std::make_shared<Prompt::ScorerWlAngle>(name, samplePos, beamDir, moderator2SampleDist, wl_min, wl_max, numbin_wl, angle_min, angle_max, numbin_angle, ptstate, method);
+      return new ScorerWlAngle(name, samplePos, beamDir, moderator2SampleDist, wl_min, wl_max, numbin_wl, angle_min, angle_max, numbin_angle, ptstate, method);
     }
     else
       PROMPT_THROW2(BadInput, "Scorer type " << ScorDef << " is not supported. ")

@@ -45,8 +45,8 @@ namespace Prompt {
     std::shared_ptr<PrimaryGun> getGun() const { return m_gun; }
     const std::vector<Vector> &getTrajectory() { return m_trajectory; }
     size_t getTrajSize() { return m_trajectory.size(); }
-    void copyCurrentParticle(Particle &p) const { p = *m_curParicle.get(); };
-
+    void copyCurrentParticle(Particle &p) const { p = *m_curParicle.get(); }
+    Particle &getCurrentParticle() {return *m_curParicle.get(); }
 
   private:
     friend class Singleton<Launcher>;

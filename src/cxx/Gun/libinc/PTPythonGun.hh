@@ -29,7 +29,7 @@ namespace Prompt {
 extern "C" {
 #endif
 
-  void* pt_PythonGun_new(const int pdg);
+  void* pt_PythonGun_new(int pdg);
   void pt_PythonGun_delete(void *obj);
   void pt_PythonGun_pushToStack(void *obj, double *pdata);
 

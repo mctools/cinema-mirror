@@ -18,50 +18,20 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTPythonGun.hh"
-#include "PTNeutron.hh"
-#include "PTGamma.hh"
-#include "PTPython.hh"
+#include "PTScorerDeposition.hh"
 
-Prompt::PythonGun::PythonGun(int pdg)
-    : PrimaryGun(Particle(pdg)), m_stackManager(Singleton<StackManager>::getInstance())
-{  
-}
-
-Prompt::PythonGun::~PythonGun()
-{ 
-}
-
-
-void Prompt::PythonGun::pushToStack(double *pdata)
+Prompt::ScorerDeposition::ScorerDeposition(const std::string &name, double e_min, double e_max, unsigned numbin,
+      Prompt::ScorerDeposition::ScorerType stype, bool linear)
+:Scorer1D("ScorerDeposition_" + name, stype, std::make_unique<Hist1D>("ScorerDeposition_" + name, 
+e_min, e_max, numbin, linear))
 {
-    m_ekin = pdata[0];
-    m_weight = pdata[1];
-    m_time = pdata[2];
-    m_pos.x() = pdata[3];
-    m_pos.y() = pdata[4];
-    m_pos.z() = pdata[5];
-    m_dir.x() = pdata[6];
-    m_dir.y() = pdata[7];
-    m_dir.z() = pdata[8];
-
-    m_ekin0=m_ekin;
-    m_eventid++;
-    m_alive = true;
-    m_stackManager.add(std::make_unique<Particle>(*this));
 }
 
-void* pt_PythonGun_new(int pdg)
+Prompt::ScorerDeposition::~ScorerDeposition()
 {
-    return static_cast<void *> (new Prompt::PythonGun(pdg)) ; 
 }
 
-void pt_PythonGun_delete(void *obj)
+void Prompt::ScorerDeposition::score(Prompt::Particle &particle)
 {
-    delete static_cast<Prompt::PythonGun *> (obj);
-}
-
-void pt_PythonGun_pushToStack(void *obj, double *pdata)
-{
-    static_cast<Prompt::PythonGun *> (obj)->pushToStack(pdata);
+  m_hist->fill(particle.getDeposition(), particle.getWeight());  
 }
