@@ -123,7 +123,7 @@ class TOFHelper(ScorerHelper):
         self._ScorerHelper__realinit()
 
 class VolFluenceHelper(ScorerHelper): 
-    def __init__(self, name, min=1e-6, max=10, numbin = 100, ptstate: str = 'PROPAGATE', linear = False) -> None:
+    def __init__(self, name, min=1e-6, max=10, numbin = 100, ptstate: str = 'ENTRY2EXIT', linear = False) -> None:
         super().__init__(name, min, max, numbin, ptstate)
         self.score = VolFluence()
         if linear:

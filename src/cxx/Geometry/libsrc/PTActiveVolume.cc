@@ -242,7 +242,7 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
 
   if(!sameVolume)
     std::swap(m_currState, m_nextState);
-
+    
   if(stepLength < step)
     PROMPT_THROW2(CalcError, "stepLength < step " << stepLength << " " << step << "\n");
 

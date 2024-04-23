@@ -111,6 +111,8 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
         m_trajectory.swap(tmp);
       } 
 
+
+      
       while(!m_activeVolume.exitWorld() && particle->isAlive() )
       {
         if(recordTrj)
@@ -119,18 +121,21 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
         }
 
         m_activeVolume.setupVolPhysAndGeoTrans();
+        // if it is not the first step, the particle should be at a boundary of a volume
+        // do not consider the surface related scorers   
         if(!isFirstStep)
         {
+          //fixme BUG: energy deposition and alike scores should be forbidden for surface type 
           m_activeVolume.scoreSurface(*particle);
           //if reflected, absorbed, transmitted
           if(m_activeVolume.surfaceReaction(*particle))
           {
             // std::cout << "reflection weight " << particle->getWeight() << "\n";
           }
+          m_activeVolume.scoreEntry(*particle);
         }
-        m_activeVolume.scoreEntry(*particle);
 
-        //! within the next while loop, particle should move in the same volume
+        //! within the next while loop, the particle is moving in the same volume
         while(m_activeVolume.proprogateInAVolume(*particle) )
         {
           // score if any scorer is available
