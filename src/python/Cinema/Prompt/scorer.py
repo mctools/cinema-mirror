@@ -123,7 +123,7 @@ class TOFHelper(ScorerHelper):
         self._ScorerHelper__realinit()
 
 class VolFluenceHelper(ScorerHelper): 
-    def __init__(self, name, min=1e-6, max=10, numbin = 100, ptstate: str = 'ENTRY2EXIT', linear = False) -> None:
+    def __init__(self, name, min=1e-6, max=10, numbin = 100, ptstate: str = 'PEA', linear = False) -> None:
         super().__init__(name, min, max, numbin, ptstate)
         self.score = VolFluence()
         if linear:
@@ -150,7 +150,7 @@ class DepositionHelper():
         self.linear = linear
 
     def make(self, vol):
-        # enum class ScorerType {SURFACE, ENTRY, PROPAGATE, EXIT, ENTRY2EXIT, ABSORB};
+        # enum class ScorerType {SURFACE, ENTRY, PROPAGATE, EXIT, PEA, ABSORB};
 
         if self.ptstate=='SURFACE':
             ptstate=0
@@ -160,7 +160,7 @@ class DepositionHelper():
             ptstate=2
         elif self.ptstate=='EXIT':
             ptstate=3
-        elif self.ptstate=='ENTRY2EXIT':
+        elif self.ptstate=='PEA':
             ptstate=4
         elif self.ptstate=='ABSORB':
             ptstate=5

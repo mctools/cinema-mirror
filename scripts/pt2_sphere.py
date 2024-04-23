@@ -47,7 +47,7 @@ class MySim(PromptMPI):
         # sphere = Volume("sphere", Sphere(0, 300), matCfg=lw)
         # world.placeChild('sphere', sphere)
 
-        VolFluenceHelper('spct', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='ENTRY2EXIT').make(world)
+        VolFluenceHelper('spct', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='PEA').make(world)
         # ESpectrumHelper('escap', min=1e-5, max=20e6, ptstate='EXIT').make(sphere)
 
         self.setWorld(world)

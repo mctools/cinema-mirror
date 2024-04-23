@@ -657,9 +657,9 @@ Prompt::Scorer::ScorerType Prompt::ScorerFactory::getPTS(const std::string& ptst
   {
     return Scorer::ScorerType::EXIT;
   }
-  else if(ptstateInStr=="ENTRY2EXIT")
+  else if(ptstateInStr=="PEA")
   {
-    return Scorer::ScorerType::ENTRY2EXIT;
+    return Scorer::ScorerType::PEA;
   }
   else {
     PROMPT_THROW2(BadInput, "ptstate does not support" << " " << ptstateInStr);

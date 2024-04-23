@@ -38,7 +38,7 @@ void Prompt::ScorerESpectrum::score(Prompt::Particle &particle)
   //   m_hist->fill(particle.getEKin(),  particle.getWeight() );
   // else if (particle.getEKin0()!=particle.getEKin()) 
   // // FIXME: neither elastic scattered or transmitted neutrons are recorded. 
-  // // Should better score elastic scattered neutrons, with ENTRY2EXIT scorer?
+  // // Should better score elastic scattered neutrons, with PEA scorer?
   //   m_hist->fill(particle.getEKin0()-particle.getEKin(),  particle.getWeight() );
 
   //XX, elastic scattered and transmitted neutrons can be removed by setting xmin>0. Above code is comment out

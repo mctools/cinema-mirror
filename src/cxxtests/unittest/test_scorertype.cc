@@ -38,7 +38,7 @@ TEST_CASE("ScorerType")
   CHECK(static_cast<int>(Prompt::Scorer::ScorerType::ENTRY) ==  1 );
   CHECK(static_cast<int>(Prompt::Scorer::ScorerType::PROPAGATE) ==  2 );
   CHECK(static_cast<int>(Prompt::Scorer::ScorerType::EXIT) ==  3 );
-  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::ENTRY2EXIT) ==  4 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::PEA) ==  4 );
   CHECK(static_cast<int>(Prompt::Scorer::ScorerType::ABSORB) ==  5 );
 
 }

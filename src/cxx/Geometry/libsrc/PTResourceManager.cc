@@ -166,13 +166,12 @@ void Prompt::ResourceManager::addScorer(size_t volID, const std::string& cfg, Sc
     it_vol->second->absorb_scorers.push_back(sc);
     std::cout << "Added ABSORB type scorer: " << sc->getName() << std::endl;
   }
-  else if(type==Scorer::ScorerType::ENTRY2EXIT)
+  else if(type==Scorer::ScorerType::PEA)
   {
-    it_vol->second->entry_scorers.push_back(sc);
     it_vol->second->propagate_scorers.push_back(sc);
     it_vol->second->exit_scorers.push_back(sc);
     it_vol->second->absorb_scorers.push_back(sc);
-    std::cout << "Added ENTRY2EXIT type scorer: " << sc->getName() << std::endl;
+    std::cout << "Added PEA type scorer: " << sc->getName() << std::endl;
   }
   else
     PROMPT_THROW2(BadInput, "unknown scorer type " << static_cast<int>(type) );

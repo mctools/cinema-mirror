@@ -32,7 +32,8 @@ namespace Prompt {
    class ActiveVolume;
   class Scorer {
   public:
-    enum class ScorerType {SURFACE, ENTRY, PROPAGATE, EXIT, ENTRY2EXIT, ABSORB};
+    // PEA, PROPAGATE-EXIT-ABSORB, to account for everything inside a volume
+    enum class ScorerType {SURFACE, ENTRY, PROPAGATE, EXIT, PEA, ABSORB};
   public:
     Scorer(const std::string& name, ScorerType type, int groupid=0) ;
     virtual ~Scorer() {std::cout<<"Destructing Scorer " << m_name <<std::endl;};
