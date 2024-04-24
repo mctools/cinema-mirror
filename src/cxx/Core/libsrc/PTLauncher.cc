@@ -134,6 +134,8 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
           }
           m_activeVolume.scoreEntry(*particle);
         }
+        else {  //particle is initialised in this volume, but not penetrate the boundary to reach here 
+        }
 
         //! within the next while loop, the particle is moving in the same volume
         while(m_activeVolume.proprogateInAVolume(*particle) )
@@ -147,7 +149,7 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
             m_trajectory.push_back(particle->getPosition());
         }
         // particle is moved
-        isFirstStep=false; //set to false, so the surfaceReaction() can be triggered at everytime particle reaching a boundary 
+        isFirstStep=false; //set to false, so the surfaceReaction() can be triggered everytime particle reaching a boundary 
 
         if(particle->isAlive())
           m_activeVolume.scoreExit(*particle);
