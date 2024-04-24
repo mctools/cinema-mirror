@@ -29,11 +29,11 @@ class MySim(PromptMPI):
 
 
         world = Volume("world", Box(10000, 10000, 25000))
-        water = Volume('sample', Box(10,10,1.5), matCfg = matCfg_sample.cfg)
-        water.addScorer(self.scorer['multi'])
-        world.placeChild("sample", water, Transformation3D(0., 0., 0), 1234)
+        # water = Volume('sample', Box(10,10,1.5), matCfg = matCfg_sample.cfg)
+        # water.addScorer(self.scorer['multi'])
+        # world.placeChild("sample", water, Transformation3D(0., 0., 0), 1234)
 
-        makePSD('psd', water, 10, 10 )
+        # makePSD('psd', water, 10, 10 )
 
         detector = Volume("det", Tube(0, 410, 0.0001))
 
@@ -50,8 +50,8 @@ sim = MySim(seed=1010)
 sim.makeWorld()
 
 class MyGun(PythonGun):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, pdg):
+        super().__init__(pdg)
 
     def sampleEnergy(self):
         return wl2ekin(8)
@@ -65,7 +65,7 @@ class MyGun(PythonGun):
 usePythonGun=True
 
 if usePythonGun:
-    gun = MyGun()
+    gun = MyGun(22)
 else:
     gun = SimpleThermalGun()
     gun.setPosition([0,0,-12000])
@@ -84,10 +84,10 @@ wlspec = sim.gatherHistData('wlspec')
 tof = sim.gatherHistData('tof')
 volf = sim.gatherHistData('volf')
 
-if sim.rank==0:
-    psd.plot(show=True)
-    espec.plot(show=True, log=True)
-    wlspec.plot(show=True)
-    tof.plot(show=True)
-    volf.plot(show=True)
+# if sim.rank==0:
+#     psd.plot(show=True)
+#     espec.plot(show=True, log=True)
+#     wlspec.plot(show=True)
+#     tof.plot(show=True)
+#     volf.plot(show=True)
 

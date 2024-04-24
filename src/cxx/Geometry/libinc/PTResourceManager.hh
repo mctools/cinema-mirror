@@ -25,7 +25,7 @@
 #include <map>
 #include <unordered_map>
 #include "PromptCore.hh"
-#include "PTBulkMaterialProcess.hh"
+#include "PTParticleProcess.hh"
 #include "PTSurfaceProcess.hh"
 #include "PTScorer.hh"
 #include "PTSingleton.hh"
@@ -35,7 +35,7 @@ namespace Prompt {
     // So VolMap is a map for all the volumes and its VolumePhysicsScorer 
     struct VolumePhysicsScorer { 
         //bulk physics
-        std::shared_ptr<BulkMaterialProcess> bulkMaterialProcess; 
+        std::shared_ptr<ParticleProcess> bulkMaterialProcess; 
         std::shared_ptr<SurfaceProcess> surfaceProcess; //surface physics
         std::vector< Scorer * >  scorers; /*Scorer*/
 
@@ -49,7 +49,7 @@ namespace Prompt {
     
 
     using VolMap = std::unordered_map<size_t, std::shared_ptr<VolumePhysicsScorer>>;
-    using CfgPhysMap = std::unordered_map<std::string /*material name*/, std::shared_ptr<BulkMaterialProcess> > ;
+    using CfgPhysMap = std::unordered_map<std::string /*material name*/, std::shared_ptr<ParticleProcess> > ;
     using CfgScorerMap = std::unordered_map<std::string /*scorer name*/, Scorer * > ;
     using CfgSurfaceMap = std::unordered_map<std::string /*surface name*/, std::shared_ptr<SurfaceProcess> > ;
 

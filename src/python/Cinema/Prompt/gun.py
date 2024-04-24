@@ -26,7 +26,7 @@ _pt_PythonGun_pushToStack = importFunc('pt_PythonGun_pushToStack', None, [type_v
 
 
 class PythonGun():
-    def __init__(self, pdg):
+    def __init__(self, pdg=2112):
         self.cobj = _pt_PythonGun_new(int(pdg))
         
     def __del__(self):

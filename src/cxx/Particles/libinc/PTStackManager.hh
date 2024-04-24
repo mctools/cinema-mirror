@@ -32,7 +32,7 @@ namespace Prompt {
   // int m_unweighted is added as a member of StackManager. 
   // It is increasing with the times of calling addSecondary to indicate the number
   // of secondary particles have been added to stack. The weights of the particles are 
-  // scaled by Prompt::BulkMaterialProcess::sampleFinalState for the cross section biasing. 
+  // scaled by Prompt::ParticleProcess::sampleFinalState for the cross section biasing. 
   // Before the correction is complete, StackManager::pop will forbit the action of  
   // poping a particle from the stack. 
 

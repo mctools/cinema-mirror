@@ -33,6 +33,24 @@ upperedge=30e6
 numbin_en=300
 numbin_mu=10
 
+
+#########################################################
+
+
+nc_bxs=80.27
+endf_fxs=20.43608
+
+const_neutron_mass_amu =1.00866491588
+h1_mass =               1.00782503224
+awr=h1_mass/(h1_mass+const_neutron_mass_amu)
+
+nc_fxs = nc_bxs*awr*awr
+endf_bxs=endf_fxs/awr/awr
+
+
+###############################################################
+
+
 # cfg='freegas::Th/18gcm3'
 
 # cfg='freegas::Si/18gcm3'

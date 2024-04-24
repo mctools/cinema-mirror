@@ -1,5 +1,5 @@
-#ifndef Prompt_BulkMaterialProcess_hh
-#define Prompt_BulkMaterialProcess_hh
+#ifndef Prompt_ParticleProcess_hh
+#define Prompt_ParticleProcess_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -27,11 +27,11 @@
 #include "PTParticle.hh"
 
 namespace Prompt {
-  class BulkMaterialProcess  {
+  class ParticleProcess  {
   public:
-    BulkMaterialProcess(const std::string& name, int pdg = const_neutron_pgd);
+    ParticleProcess(const std::string& name, int pdg = const_neutron_pgd);
     const std::string& getName() const { return m_name; }
-    virtual ~BulkMaterialProcess();
+    virtual ~ParticleProcess();
     CompoundModel* getCompoundModel() {return m_compModel.get(); }
     double getNumDensity() {return m_numdensity; }
 

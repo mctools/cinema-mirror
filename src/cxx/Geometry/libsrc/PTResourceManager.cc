@@ -210,11 +210,11 @@ void Prompt::ResourceManager::addPhysics(size_t volID, const std::string& cfg)
       PROMPT_THROW2(CalcError, "addPhysics: volume ID " << volID << " is not exist");
 
   auto it = m_globelPhysics.find(cfg);
-  std::shared_ptr<BulkMaterialProcess> sc(nullptr);
+  std::shared_ptr<ParticleProcess> sc(nullptr);
   // not exist
   if(it==m_globelPhysics.end())
   {
-    sc = std::make_shared<BulkMaterialProcess>(cfg);
+    sc = std::make_shared<ParticleProcess>(cfg);
     m_globelPhysics[cfg] = sc;
 
   }

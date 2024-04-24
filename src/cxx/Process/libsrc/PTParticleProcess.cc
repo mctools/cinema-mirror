@@ -35,7 +35,7 @@
 #include "PTCentralData.hh"
 #include "PTStackManager.hh"
 
-Prompt::BulkMaterialProcess::BulkMaterialProcess(const std::string &name, int pdg)
+Prompt::ParticleProcess::ParticleProcess(const std::string &name, int pdg)
     : m_rng(Singleton<SingletonPTRand>::getInstance()),
       m_compModel(std::make_unique<CompoundModel>(pdg)),
       m_numdensity(0.), m_name(name)
@@ -43,19 +43,19 @@ Prompt::BulkMaterialProcess::BulkMaterialProcess(const std::string &name, int pd
   cfgPhysicsModel(name);
 }
 
-Prompt::BulkMaterialProcess::~BulkMaterialProcess() {}
+Prompt::ParticleProcess::~ParticleProcess() {}
 
-double Prompt::BulkMaterialProcess::macroCrossSection(const Prompt::Particle &particle) const
+double Prompt::ParticleProcess::macroCrossSection(const Prompt::Particle &particle) const
 {
   double ekin = particle.hasEffEnergy() ? particle.getEffEKin() : particle.getEKin();
   const auto &dir = particle.hasEffEnergy() ? particle.getEffDirection() : particle.getDirection();
   return m_numdensity * m_compModel->totalCrossSection(ekin, dir);
 }
 
-void Prompt::BulkMaterialProcess::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
+void Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
 {
   if (m_compModel->getSupportedGPD() != particle.getPGD())
-    PROMPT_THROW2(CalcError, "BulkMaterialProcess::sampleFinalState " << m_name << " does not support particle " << particle.getPGD() << ", " << m_compModel->getSupportedGPD());
+    PROMPT_THROW2(CalcError, "ParticleProcess::sampleFinalState " << m_name << " does not support particle " << particle.getPGD() << ", " << m_compModel->getSupportedGPD());
 
   if (!particle.isAlive())
     PROMPT_THROW(CalcError, "Particle is not alive");
@@ -136,10 +136,10 @@ void Prompt::BulkMaterialProcess::sampleFinalState(Prompt::Particle &particle, d
   particle.scaleWeight(weightCorrection);
 }
 
-double Prompt::BulkMaterialProcess::sampleStepLength(const Prompt::Particle &particle) const
+double Prompt::ParticleProcess::sampleStepLength(const Prompt::Particle &particle) const
 {
   if (m_compModel->getSupportedGPD() != particle.getPGD())
-    PROMPT_THROW2(CalcError, "BulkMaterialProcess::sampleStepLength " << m_name << " does not support particle " << particle.getPGD() << ", " << m_compModel->getSupportedGPD());
+    PROMPT_THROW2(CalcError, "ParticleProcess::sampleStepLength " << m_name << " does not support particle " << particle.getPGD() << ", " << m_compModel->getSupportedGPD());
 
   double mxs = macroCrossSection(particle);
   if (mxs)
@@ -152,7 +152,7 @@ double Prompt::BulkMaterialProcess::sampleStepLength(const Prompt::Particle &par
   }
 }
 
-void Prompt::BulkMaterialProcess::cfgPhysicsModel(const std::string &cfgstr)
+void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
 {
   std::cout << "Configuring physics model: " << cfgstr << std::endl;
   pt_assert_always(!m_numdensity); //multiple configuration

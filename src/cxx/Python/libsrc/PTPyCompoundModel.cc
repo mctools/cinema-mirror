@@ -20,24 +20,24 @@
 
 #include "PTPython.hh"
 #include "PTCompoundModel.hh"
-#include "PTBulkMaterialProcess.hh"
+#include "PTParticleProcess.hh"
 
 void* pt_makeCompoundModel(const char * cfg)
 {
-  auto *proc = new Prompt::BulkMaterialProcess(cfg);
+  auto *proc = new Prompt::ParticleProcess(cfg);
   return static_cast<void *>(proc);
 }
 
 
 void pt_deleteCompoundModel(void* obj)
 {
-  delete static_cast<Prompt::BulkMaterialProcess *>(obj);
+  delete static_cast<Prompt::ParticleProcess *>(obj);
 }
 
 double pt_CompoundModel_getxs(void* obj, double ekin)
 {
   Prompt::Vector dir;
-  return static_cast<Prompt::BulkMaterialProcess *>(obj)
+  return static_cast<Prompt::ParticleProcess *>(obj)
       ->getCompoundModel()->totalCrossSection(ekin, dir)/Prompt::Unit::barn;
 }
 
@@ -47,7 +47,7 @@ double pt_CompoundModel_generate(void* obj, double ekin)
   double final_ekin(0); 
   Prompt::Vector final_dir;
 
-  static_cast<Prompt::BulkMaterialProcess *>(obj)
+  static_cast<Prompt::ParticleProcess *>(obj)
       ->getCompoundModel()->generate(ekin, dir, final_ekin, final_dir);
   return 0;
 }

@@ -183,8 +183,8 @@ void Prompt::GeoLoader::initFromGDML(const std::string &gdml_file)
     // {
     //   std::cout << "Creating model " << mat.name << ", "
     //             << mat.attributes.find("atomValue")->second << volume.GetName() << std::endl;
-    //   std::shared_ptr<BulkMaterialProcess> model = std::make_shared<BulkMaterialProcess>("neutron bulk physics"); //it should be a dict later
-    //   m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<BulkMaterialProcess>>(std::string(mat.name) , std::move(model) ) );
+    //   std::shared_ptr<ParticleProcess> model = std::make_shared<ParticleProcess>("neutron bulk physics"); //it should be a dict later
+    //   m_globelPhysics.insert( std::make_pair<std::string, std::shared_ptr<ParticleProcess>>(std::string(mat.name) , std::move(model) ) );
 
     //   auto theNewPhysics = getBulkMaterialProcess(mat.name);
     //   const std::string &cfg = mat.attributes.find("atomValue")->second;

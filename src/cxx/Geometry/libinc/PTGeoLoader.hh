@@ -25,7 +25,7 @@
 #include <map>
 #include <unordered_map>
 #include "PromptCore.hh"
-#include "PTBulkMaterialProcess.hh"
+#include "PTParticleProcess.hh"
 #include "PTSingleton.hh"
 #include "PTScorer.hh"
 #include "PTPrimaryGun.hh"
