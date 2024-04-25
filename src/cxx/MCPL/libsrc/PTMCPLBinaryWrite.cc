@@ -87,7 +87,7 @@ void Prompt::MCPLBinaryWrite::write(const Particle &p)
   if(m_fileNotCreated) init();
 
   m_headerClosed=true;
-  m_particleInFile->pdgcode = p.getPGD();
+  m_particleInFile->pdgcode = p.getPDG();
 
   //position in centimeters:
   const Vector &pos = p.getPosition();

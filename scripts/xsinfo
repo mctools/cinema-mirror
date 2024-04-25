@@ -26,6 +26,9 @@ parser.add_argument('cfg', metavar='N', type=str, nargs='+', help='Prompt materi
 parser.add_argument('-c', '--switchingenergy', action='store',  nargs='+', type=float, default=[-5],
                     dest='switchingenergy', help='model switching energy')
 
+parser.add_argument('-x', '--crosscomp', action='store_true', dest='crosscomp', help='cross comparison')
+parser.add_argument('-p', '--pdg', action='store',  type=int, default=2112,
+                    dest='pdg', help='pdg number')
 
 
 cdata=CentralData()
@@ -39,7 +42,7 @@ print(args.switchingenergy)
 ekin = np.logspace(np.log10(20e6), -5, 100000)
 
 for cfg in args.cfg:
-    if openmcfound:
+    if openmcfound and args.crosscomp:
         m1 = openmc.Material.from_ncrystal(cfg)
         m1.name = cfg
         fig = openmc.plot_xs({m1:['total']})
@@ -52,7 +55,7 @@ for cfg in args.cfg:
         comp = ModelCollection(cfg)
         xs = np.zeros_like(ekin)
         for i in range(ekin.size):
-            xs[i] = comp.xs(ekin[i])        
+            xs[i] = comp.xs(ekin[i], args.pdg)        
         macroxs = numberdensity*xs*1e-21
         plt.loglog(ekin, macroxs, label=cfg+', switching@'+str(sen))
 

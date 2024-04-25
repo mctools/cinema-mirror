@@ -111,7 +111,7 @@ void pt_MCPLBinaryWrite_write(void* obj, mcpl_particle_t par);
 // XS python interface
 void* pt_makeModelCollection(const char * cfg);
 void pt_deleteModelCollection(void* obj);
-double pt_ModelCollection_getxs(void* obj, double ekin);
+double pt_ModelCollection_getxs(void* obj, int pdg, double ekin);
 double pt_ModelCollection_generate(void* obj, double ekin);
 
 // Prompt::CentralData

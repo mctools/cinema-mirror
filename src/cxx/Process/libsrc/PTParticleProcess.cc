@@ -50,13 +50,13 @@ double Prompt::ParticleProcess::macroCrossSection(const Prompt::Particle &partic
 {
   double ekin = particle.hasEffEnergy() ? particle.getEffEKin() : particle.getEKin();
   const auto &dir = particle.hasEffEnergy() ? particle.getEffDirection() : particle.getDirection();
-  return m_numdensity * m_compModel->totalCrossSection(ekin, dir);
+  return m_numdensity * m_compModel->totalCrossSection(particle.getPDG(), ekin, dir);
 }
 
 void Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
 {
-  if (m_compModel->getSupportedGPD() != particle.getPGD())
-    PROMPT_THROW2(CalcError, "ParticleProcess::sampleFinalState " << m_name << " does not support particle " << particle.getPGD() << ", " << m_compModel->getSupportedGPD());
+  // if (m_compModel->getSupportedGPD() != particle.getPDG())
+  //   PROMPT_THROW2(CalcError, "ParticleProcess::sampleFinalState " << m_name << " does not support particle " << particle.getPDG() << ", " << m_compModel->getSupportedGPD());
 
   if (!particle.isAlive())
     PROMPT_THROW(CalcError, "Particle is not alive");
@@ -139,8 +139,8 @@ void Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
 
 double Prompt::ParticleProcess::sampleStepLength(const Prompt::Particle &particle) const
 {
-  if (m_compModel->getSupportedGPD() != particle.getPGD())
-    PROMPT_THROW2(CalcError, "ParticleProcess::sampleStepLength " << m_name << " does not support particle " << particle.getPGD() << ", " << m_compModel->getSupportedGPD());
+  // if (m_compModel->getSupportedGPD() != particle.getPDG())
+  //   PROMPT_THROW2(CalcError, "ParticleProcess::sampleStepLength " << m_name << " does not support particle " << particle.getPDG() << ", " << m_compModel->getSupportedGPD());
 
   double mxs = macroCrossSection(particle);
   if (mxs)

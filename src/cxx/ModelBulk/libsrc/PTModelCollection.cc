@@ -34,8 +34,7 @@ Prompt::ModelCollection::~ModelCollection() {}
 
 void Prompt::ModelCollection::addPhysicsModel(std::shared_ptr<Prompt::DiscreteModel> model)
 {
-  if(!model->getModelValidity().rightParticleType(m_forgpd))
-    PROMPT_THROW2(BadInput, "the model is not aimed for suitable for particle GPD " << m_forgpd);
+
   m_models.emplace_back(model);
 
   // cache_xs and bias will be updated once a calculation is required.
@@ -48,7 +47,7 @@ void Prompt::ModelCollection::addPhysicsModel(std::shared_ptr<Prompt::DiscreteMo
 
 
 
-double Prompt::ModelCollection::totalCrossSection(double ekin, const Vector &dir) const
+double Prompt::ModelCollection::totalCrossSection(int pdg, double ekin, const Vector &dir) const
 {
   if(sameInquiryAsLastTime(ekin, dir))
   {
@@ -60,21 +59,30 @@ double Prompt::ModelCollection::totalCrossSection(double ekin, const Vector &dir
     for(unsigned i=0;i<m_models.size();i++)
     {
       double channelxs(0);
-      if(m_models[i]->isOriented())
+      // if the model is valid for the particle
+      if(m_models[i]->isValid(pdg, ekin))
       {
-        auto &activeVolume = Singleton<ActiveVolume>::getInstance();
-        m_localdir =  activeVolume.getGeoTranslator().global2Local_direction(dir);
-        channelxs = m_models[i]->getCrossSection(ekin, m_localdir) ;
+        if(m_models[i]->isOriented())
+        {
+          auto &activeVolume = Singleton<ActiveVolume>::getInstance();
+          m_localdir =  activeVolume.getGeoTranslator().global2Local_direction(dir);
+          channelxs = m_models[i]->getCrossSection(ekin, m_localdir) ;
+        }
+        else  {
+          channelxs = m_models[i]->getCrossSection(ekin);
+          // std::cout << "model name: " << m_models[i]->getName()
+          // << ", ekin=" << ekin
+          // << ", biasing=" << m_models[i]->getBias() << ", channelxs=" << channelxs << "\n";
+        }
+        m_cache.cache_xs[i] = channelxs;
+        m_cache.bias[i] = m_models[i]->getBias();
+        xs += channelxs;
+      }  
+      else
+      {
+        m_cache.cache_xs[i] = 0.;
+        m_cache.bias[i] = m_models[i]->getBias();
       }
-      else  {
-        channelxs = m_models[i]->getCrossSection(ekin);
-        // std::cout << "model name: " << m_models[i]->getName()
-        // << ", ekin=" << ekin
-        // << ", biasing=" << m_models[i]->getBias() << ", channelxs=" << channelxs << "\n";
-      }
-      m_cache.cache_xs[i] = channelxs;
-      m_cache.bias[i] = m_models[i]->getBias();
-      xs += channelxs;
     }
     // std::cout << "total xs " << xs << "\n\n";
 

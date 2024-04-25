@@ -34,11 +34,11 @@ void pt_deleteModelCollection(void* obj)
   delete static_cast<Prompt::ParticleProcess *>(obj);
 }
 
-double pt_ModelCollection_getxs(void* obj, double ekin)
+double pt_ModelCollection_getxs(void* obj, int pdg, double ekin)
 {
   Prompt::Vector dir;
   return static_cast<Prompt::ParticleProcess *>(obj)
-      ->getModelCollection()->totalCrossSection(ekin, dir)/Prompt::Unit::barn;
+      ->getModelCollection()->totalCrossSection(pdg, ekin, dir)/Prompt::Unit::barn;
 }
 
 double pt_ModelCollection_generate(void* obj, double ekin)

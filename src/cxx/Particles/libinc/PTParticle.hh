@@ -75,7 +75,7 @@ namespace Prompt {
     void kill(KillType t);
     bool isAlive();
 
-    int getPGD() const { return m_pgd; }
+    int getPDG() const { return m_pdg; }
 
     virtual double calcSpeed() const;
     virtual double calcEffSpeed() const;
@@ -94,7 +94,7 @@ namespace Prompt {
     double m_weight;
     double m_rest_mass;
     unsigned long long m_eventid, m_id, m_parentid;
-    int m_pgd;
+    int m_pdg;
     int m_counter;
     KillType m_killtype;
     bool m_alive;
@@ -109,20 +109,20 @@ namespace Prompt {
 
 
 inline Prompt::Particle::Particle(int pdg)
-  :m_ekin0(0.), m_ekin(0.), m_effekin(0.), m_time(0.), m_dir(), m_effdir(), m_pos(), m_pgd(pdg),
+  :m_ekin0(0.), m_ekin(0.), m_effekin(0.), m_time(0.), m_dir(), m_effdir(), m_pos(), m_pdg(pdg),
   m_weight(1.), m_rest_mass(0.), m_alive(true), m_eventid(0), m_id(0), m_parentid(0), m_counter(0),
   m_step(0.), m_deltaEn(0.), m_deposition(0.)
 {
-  if(m_pgd == const_neutron_pgd)
+  if(m_pdg == const_neutron_pgd)
     m_rest_mass = const_neutron_mass_evc2;
 }
 
 inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& pos, int pdg)
-  :m_ekin0(ekin), m_ekin(ekin), m_effekin(0.), m_time(0.), m_dir(dir), m_effdir(), m_pos(pos), m_pgd(pdg),
+  :m_ekin0(ekin), m_ekin(ekin), m_effekin(0.), m_time(0.), m_dir(dir), m_effdir(), m_pos(pos), m_pdg(pdg),
   m_weight(1.), m_rest_mass(0), m_alive(true), m_eventid(0), m_id(0), m_parentid(0), m_counter(0),
   m_step(0.), m_deltaEn(0.), m_deposition(0.)
 {
-  if(m_pgd == const_neutron_pgd)
+  if(m_pdg == const_neutron_pgd)
     m_rest_mass = const_neutron_mass_evc2;
 
   m_dir.normalise();

@@ -6,7 +6,7 @@ from Cinema.Prompt.solid import Box,Tube, Sphere
 from Cinema.Prompt.scorer import makePSD, ESpectrumHelper, WlSpectrumHelper, TOFHelper, VolFluenceHelper
 from Cinema.Prompt.histogram import wl2ekin
 from Cinema.Prompt.physics import Material, Mirror
-from Cinema.Prompt.gun import IsotropicGun
+from Cinema.Prompt.gun import IsotropicGun, PythonGun
 
 import numpy as np
 
@@ -37,19 +37,36 @@ class MySim(PromptMPI):
 sim = MySim(seed=1010)
 sim.makeWorld()
 
+# gun = IsotropicGun()
+# gun.setEnergy(10e6)
 
-gun = IsotropicGun()
-gun.setEnergy(10e6)
+class MyGun(PythonGun):
+    def __init__(self, pdg, ekin):
+        super().__init__(pdg)
+        self.ekin = ekin
 
-partnum = 1e4
-# vis or production
-if False:
-    sim.show(gun, 1)
-else:
-    sim.simulate(gun, partnum)
+    def samplePosition(self):
+        return 0,0,0
+    
+    def sampleEnergy(self):
+        if isinstance(self.ekin, list):
+            r=np.random.uniform(self.ekin[0], self.ekin[1], 1)[0]
+            return r
+        else:
+            return self.ekin
 
-destination = 0
-spct = sim.gatherHistData('spct', dst=destination)
-if sim.rank==destination:
-    print('total flux', spct.getWeight().sum())
-    spct.plot(show=True, log=True)
+gun = MyGun(22, 1e6)
+sim.show(gun, 1)
+
+# partnum = 1e4
+# # vis or production
+# if False:
+#     sim.show(gun, 1)
+# else:
+#     sim.simulate(gun, partnum)
+
+# destination = 0
+# spct = sim.gatherHistData('spct', dst=destination)
+# if sim.rank==destination:
+#     print('total flux', spct.getWeight().sum())
+#     spct.plot(show=True, log=True)

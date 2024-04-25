@@ -38,14 +38,14 @@ namespace Prompt {
 inline Prompt::Neutron::Neutron()
 :Particle()
 {
-   m_pgd = const_neutron_pgd;
+   m_pdg = const_neutron_pgd;
    m_rest_mass = const_neutron_mass_evc2;
 }
 
 inline Prompt::Neutron::Neutron(double ekin, const Vector& dir, const Vector& pos)
 :Particle(ekin, dir, pos)
 {
-  m_pgd = const_neutron_pgd;
+  m_pdg = const_neutron_pgd;
   m_rest_mass = const_neutron_mass_evc2;
 }
 

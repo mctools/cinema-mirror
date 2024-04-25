@@ -40,14 +40,14 @@ namespace Prompt {
 inline Prompt::Gamma::Gamma()
 :Particle()
 {
-   m_pgd = const_photon_pgd;
+   m_pdg = const_photon_pgd;
    m_rest_mass = 0;
 }
 
 inline Prompt::Gamma::Gamma(double ekin, const Vector& dir, const Vector& pos)
 :Particle(ekin, dir, pos)
 {
-  m_pgd = const_photon_pgd;
+  m_pdg = const_photon_pgd;
   m_rest_mass = 0;
 }
 

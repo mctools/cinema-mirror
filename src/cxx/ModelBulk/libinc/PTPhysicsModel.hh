@@ -60,7 +60,7 @@ namespace Prompt {
     virtual ~PhysicsBase() = default;
     const std::string &getName() { return m_modelName; }
     bool isOriented();
-    ModelValidity& getModelValidity() { return m_modelvalid; }
+    bool isValid(int pdg, double ekin) {return m_modelvalid.isValid(pdg, ekin); }
     virtual double getCrossSection(double ekin) const ;
     virtual double getCrossSection(double ekin, const Vector &dir) const;
 

@@ -26,7 +26,7 @@ from ctypes import Structure, c_int32, c_uint64
 
 _pt_makeModelCollection = importFunc('pt_makeModelCollection', type_voidp, [type_cstr] )
 _pt_deleteModelCollection = importFunc('pt_deleteModelCollection', None, [type_voidp] )
-_pt_ModelCollection_getxs = importFunc('pt_ModelCollection_getxs', type_dbl, [type_voidp, type_dbl] )
+_pt_ModelCollection_getxs = importFunc('pt_ModelCollection_getxs', type_dbl, [type_voidp, type_int, type_dbl] )
 _pt_ModelCollection_generate = importFunc('pt_ModelCollection_generate', type_dbl, [type_voidp, type_dbl] )
 
 class ModelCollection:
@@ -36,8 +36,8 @@ class ModelCollection:
     def __del__(self):
         _pt_deleteModelCollection(self.cobj)
     
-    def xs(self, ekin):
-        return _pt_ModelCollection_getxs(self.cobj, ekin)
+    def xs(self, ekin, pdg=2112):
+        return _pt_ModelCollection_getxs(self.cobj, pdg, ekin)
 
     def generate(self, ekin):
         return _pt_ModelCollection_generate(self.cobj, ekin)

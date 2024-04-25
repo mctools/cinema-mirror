@@ -56,9 +56,7 @@ namespace Prompt {
     const std::vector<std::shared_ptr<DiscreteModel>>& getModels() const 
     { return m_models; }
 
-    
-
-    double totalCrossSection(double ekin, const Vector &dir) const;
+    double totalCrossSection(int pdg, double ekin, const Vector &dir) const;
     double calculateWeight(double lengthRho, bool hitWall);
     void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const;
     int getSupportedGPD() const { return m_forgpd; }
