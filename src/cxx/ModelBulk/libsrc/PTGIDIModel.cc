@@ -85,8 +85,6 @@ Prompt::GIDIModel::~GIDIModel()
 
 double Prompt::GIDIModel::getCrossSection(double ekin) const
 {
-  if (!m_modelvalid.ekinValid(ekin))
-    return 0;
 
   if(ekin==m_cacheEkin)
   {

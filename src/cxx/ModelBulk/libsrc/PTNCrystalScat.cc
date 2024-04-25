@@ -49,9 +49,6 @@ double Prompt::NCrystalScat::getCrossSection(double ekin) const
   }
   else
   {
-    if (!m_modelvalid.ekinValid(ekin))
-     return 0.;
-
     auto xsect = m_scat.crossSectionIsotropic( NCrystal::NeutronEnergy(ekin) );
     return xsect.get()*m_bias*Unit::barn;
   }
@@ -59,8 +56,6 @@ double Prompt::NCrystalScat::getCrossSection(double ekin) const
 
 double Prompt::NCrystalScat::getCrossSection(double ekin, const Prompt::Vector &dir) const
 {
-  if (!m_modelvalid.ekinValid(ekin))
-     return 0.;
 
   NCrystal::CrossSect xsect;
   if( m_scat.isOriented() ) {

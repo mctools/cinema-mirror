@@ -44,9 +44,6 @@ Prompt::NCrystalAbs::~NCrystalAbs()
 
 double Prompt::NCrystalAbs::getCrossSection(double ekin) const
 {
-  if (!m_modelvalid.ekinValid(ekin))
-     return 0.;
-
   return m_abs.crossSectionIsotropic(NCrystal::NeutronEnergy(ekin)).get()*Unit::barn*m_bias;
 }
 
