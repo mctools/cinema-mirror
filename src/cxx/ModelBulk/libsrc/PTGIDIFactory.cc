@@ -83,7 +83,7 @@ bool Prompt::GIDIFactory::available() const
   return true;
 }
 
-std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createGIDIModel(std::vector<Prompt::IsotopeComposition> vecComp, 
+std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createNeutronGIDIModel(std::vector<Prompt::IsotopeComposition> vecComp, 
 double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelastic, double maxEKinNonelastic) const
 {
   std::vector<std::shared_ptr<GIDIModel>> gidimodels;

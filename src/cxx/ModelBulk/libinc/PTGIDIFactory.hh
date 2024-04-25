@@ -79,7 +79,7 @@ namespace Prompt {
 
   class GIDIFactory {
   public:
-    std::vector<std::shared_ptr<GIDIModel>> createGIDIModel(std::vector<IsotopeComposition> iso,  double bias=1. , 
+    std::vector<std::shared_ptr<GIDIModel>> createNeutronGIDIModel(std::vector<IsotopeComposition> iso,  double bias=1. , 
                             double minEKinElastic=0, double maxEKinElastic=std::numeric_limits<double>::max(),
                             double minEKinNonelastic=0, double maxEKinNonelastic=std::numeric_limits<double>::max()) const;
 

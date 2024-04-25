@@ -32,7 +32,7 @@ namespace pt = Prompt;
 TEST_CASE("Gidi")
 {
   // auto &fac = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-  // std::shared_ptr<Prompt::GIDIModel> gidimodel = fac.createGIDIModel("u235");
+  // std::shared_ptr<Prompt::GIDIModel> gidimodel = fac.createNeutronGIDIModel("u235");
   // double ekin(1e6);
 
   // std::cout << "Gidi xs "<<gidimodel->getCrossSection(ekin)/Prompt::Unit::barn << std::endl;

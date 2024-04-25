@@ -184,7 +184,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
         std::cout << v << std::endl;
 
       auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-      auto models = gidifactory.createGIDIModel(isotopes, 1., gidimin<=0.?0:gidimin);
+      auto models = gidifactory.createNeutronGIDIModel(isotopes, 1., gidimin<=0.?0:gidimin);
 
       for(const auto &v: models)
         m_compModel->addPhysicsModel(v);
@@ -223,7 +223,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
 
 
       auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-      auto models = gidifactory.createGIDIModel(isotopes, abs_bias, gidimin<=0.?0:gidimin);
+      auto models = gidifactory.createNeutronGIDIModel(isotopes, abs_bias, gidimin<=0.?0:gidimin);
 
       for(const auto &v: models)
         m_compModel->addPhysicsModel(v);
