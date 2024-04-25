@@ -23,7 +23,7 @@ Prompt::ResourceManager::~ResourceManager()
 
 
   // std::cout << "Simulation completed!\n";
-  // std::cout << "Simulation created " << numBulkMaterialProcess() << " material physics\n";
+  // std::cout << "Simulation created " << numParticleProcess() << " material physics\n";
   // std::cout << "There are " << numScorer() << " scorers in total\n";
 }
 

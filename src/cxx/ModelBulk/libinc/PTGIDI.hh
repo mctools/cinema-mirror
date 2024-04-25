@@ -91,47 +91,15 @@ namespace Prompt {
     std::shared_ptr<MCGIDI::Protare> m_mcprotare;
     MCGIDI::URR_protareInfos *m_urr_info;
     mutable MCGIDI::Sampling::StdVectorProductHandler *m_products;
-    mutable double m_cacheEkin, m_cacheGidiXS;
+    //In fact, the xs is cached in the compoundmodel as well. But gidiplus need the un-biased xs to sample reaction MT,
+    // hence cached here as well.
+    mutable double m_cacheEkin, m_cacheGidiXS;  
     const double m_temperature, m_frac;
     MCGIDI::Sampling::Input *m_input;
 
   };
 
   
-
-  class IsotopeComposition;
-
-  class GIDIFactory {
-  public:
-    std::vector<std::shared_ptr<GIDIModel>> createGIDIModel(std::vector<IsotopeComposition> iso,  double bias=1. , 
-                            double minEKinElastic=0, double maxEKinElastic=std::numeric_limits<double>::max(),
-                            double minEKinNonelastic=0, double maxEKinNonelastic=std::numeric_limits<double>::max()) const;
-
-    int getHashID(double energy) const;
-    bool available() const;
-    CentralData &getCentralData() const {return m_ctrdata;};
-
-    inline bool NCrystal4Elastic(double ekin) const 
-    {
-      return ekin < m_ctrdata.getGidiThreshold();
-    };
-
-
-  private:
-  
-    friend class Singleton<GIDIFactory>;
-    GIDIFactory();
-    ~GIDIFactory();
-
-    CentralData &m_ctrdata;
-    PoPI::Database *m_pops;
-    GIDI::Map::Map *m_map;
-    GIDI::Transporting::Particles *m_particles;
-    GIDI::Construction::Settings *m_construction;
-    MCGIDI::DomainHash *m_domainHash;
-    LUPI::StatusMessageReporting *m_smr1;
-
-  };
 }
 
 #endif

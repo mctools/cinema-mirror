@@ -149,7 +149,7 @@ std::shared_ptr<Prompt::DiscreteModel> Prompt::PhysicsFactory::createIdealElaSca
 }
 
 
-std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createBulkMaterialProcess(const std::string &cfgstr)
+std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createParticleProcess(const std::string &cfgstr)
 {
   std::cout << "Parsing config string for a CompoundModel: \n";
   CfgParser::StringCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);

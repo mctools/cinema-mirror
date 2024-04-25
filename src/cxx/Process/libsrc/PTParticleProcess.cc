@@ -32,6 +32,7 @@
 #include "PTCfgParser.hh"
 #include "PTMaterialDecomposer.hh"
 #include "PTGIDI.hh"
+#include "PTGIDIFactory.hh"
 #include "PTCentralData.hh"
 #include "PTStackManager.hh"
 

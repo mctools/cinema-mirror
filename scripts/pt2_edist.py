@@ -25,7 +25,7 @@ cdata.setEnableGidiPowerIteration(False)
 
 # energy = [5e6, 10e6]
 
-energy=1000
+energy=1e6
 partnum = 1e3
 loweredge=1e-5
 upperedge=30e6
@@ -58,9 +58,9 @@ endf_bxs=endf_fxs/awr/awr
 # cfg='freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'
 # cfg='freegas::H2O/1gcm3/H_is_H1/O_is_O16;temp=293.6'
 # cfg='freegas::H/1gcm3/H_is_H1;temp=293.6'
-cfg='freegas::O/1gcm3/O_is_O16'
+# cfg='freegas::O/1gcm3/O_is_O16'
 
-# cfg='freegas::U/18gcm3/U_is_U235'
+cfg='freegas::U/18gcm3/U_is_U235'
 # cfg='freegas::C/18gcm3/C_is_C13'
 # cfg='freegas::Bi/18gcm3'
 # cfg='freegas::U/18gcm3/U_is_U235'

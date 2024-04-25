@@ -25,7 +25,7 @@
 
 TEST_CASE("ParticleProcess")
 {
-  auto mat = Prompt::ParticleProcess("freegas::H/1gcm3") ;
+  auto mat = Prompt::ParticleProcess("LiquidWaterH2O_T293.6K.ncmat") ;
   double ekin  = 0.0253;
   auto n = Prompt::Neutron(ekin, Prompt::Vector(1,0,0), Prompt::Vector(0,0,0) );
   // auto n = Prompt::Photon(ekin, Prompt::Vector(1,0,0), Prompt::Vector(0,0,0) );

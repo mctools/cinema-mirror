@@ -1,5 +1,5 @@
-#ifndef Prompt_PhysicsFactory_hh
-#define Prompt_PhysicsFactory_hh
+#ifndef Prompt_GIDIFactory_hh
+#define Prompt_GIDIFactory_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,40 +21,92 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <string>
+#include <memory>
+#include <set>
+
 #include "PromptCore.hh"
+#include "PTDiscreteModel.hh"
 #include "PTSingleton.hh"
-#include "PTSurfaceProcess.hh"
-#include "PTCompoundModel.hh"
+#include "PTCentralData.hh"
+#include "PTLauncher.hh"
+
+
+namespace GIDI
+{
+  namespace Transporting
+  {
+    class Particles;
+  }
+
+  namespace Construction
+  {
+    class Settings;
+  }
+  
+  namespace Map
+  {
+    class Map;
+  }
+}
+
+namespace PoPI
+{
+  class Database;
+}
+
+namespace LUPI
+{
+  class StatusMessageReporting;
+}
+
+namespace MCGIDI
+{
+  class DomainHash;
+  class Protare;
+  class URR_protareInfos;
+  namespace Sampling
+  {
+    class StdVectorProductHandler;
+    class Input;
+  }
+}  
 
 namespace Prompt {
 
-  class PhysicsFactory  {
+  class IsotopeComposition;
+  class GIDIModel;
+
+  class GIDIFactory {
   public:
-    enum class PhysicsType {
-      SURFACE_PHYSICS,
-      NC_SCATTER,
-      NC_ABSORB,
-      NC_SCATTER_ABSORB,
-      NC_RAW,
-      NC_IDEALSCAT,
-      ENDF_SCATTER,
-      ENDF_ABSORB
+    std::vector<std::shared_ptr<GIDIModel>> createGIDIModel(std::vector<IsotopeComposition> iso,  double bias=1. , 
+                            double minEKinElastic=0, double maxEKinElastic=std::numeric_limits<double>::max(),
+                            double minEKinNonelastic=0, double maxEKinNonelastic=std::numeric_limits<double>::max()) const;
+
+    int getHashID(double energy) const;
+    bool available() const;
+    CentralData &getCentralData() const {return m_ctrdata;};
+
+    inline bool NCrystal4Elastic(double ekin) const 
+    {
+      return ekin < m_ctrdata.getGidiThreshold();
     };
-  public:
-    bool rawNCrystalCfg(const std::string &cfgstr);
-    double nccalNumDensity(const std::string &nccfgstr); // ncrystal cfg string
-    void showNCComposition(const std::string &nccfgstr);
 
-    std::shared_ptr<SurfaceProcess> createSurfaceProcess(const std::string &cfgstr);
-
-    std::shared_ptr<DiscreteModel> createIdealElaScat(const std::string &cfgstr);
-    std::unique_ptr<CompoundModel> createParticleProcess(const std::string &cfgstr);
-    PhysicsType checkPhysicsType(const std::string &cfgstr) const;
 
   private:
-    friend class Singleton<PhysicsFactory>;
-    PhysicsFactory() = default;
-    ~PhysicsFactory() = default;
+  
+    friend class Singleton<GIDIFactory>;
+    GIDIFactory();
+    ~GIDIFactory();
+
+    CentralData &m_ctrdata;
+    PoPI::Database *m_pops;
+    GIDI::Map::Map *m_map;
+    GIDI::Transporting::Particles *m_particles;
+    GIDI::Construction::Settings *m_construction;
+    MCGIDI::DomainHash *m_domainHash;
+    LUPI::StatusMessageReporting *m_smr1;
+
   };
 }
 
