@@ -24,7 +24,7 @@
 #include "MCGIDI_sampling.hpp"
 #include <limits>
 
-#include "PTGIDI.hh"
+#include "PTGIDIModel.hh"
 #include "PTGIDIElasticModel.hh"
 #include "PTGIDIFactory.hh"
 #include <iostream>

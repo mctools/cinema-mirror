@@ -28,7 +28,7 @@
 #include <iomanip>
 #include <functional>
 #include "PTMaterialDecomposer.hh"
-#include "PTGIDI.hh"
+#include "PTGIDIModel.hh"
 #include "PTGIDIElasticModel.hh"
 
 #include "PTGIDIFactory.hh"

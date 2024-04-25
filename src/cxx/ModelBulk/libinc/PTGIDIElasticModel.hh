@@ -30,7 +30,7 @@
 #include "PTSingleton.hh"
 #include "PTCentralData.hh"
 #include "PTLauncher.hh"
-#include "PTGIDI.hh"
+#include "PTGIDIModel.hh"
 
 namespace MCGIDI
 {

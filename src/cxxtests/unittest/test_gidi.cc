@@ -22,7 +22,7 @@
 
 #include <iostream>
 #include <memory>
-#include "PTGIDI.hh"
+#include "PTGIDIModel.hh"
 #include "PTNCrystalScat.hh"
 #include "PTHist1D.hh"
 #include "PTModelCollection.hh"
