@@ -25,7 +25,7 @@
 #include <limits>
 
 #include "PTGIDIModel.hh"
-#include "PTGIDIElasticModel.hh"
+#include "PTGIDINeutronElastic.hh"
 #include "PTGIDIFactory.hh"
 #include <iostream>
 #include <iomanip>
@@ -34,10 +34,10 @@
 
 
 
-Prompt::GIDIModel::GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
+Prompt::GIDIModel::GIDIModel(int pgd, const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
                              double temperature, 
                              double bias, double frac, double lowerlimt, double upperlimt)
-:Prompt::DiscreteModel(name+"_Gidi_"+std::to_string(mcprotare->numberOfReactions()), const_neutron_pgd,
+:Prompt::DiscreteModel(name+"_Gidi_"+std::to_string(mcprotare->numberOfReactions()), pgd,
                       lowerlimt,
                       upperlimt, 
                       bias),

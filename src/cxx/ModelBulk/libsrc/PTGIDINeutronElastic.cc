@@ -6,12 +6,12 @@
 #include <limits>
 
 
-#include "PTGIDIElasticModel.hh"
+#include "PTGIDINeutronElastic.hh"
 
 
-Prompt::GIDIElasticModel::GIDIElasticModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
+Prompt::GIDINeutronElastic::GIDINeutronElastic(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
             double temperature, double bias, double frac, double lowerlimt, double upperlimt)
-:GIDIModel(name, mcprotare, temperature, bias, frac, lowerlimt, upperlimt), m_ncscatt(nullptr)
+:GIDIModel(const_neutron_pgd, name, mcprotare, temperature, bias, frac, lowerlimt, upperlimt), m_ncscatt(nullptr)
 {
   unsigned numDigit = std::count_if(name.begin(), name.end(), 
       [](unsigned char c){ return std::isdigit(c); } );
@@ -20,11 +20,11 @@ Prompt::GIDIElasticModel::GIDIElasticModel(const std::string &name, std::shared_
   std::string cfgstr = "freegas::" + element + "/1gcm3/" + element + "_is_"+name+";temp="+std::to_string(temperature);
   m_ncscatt = std::make_shared<NCrystalScat>(cfgstr);
 
-  std::cout << "GIDIElasticModel created " << cfgstr << std::endl;
+  std::cout << "GIDINeutronElastic created " << cfgstr << std::endl;
 }
 
 
-void Prompt::GIDIElasticModel::generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const 
+void Prompt::GIDINeutronElastic::generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const 
 {
 
     // m_ncscatt->generate(ekin, dir, final_ekin, final_dir);

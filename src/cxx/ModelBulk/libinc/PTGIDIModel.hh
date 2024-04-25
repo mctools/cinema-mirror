@@ -32,37 +32,8 @@
 #include "PTLauncher.hh"
 
 
-namespace GIDI
-{
-  namespace Transporting
-  {
-    class Particles;
-  }
-
-  namespace Construction
-  {
-    class Settings;
-  }
-  
-  namespace Map
-  {
-    class Map;
-  }
-}
-
-namespace PoPI
-{
-  class Database;
-}
-
-namespace LUPI
-{
-  class StatusMessageReporting;
-}
-
 namespace MCGIDI
 {
-  class DomainHash;
   class Protare;
   class URR_protareInfos;
   namespace Sampling
@@ -77,7 +48,7 @@ namespace Prompt {
 
   class GIDIModel  : public DiscreteModel {
   public:
-    GIDIModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
+    GIDIModel(int pgd, const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
               double temperature, double bias=1.0, double frac=1.0, double lowerlimt = 0., double upperlimt = std::numeric_limits<double>::max());
     virtual ~GIDIModel();
 

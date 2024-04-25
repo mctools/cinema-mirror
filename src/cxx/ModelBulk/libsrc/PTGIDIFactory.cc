@@ -29,7 +29,7 @@
 #include <functional>
 #include "PTMaterialDecomposer.hh"
 #include "PTGIDIModel.hh"
-#include "PTGIDIElasticModel.hh"
+#include "PTGIDINeutronElastic.hh"
 
 #include "PTGIDIFactory.hh"
 
@@ -171,8 +171,8 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
                                                                 *m_particles, *m_domainHash, temperatures, elastic );
 
-    gidimodels.emplace_back(std::make_shared<GIDIElasticModel>(name, mcProtare_elastic,    temperature_K, bias, frac, minEKinElastic, maxEKinElastic));
-    gidimodels.emplace_back(std::make_shared<GIDIModel>(name, mcProtare_nonelastic, temperature_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
+    gidimodels.emplace_back(std::make_shared<GIDINeutronElastic>(name, mcProtare_elastic,    temperature_K, bias, frac, minEKinElastic, maxEKinElastic));
+    gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name, mcProtare_nonelastic, temperature_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
 
     delete gidiprotare;
   }

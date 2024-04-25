@@ -1,5 +1,5 @@
-#ifndef Prompt_PTGIDIElasticModel_hh
-#define Prompt_PTGIDIElasticModel_hh
+#ifndef Prompt_PTGIDINeutronElastic_hh
+#define Prompt_PTGIDINeutronElastic_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -41,12 +41,12 @@ namespace MCGIDI
 namespace Prompt {
 
 
-  class GIDIElasticModel: public GIDIModel{
+  class GIDINeutronElastic: public GIDIModel{
   public:
-    GIDIElasticModel(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
+    GIDINeutronElastic(const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
                     double temperature, double bias=1.0, double frac=1.0,
                     double lowerlimt = 0., double upperlimt = std::numeric_limits<double>::max());
-    virtual ~GIDIElasticModel() = default;
+    virtual ~GIDINeutronElastic() = default;
 
     virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
 
