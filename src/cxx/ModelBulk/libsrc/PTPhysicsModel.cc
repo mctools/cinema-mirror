@@ -35,12 +35,12 @@ bool Prompt::PhysicsBase::isOriented()
 
 double Prompt::PhysicsBase::getCrossSection(double ekin) const
 {
-  PROMPT_THROW(LogicError, "getCrossSection is not impletmented ")
+  PROMPT_THROW(NotImplemented, "PhysicsBase::getCrossSection is not impletmented ")
   return 0.;
 }
 
 double Prompt::PhysicsBase::getCrossSection(double ekin, const Vector &dir) const
 {
-  PROMPT_THROW(LogicError, "getCrossSection is not impletmented ")
+  PROMPT_THROW(NotImplemented, "PhysicsBase::getCrossSection is not impletmented ")
   return 0.;
 }
