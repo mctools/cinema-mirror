@@ -25,7 +25,7 @@
 #include "PTGIDI.hh"
 #include "PTNCrystalScat.hh"
 #include "PTHist1D.hh"
-#include "PTCompoundModel.hh"
+#include "PTModelCollection.hh"
 
 namespace pt = Prompt;
 

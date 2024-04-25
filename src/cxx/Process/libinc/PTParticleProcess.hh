@@ -23,7 +23,7 @@
 
 #include <string>
 #include "PromptCore.hh"
-#include "PTCompoundModel.hh"
+#include "PTModelCollection.hh"
 #include "PTParticle.hh"
 
 namespace Prompt {
@@ -32,7 +32,7 @@ namespace Prompt {
     ParticleProcess(const std::string& name, int pdg = const_neutron_pgd);
     const std::string& getName() const { return m_name; }
     virtual ~ParticleProcess();
-    CompoundModel* getCompoundModel() {return m_compModel.get(); }
+    ModelCollection* getModelCollection() {return m_compModel.get(); }
     double getNumDensity() {return m_numdensity; }
 
     double sampleStepLength(const Prompt::Particle &particle) const;
@@ -44,7 +44,7 @@ namespace Prompt {
     double macroCrossSection(const Prompt::Particle &particle) const;
     std::string m_name;
     SingletonPTRand &m_rng;
-    std::unique_ptr<CompoundModel> m_compModel;
+    std::unique_ptr<ModelCollection> m_compModel;
     double m_numdensity;
 
   };

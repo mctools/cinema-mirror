@@ -38,7 +38,7 @@
 
 Prompt::ParticleProcess::ParticleProcess(const std::string &name, int pdg)
     : m_rng(Singleton<SingletonPTRand>::getInstance()),
-      m_compModel(std::make_unique<CompoundModel>(pdg)),
+      m_compModel(std::make_unique<ModelCollection>(pdg)),
       m_numdensity(0.), m_name(name)
 {
   cfgPhysicsModel(name);

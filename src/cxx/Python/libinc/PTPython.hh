@@ -109,10 +109,10 @@ void pt_MCPLBinaryWrite_delete(void* obj);
 void pt_MCPLBinaryWrite_write(void* obj, mcpl_particle_t par);
 
 // XS python interface
-void* pt_makeCompoundModel(const char * cfg);
-void pt_deleteCompoundModel(void* obj);
-double pt_CompoundModel_getxs(void* obj, double ekin);
-double pt_CompoundModel_generate(void* obj, double ekin);
+void* pt_makeModelCollection(const char * cfg);
+void pt_deleteModelCollection(void* obj);
+double pt_ModelCollection_getxs(void* obj, double ekin);
+double pt_ModelCollection_generate(void* obj, double ekin);
 
 // Prompt::CentralData
 void* pt_CentralData_getInstance();

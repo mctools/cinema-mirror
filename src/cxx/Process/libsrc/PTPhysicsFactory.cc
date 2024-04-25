@@ -91,11 +91,11 @@ void Prompt::PhysicsFactory::showNCComposition(const std::string &nccfgstr)
 
 std::shared_ptr<Prompt::DiscreteModel> Prompt::PhysicsFactory::createIdealElaScat(const std::string &cfgstr)
 {
-  std::cout << "Parsing config string for a CompoundModel: \n";
+  std::cout << "Parsing config string for a ModelCollection: \n";
   CfgParser::StringCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
   cfg.print();
 
-  std::unique_ptr<Prompt::CompoundModel> compmod;
+  std::unique_ptr<Prompt::ModelCollection> compmod;
   std::string physDef = cfg.find("physics");
   if(physDef.empty())
   {
@@ -149,13 +149,13 @@ std::shared_ptr<Prompt::DiscreteModel> Prompt::PhysicsFactory::createIdealElaSca
 }
 
 
-std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createParticleProcess(const std::string &cfgstr)
+std::unique_ptr<Prompt::ModelCollection> Prompt::PhysicsFactory::createParticleProcess(const std::string &cfgstr)
 {
-  std::cout << "Parsing config string for a CompoundModel: \n";
+  std::cout << "Parsing config string for a ModelCollection: \n";
   CfgParser::StringCfg cfg = Singleton<CfgParser>::getInstance().parse(cfgstr);
   cfg.print();
 
-  std::unique_ptr<Prompt::CompoundModel> compmod;
+  std::unique_ptr<Prompt::ModelCollection> compmod;
   std::string physDef = cfg.find("physics");
 
   if(physDef.empty())
@@ -184,7 +184,7 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createParticlePro
         PROMPT_THROW2(BadInput, "At lease one of the \"scatter_bias\" and \"abs_bias\" key shoule be set to a non-zero positive value" );
       }
 
-      compmod = std::make_unique<CompoundModel> (2112);
+      compmod = std::make_unique<ModelCollection> (2112);
       if(scatter_bias)
       {
         compmod->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias));
@@ -242,7 +242,7 @@ std::unique_ptr<Prompt::CompoundModel> Prompt::PhysicsFactory::createParticlePro
         PROMPT_THROW2(BadInput, "Physics type \"idealElaScat\" is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
-      compmod = std::make_unique<CompoundModel> (2112);
+      compmod = std::make_unique<ModelCollection> (2112);
       compmod->addPhysicsModel(std::make_shared<IdealElaScat>(xs, density_per_aa3, scatter_bias, ekin_transfer));
       return compmod;   
     }

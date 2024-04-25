@@ -24,7 +24,7 @@
 #include "PromptCore.hh"
 #include "PTSingleton.hh"
 #include "PTSurfaceProcess.hh"
-#include "PTCompoundModel.hh"
+#include "PTModelCollection.hh"
 
 namespace Prompt {
 
@@ -48,7 +48,7 @@ namespace Prompt {
     std::shared_ptr<SurfaceProcess> createSurfaceProcess(const std::string &cfgstr);
 
     std::shared_ptr<DiscreteModel> createIdealElaScat(const std::string &cfgstr);
-    std::unique_ptr<CompoundModel> createParticleProcess(const std::string &cfgstr);
+    std::unique_ptr<ModelCollection> createParticleProcess(const std::string &cfgstr);
     PhysicsType checkPhysicsType(const std::string &cfgstr) const;
 
   private:

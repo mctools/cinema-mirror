@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from  Cinema.Prompt.compoundModel import CompoundModel
+from  Cinema.Prompt.compoundModel import ModelCollection
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
@@ -49,7 +49,7 @@ for cfg in args.cfg:
 
     for sen in args.switchingenergy:
         cdata.setGidiThreshold(sen)
-        comp = CompoundModel(cfg)
+        comp = ModelCollection(cfg)
         xs = np.zeros_like(ekin)
         for i in range(ekin.size):
             xs[i] = comp.xs(ekin[i])        

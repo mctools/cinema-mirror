@@ -1,5 +1,5 @@
-#ifndef Prompt_CompoundModel_hh
-#define Prompt_CompoundModel_hh
+#ifndef Prompt_ModelCollection_hh
+#define Prompt_ModelCollection_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -47,10 +47,10 @@ namespace Prompt {
   // Only discrete models for now.
   // This class processes the biasing factor
 
-  class CompoundModel  {
+  class ModelCollection  {
   public:
-    CompoundModel(int gpd);
-    virtual ~CompoundModel();
+    ModelCollection(int gpd);
+    virtual ~ModelCollection();
 
     void addPhysicsModel(std::shared_ptr<DiscreteModel> model);
     const std::vector<std::shared_ptr<DiscreteModel>>& getModels() const 
@@ -77,7 +77,7 @@ namespace Prompt {
   };
 }
 
-inline bool Prompt::CompoundModel::sameInquiryAsLastTime(double ekin, const Vector &dir) const
+inline bool Prompt::ModelCollection::sameInquiryAsLastTime(double ekin, const Vector &dir) const
 {
   return m_containsOriented ? (m_cache.ekin==ekin && m_cache.dir == dir) : m_cache.ekin==ekin;
 }

@@ -24,20 +24,20 @@ from ctypes import Structure, c_int32, c_uint64
 
 
 
-_pt_makeCompoundModel = importFunc('pt_makeCompoundModel', type_voidp, [type_cstr] )
-_pt_deleteCompoundModel = importFunc('pt_deleteCompoundModel', None, [type_voidp] )
-_pt_CompoundModel_getxs = importFunc('pt_CompoundModel_getxs', type_dbl, [type_voidp, type_dbl] )
-_pt_CompoundModel_generate = importFunc('pt_CompoundModel_generate', type_dbl, [type_voidp, type_dbl] )
+_pt_makeModelCollection = importFunc('pt_makeModelCollection', type_voidp, [type_cstr] )
+_pt_deleteModelCollection = importFunc('pt_deleteModelCollection', None, [type_voidp] )
+_pt_ModelCollection_getxs = importFunc('pt_ModelCollection_getxs', type_dbl, [type_voidp, type_dbl] )
+_pt_ModelCollection_generate = importFunc('pt_ModelCollection_generate', type_dbl, [type_voidp, type_dbl] )
 
-class CompoundModel:
+class ModelCollection:
     def __init__(self, cfg) -> None:
-        self.cobj = _pt_makeCompoundModel(cfg.encode('utf-8')) 
+        self.cobj = _pt_makeModelCollection(cfg.encode('utf-8')) 
 
     def __del__(self):
-        _pt_deleteCompoundModel(self.cobj)
+        _pt_deleteModelCollection(self.cobj)
     
     def xs(self, ekin):
-        return _pt_CompoundModel_getxs(self.cobj, ekin)
+        return _pt_ModelCollection_getxs(self.cobj, ekin)
 
     def generate(self, ekin):
-        return _pt_CompoundModel_generate(self.cobj, ekin)
+        return _pt_ModelCollection_generate(self.cobj, ekin)

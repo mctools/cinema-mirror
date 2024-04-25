@@ -18,21 +18,21 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTCompoundModel.hh"
+#include "PTModelCollection.hh"
 #include "PTNCrystalScat.hh"
 #include "PTNCrystalAbs.hh"
 #include "PTPhysicsModel.hh"
 #include "PTActiveVolume.hh"
 
-Prompt::CompoundModel::CompoundModel(int gpd)
+Prompt::ModelCollection::ModelCollection(int gpd)
 :m_cache({}), m_containsOriented(false), m_rng( Singleton<SingletonPTRand>::getInstance() ),
  m_forgpd(gpd)
 {}
 
-Prompt::CompoundModel::~CompoundModel() {}
+Prompt::ModelCollection::~ModelCollection() {}
 
 
-void Prompt::CompoundModel::addPhysicsModel(std::shared_ptr<Prompt::DiscreteModel> model)
+void Prompt::ModelCollection::addPhysicsModel(std::shared_ptr<Prompt::DiscreteModel> model)
 {
   if(!model->getModelValidity().rightParticleType(m_forgpd))
     PROMPT_THROW2(BadInput, "the model is not aimed for suitable for particle GPD " << m_forgpd);
@@ -48,7 +48,7 @@ void Prompt::CompoundModel::addPhysicsModel(std::shared_ptr<Prompt::DiscreteMode
 
 
 
-double Prompt::CompoundModel::totalCrossSection(double ekin, const Vector &dir) const
+double Prompt::ModelCollection::totalCrossSection(double ekin, const Vector &dir) const
 {
   if(sameInquiryAsLastTime(ekin, dir))
   {
@@ -85,7 +85,7 @@ double Prompt::CompoundModel::totalCrossSection(double ekin, const Vector &dir) 
   }
 }
 
-void Prompt::CompoundModel::generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const
+void Prompt::ModelCollection::generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const
 {
   if(!sameInquiryAsLastTime(ekin, dir))
   {
@@ -131,7 +131,7 @@ void Prompt::CompoundModel::generate(double ekin, const Vector &dir, double &fin
 }
 
 //this shoule be called right after cross section is updated
-double Prompt::CompoundModel::calculateWeight(double lengthRho, bool hitWall)
+double Prompt::ModelCollection::calculateWeight(double lengthRho, bool hitWall)
 {
   double factor(1.);
   for(size_t i=0;i<m_models.size();i++)
