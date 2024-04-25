@@ -68,7 +68,7 @@ namespace Prompt {
             CfgScorerMap::const_iterator endScorer() const;
             void addScorer(size_t volID, const std::string& cfg, Scorer *scorer=nullptr);
             void addSurface(size_t volID, const std::string& cfg);
-            void addPhysics(size_t volID, const std::string& cfg);
+            void cfgVolPhysics(size_t volID, const std::string& cfg);
 
             void clear();
 

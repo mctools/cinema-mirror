@@ -42,7 +42,7 @@ _pt_Transformlation3D_setRotation  = importFunc('pt_Transformlation3D_setRotatio
 _pt_ResourceManager_addNewVolume = importFunc('pt_ResourceManager_addNewVolume', None, [type_uint])
 _pt_ResourceManager_addScorer = importFunc('pt_ResourceManager_addScorer', None, [type_uint, type_cstr, type_voidp])
 _pt_ResourceManager_addSurface = importFunc('pt_ResourceManager_addSurface', None, [type_uint, type_cstr])
-_pt_ResourceManager_addPhysics = importFunc('pt_ResourceManager_addPhysics', None, [type_uint, type_cstr])
+_pt_ResourceManager_cfgVolPhysics = importFunc('pt_ResourceManager_cfgVolPhysics', None, [type_uint, type_cstr])
 
 class Transformation3D:
     def __init__(self, x=0., y=0., z=0., rot_z=0., rot_new_x=0., rot_new_z=0., degrees = True):
@@ -209,7 +209,7 @@ class Volume:
         pass
 
     def setMaterial(self, cfg : str):
-        _pt_ResourceManager_addPhysics(self.volid, cfg.encode('utf-8')) # set as the universe
+        _pt_ResourceManager_cfgVolPhysics(self.volid, cfg.encode('utf-8')) # set as the universe
 
     def addScorer(self, scorer : Scorer or str, cppScorer=ctypes.c_voidp()):
         if isinstance(cppScorer, int):

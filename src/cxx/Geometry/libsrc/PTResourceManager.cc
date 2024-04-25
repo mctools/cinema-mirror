@@ -203,11 +203,11 @@ void Prompt::ResourceManager::addSurface(size_t volID, const std::string& cfg)
   it_vol->second->surfaceProcess = sc;
 }
 
-void Prompt::ResourceManager::addPhysics(size_t volID, const std::string& cfg)
+void Prompt::ResourceManager::cfgVolPhysics(size_t volID, const std::string& cfg)
 {
   auto it_vol = m_volumes.find(volID);
   if(it_vol == m_volumes.end())
-      PROMPT_THROW2(CalcError, "addPhysics: volume ID " << volID << " is not exist");
+      PROMPT_THROW2(CalcError, "cfgVolPhysics: volume ID " << volID << " is not exist");
 
   auto it = m_globelPhysics.find(cfg);
   std::shared_ptr<ParticleProcess> sc(nullptr);

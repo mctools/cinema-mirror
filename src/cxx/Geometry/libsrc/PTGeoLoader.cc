@@ -168,7 +168,7 @@ void Prompt::GeoLoader::initFromGDML(const std::string &gdml_file)
     // 3. setup physics model, if it is not yet set
     const vgdml::Material& mat = mat_iter->second;
 
-    m_resman.addPhysics(volID, mat.attributes.find("atomValue")->second);
+    m_resman.cfgVolPhysics(volID, mat.attributes.find("atomValue")->second);
 
     // auto matphys = getParticleProcess(mat.attributes.find("atomValue")->second);
 

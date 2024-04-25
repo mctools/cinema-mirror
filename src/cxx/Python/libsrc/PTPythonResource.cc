@@ -19,9 +19,9 @@ void pt_ResourceManager_addSurface(unsigned volID, const char* cfg)
     pt::Singleton<pt::ResourceManager>::getInstance().addSurface(volID, cfg);
 }
 
-void pt_ResourceManager_addPhysics(unsigned volID, const char* cfg)
+void pt_ResourceManager_cfgVolPhysics(unsigned volID, const char* cfg)
 {
-    pt::Singleton<pt::ResourceManager>::getInstance().addPhysics(volID, cfg);
+    pt::Singleton<pt::ResourceManager>::getInstance().cfgVolPhysics(volID, cfg);
 }
 
 void* pt_ResourceManager_getHist(const char* cfg)
