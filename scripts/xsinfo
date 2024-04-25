@@ -27,7 +27,7 @@ parser.add_argument('-c', '--switchingenergy', action='store',  nargs='+', type=
                     dest='switchingenergy', help='model switching energy')
 
 parser.add_argument('-x', '--crosscomp', action='store_true', dest='crosscomp', help='cross comparison')
-parser.add_argument('-p', '--pdg', action='store',  type=int, default=2112,
+parser.add_argument('-p', '--pdg', action='store',  nargs='+', type=int, default=[2112],
                     dest='pdg', help='pdg number')
 
 
@@ -51,13 +51,14 @@ for cfg in args.cfg:
     print('number density', )    
 
     for sen in args.switchingenergy:
-        cdata.setGidiThreshold(sen)
-        comp = ModelCollection(cfg)
-        xs = np.zeros_like(ekin)
-        for i in range(ekin.size):
-            xs[i] = comp.xs(ekin[i], args.pdg)        
-        macroxs = numberdensity*xs*1e-21
-        plt.loglog(ekin, macroxs, label=cfg+', switching@'+str(sen))
+        for pdg in args.pdg:
+            cdata.setGidiThreshold(sen)
+            comp = ModelCollection(cfg)
+            xs = np.zeros_like(ekin)
+            for i in range(ekin.size):
+                xs[i] = comp.xs(ekin[i], pdg)        
+            macroxs = numberdensity*xs*1e-21
+            plt.loglog(ekin, macroxs, label=cfg+', switching@'+str(sen)+ f' , pdg={pdg}')
 
 plt.legend(loc=0)
 plt.grid('both')

@@ -188,6 +188,13 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
 
       for(const auto &v: models)
         m_compModel->addPhysicsModel(v);
+
+      if(cd.getGammaTransport())
+      {
+        auto models = gidifactory.createPhotonGIDIModel(isotopes, 1.);
+        for(const auto &v: models)
+           m_compModel->addPhysicsModel(v);
+      }
     }
     else
     {
@@ -235,6 +242,13 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
       }
       else
         std::cout << "!The ncrystal elastic scatter is not created!\n";
+
+      if(cd.getGammaTransport())
+      {
+        auto models = gidifactory.createPhotonGIDIModel(isotopes, 1.);
+        for(const auto &v: models)
+           m_compModel->addPhysicsModel(v);
+      }
     }
     else
     {

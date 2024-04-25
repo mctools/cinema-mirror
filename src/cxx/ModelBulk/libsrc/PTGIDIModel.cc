@@ -147,7 +147,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   {
     MCGIDI::Sampling::Product &aproduct = (*m_products)[i];
 
-    if (aproduct.m_productIndex==11 ) //neutron 11 or gamma 8
+    if (aproduct.m_productIndex==11 ||  aproduct.m_productIndex==8) //neutron 11 or gamma 8
     {
      
       double labekin = aproduct.m_kineticEnergy*1e6;

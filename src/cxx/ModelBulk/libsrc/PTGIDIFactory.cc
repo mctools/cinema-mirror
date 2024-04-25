@@ -83,7 +83,7 @@ bool Prompt::GIDIFactory::available() const
   return true;
 }
 
-std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createNeutronGIDIModel(std::vector<Prompt::IsotopeComposition> vecComp, 
+std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createNeutronGIDIModel(const std::vector<Prompt::IsotopeComposition> &vecComp, 
 double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelastic, double maxEKinNonelastic) const
 {
   std::vector<std::shared_ptr<GIDIModel>> gidimodels;
@@ -183,3 +183,89 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
 
   return std::move(gidimodels);
 }
+
+
+
+std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createPhotonGIDIModel(const std::vector<Prompt::IsotopeComposition> & vecComp, 
+double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelastic, double maxEKinNonelastic) const
+{
+  std::vector<std::shared_ptr<GIDIModel>> gidimodels;
+  MCGIDI::Vector<MCGIDI::Protare *> protares(vecComp.size());
+  std::vector<std::tuple<std::shared_ptr<MCGIDI::ProtareSingle>, std::string, double, double>> singleProtares;
+
+
+  // fixme: make shared pointer map to cache MCGIDI::ProtareSingle for repeated isotopes
+  // the key should be the label (i.e. iter->heatedCrossSection( )) plus the  isotope name
+  for(const auto& isotope : vecComp)
+  {
+    const std::string &name = isotope.name;
+    double frac = isotope.frac;
+
+    if(!m_map->isProtareAvailable( PoPI::IDs::photon, name))
+    {
+      PROMPT_THROW2(DataLoadError, "GIDIFactory failed to load data for " << name);
+    }
+    auto *gidiprotare =  (GIDI::Protare *) m_map->protare( *m_construction, *m_pops, "photon", name, "", "", true, true ) ;
+
+    auto delay = GIDI::Transporting::DelayedNeutrons::on;
+    if( !gidiprotare->isDelayedFissionNeutronComplete( ) ) 
+    {
+        std::cout << "WARNING: delayed neutron fission data for "<< name<< " are incomplete and are not included." << std::endl;
+        delay = GIDI::Transporting::DelayedNeutrons::off;
+    }
+    else
+      std::cout << "Delayed neutron fission data for "<< name<< " are included." << std::endl;
+
+    GIDI::Transporting::Settings incompleteParticlesSetting( gidiprotare->projectile( ).ID( ),  delay);
+    std::set<std::string> incompleteParticles;
+    gidiprotare->incompleteParticles( incompleteParticlesSetting, incompleteParticles );
+    std::cout << "# List of incomplete particles:";
+    for( auto iter = incompleteParticles.begin( ); iter != incompleteParticles.end( ); ++iter ) {
+        std::cout << " " << *iter;
+    }
+    std::cout << std::endl;
+    
+    GIDI::Styles::TemperatureInfos temperatures = gidiprotare->temperatures( );
+    for( GIDI::Styles::TemperatureInfos::const_iterator iter = temperatures.begin( ); iter != temperatures.end( ); ++iter ) {
+      std::cout << "label = " << iter->heatedCrossSection( ) << "  temperature = " << iter->temperature( ).value( ) << std::endl;
+    }
+   
+
+    // std::string label( temperatures[0].heatedCrossSection( ) ); // fixme: heated? gridded
+    std::string label( temperatures[0].griddedCrossSection( ) );
+
+    double temperature_K = temperatures[0].temperature( ).value()*Unit::MeV / const_boltzmann; 
+
+    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, delay, 20.0 );
+    // MC.setNuclearPlusCoulombInterferenceOnly( true );
+    MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
+    // MC.set_ignoreENDF_MT5(true);
+    MC.want_URR_probabilityTables(false);
+    MC.setThrowOnError( false );
+   
+    // if( gidiprotare->protareType( ) != GIDI::ProtareType::single ) {
+    //     PROMPT_THROW(CalcError, "ProtareType must be single");
+    // }
+    
+    std::set<int> exc;
+    int numberOfReactions = gidiprotare->numberOfReactions();
+    std::cout <<"Isotope " << name << " has " << numberOfReactions << " reactions in total"<< "\n";
+
+
+    // if( gidiprotare.protareType( ) == GIDI::ProtareType::single ) 
+    // auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+    //                                                             *m_particles, *m_domainHash, temperatures, elastic );
+
+    // else if( gidiprotare.protareType( ) == GIDI::ProtareType::composite ) {
+    auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareComposite> ( *m_smr1, static_cast<GIDI::ProtareComposite const &>( *gidiprotare ), *m_pops, MC, 
+                                                                *m_particles, *m_domainHash, temperatures, exc );
+
+    gidimodels.emplace_back(std::make_shared<GIDIModel>(const_photon_pgd, name, mcProtare_nonelastic, temperature_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
+
+    delete gidiprotare;
+  }
+
+
+  return std::move(gidimodels);
+}
+
