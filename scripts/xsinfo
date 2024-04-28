@@ -56,10 +56,15 @@ for cfg in args.cfg:
             comp = ModelCollection(cfg)
             xs = np.zeros_like(ekin)
             for i in range(ekin.size):
-                xs[i] = comp.xs(ekin[i], pdg)        
-            macroxs = numberdensity*xs*1e-21
-            plt.loglog(ekin, macroxs, label=cfg+', switching@'+str(sen)+ f' , pdg={pdg}')
+                xs[i] = comp.xs(ekin[i], pdg)     
+            if args.crosscomp:
+                xs = numberdensity*xs*1e-21
+            else:
+                plt.xlabel('energy ,eV')
+                plt.ylabel('cross section, barn')
+            plt.loglog(ekin, xs, label=cfg+', switching@'+str(sen)+ f' , pdg={pdg}')
 
 plt.legend(loc=0)
+plt.tight_layout()
 plt.grid('both')
 plt.show()
