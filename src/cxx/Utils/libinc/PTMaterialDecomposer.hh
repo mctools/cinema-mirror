@@ -25,6 +25,7 @@
 #include <memory>
 #include <map>
 #include <iostream>
+#include <algorithm>
 
 #include "PromptCore.hh"
 #include "PTSingleton.hh"
@@ -44,7 +45,8 @@ namespace Prompt {
     }
   };
 
-
+  std::vector<IsotopeComposition> shrink2element(const std::vector<IsotopeComposition> & isovec);
+  
   class MaterialDecomposer {
   public:
     std::vector<IsotopeComposition> getComposition(int Z);

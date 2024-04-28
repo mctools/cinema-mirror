@@ -32,7 +32,8 @@
 #include <functional>
 #include "PTMaterialDecomposer.hh"
 
-
+#include "PTNeutron.hh"
+#include "PTPhoton.hh"
 
 Prompt::GIDIModel::GIDIModel(int pgd, const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
                              double temperature, 
@@ -157,14 +158,22 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
       totalekin += labekin; // accumulate the energy that will be carried by a particle in the later simulation. 
 
       // make secondary
-      Particle primary; 
-      m_launcher.copyCurrentParticle(primary); 
-
-      primary.setEKin(labekin);
-      primary.setDirection(labdir);
-      primary.setTime(primary.getTime() + aproduct.m_birthTimeSec);
-
-      secondaries.push_back(primary);
+      const Particle & primary = m_launcher.getCurrentParticle(); 
+      // m_launcher.copyCurrentParticle(primary); 
+      if(aproduct.m_productIndex==11)
+      {
+        Neutron sec(labekin, labdir, primary.getPosition());
+        sec.setTime(primary.getTime() + aproduct.m_birthTimeSec);
+        secondaries.push_back(sec);
+      }
+      else if(aproduct.m_productIndex==8)
+      {
+        Photon sec(labekin, labdir, primary.getPosition());
+        sec.setTime(primary.getTime() + aproduct.m_birthTimeSec);
+        secondaries.push_back(sec);
+      }
+      else
+        PROMPT_THROW(NotImplemented, "");
       
     }
     // if(m_input->m_frame == GIDI::Frame::centerOfMass)
@@ -179,7 +188,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   // printf("MT%d, deposition %e\n\n", reaction->ENDF_MT(), ekin+reaction->finalQ(ekin_MeV)*1e6-totalekin);
 
   double deposition = ekin + reaction->finalQ(ekin_MeV)*1e6-totalekin;
-  m_launcher.getCurrentParticle().setDeposition(deposition);
+  m_launcher.registerDeposition(deposition);
 
   // Kill neutron in an absorption
   if(secondaries.size()==0)

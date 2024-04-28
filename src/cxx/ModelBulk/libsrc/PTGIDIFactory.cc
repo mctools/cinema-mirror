@@ -100,9 +100,10 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
 
     if(!m_map->isProtareAvailable( PoPI::IDs::neutron, name))
     {
-      PROMPT_THROW2(DataLoadError, "GIDIFactory failed to load data for " << name);
+      PROMPT_THROW2(DataLoadError, "GIDIFactory createNeutronGIDIModel failed to load data for " << name << ". ");
     }
     auto *gidiprotare =  (GIDI::Protare *) m_map->protare( *m_construction, *m_pops, "n", name, "", "", true, true ) ;
+    std::cout << "Using data file " << gidiprotare->realFileName( ) << std::endl;
 
     auto delay = GIDI::Transporting::DelayedNeutrons::on;
     if( !gidiprotare->isDelayedFissionNeutronComplete( ) ) 
@@ -198,15 +199,18 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
   // the key should be the label (i.e. iter->heatedCrossSection( )) plus the  isotope name
   for(const auto& isotope : vecComp)
   {
-    const std::string &name = isotope.name;
+    const std::string &name = isotope.name; //.substr(0,1);
     double frac = isotope.frac;
-
+    
     if(!m_map->isProtareAvailable( PoPI::IDs::photon, name))
     {
-      PROMPT_THROW2(DataLoadError, "GIDIFactory failed to load data for " << name);
+
+      std::cout << "WARNING: photon data for "<< name << " are are not found. The cross section for isotope: " << isotope << "\" is ignored.\n";
+      continue;
+      // PROMPT_THROW2(DataLoadError, "GIDIFactory createPhotonGIDIModel failed to load data for " << name);
     }
     auto *gidiprotare =  (GIDI::Protare *) m_map->protare( *m_construction, *m_pops, "photon", name, "", "", true, true ) ;
-
+    std::cout << "Using data file " << gidiprotare->realFileName( ) << std::endl;
     auto delay = GIDI::Transporting::DelayedNeutrons::on;
     if( !gidiprotare->isDelayedFissionNeutronComplete( ) ) 
     {

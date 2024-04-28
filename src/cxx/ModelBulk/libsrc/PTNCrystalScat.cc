@@ -78,6 +78,6 @@ void Prompt::NCrystalScat::generate(double ekin, const Prompt::Vector &dir, doub
   final_dir.y() = outdir[1];
   final_dir.z() = outdir[2];
 
-  Singleton<Launcher>::getInstance().getCurrentParticle().setDeposition(ekin-final_ekin);
+  Singleton<Launcher>::getInstance().registerDeposition(ekin-final_ekin);
 
 }

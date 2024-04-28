@@ -210,3 +210,34 @@ std::vector<Prompt::IsotopeComposition> Prompt::MaterialDecomposer::getCompositi
   }
     
 }
+
+
+std::vector<Prompt::IsotopeComposition> Prompt::shrink2element(const std::vector<Prompt::IsotopeComposition> & isovec)
+{
+ 
+  std::vector<IsotopeComposition> ele;
+  for(const auto& iso : isovec)
+  {
+   
+    auto found = find_if(ele.begin(), ele.end(), [&iso](const auto& s)->bool {return s.Z == iso.Z; });
+    if(found==ele.end()) // it is new
+    {
+      ele.push_back(iso);
+
+      auto& back = ele.back();
+      unsigned numDigit = std::count_if(back.name.begin(), back.name.end(), 
+        [](unsigned char c){ return std::isdigit(c); } );
+
+      back.name = back.name.substr(0, back.name.size()-numDigit);
+      back.A=0;
+    }
+    else
+    {
+      found->frac += iso.frac;
+    }
+  }
+
+  return ele;
+}
+
+

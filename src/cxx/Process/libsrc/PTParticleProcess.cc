@@ -194,6 +194,10 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
         auto models = gidifactory.createPhotonGIDIModel(isotopes, 1.);
         for(const auto &v: models)
            m_compModel->addPhysicsModel(v);
+
+        auto atomic_models = gidifactory.createPhotonGIDIModel(shrink2element(isotopes), 1.);
+        for(const auto &v: atomic_models)
+           m_compModel->addPhysicsModel(v);
       }
     }
     else
@@ -247,6 +251,10 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
       {
         auto models = gidifactory.createPhotonGIDIModel(isotopes, 1.);
         for(const auto &v: models)
+           m_compModel->addPhysicsModel(v);
+
+        auto atomic_models = gidifactory.createPhotonGIDIModel(shrink2element(isotopes), 1.);
+        for(const auto &v: atomic_models)
            m_compModel->addPhysicsModel(v);
       }
     }
