@@ -43,7 +43,7 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
       if [ -d ncrystal ]; then
         rm -rf ncrystal
       fi
-      git clone ${PREFIX}/ncrystal.git
+      git clone -b v3.8.0 ${PREFIX}/ncrystal38.git ncrystal
       cd -
       mkdir $CINEMAPATH/external/ncrystal/build && cd $CINEMAPATH/external/ncrystal/build
       cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/ncrystal/install ..
@@ -53,10 +53,11 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
     else
       echo "Found ncrystal"
     fi
-    .  $CINEMAPATH/external/ncrystal/install/setup.sh
+    $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup
     export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
   else
-    .  $CINEMAPATH/external/ncrystal/install/setup.sh
+    $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup
+    # .  $CINEMAPATH/external/ncrystal/install/setup.sh
     export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
   fi
 
@@ -107,6 +108,27 @@ if [ ! -f $CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so ]; then
 fi
 
 # KDSource 
+# 1st check if libxml2 is installed, if not install version 2.9.3, as required by KDSource
+# 2nd install KDSource
+if find /lib -name *libxml2.so | grep -q . ; then
+  export PROMPT_LIBXML2_LIB="$(dirname $(find /lib -name *libxml2.so -print -quit))"
+elif find $CINEMAPATH/external/libxml2-2.9.3/local -name *libxml2.so | grep -q .; then
+  export PROMPT_LIBXML2_LIB=$CINEMAPATH/external/libxml2-2.9.3/local
+else
+  echo "libxml2 missing! Installing to "${CINEMAPATH}"/external"
+  cd $CINEMAPATH/external
+  wget https://download.gnome.org/sources/libxml2/2.9/libxml2-2.9.3.tar.xz
+  tar xf libxml2-2.9.3.tar.xz
+  cd -
+  cd $CINEMAPATH/external/libxml2-2.9.3/
+  if [ ! -d $CINEMAPATH/external/libxml2-2.9.3/local ]; then
+    mkdir $CINEMAPATH/external/libxml2-2.9.3/local
+  fi
+  ./configure --prefix=$CINEMAPATH/external/libxml2-2.9.3/local --with-python=off
+  make -j ${NUMCPU} && make install
+  export PROMPT_LIBXML2_LIB=$CINEMAPATH/external/libxml2-2.9.3/local
+  cd -
+fi
 if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libkdsource.so ]; then
   # read -r -p "Do you want to install KDSource into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
@@ -122,35 +144,12 @@ if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libkdsource.so ]; then
       mkdir $CINEMAPATH/external/KDSource/build $CINEMAPATH/external/KDSource/install && cd $CINEMAPATH/external/KDSource/build
       rm -rf $CINEMAPATH/external/KDSource/mcpl
       ln -s $CINEMAPATH/external/mcpl $CINEMAPATH/external/KDSource/
-      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/KDSource/install ..
+      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/KDSource/install -DCMAKE_PREFIX_PATH=$PROMPT_LIBXML2_LIB -DCMAKE_BUILD_TYPE=RELEASE ..
       make -j ${NUMCPU} && make install
       cd -
       echo "installed  KDSource"
     fi
 fi
-
-# gidipuls
-if [ ! -f $CINEMAPATH/external/gidiplus/lib/libgidiplus.a ]; then
-  read -r -p "Do you want to install gidiplus into $CINEMAPATH/external? [y/N] " response
-  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-    if [ ! -d $CINEMAPATH/external ]; then
-      mkdir $CINEMAPATH/external
-    fi
-    cd $CINEMAPATH/external
-    if [ -d gidiplus ]; then
-      rm -rf gidiplus
-    fi
-    git clone -b pt --single-branch ${PREFIX}/gidiplus.git
-    cd -
-    cd $CINEMAPATH/external/gidiplus
-    wget https://github.com/zeux/pugixml/releases/download/v1.13/pugixml-1.13.zip 
-    mv pugixml-1.13.zip Misc
-    make -s -j${NUMCPU} CXXFLAGS="-std=c++11 -fPIC"  CFLAGS="-fPIC" HDF5_LIB=/usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so HDF5_PATH=/usr/lib/x86_64-linux-gnu/hdf5/serial/
-    cd -
-    echo "installed gidiplus"
-  fi
-fi
-
 
 
 #install VecGeom
@@ -177,6 +176,79 @@ if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
   fi
 fi
 
+# gidiplus
+# first check&install hdf5
+if find /usr -name *hdf5.so | grep -q . ; then
+  export PROMPT_HDF5_LIB="$(dirname $(find /usr -name *hdf5.so -print -quit))"
+  # there are cases where lib and header not in the same well-setup directory tree like .../bin .../include .../lib, so another find cml
+  export PROMPT_HDF5_HEADER="$(dirname $(find /usr -name *hdf5.h -print -quit))"
+  export PROMPT_HDF5_PATH="$(dirname $(dirname $(find /usr -name *hdf5.h -print -quit)))"
+elif find $CINEMAPATH/external/hdf5-1.12.2/local -name *hdf5.so | grep -q .; then
+  export PROMPT_HDF5_LIB=$CINEMAPATH/external/hdf5-1.12.2/local/lib
+  export PROMPT_HDF5_HEADER=$CINEMAPATH/external/hdf5-1.12.2/local/include
+  export PROMPT_HDF5_PATH=$CINEMAPATH/external/hdf5-1.12.2/local/
+else
+  echo "HDF5 missing! Installing to "$CINEMAPATH"/external"
+  cd $CINEMAPATH/external
+  wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.2/src/hdf5-1.12.2.tar.gz
+  tar xvf hdf5-1.12.2.tar.gz
+  cd -
+  cd $CINEMAPATH/external/hdf5-1.12.2
+  if [ ! -d $CINEMAPATH/external/hdf5-1.12.2/local ]; then
+    mkdir $CINEMAPATH/external/hdf5-1.12.2/local
+  fi
+  ./configure --prefix=$CINEMAPATH/external/hdf5-1.12.2/local
+  make -j${NUMCPU} && make install
+  cd -
+  export PROMPT_HDF5_LIB=$CINEMAPATH/external/hdf5-1.12.2/local/lib
+  export PROMPT_HDF5_HEADER=$CINEMAPATH/external/hdf5-1.12.2/local/include
+  export PROMPT_HDF5_PATH=$CINEMAPATH/external/hdf5-1.12.2/local/
+fi
+if [ ! -f $CINEMAPATH/external/gidiplus/lib/libgidiplus.a ]; then
+  # read -r -p "Do you want to install gidiplus into $CINEMAPATH/external? [y/N] " response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    if [ ! -d $CINEMAPATH/external ]; then
+      mkdir $CINEMAPATH/external
+    fi
+    cd $CINEMAPATH/external
+    if [ -d gidiplus ]; then
+      rm -rf gidiplus
+    fi
+    git clone -b master --single-branch ${PREFIX}/gidiplus.git
+    cd -
+    cd $CINEMAPATH/external/gidiplus
+    # wget https://github.com/zeux/pugixml/releases/download/v1.13/pugixml-1.13.zip 
+    # mv pugixml-1.13.zip Misc
+    make -s -j${NUMCPU} SHELL=bash CXXFLAGS="-std=c++11 -fPIC"  CFLAGS="-fPIC" HDF5_PATH=${PROMPT_HDF5_PATH} HDF5_LIB=${PROMPT_HDF5_LIB} HDF5_INCLUDE=${PROMPT_HDF5_HEADER}
+    cd -
+    echo "installed gidiplus"
+  fi
+fi
+
+if [ ! -f $CINEMAPATH/external/openmc/local/lib/libopenmc.so ]; then
+  read -r -p "Do you want to install OPENMC into $CINEMAPATH/external? [y/N] \
+            NOTES: OPENMC acts as a direct benchmarking tool :    " \
+            response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+      if [ ! -d $CINEMAPATH/external ]; then
+        mkdir $CINEMAPATH/external
+      fi
+      cd $CINEMAPATH/external
+      if [ -d openmc ]; then
+        # rm -rf openmc
+        echo "Not doing anything"
+      fi
+      cd -
+      . $CINEMAPATH/tools/scripts/linux/prompt_openmcInstall
+      echo "OPENMC INSTALLED"
+  fi
+else
+  echo "Found OPENMC"
+  export PATH=$CINEMAPATH/external/openmc/local/bin/:$PATH
+  echo "OPENMC executable added to PATH."
+fi
+
+
 if [ -f $CINEMAPATH/src/python/Cinema/__init__.py ]; then
   export PYTHONPATH="$CINEMAPATH/src/python:$CINEMAPATH/src/python/ptgeo/python:$PYTHONPATH"
   echo "Added Cinema python module into path"
@@ -188,8 +260,8 @@ fi
 if [ ! -d $CINEMAPATH/cinemabin ]; then
   mkdir $CINEMAPATH/cinemabin
   cd $CINEMAPATH/cinemabin
-  cmake .. 
-  make -j${NUMCPU}
+  cmake -DHDF5_ROOT=$PROMPT_HDF5_PATH .. 
+  make -j${NUMCPU} 
   cd -
 fi
 
