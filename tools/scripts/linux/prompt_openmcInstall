@@ -1,5 +1,7 @@
 #!/bin/bash
 
+NUMCPU=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
+
 cd $CINEMAPATH/external
 if [ ! -d $CINEMAPATH/external/openmc ]; then
     git clone --recurse-submodules -b v0.14.0 https://gitlab.com/cinema-developers/openmc.git
@@ -22,7 +24,7 @@ cmake -DOPENMC_USE_MCPL=on \
     -DHDF5_ROOT=$PROMPT_HDF5_DIR \
     -DCMAKE_BUILD_TYPE=RELEASE \
     ..
-make -j8
+make -j ${NUMCPU}
 make install
 cd -
 cd $CINEMAPATH/external/openmc/
