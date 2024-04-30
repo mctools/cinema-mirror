@@ -19,6 +19,7 @@ cmake -DOPENMC_USE_MCPL=on \
     -DNCrystal_ROOT=$CINEMAPATH/external/ncrystal/install \
     -DMCPL_ROOT=$CINEMAPATH/external/KDSource/install \
     -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/openmc/local \
+    -DCMAKE_PREFIX_PATH=$PROMPT_HDF5_DIR \
     -DHDF5_ROOT=$PROMPT_HDF5_PATH \
     -DCMAKE_BUILD_TYPE=RELEASE \
     ..

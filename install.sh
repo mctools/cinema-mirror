@@ -182,7 +182,7 @@ if find /usr -name *hdf5.so | grep -q . ; then
   export PROMPT_HDF5_LIB="$(dirname $(find /usr -name *hdf5.so -print -quit))"
   # there are cases where lib and header not in the same well-setup directory tree like .../bin .../include .../lib, so another find cml
   export PROMPT_HDF5_HEADER="$(dirname $(find /usr -name *hdf5.h -print -quit))"
-  export PROMPT_HDF5_PATH="$(dirname $(dirname $(find /usr -name *hdf5.h -print -quit)))"
+  export PROMPT_HDF5_PATH="$(dirname $(dirname $(find /usr -name *hdf5.so -print -quit)))"
 elif find $CINEMAPATH/external/hdf5-1.12.2/local -name *hdf5.so | grep -q .; then
   export PROMPT_HDF5_LIB=$CINEMAPATH/external/hdf5-1.12.2/local/lib
   export PROMPT_HDF5_HEADER=$CINEMAPATH/external/hdf5-1.12.2/local/include
@@ -204,6 +204,10 @@ else
   export PROMPT_HDF5_HEADER=$CINEMAPATH/external/hdf5-1.12.2/local/include
   export PROMPT_HDF5_PATH=$CINEMAPATH/external/hdf5-1.12.2/local/
 fi
+
+export PROMPT_HDF5_DIR=$PROMPT_HDF5_PATH:$PROMPT_HDF5_LIB
+echo "PROMPT ENV: PROMPT_HDF5_DIR=${PROMPT_HDF5_DIR}"
+
 if [ ! -f $CINEMAPATH/external/gidiplus/lib/libgidiplus.a ]; then
   # read -r -p "Do you want to install gidiplus into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
@@ -260,7 +264,7 @@ fi
 if [ ! -d $CINEMAPATH/cinemabin ]; then
   mkdir $CINEMAPATH/cinemabin
   cd $CINEMAPATH/cinemabin
-  cmake -DHDF5_ROOT=$PROMPT_HDF5_PATH .. 
+  cmake -DCMAKE_PREFIX_PATH=$PROMPT_HDF5_DIR -DHDF5_ROOT=$PROMPT_HDF5_PATH .. 
   make -j${NUMCPU} 
   cd -
 fi
