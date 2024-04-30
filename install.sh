@@ -205,7 +205,7 @@ else
   export PROMPT_HDF5_PATH=$CINEMAPATH/external/hdf5-1.12.2/local/
 fi
 
-export PROMPT_HDF5_DIR=$PROMPT_HDF5_PATH:$PROMPT_HDF5_LIB
+export PROMPT_HDF5_DIR="$PROMPT_HDF5_PATH;$PROMPT_HDF5_LIB;$PROMPT_HDF5_HEADER"
 echo "PROMPT ENV: PROMPT_HDF5_DIR=${PROMPT_HDF5_DIR}"
 
 if [ ! -f $CINEMAPATH/external/gidiplus/lib/libgidiplus.a ]; then
@@ -264,7 +264,7 @@ fi
 if [ ! -d $CINEMAPATH/cinemabin ]; then
   mkdir $CINEMAPATH/cinemabin
   cd $CINEMAPATH/cinemabin
-  cmake -DCMAKE_PREFIX_PATH=$PROMPT_HDF5_DIR -DHDF5_ROOT=$PROMPT_HDF5_PATH .. 
+  cmake -DHDF5_ROOT=$PROMPT_HDF5_DIR .. 
   make -j${NUMCPU} 
   cd -
 fi
