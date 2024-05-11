@@ -60,4 +60,12 @@ void pt_CentralData_setEnableGidiPowerIteration(void* obj, bool t)
     return static_cast<pt::CentralData *>(obj)->setEnableGidiPowerIteration(t);
 }
 
+bool pt_CentralData_getGammaTransport(void* obj)
+{
+    return static_cast<pt::CentralData *>(obj)->getGammaTransport();
+}
 
+void pt_CentralData_setGammaTransport(void* obj, bool t)
+{
+    return static_cast<pt::CentralData *>(obj)->setGammaTransport(t);
+}

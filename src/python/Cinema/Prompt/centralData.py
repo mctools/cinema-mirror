@@ -41,6 +41,9 @@ _pt_CentralData_setEnableGidi = importFunc('pt_CentralData_setEnableGidi', None,
 _pt_CentralData_getEnableGidiPowerIteration = importFunc('pt_CentralData_getEnableGidiPowerIteration', type_bool, [type_voidp] )
 _pt_CentralData_setEnableGidiPowerIteration = importFunc('pt_CentralData_setEnableGidiPowerIteration', None, [type_voidp, type_bool] )
 
+_pt_CentralData_getGammaTransport = importFunc('pt_CentralData_getGammaTransport', type_bool, [type_voidp] )
+_pt_CentralData_setGammaTransport = importFunc('pt_CentralData_setGammaTransport', type_bool, [type_voidp, type_bool] )
+
 
 @singleton
 class CentralData():
@@ -78,4 +81,8 @@ class CentralData():
     def setEnableGidiPowerIteration(self, b):
         _pt_CentralData_setEnableGidiPowerIteration(self.cobj, b)
     
+    def getGammaTransport(self):
+        return _pt_CentralData_getGammaTransport(self.cobj)
     
+    def setGammaTransport(self, b):
+        _pt_CentralData_setGammaTransport(self.cobj, b)

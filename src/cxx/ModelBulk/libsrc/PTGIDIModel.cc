@@ -216,8 +216,15 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
       {
         PROMPT_THROW2(CalcError, "particle weight in gidi model is not unity.") 
       }
-
-      Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getCentralData().getEnableGidiPowerIteration());
+      if(m_factory.getCentralData().getGammaTransport() && p.getPDG()==22)
+      {
+        Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getCentralData().getEnableGidiPowerIteration());
+      }
+      else if (p.getPDG()==2112)
+      {
+        Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getCentralData().getEnableGidiPowerIteration());
+      }
+      
     }
   }
 }
