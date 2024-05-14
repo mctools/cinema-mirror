@@ -2,7 +2,8 @@
 
 USAGE="Usage: $0 -t for unit test"
 
-.  $CINEMAPATH/external/ncrystal/install/setup.sh
+# .  $CINEMAPATH/external/ncrystal/install/setup.sh
+$CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup
 
 while getopts ti:dr option
   do
