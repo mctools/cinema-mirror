@@ -24,7 +24,7 @@ endif()
 set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/ncrystal/install/")
 message(STATUS "NCrystal_DIR=$ENV{NCrystal_ext}/lib/cmake")
 set(NCrystal_DIR  "$ENV{NCrystal_ext}/lib/cmake")
-find_package(NCrystal 3.8.0 REQUIRED)
+find_package(NCrystal 3.0.0 REQUIRED)
 message(STATUS "FOUND NCrystal: ${NCrystal_FOUND} ${NCrystal_DIR}")
 
 # MCPL
