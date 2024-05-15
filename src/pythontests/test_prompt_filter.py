@@ -34,4 +34,4 @@ gun.setPosition([0,0,-99])
 sim.simulate(gun, 1000)
 
 import numpy as np
-np.testing.assert_allclose(sim.gatherHistData('espec').getTotalWeight(), 333., rtol=1e-15)
+np.testing.assert_allclose(sim.gatherHistData('espec').getTotalWeight(), 310., rtol=1e-15)

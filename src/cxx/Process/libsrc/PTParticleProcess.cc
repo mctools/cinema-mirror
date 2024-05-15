@@ -202,8 +202,8 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
     }
     else
     {
-      m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0));
       m_compModel->addPhysicsModel(std::make_shared<NCrystalAbs>(cfgstr, 1.0, 0));
+      m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0));
     }
 
   }

@@ -10,8 +10,8 @@ import numpy as np
 from Cinema.Prompt import Prompt
 from Cinema.Prompt.geo import Volume
 
-expectWl = [407, 392, 425, 431, 403, 386, 369, 377, 315, 307, 274, 271, 257, 231,
- 218, 177, 179, 193, 152, 142]
+expectWl = [413., 400., 436., 427., 404., 393., 370., 395., 328., 306., 271.,
+       267., 254., 228., 212., 169., 182., 186., 152., 147.]
 
 
 

@@ -9,7 +9,7 @@ import numpy as np
 
 from Cinema.Prompt import Prompt
 from Cinema.Prompt.geo import Volume
-expWl = [355, 354, 349, 364, 343, 332, 315, 310, 257, 254, 236, 218, 219, 159, 182, 156, 160, 143, 136, 102]
+expWl = [350., 367., 347., 367., 335., 342., 315., 312., 256., 253., 239., 217., 214., 161., 175., 146., 159., 147., 136., 108.]
 
 class MySim(Prompt):
     def __init__(self, seed) -> None:
@@ -37,6 +37,7 @@ class MySim(Prompt):
         scorerWl.cfg_min = 1
         scorerWl.cfg_max = 2
         scorerWl.cfg_numbin = 20
+        scorerWl.cfg_ptstate = 'ENTRY'
         dtt.addScorer(scorerWl)
         world.placeChild('detectorPhy', dtt, Transformation3D(0,0,90))
 
