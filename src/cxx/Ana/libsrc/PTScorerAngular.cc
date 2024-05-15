@@ -45,6 +45,14 @@ void Prompt::ScorerAngular::score(Prompt::Particle &particle)
 
   }
   m_hist->fill(m_refDir.angleCos(particle.getDirection()), particle.getWeight());  
+  
+  // fixme:
+  // Prompt::Vector vec = {0,0,0};
+  // std::cout << "Dir 1: " << particle.getDirection() << ". Dir 2: " << (particle.getPosition() - vec) / std::sqrt((particle.getPosition() - vec).mag2()) << std::endl;
+
+  // The following and above particle outgoing dir neglects beam direction variations.
+  // The following particle outgoing direction neglects sample size and scattering by environments.
   // double angle_cos = (m_samplePos-particle.getPosition()).angleCos(m_refDir);
   // m_hist->fill(180-std::acos(angle_cos)*const_rad2deg, particle.getWeight());
+
 }
