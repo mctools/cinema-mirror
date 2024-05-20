@@ -26,11 +26,66 @@
 #include "PTNCrystalScat.hh"
 #include "PTHist1D.hh"
 #include "PTModelCollection.hh"
+#include "PTMaterialDecomposer.hh"
+#include "PTGIDIFactory.hh"
+#include "PTCentralData.hh"
+
 
 namespace pt = Prompt;
 
-TEST_CASE("Gidi")
+TEST_CASE("H1")
 {
+  std::vector<double> expectedXS;
+  expectedXS = {2.06942784133667e-21, 5.29027296368866e-24};
+  std::cout.precision(15);
+  auto &cdata = Prompt::Singleton<Prompt::CentralData>::getInstance();
+  std::cout << "CentralData info: " << std::endl;
+  std::cout << cdata.getGidiMap() << std::endl;
+  std::cout << cdata.getGidiPops() << std::endl;
+  auto isotope = Prompt::IsotopeComposition{1, 1, 1., "H1"};
+  auto isotopes = {isotope};
+  for(const auto& v : isotopes)
+    std::cout << v << std::endl;
+  auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
+
+  auto model = gidifactory.createNeutronGIDIModel(isotopes, 1., 0. );
+  std::cout << "Info: model number " << model.size() << std::endl;
+  CHECK(model.size()==2);
+  int i = 0;
+  for(auto v: model)
+  {
+    std::cout << "Info: xs " << v->getCrossSection(1.) << std::endl;
+    CHECK(Prompt::floateq(v->getCrossSection(1.), expectedXS[i]));
+    i++;
+  }
+}
+
+
+TEST_CASE("U235")
+{
+  std::vector<double> expectedXS;
+  expectedXS = {1.26423125537086e-21, 7.99475113325076e-21};
+  auto &cdata = Prompt::Singleton<Prompt::CentralData>::getInstance();
+  std::cout << "CentralData info: " << std::endl;
+  std::cout << cdata.getGidiMap() << std::endl;
+  std::cout << cdata.getGidiPops() << std::endl;
+  auto isotope = Prompt::IsotopeComposition{235, 92, 1., "U235"};
+  auto isotopes = {isotope};
+  for(const auto& v : isotopes)
+    std::cout << v << std::endl;
+  auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
+
+  auto model = gidifactory.createNeutronGIDIModel(isotopes, 1., 0. );
+  std::cout << "Info: model number " << model.size() << std::endl;
+  CHECK(model.size()==2);
+  int i = 0;
+  for(auto v: model)
+  {
+    std::cout << "Info: xs " << v->getCrossSection(1.) << std::endl;
+    CHECK(Prompt::floateq(v->getCrossSection(1.), expectedXS[i]));
+    i++;
+  }
+}
   // auto &fac = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
   // std::shared_ptr<Prompt::GIDIModel> gidimodel = fac.createNeutronGIDIModel("u235");
   // double ekin(1e6);
@@ -68,4 +123,4 @@ TEST_CASE("Gidi")
   // // std::cout << "gidiekin ncrystal " << gidiekin/loop << std::endl;
   // hist2.save("histnc.mcpl");
 
-}
+
