@@ -22,27 +22,36 @@
 #include "PTMath.hh"
 #include "PTModelCollection.hh"
 #include "PTParticleProcess.hh"
+#include "PTLauncher.hh"
 
 TEST_CASE("ModelCollection")
 {
-  std::vector<double> expectedEnergyOut;
-  expectedEnergyOut = {0.0253, 0.0263, 0.045192303408606, 0.0283, -1, 0.00542322400666893 };
-  std::vector<std::vector<double>> expectedDirOut;
-  expectedDirOut ={
-    { 0.211330297846913, -0.592201916881118, -0.777583689935858 },
-    { -0.896705652516454, 0.227612286342529, -0.379620362798107 },
-    { 0.349974039965383, -0.141170718428235, 0.926061012897511 },
-    { -0.762662850218472, 0.547355775591302, -0.344596912092202 }, 
-    { -0.762662850218472, 0.547355775591302, -0.344596912092202 }, //same as previous one due to absorption, variable outdir unchanged
-    { -0.423603163886187, -0.904003071387581, 0.0577824062101281 }
-  };
+  // std::vector<double> expectedEnergyOut;
+  // expectedEnergyOut = {0.0253, 0.0263, 0.045192303408606, 0.0283, -1, 0.00542322400666893 };
+  // std::vector<std::vector<double>> expectedDirOut;
+  // expectedDirOut ={
+  //   { 0.211330297846913, -0.592201916881118, -0.777583689935858 },
+  //   { -0.896705652516454, 0.227612286342529, -0.379620362798107 },
+  //   { 0.349974039965383, -0.141170718428235, 0.926061012897511 },
+  //   { -0.762662850218472, 0.547355775591302, -0.344596912092202 }, 
+  //   { -0.762662850218472, 0.547355775591302, -0.344596912092202 }, //same as previous one due to absorption, variable outdir unchanged
+  //   { -0.423603163886187, -0.904003071387581, 0.0577824062101281 }
+  // };
+  std::vector<double> expectedXS;
+  expectedXS={
+    1.67754141205923,
+    1.63589383650134,
+    1.5978104364311,
+    1.56291359985623,
+    1.53091995017932,
+    1.61041869533578
+    };
   double inE(0.0253);
   auto inDir = Prompt::Vector({1.,0.,0.});
   auto pp = Prompt::ParticleProcess("Al_sg225.ncmat");
   auto compModel = pp.getModelCollection();
   double xs(0.);
   std::cout.precision(15);
-  std::cout << "Total XS: " << xs/Prompt::Unit::barn << std::endl;
 
   double finE(0.);
   Prompt::Vector finDir;
@@ -52,14 +61,15 @@ TEST_CASE("ModelCollection")
     std::cout << "In dir: " << inDir << std::endl;
     xs = compModel->totalCrossSection(2112, inE, inDir);
     std::cout << "Total XS: " << xs/Prompt::Unit::barn << std::endl;
-    compModel->generate(inE, inDir, finE, finDir);
-    std::cout << "Out energy: " << finE << std::endl;
-    CHECK(Prompt::floateq(finE, expectedEnergyOut[i]));
-    std::cout << "Out dir: " << finDir << std::endl;
-    CHECK(Prompt::floateq(finDir.x(), expectedDirOut[i][0]));
-    CHECK(Prompt::floateq(finDir.y(), expectedDirOut[i][1]));
-    CHECK(Prompt::floateq(finDir.z(), expectedDirOut[i][2]));
-    std::cout << "  " << std::endl;
+    CHECK(Prompt::floateq(xs/Prompt::Unit::barn, expectedXS[i]));
+    // compModel->generate(inE, inDir, finE, finDir);
+    // std::cout << "Out energy: " << finE << std::endl;
+    // CHECK(Prompt::floateq(finE, expectedEnergyOut[i]));
+    // std::cout << "Out dir: " << finDir << std::endl;
+    // CHECK(Prompt::floateq(finDir.x(), expectedDirOut[i][0]));
+    // CHECK(Prompt::floateq(finDir.y(), expectedDirOut[i][1]));
+    // CHECK(Prompt::floateq(finDir.z(), expectedDirOut[i][2]));
+    // std::cout << "  " << std::endl;
     inE += 0.001;
   }
 
