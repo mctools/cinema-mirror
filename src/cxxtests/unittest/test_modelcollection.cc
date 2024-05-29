@@ -23,9 +23,12 @@
 #include "PTModelCollection.hh"
 #include "PTParticleProcess.hh"
 #include "PTLauncher.hh"
+#include "PTCentralData.hh"
 
 TEST_CASE("ModelCollection")
 {
+  // !! NCrystal scattering + NCrystal Abs != NCrystal scattering + GIDI Abs
+  using namespace Prompt;
   // std::vector<double> expectedEnergyOut;
   // expectedEnergyOut = {0.0253, 0.0263, 0.045192303408606, 0.0283, -1, 0.00542322400666893 };
   // std::vector<std::vector<double>> expectedDirOut;
@@ -39,51 +42,53 @@ TEST_CASE("ModelCollection")
   // };
   std::vector<double> expectedXS;
   expectedXS={
-    1.67754141205923,
-    1.63589383650134,
-    1.5978104364311,
-    1.56291359985623,
-    1.53091995017932,
-    1.61041869533578
+    1.6801370629016,
+    1.63844743351929,
+    1.60031071917211,
+    1.565349153125,
+    1.53331373618499,
+    1.61278276163805
     };
   double inE(0.0253);
-  auto inDir = Prompt::Vector({1.,0.,0.});
-  auto pp = Prompt::ParticleProcess("Al_sg225.ncmat");
+  auto inDir = Vector({1.,0.,0.});
+  auto &cd = Singleton<CentralData>::getInstance();
+  cd.setEnableGidi(true);
+  auto pp = ParticleProcess("Al_sg225.ncmat");
   auto compModel = pp.getModelCollection();
   double xs(0.);
   std::cout.precision(15);
 
   double finE(0.);
-  Prompt::Vector finDir;
+  Vector finDir;
   for(size_t i;i<6;i++)
   {
     std::cout << "In energy: " << inE << std::endl;
     std::cout << "In dir: " << inDir << std::endl;
     xs = compModel->totalCrossSection(2112, inE, inDir);
-    std::cout << "Total XS: " << xs/Prompt::Unit::barn << std::endl;
-    CHECK(Prompt::floateq(xs/Prompt::Unit::barn, expectedXS[i]));
+    std::cout << "Total XS: " << xs/Unit::barn << std::endl;
+    CHECK(floateq(xs/Unit::barn, expectedXS[i]));
     // compModel->generate(inE, inDir, finE, finDir);
     // std::cout << "Out energy: " << finE << std::endl;
-    // CHECK(Prompt::floateq(finE, expectedEnergyOut[i]));
+    // CHECK(floateq(finE, expectedEnergyOut[i]));
     // std::cout << "Out dir: " << finDir << std::endl;
-    // CHECK(Prompt::floateq(finDir.x(), expectedDirOut[i][0]));
-    // CHECK(Prompt::floateq(finDir.y(), expectedDirOut[i][1]));
-    // CHECK(Prompt::floateq(finDir.z(), expectedDirOut[i][2]));
+    // CHECK(floateq(finDir.x(), expectedDirOut[i][0]));
+    // CHECK(floateq(finDir.y(), expectedDirOut[i][1]));
+    // CHECK(floateq(finDir.z(), expectedDirOut[i][2]));
     // std::cout << "  " << std::endl;
     inE += 0.001;
   }
 
-  // auto collection = Prompt::ModelCollection(2112) ;
+  // auto collection = ModelCollection(2112) ;
   // collection.addNCScaAbsModels("Al_sg225.ncmat;dcutoff=0.5;temp=25C");
 
   // double xs(0.);
   // xs = collection.totalCrossSection(1., {0,0,0} );
-  // Prompt::Vector out;
+  // Vector out;
   // double final;
   // std::cout << xs << std::endl;
   // printf("%.15f\n", xs);
 
-  // CHECK(Prompt::floateq(1.378536096609809*Prompt::Unit::barn, xs ));
+  // CHECK(floateq(1.378536096609809*Unit::barn, xs ));
 
 
   // collection.generate(1., {1,0,0}, final, out);
