@@ -1,0 +1,32 @@
+#!/bin/bash
+
+NUMCPU=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
+
+cd $CINEMAPATH/external
+if [ ! -d $CINEMAPATH/external/openmc ]; then
+    git clone --recurse-submodules -b v0.14.0 https://gitlab.com/cinema-developers/openmc.git
+fi
+cd $CINEMAPATH
+cd $CINEMAPATH/external/openmc
+if [ ! -d $CINEMAPATH/external/openmc/build ]; then
+    mkdir build 
+fi
+if [ ! -d $CINEMAPATH/external/openmc/local ]; then
+    mkdir local 
+fi
+cd -
+cd $CINEMAPATH/external/openmc/build
+cmake -DOPENMC_USE_MCPL=on \
+    -DOPENMC_USE_NCRYSTAL=on \
+    -DNCrystal_ROOT=$CINEMAPATH/external/ncrystal/install \
+    -DMCPL_ROOT=$CINEMAPATH/external/KDSource/install \
+    -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/openmc/local \
+    -DHDF5_ROOT=$PROMPT_HDF5_DIR \
+    -DCMAKE_BUILD_TYPE=RELEASE \
+    ..
+make -j ${NUMCPU}
+make install
+cd -
+cd $CINEMAPATH/external/openmc/
+pip install .
+cd -
