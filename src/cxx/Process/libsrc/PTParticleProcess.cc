@@ -172,7 +172,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
     if(enablegidi)
     {
       std::cout << "enabled gidi model for " << cfgstr 
-      << ", the switching energy at " << gidimin << "eV\n.";
+      << ", the switching energy at " << gidimin << "eV.\n";
       // NCrystal models
       if(gidimin>0)
          m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0, gidimin));    
@@ -224,7 +224,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
     if(enablegidi)
     {
       std::cout << "enabled gidi model for " << cfgstr 
-      << ", the switching energy at " << gidimin << "eV\n.";
+      << ", the switching energy at " << gidimin << "eV.\n";
 
       // GIDI models
       auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
