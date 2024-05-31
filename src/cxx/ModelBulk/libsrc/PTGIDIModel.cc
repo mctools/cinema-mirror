@@ -79,8 +79,9 @@ Prompt::GIDIModel::~GIDIModel()
   delete m_products;
   delete m_urr_info;
   delete m_input;
-
-  std::cout<<"Destructing GIDIModel " << m_modelName << " containing " << m_mcprotare->numberOfReactions() << " reactions" <<std::endl;
+  
+  std::cout<<"Destructing GIDIModel " << m_modelName << ", energy between [" << m_modelvalid.minEkin << ", " << m_modelvalid.maxEkin << "]";
+  std::cout<< ", containing " << m_mcprotare->numberOfReactions() << " reactions" <<std::endl;
 }
 
 
@@ -170,7 +171,8 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
       {
         Photon sec(labekin, labdir, primary.getPosition());
         sec.setTime(primary.getTime() + aproduct.m_birthTimeSec);
-        secondaries.push_back(sec);
+        if(m_factory.getCentralData().getGammaTransport() )
+          secondaries.push_back(sec);
       }
       else
         PROMPT_THROW(NotImplemented, "");
