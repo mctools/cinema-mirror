@@ -229,30 +229,6 @@ if [ ! -f $CINEMAPATH/external/gidiplus/lib/libgidiplus.a ]; then
   fi
 fi
 
-if [ ! -f $CINEMAPATH/external/openmc/local/lib/libopenmc.so ]; then
-  read -r -p "Do you want to install OPENMC into $CINEMAPATH/external? [y/N] \
-            NOTES: OPENMC acts as a direct benchmarking tool :    " \
-            response
-  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-      if [ ! -d $CINEMAPATH/external ]; then
-        mkdir $CINEMAPATH/external
-      fi
-      cd $CINEMAPATH/external
-      if [ -d openmc ]; then
-        # rm -rf openmc
-        echo "Not doing anything"
-      fi
-      cd -
-      . $CINEMAPATH/tools/scripts/linux/prompt_openmcInstall
-      echo "OPENMC INSTALLED"
-  fi
-else
-  echo "Found OPENMC"
-  export PATH=$CINEMAPATH/external/openmc/local/bin/:$PATH
-  echo "OPENMC executable added to PATH."
-fi
-
-
 if [ -f $CINEMAPATH/src/python/Cinema/__init__.py ]; then
   export PYTHONPATH="$CINEMAPATH/src/python:$CINEMAPATH/src/python/ptgeo/python:$PYTHONPATH"
   echo "Added Cinema python module into path"
@@ -292,6 +268,29 @@ else
       pip install -r $CINEMAPATH/requirement
     fi
   fi
+fi
+
+if [ ! -f $CINEMAPATH/external/openmc/local/lib/libopenmc.so ]; then
+  read -r -p "Do you want to install OPENMC into $CINEMAPATH/external? [y/N] \
+            NOTES: OPENMC acts as a direct benchmarking tool :    " \
+            response
+  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+      if [ ! -d $CINEMAPATH/external ]; then
+        mkdir $CINEMAPATH/external
+      fi
+      cd $CINEMAPATH/external
+      if [ -d openmc ]; then
+        # rm -rf openmc
+        echo "Not doing anything"
+      fi
+      cd -
+      . $CINEMAPATH/tools/scripts/linux/prompt_openmcInstall
+      echo "OPENMC INSTALLED"
+  fi
+else
+  echo "Found OPENMC"
+  export PATH=$CINEMAPATH/external/openmc/local/bin/:$PATH
+  echo "OPENMC executable added to PATH."
 fi
 
 #SSSP
