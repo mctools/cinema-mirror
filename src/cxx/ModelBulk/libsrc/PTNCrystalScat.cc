@@ -38,7 +38,7 @@ Prompt::NCrystalScat::NCrystalScat(const std::string &cfgstring, double bias,
 
 Prompt::NCrystalScat::~NCrystalScat()
 {
-  std::cout<<"Destructing scattering physics " << m_modelName <<std::endl;
+  std::cout<<"Destructing NCrystal scattering physics " << m_modelName << ", energy between [" << m_modelvalid.minEkin << ", " << m_modelvalid.maxEkin << "]" << std::endl;
 }
 
 

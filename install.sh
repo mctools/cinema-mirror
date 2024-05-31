@@ -43,7 +43,7 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
       if [ -d ncrystal ]; then
         rm -rf ncrystal
       fi
-      git clone -b v3.0.0 ${PREFIX}/ncrystal38.git ncrystal
+      git clone -b v3.8.0 ${PREFIX}/ncrystal38.git ncrystal
       cd -
       mkdir $CINEMAPATH/external/ncrystal/build && cd $CINEMAPATH/external/ncrystal/build
       cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/ncrystal/install ..
@@ -53,11 +53,11 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
     else
       echo "Found ncrystal"
     fi
-    # $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup
+    $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup
     export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
   else
-    # $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup
-    .  $CINEMAPATH/external/ncrystal/install/setup.sh
+    $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup
+    # .  $CINEMAPATH/external/ncrystal/install/setup.sh
     export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
   fi
 

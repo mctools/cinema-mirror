@@ -29,7 +29,6 @@
 #include "PTException.hh"
 
 namespace Prompt {
-
   class HistBase {
   public:
     explicit HistBase(const std::string &name, unsigned nbins);
@@ -41,6 +40,14 @@ namespace Prompt {
     
     double getXMin() const {return m_xmin;}
     double getXMax() const {return m_xmax;}
+    /**
+     * @brief Get total weight.
+     * 
+     * Counting all, distinglished from HistBase::getAccWeight() const, 
+     * which scores only those which falls between scorer variable range
+     * 
+     * @return double 
+     */
     double getTotalWeight() const {return m_sumW;};
     double getOverflow() const {return m_overflow;};
     double getUnderflow() const {return m_underflow;};

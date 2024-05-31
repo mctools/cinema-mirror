@@ -140,8 +140,9 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
         //! within the next while loop, the particle is moving in the same volume
         while(m_activeVolume.proprogateInAVolume(*particle) )
         {
+          // std::cout << "Tracing Volume ID " << m_activeVolume.getVolumeID() << std::endl;
           // score if any scorer is available
-          if(m_activeVolume.hasPropagateScorer())
+          if(particle->isAlive() && m_activeVolume.hasPropagateScorer())
           {
             m_activeVolume.scorePropagate(*particle);
           }

@@ -38,7 +38,7 @@ Prompt::NCrystalAbs::NCrystalAbs(const std::string &cfgstring, double bias,
 
 Prompt::NCrystalAbs::~NCrystalAbs()
 {
-  std::cout<<"Destructing absorption physics " << m_modelName <<std::endl;
+  std::cout<<"Destructing NCrystal absorption physics " << m_modelName <<", energy between [" << m_modelvalid.minEkin << ", " << m_modelvalid.maxEkin << "]"<< std::endl;
 }
 
 

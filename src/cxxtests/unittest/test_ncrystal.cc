@@ -20,11 +20,12 @@
 
 #include "../doctest.h"
 #include "PTNCrystalScat.hh"
+#include "PTNCrystalAbs.hh"
 #include "PTMath.hh"
 #include "PTMaterialDecomposer.hh"
 
 
-TEST_CASE("NCrystal")
+TEST_CASE("NCrystal scattering physics")
 {
 
   // class CustomRNG : public NC::RNGStream {
@@ -47,25 +48,45 @@ TEST_CASE("NCrystal")
   //////////////////////////////////////
   // Create and use aluminium powder: //
   //////////////////////////////////////
+  // std::vector<double> expectedEnergyOut;
+  // expectedEnergyOut = {0.895688481646089, 0.913113714008026, 0.893634719170785 };
+  // std::vector<std::vector<double>> expectedDirOut;
+  // expectedDirOut ={
+  //   { -0.667313017257404, -0.443201936751825, 0.598552738075978 },
+  //   { -0.569071523546255, -0.478398437813209, -0.668799324002818 },
+  //   { -0.476695834028235, 0.192041130941706, 0.857835232341711 },
+  // };
 
   auto pc = Prompt::NCrystalScat( "Al_sg225.ncmat;dcutoff=0.5;temp=25C" );
   double xs = pc.getCrossSection(1);
-  Prompt::Vector out;
-  double final(0);
-
+ 
+  std::cout.precision(15);
   std::cout << xs << std::endl;
   printf("%.15f\n", xs);
 
   CHECK(Prompt::floateq(1.378536096609809*Prompt::Unit::barn, xs ));
 
-  pc.generate(1., {1,0,0}, final, out);
-  std::cout << final << " " << out << std::endl;
+  // double inE(1.);
+  // auto inDir = Prompt::Vector({1.,0.,0.});
+  // double finE(0.);
+  // Prompt::Vector finDir;
+ 
+  // for(size_t i=0;i<3;i++)
+  // {
+  //   std::cout << "In energy: " << inE << std::endl;
+  //   std::cout << "In dir: " << inDir << std::endl;
+  //   pc.generate(inE, inDir, finE, finDir);
+  //   std::cout << "Out energy: " << finE << std::endl;
+  //   CHECK(Prompt::floateq(finE, expectedEnergyOut[i]));
+  //   std::cout << "Out dir: " << finDir << std::endl;
+  //   CHECK(Prompt::floateq(finDir.x(), expectedDirOut[i][0]));
+  //   CHECK(Prompt::floateq(finDir.y(), expectedDirOut[i][1]));
+  //   CHECK(Prompt::floateq(finDir.z(), expectedDirOut[i][2]));
+  //   std::cout << "  " << std::endl;
+  // }
 
-  pc.generate(1., {1,0,0}, final, out);
-  std::cout << final << " " << out << std::endl;
-
-  pc.generate(1., {1,0,0}, final, out);
-  std::cout << final << " " << out << std::endl;
+  // pc.generate(1., {1,0,0}, final, out);
+  // std::cout << final << " " << out << std::endl;
 
 
   //
@@ -86,4 +107,21 @@ TEST_CASE("NCrystal")
     std::cout << *it << std::endl;
 
 
+}
+
+
+TEST_CASE("Ncrystal absorption physics")
+{
+  double inE(1.);
+  auto inDir = Prompt::Vector({1.,0.,0.});
+  double finE(0.);
+  Prompt::Vector finDir;
+
+  auto absModel = Prompt::NCrystalAbs("LiquidWaterH2O_T293.6K.ncmat");
+  double absxs = absModel.getCrossSection(inE);
+  std::cout << "Absorption XS at "<< inE << "eV : " << absxs << std::endl;
+  CHECK(Prompt::floateq(absxs, .52781258905735e-24));
+
+  // absModel.generate(inE, inDir, finE, finDir);
+  // CHECK(Prompt::floateq(finE, -1.));
 }

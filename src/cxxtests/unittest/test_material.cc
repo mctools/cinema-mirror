@@ -37,5 +37,5 @@ TEST_CASE("ParticleProcess")
     totlength += mat.sampleStepLength(n);
   }
   printf("%.16f \n", totlength/loop);
-  CHECK(Prompt::floateq(totlength/loop, 2.7602913707687793));
+  CHECK(Prompt::floateq(totlength/loop, 2.7599510379162586));
 }
