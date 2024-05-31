@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import numpy as np
 import prompt_suite as ps
-import openmc_suite as os
 import matplotlib.pyplot as plt
 
 expected = [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 1568.0, 1856.0, 8503.0, 86150.0, 203.0, 128.0, 5.0, 0.0, 0.0]
@@ -21,6 +20,7 @@ def printExpected(counts):
             print(c)
     
 if manualcheck:
+    import openmc_suite as os
     counts = ps.promptRun(cfg, incidentEnergy, -5, energyBinNum, energyRange[0], energyRange[1], partnum=partnum, plot=True)
     os.openmcRun(cfg, incidentEnergy, energyBinNum, energyRange[0], energyRange[1], partnum=partnum)
     printExpected(counts)

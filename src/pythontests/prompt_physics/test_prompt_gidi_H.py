@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import numpy as np
 import prompt_suite as ps
-import openmc_suite as os
 import matplotlib.pyplot as plt
 
 # Check H1 at 1e-4
@@ -22,6 +21,7 @@ def printExpected(counts):
             print(c)
     
 if manualcheck:
+    import openmc_suite as os
     counts = ps.promptRun(cfg, incidentEnergy, -5, energyBinNum, energyRange[0], energyRange[1], partnum=partnum, plot=True)
     os.openmcRun(cfg, incidentEnergy, energyBinNum, energyRange[0], energyRange[1], partnum=partnum)
     printExpected(counts)
