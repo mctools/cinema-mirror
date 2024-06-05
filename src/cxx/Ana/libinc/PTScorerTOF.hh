@@ -28,7 +28,7 @@ namespace Prompt {
 
   class ScorerTOF  : public Scorer1D {
   public:
-    ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins, ScorerType stype=Scorer::ScorerType::ENTRY);
+    ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins, unsigned int pdg, ScorerType stype=Scorer::ScorerType::ENTRY);
     virtual ~ScorerTOF();
     virtual void score(Particle &particle) override;
   };

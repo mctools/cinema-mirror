@@ -22,9 +22,9 @@
 #include "PTActiveVolume.hh"
 
 Prompt::ScorerPSD::ScorerPSD(const std::string &name, double xmin, double xmax,
-   unsigned nxbins, double ymin, double ymax, unsigned nybins, ScorerType stype, PSDType type)
+   unsigned nxbins, double ymin, double ymax, unsigned nybins, unsigned int pdg, ScorerType stype, PSDType type)
 :Scorer2D("ScorerPSD_"+name, stype,
-  std::make_unique<Hist2D>("ScorerPSD_"+name, xmin, xmax, nxbins, ymin, ymax, nybins)),
+  std::make_unique<Hist2D>("ScorerPSD_"+name, xmin, xmax, nxbins, ymin, ymax, nybins), pdg),
  m_type(type)
 {}
 

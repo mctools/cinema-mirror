@@ -30,7 +30,7 @@ namespace Prompt {
   class ScorerRotatingObj  : public Scorer1D {
   public:
     ScorerRotatingObj(const std::string &name, const Vector &dir, const Vector &point,
-      double rotFreq);
+      double rotFreq, unsigned int pdg);
     virtual ~ScorerRotatingObj();
     virtual void score(Particle &particle) override;
   private:

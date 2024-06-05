@@ -28,7 +28,7 @@ namespace Prompt {
 
   class ScorerSplit : public Scorer1D {
   public:
-    ScorerSplit(const std::string &name, unsigned split);
+    ScorerSplit(const std::string &name, unsigned split, unsigned int pdg);
     virtual ~ScorerSplit();
     virtual void score(Particle &particle) override;
   private:

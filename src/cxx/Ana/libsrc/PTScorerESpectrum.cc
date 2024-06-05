@@ -21,8 +21,8 @@
 #include "PTScorerESpectrum.hh"
 
 
-Prompt::ScorerESpectrum::ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, ScorerType stype)
-:Scorer1D("ScorerESpectrum_"+name, stype, std::make_unique<Hist1D>("ScorerESpectrum_"+name, xmin, xmax, nxbins, false)),
+Prompt::ScorerESpectrum::ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, unsigned pdg, ScorerType stype)
+:Scorer1D("ScorerESpectrum_"+name, stype, std::make_unique<Hist1D>("ScorerESpectrum_"+name, xmin, xmax, nxbins, false), pdg),
 m_scoreTransfer(scoreTransfer)
 {}
 
@@ -30,8 +30,9 @@ Prompt::ScorerESpectrum::~ScorerESpectrum() {}
 
 void Prompt::ScorerESpectrum::score(Prompt::Particle &particle)
 {
-  m_scoreTransfer ? m_hist->fill(particle.getEKin0()-particle.getEKin(),  particle.getWeight() ) :
-                    m_hist->fill(particle.getEKin(),  particle.getWeight() );
+  if(matchParticle(particle))
+    m_scoreTransfer ? m_hist->fill(particle.getEKin0()-particle.getEKin(),  particle.getWeight() ) :
+                      m_hist->fill(particle.getEKin(),  particle.getWeight() );
   
 
   // if (!m_scoreTransfer)

@@ -24,9 +24,14 @@
 #include "PTRandCanonical.hh"
 
 Prompt::ScorerDeltaMomentum::ScorerDeltaMomentum(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, ScorerType stype, int method, int scatnum, bool linear)
-:Scorer1D("ScorerDeltaMomentum_" + name, stype, std::make_unique<Hist1D>("ScorerDeltaMomentum_" + name, qmin, qmax, numbin, linear)), m_samplePos(samplePos), m_refDir(refDir), 
-m_sourceSampleDist(sourceSampleDist), m_method(method), m_scatnum(scatnum), m_file()
+      double sourceSampleDist, double qmin, double qmax, unsigned numbin, unsigned int pdg, ScorerType stype, int method, int scatnum, bool linear)
+:Scorer1D("ScorerDeltaMomentum_" + name, stype, std::make_unique<Hist1D>("ScorerDeltaMomentum_" + name, qmin, qmax, numbin, linear), pdg), 
+m_samplePos(samplePos), 
+m_refDir(refDir), 
+m_sourceSampleDist(sourceSampleDist), 
+m_method(method), 
+m_scatnum(scatnum), 
+m_file()
 {
   std::string s = std::__cxx11::to_string(Singleton<SingletonPTRand>::getInstance().getSeed());
   m_file.open(m_name+"_"+s +".txt", std::ios::out);

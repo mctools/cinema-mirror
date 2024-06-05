@@ -21,9 +21,9 @@
 #include "PTScorerSplit.hh"
 #include "PTStackManager.hh"
 
-Prompt::ScorerSplit::ScorerSplit(const std::string &name, unsigned split)
+Prompt::ScorerSplit::ScorerSplit(const std::string &name, unsigned split, unsigned int pdg)
 :Scorer1D("ScorerSplit_"+ name, Scorer::ScorerType::ENTRY, 
-  std::make_unique<Hist1D>("ScorerSplit_"+ name, 1e-10, 1e2, 1200, false)), m_split(split), m_lastsplit(-1)
+  std::make_unique<Hist1D>("ScorerSplit_"+ name, 1e-10, 1e2, 1200, false), pdg), m_split(split), m_lastsplit(-1)
 { }
 
 Prompt::ScorerSplit::~ScorerSplit() {}

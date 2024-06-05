@@ -31,7 +31,7 @@ namespace Prompt {
   class ScorerDeltaMomentum : public Scorer1D {
   public:
     ScorerDeltaMomentum(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin,
+      double sourceSampleDist, double qmin, double qmax, unsigned numbin, unsigned int pdg,
       ScorerType stype=Scorer::ScorerType::ENTRY, int method=0, int scatnum=-1, bool linear=true);
     virtual ~ScorerDeltaMomentum();
     virtual void score(Particle &particle) override;

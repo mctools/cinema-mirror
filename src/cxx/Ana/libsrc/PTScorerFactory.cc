@@ -147,7 +147,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         PROMPT_THROW2(BadInput, "Scorer type DeltaMomentum is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
-      return new ScorerDeltaMomentum(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, ptstate, method, scatnum, linear);
+      return new ScorerDeltaMomentum(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, 2112, ptstate, method, scatnum, linear);
     }
     if(ScorDef == "Angular")
     {
@@ -209,7 +209,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
       {
         PROMPT_THROW2(BadInput, "Scorer type Angular is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
-      return new ScorerAngular(name, samplePos, beamDir, moderator2SampleDist, angle_min, angle_max, numBin, ptstate);
+      return new ScorerAngular(name, samplePos, beamDir, moderator2SampleDist, angle_min, angle_max, numBin, 2112, ptstate);
     }
 
     else if(ScorDef == "PSD")
@@ -279,7 +279,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         PROMPT_THROW2(BadInput, "Scorer type PSD is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return new ScorerPSD(name, xmin, xmax, nxbins, ymin, ymax, nybins, ptstate,type);
+      return new ScorerPSD(name, xmin, xmax, nxbins, ymin, ymax, nybins, 2112, ptstate,type);
     }
 
     else if(ScorDef == "ESpectrum")
@@ -288,7 +288,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
       // example cfg
       // "Scorer=ESD; name=detector; min=0.0; max=0.0253; numbin=100; ptstate=ENTRY"
 
-      int parCount = 7;
+      int parCount = 8;
 
       // The mandatory parameters
       bool force = true;
@@ -316,6 +316,14 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         numBin = ptstoi(cfg.find("numbin"));
       }
 
+      int pdg = 2112;
+      if(cfg.find("particle")=="") 
+        parCount--;
+      else
+      {
+        pdg = ptstoi(cfg.find("particle"));
+      }
+
       // if is an energy transfer scorer, force pts to EXIT
       Scorer::ScorerType ptstate = Scorer::ScorerType::ENTRY;
       std::string ptstateInStr = cfg.find("ptstate");
@@ -340,7 +348,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         PROMPT_THROW2(BadInput, "Scorer type ESpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return new ScorerESpectrum(name, scoreTransfer, minE, maxE, numBin, ptstate);
+      return new ScorerESpectrum(name, scoreTransfer, minE, maxE, numBin, pdg, ptstate);
     }
     else if(ScorDef == "WlSpectrum")
     {
@@ -378,7 +386,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         PROMPT_THROW2(BadInput, "Scorer type WlSpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return new ScorerWlSpectrum(name, minWl, maxWl, numBin, ptstate);
+      return new ScorerWlSpectrum(name, minWl, maxWl, numBin, 2112, ptstate);
     }
     else if(ScorDef == "TOF")
     {
@@ -416,7 +424,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         PROMPT_THROW2(BadInput, "Scorer type TOF is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return new ScorerTOF(name, minT, maxT, numBin, ptstate);
+      return new ScorerTOF(name, minT, maxT, numBin, 2112, ptstate);
     }
     else if(ScorDef == "MultiScat")
     {
@@ -486,7 +494,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         PROMPT_THROW2(BadInput, "Scorer type MultiScat is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return new ScorerMultiScat(name, minNumber-0.5, maxNumber+0.5, numBin, ptstate, linear);
+      return new ScorerMultiScat(name, minNumber-0.5, maxNumber+0.5, numBin, 2112, ptstate, linear);
     }
     else if(ScorDef == "VolFluence")
     {
@@ -539,14 +547,14 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         PROMPT_THROW2(BadInput, "Scorer type VolFluence is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return new ScorerVolFluence(name, xmin, xmax, nxbins, vol, ptstate, linear);
+      return new ScorerVolFluence(name, xmin, xmax, nxbins, vol, 2112, ptstate, linear);
 
     }
     else if(ScorDef == "Split")
     {
       std::string name = cfg.find("name", true);
       int split = ptstoi(cfg.find("split", true));
-      return new ScorerSplit(name, split);
+      return new ScorerSplit(name, split, 2112);
     }
     else if(ScorDef == "RotatingObj")
     {
@@ -559,7 +567,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
       auto rotAxis = string2vec(cfg.find("rotation_axis", force));
       auto pointAxis = string2vec(cfg.find("point_on_axis", force));
       double rotFreq = ptstod(cfg.find("rot_fre", force));
-      return new ScorerRotatingObj(name, rotAxis, pointAxis, rotFreq);
+      return new ScorerRotatingObj(name, rotAxis, pointAxis, rotFreq, 2112);
     }
     else if(ScorDef == "WlAngle")
     {
@@ -626,7 +634,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         PROMPT_THROW2(BadInput, "Scorer type WlAngle is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
-      return new ScorerWlAngle(name, samplePos, beamDir, moderator2SampleDist, wl_min, wl_max, numbin_wl, angle_min, angle_max, numbin_angle, ptstate, method);
+      return new ScorerWlAngle(name, samplePos, beamDir, moderator2SampleDist, wl_min, wl_max, numbin_wl, angle_min, angle_max, numbin_angle, 2112, ptstate, method);
     }
     else
       PROMPT_THROW2(BadInput, "Scorer type " << ScorDef << " is not supported. ")

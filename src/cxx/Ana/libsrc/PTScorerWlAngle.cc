@@ -21,9 +21,12 @@
 #include "PTScorerWlAngle.hh"
 
 Prompt::ScorerWlAngle::ScorerWlAngle(const std::string &name, const Vector &samplePos, const Vector &refDir, double sourceSampleDist,
-      double wl_min, double wl_max, unsigned wl_nbins, double angle_min, double angle_max, unsigned angle_nbins, ScorerType stype, int method)
-:Scorer2D("ScorerWlAngle_"+name, stype, std::make_unique<Hist2D>("ScorerWlAngle_"+name, wl_min, wl_max, wl_nbins, angle_min, angle_max, angle_nbins)),
-m_samplePos(samplePos), m_refDir(refDir), m_sourceSampleDist(sourceSampleDist), m_method(method)
+      double wl_min, double wl_max, unsigned wl_nbins, double angle_min, double angle_max, unsigned angle_nbins, unsigned int pdg, ScorerType stype, int method)
+:Scorer2D("ScorerWlAngle_"+name, stype, std::make_unique<Hist2D>("ScorerWlAngle_"+name, wl_min, wl_max, wl_nbins, angle_min, angle_max, angle_nbins), pdg),
+m_samplePos(samplePos), 
+m_refDir(refDir), 
+m_sourceSampleDist(sourceSampleDist), 
+m_method(method)
 {}
 
 Prompt::ScorerWlAngle::~ScorerWlAngle() {}

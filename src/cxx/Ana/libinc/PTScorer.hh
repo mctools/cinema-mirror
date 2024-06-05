@@ -35,27 +35,38 @@ namespace Prompt {
     // PEA, PROPAGATE-EXIT-ABSORB, to account for everything inside a volume
     enum class ScorerType {SURFACE, ENTRY, PROPAGATE, EXIT, PEA, ABSORB};
   public:
-    Scorer(const std::string& name, ScorerType type, int groupid=0) ;
+    Scorer(const std::string& name, ScorerType type, unsigned int pdg, int groupid=0) ;  
     virtual ~Scorer() {std::cout<<"Destructing Scorer " << m_name <<std::endl;};
     const std::string &getName() const { return m_name; }
     ScorerType getType() const { return m_type; }
     virtual void score(Particle &particle) = 0;
     virtual void save_mcpl() = 0;
     virtual const HistBase* getHist() const = 0 ; 
+
+    /**
+     * @brief Check if the arriving particle matches the particle type that the scorer desired.
+     * 
+     * @param particle arriving particle 
+     * @return true if match. Note: if particle pdg set as 0, always true, meaning that all particles that arrives are counted.
+     * @return false if not match.
+     */
+    bool matchParticle(Particle &particle) const {return m_pdg ? particle.getPDG()==m_pdg : true;}
+
   protected:
     const std::string m_name;
     const ScorerType m_type;
     const int m_groupid;
     ActiveVolume &m_activeVolume; 
-
+    const unsigned m_pdg;
+    
     int getVolumeGroupID();
     
   };
 
   class Scorer1D : public Scorer {
   public:
-    Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist, int groupid=0)
-    : Scorer(name, type, groupid), m_hist(std::move(hist)) {};
+    Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist, unsigned int pdg, int groupid=0)
+    : Scorer(name, type, pdg, groupid), m_hist(std::move(hist)) {};
     virtual ~Scorer1D() {  }
     void save_mcpl() override { m_hist->save(m_name); }
     const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }
@@ -65,7 +76,7 @@ namespace Prompt {
 
   class Scorer2D : public Scorer {
   public:
-    Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist, int groupid=0)
+    Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist, unsigned int pdg, int groupid=0)
     : Scorer(name, type, groupid), m_hist(std::move(hist)) {};
     virtual ~Scorer2D() {  }
     void save_mcpl() override { m_hist->save(m_name); }

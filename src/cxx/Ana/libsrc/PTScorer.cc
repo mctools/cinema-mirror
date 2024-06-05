@@ -21,8 +21,8 @@
 #include "PTScorer.hh"
 #include "PTActiveVolume.hh"
 
-Prompt::Scorer::Scorer(const std::string& name, ScorerType type, int groupid) 
-  : m_name(name), m_type(type), m_groupid(groupid), m_activeVolume(Singleton<ActiveVolume>::getInstance())  { };
+Prompt::Scorer::Scorer(const std::string& name, ScorerType type, unsigned int pdg, int groupid) 
+  : m_name(name), m_type(type), m_groupid(groupid), m_pdg(pdg), m_activeVolume(Singleton<ActiveVolume>::getInstance())  { };
 
 
 int Prompt::Scorer::getVolumeGroupID()
