@@ -285,6 +285,7 @@ if [ ! -f $CINEMAPATH/external/openmc/local/lib/libopenmc.so ]; then
       fi
       cd -
       . $CINEMAPATH/tools/scripts/linux/prompt_openmcInstall
+      pip install NCrystal
       echo "OPENMC INSTALLED"
   fi
 else
