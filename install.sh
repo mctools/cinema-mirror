@@ -1,6 +1,5 @@
 #!/bin/bash
-
-# --set options for git repos
+# --set options
 while getopts ":f" option
   do
     case "${option}"
@@ -30,6 +29,24 @@ fi
 
 unset cinema_prunepath
 
+function findSetEnv(){
+  if [ -f $CINEMAPATH/cinemabin/envCache.txt ]; then
+    while IFS=" " read -r name value; do
+      export "${name}=${value}"
+    done < $CINEMAPATH/cinemabin/envCache.txt 
+    for i in "$@"; do
+      if [ ! -v "$i" ];then
+        echo "Not set ..."
+        return 2
+        break
+      fi
+    done
+    return 0
+  else
+    return 2
+  fi
+}
+
 export CINEMAPATH="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #install ncrystal
 export response='y'
@@ -56,10 +73,11 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
     $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup
     export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
   else
-    $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup
+    $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup > /dev/null
     # .  $CINEMAPATH/external/ncrystal/install/setup.sh
     export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
-  fi
+    echo "NCrystal config done"
+fi
 
 #MCPL
 if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libmcpl.so ]; then
@@ -80,10 +98,10 @@ if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libmcpl.so ]; then
       # make -j ${NUMCPU} && make install
       # cd -
       echo "Cloned MCPL, not built"
-    else
-      echo "Found MCPL"
-    fi
   fi
+  else
+    echo "Found MCPL"
+fi
 
 #install libxerces
 if [ ! -f $CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so ]; then
@@ -104,13 +122,18 @@ if [ ! -f $CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so ]; then
       make -j ${NUMCPU} && make install
       cd -
       echo "installed  libxerces"
-    fi
+  fi
+  else
+    echo "Found libxerces"
 fi
 
 # KDSource 
 # 1st check if libxml2 is installed, if not install version 2.9.3, as required by KDSource
 # 2nd install KDSource
-if find /lib -name *libxml2.so | grep -q . ; then
+findSetEnv PROMPT_LIBXML2_LIB
+if [ $? -eq 0 ]; then
+  echo "LIBXML2 path read from environment variable cache"
+elif find /lib -name *libxml2.so | grep -q . ; then
   export PROMPT_LIBXML2_LIB="$(dirname $(find /lib -name *libxml2.so -print -quit))"
 elif find $CINEMAPATH/external/libxml2-2.9.3/local -name *libxml2.so | grep -q .; then
   export PROMPT_LIBXML2_LIB=$CINEMAPATH/external/libxml2-2.9.3/local
@@ -148,12 +171,13 @@ if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libkdsource.so ]; then
       make -j ${NUMCPU} && make install
       cd -
       echo "installed  KDSource"
-    fi
+  fi
+  else
+    echo "Found KDSource"
 fi
 
 
 #install VecGeom
-
 if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
   # read -r -p "Do you want to install VecGeom into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
@@ -174,11 +198,16 @@ if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
     cd -
     echo "installed  VecGeom"
   fi
+  else
+    echo "Found VecGeom"
 fi
 
 # gidiplus
-# first check&install hdf5
-if find /usr -name *hdf5.so | grep -q . ; then
+# first check&install hdf5 
+findSetEnv PROMPT_HDF5_LIB PROMPT_HDF5_HEADER PROMPT_HDF5_PATH
+if [ $? -eq 0 ]; then
+  echo "HDF5 path read from environment variable cache"
+elif find /usr -name *hdf5.so | grep -q . ; then
   export PROMPT_HDF5_LIB="$(dirname $(find /usr -name *hdf5.so -print -quit))"
   # there are cases where lib and header not in the same well-setup directory tree like .../bin .../include .../lib, so another find cml
   export PROMPT_HDF5_HEADER="$(dirname $(find /usr -name *hdf5.h -print -quit))"
@@ -204,9 +233,7 @@ else
   export PROMPT_HDF5_HEADER=$CINEMAPATH/external/hdf5-1.12.2/local/include
   export PROMPT_HDF5_PATH=$CINEMAPATH/external/hdf5-1.12.2/local/
 fi
-
 export PROMPT_HDF5_DIR="$PROMPT_HDF5_PATH;$PROMPT_HDF5_LIB;$PROMPT_HDF5_HEADER"
-echo "PROMPT ENV: PROMPT_HDF5_DIR=${PROMPT_HDF5_DIR}"
 
 if [ ! -f $CINEMAPATH/external/gidiplus/lib/libgidiplus.a ]; then
   # read -r -p "Do you want to install gidiplus into $CINEMAPATH/external? [y/N] " response
@@ -227,6 +254,8 @@ if [ ! -f $CINEMAPATH/external/gidiplus/lib/libgidiplus.a ]; then
     cd -
     echo "installed gidiplus"
   fi
+  else
+    echo "Found gidiplus"
 fi
 
 if [ -f $CINEMAPATH/src/python/Cinema/__init__.py ]; then
@@ -253,6 +282,17 @@ if [ -d $CINEMAPATH/cinemabin ]; then
   echo "Added the cinemabin directory into environment"
 fi
 
+# Refresh cache file
+> $CINEMAPATH/cinemabin/envCache.txt 
+
+function writeEnv(){
+  for i in "$@"; do
+    eval echo "$i"" "'$'"$i" >> $CINEMAPATH/cinemabin/envCache.txt 
+  done
+}
+
+writeEnv PROMPT_LIBXML2_LIB PROMPT_HDF5_LIB PROMPT_HDF5_PATH PROMPT_HDF5_DIR PROMPT_HDF5_HEADER
+
 
 if [ -f $CINEMAPATH/cinemavirenv/bin/activate ]; then
   . $CINEMAPATH/cinemavirenv/bin/activate
@@ -270,28 +310,25 @@ else
   fi
 fi
 
-if [ ! -f $CINEMAPATH/external/openmc/local/lib/libopenmc.so ]; then
-  read -r -p "Do you want to install OPENMC into $CINEMAPATH/external? [y/N] \
-            NOTES: OPENMC acts as a direct benchmarking tool :    " \
-            response
-  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-      if [ ! -d $CINEMAPATH/external ]; then
-        mkdir $CINEMAPATH/external
-      fi
-      cd $CINEMAPATH/external
-      if [ -d openmc ]; then
-        # rm -rf openmc
-        echo "Not doing anything"
-      fi
-      cd -
-      . $CINEMAPATH/tools/scripts/linux/prompt_openmcInstall
-      pip install NCrystal
-      echo "OPENMC INSTALLED"
+if [ $OPENMCIN -eq 1 ]; then
+  if [ ! -f $CINEMAPATH/external/openmc/local/lib/libopenmc.so ]; then
+    if [ ! -d $CINEMAPATH/external ]; then
+      mkdir $CINEMAPATH/external
+    fi
+    cd $CINEMAPATH/external
+    if [ -d openmc ]; then
+      # rm -rf openmc
+      echo "Not doing anything"
+    fi
+    cd -
+    . $CINEMAPATH/tools/scripts/linux/prompt_openmcInstall
+    pip install NCrystal
+    echo "OPENMC INSTALLED"
+  else
+    echo "Found OPENMC"
+    export PATH=$CINEMAPATH/external/openmc/local/bin/:$PATH
+    echo "OPENMC executable added to PATH."
   fi
-else
-  echo "Found OPENMC"
-  export PATH=$CINEMAPATH/external/openmc/local/bin/:$PATH
-  echo "OPENMC executable added to PATH."
 fi
 
 #SSSP

@@ -1,7 +1,7 @@
 #!/bin/bash
-
+OPENMCIN=0
 DOCKER=false
-while getopts hi:x:d option
+while getopts hi:x:do option
 do
 case "${option}"
 in
@@ -10,6 +10,7 @@ in
     x) INPUT=${OPTARG};;
     i) ARGS=${OPTARG};;
     d) DOCKER=true;;
+    o) OPENMCIN=1;;
     *) echo "$USAGE"
       exit 0;;
 esac
