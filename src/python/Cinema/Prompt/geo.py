@@ -33,6 +33,7 @@ _pt_Volume_delete = importFunc('pt_Volume_delete', None, [type_voidp] )
 _pt_Volume_placeChild = importFunc('pt_Volume_placeChild', None, [type_voidp, type_cstr, type_voidp, type_voidp, type_int])
 
 _pt_Volume_id = importFunc('pt_Volume_id', type_uint, [type_voidp])
+_pt_Volume_capacity = importFunc('pt_Volume_capacity', type_dbl, [type_voidp])
 
 _pt_Transformation3D_newfromdata = importFunc('pt_Transformation3D_newfromdata', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 _pt_Transformation3D_delete = importFunc('pt_Transformation3D_delete', None, [type_voidp] )
@@ -251,7 +252,13 @@ class Volume:
                 count = count + 1
                 self.placeArray(array.element, transf * i_mem.refFrame, i_mem.marker, count = count)
 
+    def getCapacity(self):
+        """Get the capacity (or the volume of a solid, in other words) of the current Volume.
 
+        Returns:
+            capacity of volume(double)
+        """
+        return _pt_Volume_capacity(self.cobj)
 
     def getLogicalID(self, cobj=None):
         if cobj is None: # reutrn the ID of this volume

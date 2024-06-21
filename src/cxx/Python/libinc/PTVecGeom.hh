@@ -65,6 +65,7 @@ void* pt_Volume_new(const char* name, void *unplacedVolume);
 void pt_Volume_delete(void* obj);
 void pt_Volume_placeChild(void* obj, const char* name, void *Volume, void *transformation, int group);
 unsigned pt_Volume_id(void* obj);
+double pt_Volume_capacity(void *obj);
 // unsigned pt_Volume_copyid(void *obj):
 
 #ifdef __cplusplus

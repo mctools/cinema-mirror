@@ -282,6 +282,10 @@ unsigned pt_Volume_id(void* obj)
     return static_cast<vg::LogicalVolume *>(obj)->id();
 }
 
+double pt_Volume_capacity(void *obj)
+{
+  return static_cast<vg::LogicalVolume *>(obj)->GetUnplacedVolume()->Capacity();
+}
 
 
 // unsigned pt_LogicalVolume_copyid(void* obj)
