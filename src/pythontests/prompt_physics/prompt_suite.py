@@ -5,7 +5,7 @@
 from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.geo import Volume
 from Cinema.Prompt.solid import Box, Sphere, Tube
-from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper, DepositionHelper
+from Cinema.Prompt.scorer import ESpectrumHelper
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun, SimpleThermalGun, PythonGun
 from Cinema.Prompt.centralData import CentralData 
@@ -62,7 +62,7 @@ def promptRun(cfg, energy, gidiThreshold = -5,
             media = Volume("media", Tube(0, size*0.5, 1e50), matCfg= lw)
             world.placeChild('media', media)
 
-            ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='EXIT').make(media)
+            ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin_en, pdg=2112, ptstate='EXIT').make(media)
             # media.addScorer(f'Scorer=Angular;name=SofAngle;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;ptstate=EXIT;linear=yes;min=-1;max=1;numbin={numbin_mu}')
             # DepositionHelper('dep', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='PROPAGATE', linear=False).make(media)
             self.setWorld(world)

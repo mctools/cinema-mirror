@@ -34,5 +34,8 @@ void Prompt::ScorerVolFluence::score(Particle &particle)
 
   if(particle.getWeight()!=m_weight)
     PROMPT_THROW(LogicError, "ScorerVolFluence is incorrect in the cross section biasing model. The D value for the material within the solid of insterest should be unity");
-  m_hist->fill(particle.getEKin()+particle.getEnergyChange(), m_iVol*particle.getStep());
+  if(matchParticle(particle))
+  {
+    m_hist->fill(particle.getEKin()+particle.getEnergyChange(), m_iVol*particle.getStep());
+  }
 }

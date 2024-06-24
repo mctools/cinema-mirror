@@ -20,15 +20,41 @@
 
 #include "PTPythonScorer.hh"
 #include "PTScorerDeposition.hh"
+#include "PTScorerESpectrum.hh"
+#include "PTScorerTOF.hh"
+#include "PTScorerWlSpectrum.hh"
+#include "PTScorerVolFluence.hh"
 
 namespace pt = Prompt;
 
 
 //ScorerDeposition
-void* pt_ScorerDeposition_new(const char* name, double xmin, double xmax, unsigned nbins, int type, bool linear)
+void* pt_ScorerDeposition_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int type, bool linear)
 {
   pt::ScorerDeposition::ScorerType t = static_cast<pt::ScorerDeposition::ScorerType>(type); 
-  return static_cast<void *>(new pt::ScorerDeposition(name, xmin, xmax, nbins, t, linear));
+  return static_cast<void *>(new pt::ScorerDeposition(name, xmin, xmax, nbins, pdg, t, linear));
 }
 
+void* pt_ScorerESpectrum_new(const char* name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, unsigned int pdg, int type)
+{
+  pt::ScorerESpectrum::ScorerType t = static_cast<pt::ScorerESpectrum::ScorerType>(type); 
+  return static_cast<void *>(new pt::ScorerESpectrum(name, scoreTransfer, xmin, xmax, nxbins, pdg, t));
+}
 
+void* pt_ScorerTOF_new(const char* name, double xmin, double xmax, unsigned nxbins, unsigned int pdg, int type)
+{
+  pt::ScorerTOF::ScorerType t = static_cast<pt::ScorerTOF::ScorerType>(type); 
+  return static_cast<void *>(new pt::ScorerTOF(name, xmin, xmax, nxbins, pdg, t));
+}
+
+void* pt_ScorerWlSpectrum_new(const char* name, double xmin, double xmax, unsigned nxbins, unsigned int pdg, int type)
+{
+  pt::ScorerWlSpectrum::ScorerType t = static_cast<pt::ScorerWlSpectrum::ScorerType>(type); 
+  return static_cast<void *>(new pt::ScorerWlSpectrum(name, xmin, xmax, nxbins, pdg, t));
+}
+
+void* pt_ScorerVolFluence_new(const char* name, double xmin, double xmax, unsigned nbins, double volme, unsigned pdg, int type, bool linear)
+{
+  pt::ScorerVolFluence::ScorerType t = static_cast<pt::ScorerVolFluence::ScorerType>(type); 
+  return static_cast<void *>(new pt::ScorerVolFluence(name, xmin, xmax, nbins, volme, pdg, t, linear));
+}

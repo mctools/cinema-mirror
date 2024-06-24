@@ -29,5 +29,6 @@ Prompt::ScorerTOF::~ScorerTOF() {}
 
 void Prompt::ScorerTOF::score(Prompt::Particle &particle)
 {
-  m_hist->fill(particle.getTime(), particle.getWeight());
+  if(matchParticle(particle))
+    m_hist->fill(particle.getTime(), particle.getWeight());
 }

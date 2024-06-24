@@ -27,9 +27,17 @@
 extern "C" {
 #endif
 
-//ScorerDeposition
-void* pt_ScorerDeposition_new(const char* name, double xmin, double xmax, unsigned nbins, int type, bool linear);
 
+//ScorerDeposition
+void* pt_ScorerDeposition_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int type, bool linear);
+
+void* pt_ScorerESpectrum_new(const char* name, bool scoreTransfer, double xmin, double xmax, unsigned nbins, unsigned pdg, int type);
+
+void* pt_ScorerTOF_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int type);
+
+void* pt_ScorerWlSpectrum_new(const char* name, double xmin, double xmax, unsigned nxbins, unsigned int pdg, int type);
+
+void* pt_ScorerVolFluence_new(const char* name, double xmin, double xmax, unsigned nbins, double volme, unsigned pdg, int type, bool linear);
 
 #ifdef __cplusplus
 }
