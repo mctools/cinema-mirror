@@ -41,6 +41,9 @@ Prompt::ScorerDeltaMomentum::~ScorerDeltaMomentum(){m_file.close();}
 
 void Prompt::ScorerDeltaMomentum::score(Prompt::Particle &particle)
 {
+  if(!rightScorer(particle))
+    return;
+
   if(particle.getPDG()!=const_neutron_pgd)
     return; // for neutron only
   

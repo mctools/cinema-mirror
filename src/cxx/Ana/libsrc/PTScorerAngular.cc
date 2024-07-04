@@ -39,6 +39,9 @@ Prompt::ScorerAngular::~ScorerAngular()
 
 void Prompt::ScorerAngular::score(Prompt::Particle &particle)
 {
+  if(!rightScorer(particle))
+    return;
+
   if((m_refDir.angleCos(particle.getDirection()))>1)
   {
     std::cout << "wrong mu " << m_refDir.angleCos(particle.getDirection()) << std::endl;

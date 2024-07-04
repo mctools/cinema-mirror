@@ -25,11 +25,12 @@
 #include "PTParticle.hh"
 #include "PTHist1D.hh"
 #include "PTHist2D.hh"
+
 // #include "PTActiveVolume.hh"
 // #include "PTSingleton.hh"
 
 namespace Prompt {
-   class ActiveVolume;
+  class ActiveVolume;
   class Scorer {
   public:
     // PEA, PROPAGATE-EXIT-ABSORB, to account for everything inside a volume
@@ -50,7 +51,9 @@ namespace Prompt {
      * @return true if match. Note: if particle pdg set as 0, always true, meaning that all particles that arrives are counted.
      * @return false if not match.
      */
-    bool matchParticle(Particle &particle) const {return m_pdg ? particle.getPDG()==m_pdg : true;}
+    inline bool rightParticle(const Particle &particle) const; 
+    inline bool rightGroup() const;
+    inline bool rightScorer(const Particle &particle) const;
 
   protected:
     const std::string m_name;
@@ -59,9 +62,11 @@ namespace Prompt {
     ActiveVolume &m_activeVolume; 
     const unsigned m_pdg;
     
-    int getVolumeGroupID();
+    int getVolumeGroupID() const;
     
   };
+
+
 
   class Scorer1D : public Scorer {
   public:
@@ -86,5 +91,8 @@ namespace Prompt {
     std::unique_ptr<Hist2D> m_hist;
   };
 }
+
+#include "PTScorer.icc"
+
 
 #endif

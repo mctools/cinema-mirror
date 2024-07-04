@@ -31,6 +31,9 @@ Prompt::ScorerMultiScat::~ScorerMultiScat() {}
 
 void Prompt::ScorerMultiScat::score(Particle &particle)
 {
+  if(!rightScorer(particle))
+    return;
+
   if (m_lasteventid==particle.getEventID())
   {
     m_p_counter++;

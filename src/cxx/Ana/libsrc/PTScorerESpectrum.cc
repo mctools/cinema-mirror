@@ -30,9 +30,11 @@ Prompt::ScorerESpectrum::~ScorerESpectrum() {}
 
 void Prompt::ScorerESpectrum::score(Prompt::Particle &particle)
 {
-  if(matchParticle(particle))
-    m_scoreTransfer ? m_hist->fill(particle.getEKin0()-particle.getEKin(),  particle.getWeight() ) :
-                      m_hist->fill(particle.getEKin(),  particle.getWeight() );
+  if(!rightScorer(particle))
+  return;
+
+  m_scoreTransfer ? m_hist->fill(particle.getEKin0()-particle.getEKin(),  particle.getWeight() ) :
+                    m_hist->fill(particle.getEKin(),  particle.getWeight() );
   
 
   // if (!m_scoreTransfer)

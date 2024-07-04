@@ -30,6 +30,9 @@ Prompt::ScorerSplit::~ScorerSplit() {}
 
 void Prompt::ScorerSplit::score(Particle &particle)
 {
+  if(!rightScorer(particle))
+    return;
+    
   if(m_lastsplit != particle.getEventID() )
   {
     m_hist->fill(particle.getWeight());

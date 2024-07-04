@@ -29,6 +29,7 @@ Prompt::ScorerWlSpectrum::~ScorerWlSpectrum() {}
 
 void Prompt::ScorerWlSpectrum::score(Prompt::Particle &particle)
 {
-  if(matchParticle(particle))
-    m_hist->fill(ekin2wl(particle.getEKin()),  particle.getWeight() );
+  if(!rightScorer(particle))
+    return;
+  m_hist->fill(ekin2wl(particle.getEKin()),  particle.getWeight() );
 }

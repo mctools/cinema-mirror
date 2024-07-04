@@ -33,6 +33,9 @@ Prompt::ScorerWlAngle::~ScorerWlAngle() {}
 
 void Prompt::ScorerWlAngle::score(Prompt::Particle &particle)
 {
+  if(!rightScorer(particle))
+    return;
+    
   double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
   double angle = std::acos(angle_cos);
   if(particle.getPosition().x()<0) //default setting
