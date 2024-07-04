@@ -195,7 +195,7 @@ class TOFHelper(ScorerHelper):
         vol.addScorer(self, cobj)
 
 class ESpectrumHelper(ScorerHelper):
-    def __init__(self, name, min=1e-5, max=1, numbin = 100, pdg=2112, ptstate: str = 'ENTRY', energyTransfer=False) -> None:
+    def __init__(self, name, min=1e-5, max=1, numbin = 100, pdg : int = 2112, ptstate: str = 'ENTRY', energyTransfer=False) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate)
         self.energyTransfer = energyTransfer
 
@@ -225,7 +225,7 @@ class WlSpectrumHelper(ScorerHelper):
         vol.addScorer(self, cobj)
 
 class VolFluenceHelper(ScorerHelper):
-    def __init__(self, name, min, max, numbin, pdg, linear : bool = True) -> None:
+    def __init__(self, name, min = 1e-6, max = 10, numbin = 100, pdg = 2112, linear : bool = False) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate = 'PEA')
         self.linear = linear
 
