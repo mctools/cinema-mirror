@@ -50,7 +50,7 @@ namespace Prompt {
      * @return true if match. Note: if particle pdg set as 0, always true, meaning that all particles that arrives are counted.
      * @return false if not match.
      */
-    bool matchParticle(Particle &particle) const {return m_pdg ? particle.getPDG()==m_pdg : true;}
+    bool matchParticle(const Particle &particle) const {return m_pdg ? particle.getPDG()==m_pdg : true;}
 
   protected:
     const std::string m_name;
