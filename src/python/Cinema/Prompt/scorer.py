@@ -109,19 +109,19 @@ class ESpectrumHelperV1(ScorerHelperV1):
             self.score.cfg_scoreTransfer = 1
         else:
             self.score.cfg_scoreTransfer = 0
-        self._ScorerHelper__realinit()
+        self._ScorerHelperV1__realinit()
     
 class WlSpectrumHelperV1(ScorerHelperV1): 
     def __init__(self, name, min=0.1, max=10, numbin = 100, ptstate: str = 'ENTRY') -> None:
         super().__init__(name, min, max, numbin, ptstate)
         self.score = WlSpectrum()
-        self._ScorerHelper__realinit()
+        self._ScorerHelperV1__realinit()
     
 class TOFHelperV1(ScorerHelperV1): 
     def __init__(self, name, min=0, max=40e-3, numbin = 100, ptstate: str = 'ENTRY') -> None:
         super().__init__(name, min, max, numbin, ptstate)
         self.score = TOF()
-        self._ScorerHelper__realinit()
+        self._ScorerHelperV1__realinit()
 
 class VolFluenceHelperV1(ScorerHelperV1): 
     def __init__(self, name, min=1e-6, max=10, numbin = 100, ptstate: str = 'PEA', linear = False) -> None:
@@ -131,7 +131,7 @@ class VolFluenceHelperV1(ScorerHelperV1):
             self.score.cfg_linear = 'yes'
         else: 
             self.score.cfg_linear = 'no'
-        self._ScorerHelper__realinit()
+        self._ScorerHelperV1__realinit()
 
 
 # DepositionHelper is a special class that skipped the traditional string based initialisation.
