@@ -10,7 +10,7 @@ from Cinema.Prompt.centralData import CentralData
 
 cdata=CentralData()
 cdata.setEnableGidi(True)
-
+cdata.setGammaTransport(False)
 
 class MySim(Prompt):
     def __init__(self, seed=4096) -> None:
@@ -28,7 +28,7 @@ class MySim(Prompt):
         sphere = Volume("sphere", Sphere(0, 300), matCfg=lw)
         world.placeChild('sphere', sphere)
 
-        VolFluenceHelper('spct', max=20e6).make(sphere)
+        VolFluenceHelper('spct', 1e-6, 20e6, 100).make(sphere)
         self.setWorld(world)
 
 
@@ -46,10 +46,10 @@ sim.simulate(gun, partnum)
 
 spct = sim.gatherHistData('spct')
 print(spct.getWeight().sum())
-
+print(spct.getHit().sum())
 # spct.plot(show=True, log=True)
 
 import numpy.testing as npt
-npt.assert_array_almost_equal(spct.getWeight().sum(), 0.00040921634486766265, decimal =  15)
+npt.assert_array_almost_equal(spct.getWeight().sum(), 0.000405540709924, decimal =  15)
 
 
