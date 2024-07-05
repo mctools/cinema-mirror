@@ -142,8 +142,9 @@ _pt_ScorerESpectrum_new = importFunc('pt_ScorerESpectrum_new', type_voidp, [type
 _pt_ScorerTOF_new = importFunc('pt_ScorerTOF_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int ])
 _pt_ScorerWlSpectrum_new = importFunc('pt_ScorerWlSpectrum_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int ])
 _pt_ScorerVolFluence_new = importFunc('pt_ScorerVolFluence_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_dbl, type_uint, type_int, type_bool])
+
 class ScorerHelper:
-    def __init__(self, name, min, max, numbin, pdg, ptstate) -> None:
+    def __init__(self, name, min, max, numbin, pdg = 2112, ptstate = 'ENTRY') -> None:
         self.name = name
         self.min = min
         self.max = max
@@ -211,7 +212,7 @@ class ESpectrumHelper(ScorerHelper):
         vol.addScorer(self, cobj)
 
 class WlSpectrumHelper(ScorerHelper):
-    def __init__(self, name, min, max, numbin, pdg, ptstate) -> None:
+    def __init__(self, name, min=0.1, max=10, numbin = 100, pdg : int = 2112, ptstate : str = 'ENTRY') -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate)
 
     def make(self, vol):
@@ -244,7 +245,7 @@ class VolFluenceHelper(ScorerHelper):
         vol.addScorer(self, cobj)
 
 class DepositionHelper(ScorerHelper):
-    def __init__(self, name : str, min, max, numbin, pdg, ptstate, linear=False) -> None:
+    def __init__(self, name : str, min, max, numbin, pdg, ptstate, linear : bool = False) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate)
         self.linear = linear
 
