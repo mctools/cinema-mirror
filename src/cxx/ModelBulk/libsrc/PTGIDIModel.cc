@@ -172,7 +172,9 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
         Photon sec(labekin, labdir, primary.getPosition());
         sec.setTime(primary.getTime() + aproduct.m_birthTimeSec);
         if(m_factory.getCentralData().getGammaTransport() )
+        {
           secondaries.push_back(sec);
+        }
       }
       else
         PROMPT_THROW(NotImplemented, "");
@@ -198,7 +200,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
     // essentially killing the current active particle in the launcher
     final_ekin=ENERGYTOKEN_ABSORB;
   }
-  else if(secondaries.size()==1)
+  else if(secondaries.size()==1 && secondaries[0].getPDG()==2112) /*If is neutron, treated as like the incoming neutron states changes*/
   {
     // essentially modifying the current active particle in the launcher
     //fixme: how about a reaction produce only one delayed particle? there is no way to treat the time in this function
