@@ -140,7 +140,7 @@ from ..Interface import *
 _pt_ScorerDeposition_new = importFunc('pt_ScorerDeposition_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_bool])
 _pt_ScorerESpectrum_new = importFunc('pt_ScorerESpectrum_new', type_voidp, [type_cstr, type_bool, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerTOF_new = importFunc('pt_ScorerTOF_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
-_pt_ScorerWlSpectrum_new = importFunc('pt_ScorerWlSpectrum_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int ])
+_pt_ScorerWlSpectrum_new = importFunc('pt_ScorerWlSpectrum_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerVolFluence_new = importFunc('pt_ScorerVolFluence_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_dbl, type_uint, type_int, type_bool])
 
 class ScorerHelper:
@@ -199,7 +199,8 @@ class TOFHelper(ScorerHelper):
         vol.addScorer(self, cobj)
 
 class ESpectrumHelper(ScorerHelper):
-    def __init__(self, name, min=1e-5, max=1, numbin = 100, pdg : int = 2112, ptstate: str = 'ENTRY', energyTransfer=False, groupID=0) -> None:
+    def __init__(self, name, min=1e-5, max=1, numbin = 100, pdg : int = 2112, 
+                 ptstate: str = 'ENTRY', energyTransfer=False, groupID=0) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
         self.energyTransfer = energyTransfer
 
@@ -216,8 +217,8 @@ class ESpectrumHelper(ScorerHelper):
         vol.addScorer(self, cobj)
 
 class WlSpectrumHelper(ScorerHelper):
-    def __init__(self, name, min=0.1, max=10, numbin = 100, pdg : int = 2112, ptstate : str = 'ENTRY') -> None:
-        super().__init__(name, min, max, numbin, pdg, ptstate)
+    def __init__(self, name, min=0.1, max=10, numbin = 100, pdg : int = 2112, ptstate : str = 'ENTRY', groupID : int = 0) -> None:
+        super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
 
     def make(self, vol):
         cobj = _pt_ScorerWlSpectrum_new(self.name.encode('utf-8'), 
@@ -225,7 +226,8 @@ class WlSpectrumHelper(ScorerHelper):
                                         self.max,
                                         self.numbin,
                                         self.pdg,
-                                        self.ptsNum
+                                        self.ptsNum,
+                                        self.groupID
                                         )
         vol.addScorer(self, cobj)
 
