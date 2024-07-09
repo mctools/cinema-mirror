@@ -41,10 +41,10 @@ void* pt_ScorerESpectrum_new(const char* name, bool scoreTransfer, double xmin, 
   return static_cast<void *>(new pt::ScorerESpectrum(name, scoreTransfer, xmin, xmax, nxbins, pdg, t, groupid));
 }
 
-void* pt_ScorerTOF_new(const char* name, double xmin, double xmax, unsigned nxbins, unsigned int pdg, int type)
+void* pt_ScorerTOF_new(const char* name, double xmin, double xmax, unsigned nxbins, unsigned int pdg, int type, int groupid)
 {
   pt::ScorerTOF::ScorerType t = static_cast<pt::ScorerTOF::ScorerType>(type); 
-  return static_cast<void *>(new pt::ScorerTOF(name, xmin, xmax, nxbins, pdg, t));
+  return static_cast<void *>(new pt::ScorerTOF(name, xmin, xmax, nxbins, pdg, t, groupid));
 }
 
 void* pt_ScorerWlSpectrum_new(const char* name, double xmin, double xmax, unsigned nxbins, unsigned int pdg, int type)

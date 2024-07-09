@@ -17,10 +17,10 @@ class MySim(Prompt):
         world = Volume('world', Box(50, 50, 200))
         
         dtt = Volume('detector', Box(10, 10, 1))
-        scorertof = TOFHelper('testObj', 0., 0.0005, 10, 2112, 'ENTRY')
+        scorertof = TOFHelper('testObj', 0., 0.0005, 10, 2112, 'ENTRY',100)
         scorertof.make(dtt)
 
-        world.placeChild('detectorPhy', dtt)
+        world.placeChild('detectorPhy', dtt, scorerGroup=100)
 
         self.setWorld(world)
 

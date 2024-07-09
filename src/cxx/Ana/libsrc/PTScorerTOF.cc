@@ -21,8 +21,8 @@
 #include "PTScorerTOF.hh"
 
 
-Prompt::ScorerTOF::ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins, unsigned int pdg, ScorerType stype)
-:Scorer1D("ScorerTOF_"+name, stype,std::make_unique<Hist1D>("ScorerTOF_"+name, xmin, xmax, nxbins), pdg)
+Prompt::ScorerTOF::ScorerTOF(const std::string &name, double xmin, double xmax, unsigned nxbins, unsigned int pdg, ScorerType stype, int groupid)
+:Scorer1D("ScorerTOF_"+name, stype,std::make_unique<Hist1D>("ScorerTOF_"+name, xmin, xmax, nxbins), pdg, groupid)
 {}
 
 Prompt::ScorerTOF::~ScorerTOF() {}
