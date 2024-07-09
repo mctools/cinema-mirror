@@ -152,8 +152,8 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
         // particle is moved
         isFirstStep=false; //set to false, so the surfaceReaction() can be triggered everytime particle reaching a boundary 
 
-        if(particle->isAlive())
-          m_activeVolume.scoreExit(*particle);
+        // if(particle->isAlive())
+        //   m_activeVolume.scoreExit(*particle);
       }
 
       if(!particle->isAlive())

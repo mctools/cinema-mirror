@@ -200,7 +200,9 @@ void Prompt::ActiveVolume::scoreExit(Prompt::Particle &particle)
       if(particle.hasEffEnergy())
           particle.setEffDirection(Vector());
       else
-          v->score(particle);
+      {
+        v->score(particle);
+      }
     }
   }
 }
@@ -239,9 +241,6 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
 
 
   bool sameVolume (m_currState->Top() == m_nextState->Top());
-
-  if(!sameVolume)
-    std::swap(m_currState, m_nextState);
     
   if(stepLength < step)
     PROMPT_THROW2(CalcError, "stepLength < step " << stepLength << " " << step << "\n");
@@ -250,6 +249,11 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
   particle.moveForward(sameVolume ? step : (step + resolution) );
 
+  if(!sameVolume)
+  {
+    scoreExit(particle);
+    std::swap(m_currState, m_nextState);
+  }
   //sample the interaction at the location
   m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
   return sameVolume;
