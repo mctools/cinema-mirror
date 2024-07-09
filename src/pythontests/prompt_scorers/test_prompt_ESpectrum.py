@@ -23,11 +23,11 @@ class MySim(Prompt):
         world.placeChild('physicalSample', sample)
         
         dtt = Volume('detector', Box(10, 10, 1))
-        scorerTest1 = ESpectrumHelper('testObj', 1e-6, 10, 20, 2112, 'ENTRY', False)
+        scorerTest1 = ESpectrumHelper('testObj', 1e-6, 10, 20, 2112, 'ENTRY', False, 100)
         scorerTest1.make(dtt)
-        scorerTest2 = ESpectrumHelper('testObj2', 1e-6, 10, 8, 2112, 'ENTRY', True)
+        scorerTest2 = ESpectrumHelper('testObj2', 1e-6, 10, 8, 2112, 'ENTRY', True, 100)
         scorerTest2.make(dtt)
-        world.placeChild('detectorPhy', dtt, Tsf(0,0,20))
+        world.placeChild('detectorPhy', dtt, Tsf(0,0,20), 100)
 
         self.setWorld(world)
 
