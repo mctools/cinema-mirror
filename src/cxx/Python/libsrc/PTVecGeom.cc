@@ -273,8 +273,8 @@ void pt_Volume_placeChild(void* obj, const char* name, void *volume,
     if(group)
     {
         placed->SetCopyNo(group);
-        std::cout << name << " Group ID " << placed->GetCopyNo() << std::endl;
     }
+    std::cout << name << " Group ID " << placed->GetCopyNo() << std::endl;
 }
 
 unsigned pt_Volume_id(void* obj)
