@@ -21,8 +21,8 @@
 #include "PTScorerESpectrum.hh"
 
 
-Prompt::ScorerESpectrum::ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, unsigned pdg, ScorerType stype)
-:Scorer1D("ScorerESpectrum_"+name, stype, std::make_unique<Hist1D>("ScorerESpectrum_"+name, xmin, xmax, nxbins, false), pdg),
+Prompt::ScorerESpectrum::ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, unsigned pdg, ScorerType stype, int groupid)
+:Scorer1D("ScorerESpectrum_"+name, stype, std::make_unique<Hist1D>("ScorerESpectrum_"+name, xmin, xmax, nxbins, false), pdg, groupid),
 m_scoreTransfer(scoreTransfer)
 {}
 

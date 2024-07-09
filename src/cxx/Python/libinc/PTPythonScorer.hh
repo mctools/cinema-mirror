@@ -31,7 +31,7 @@ extern "C" {
 //ScorerDeposition
 void* pt_ScorerDeposition_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int type, bool linear);
 
-void* pt_ScorerESpectrum_new(const char* name, bool scoreTransfer, double xmin, double xmax, unsigned nbins, unsigned pdg, int type);
+void* pt_ScorerESpectrum_new(const char* name, bool scoreTransfer, double xmin, double xmax, unsigned nbins, unsigned pdg, int type, int groupid);
 
 void* pt_ScorerTOF_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int type);
 
