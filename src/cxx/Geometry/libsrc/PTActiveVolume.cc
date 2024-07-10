@@ -249,13 +249,13 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
   particle.moveForward(sameVolume ? step : (step + resolution) );
 
+  m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
   if(!sameVolume)
   {
-    scoreExit(particle);
+    scoreExit(particle);  //score exit before activeVolume changes, otherwise physical volume id and scorer id may be inconsistent.
     std::swap(m_currState, m_nextState);
   }
   //sample the interaction at the location
-  m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
   return sameVolume;
 
 }
