@@ -20,8 +20,9 @@
 
 #include "PTScorerVolFluence.hh"
 
-Prompt::ScorerVolFluence::ScorerVolFluence(const std::string &name, double xmin, double xmax, unsigned nxbins, double volme, unsigned int pdg, ScorerType stype, bool linear)
-:Scorer1D("ScorerVolFluence_"+ name, stype, std::make_unique<Hist1D>("ScorerVolFluence_"+ name, xmin, xmax, nxbins, linear), pdg), 
+Prompt::ScorerVolFluence::ScorerVolFluence(const std::string &name, double xmin, double xmax, unsigned nxbins, 
+                                            double volme, unsigned int pdg, ScorerType stype, bool linear, int groupid)
+:Scorer1D("ScorerVolFluence_"+ name, stype, std::make_unique<Hist1D>("ScorerVolFluence_"+ name, xmin, xmax, nxbins, linear), pdg, groupid), 
 m_iVol(1./volme), 
 m_weight(-1.)
 { }

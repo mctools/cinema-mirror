@@ -18,10 +18,10 @@ class MySim(Prompt):
         
         sample_mat = "physics=idealElaScat;xs_barn=5;density_per_aa3=0.5;energy_transfer_eV=0.01"
         dtt = Volume('detector', Box(10, 10, 1), sample_mat)
-        scorertof = VolFluenceHelper('testObj', 1e-6, 0.5, 10, 2112)
+        scorertof = VolFluenceHelper('testObj', 1e-6, 0.5, 10, 2112, groupID=1)
         scorertof.make(dtt)
 
-        world.placeChild('detectorPhy', dtt)
+        world.placeChild('detectorPhy', dtt, scorerGroup=1)
 
         self.setWorld(world)
 

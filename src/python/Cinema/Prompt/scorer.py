@@ -141,7 +141,7 @@ _pt_ScorerDeposition_new = importFunc('pt_ScorerDeposition_new', type_voidp, [ty
 _pt_ScorerESpectrum_new = importFunc('pt_ScorerESpectrum_new', type_voidp, [type_cstr, type_bool, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerTOF_new = importFunc('pt_ScorerTOF_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerWlSpectrum_new = importFunc('pt_ScorerWlSpectrum_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
-_pt_ScorerVolFluence_new = importFunc('pt_ScorerVolFluence_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_dbl, type_uint, type_int, type_bool])
+_pt_ScorerVolFluence_new = importFunc('pt_ScorerVolFluence_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_dbl, type_uint, type_int, type_bool, type_int])
 
 class ScorerHelper:
     def __init__(self, name, min, max, numbin, pdg = 2112, ptstate = 'ENTRY', groupID=0) -> None:
@@ -232,8 +232,8 @@ class WlSpectrumHelper(ScorerHelper):
         vol.addScorer(self, cobj)
 
 class VolFluenceHelper(ScorerHelper):
-    def __init__(self, name, min = 1e-6, max = 10, numbin = 100, pdg = 2112, linear : bool = False) -> None:
-        super().__init__(name, min, max, numbin, pdg, ptstate = 'PEA')
+    def __init__(self, name, min = 1e-6, max = 10, numbin = 100, pdg = 2112, linear : bool = False, groupID : int = 0) -> None:
+        super().__init__(name, min, max, numbin, pdg, ptstate = 'PEA', groupID = groupID)
         self.linear = linear
 
     def make(self, vol):
@@ -246,7 +246,8 @@ class VolFluenceHelper(ScorerHelper):
             volCapacity,
             self.pdg,
             self.ptsNum,
-            self.linear
+            self.linear,
+            self.groupID
         )
         vol.addScorer(self, cobj)
 

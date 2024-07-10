@@ -29,7 +29,8 @@ namespace Prompt {
   class ScorerVolFluence  : public Scorer1D {
   public:
     ScorerVolFluence(const std::string &name, double xmin, double xmax,
-                  unsigned nxbins, double volme, unsigned int pdg, ScorerType stype=Scorer::ScorerType::PROPAGATE, bool linear=true);
+                  unsigned nxbins, double volme, unsigned int pdg, 
+                  ScorerType stype=Scorer::ScorerType::PEA, bool linear=true, int groupid=0);
     virtual ~ScorerVolFluence();
     virtual void score(Particle &particle) override;
   private:
