@@ -71,6 +71,10 @@ class Visualiser():
             self.worldMesh.printMesh()
 
         self.plotter = pv.Plotter(window_size=window_size)
+        
+        # Enable depth peeling for better transparency handling
+        self.plotter.enable_depth_peeling()
+
         self.loadMesh(nSegments, dumpMesh, mergeMesh)
         self.trj=pv.MultiBlock()
         self.redpoints=pv.MultiBlock()
