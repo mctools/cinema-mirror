@@ -252,6 +252,9 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
   if(!sameVolume)
   {
+    #ifdef DEBUG_PTS
+      std::cout << "Exiting volume " << getVolumeID() << std::endl;
+    #endif
     scoreExit(particle);  //score exit before activeVolume changes, otherwise physical volume id and scorer id may be inconsistent.
     std::swap(m_currState, m_nextState);
   }

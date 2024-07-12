@@ -97,6 +97,11 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
     {
       m_curParicle = m_stackManager.pop();
       auto *particle = m_curParicle.get();
+
+      #ifdef DEBUG_PTS
+        std::cout << "------ Starting event " << particle->getEventID() << " ------" << std::endl;
+      #endif
+
       bool isFirstStep(true);
 
       // allocate the point in a volume,
@@ -132,6 +137,9 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
           {
             // std::cout << "reflection weight " << particle->getWeight() << "\n";
           }
+          #ifdef DEBUG_PTS
+            std::cout << "Entering volume " << m_activeVolume.getVolumeID() << std::endl;
+          #endif
           m_activeVolume.scoreEntry(*particle);
         }
         else {  //particle is initialised in this volume, but not penetrate the boundary to reach here 
@@ -144,6 +152,9 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
           // score if any scorer is available
           if(particle->isAlive() && m_activeVolume.hasPropagateScorer())
           {
+            #ifdef DEBUG_PTS
+              std::cout << "Propagating in volume " << m_activeVolume.getVolumeID() << std::endl;
+            #endif
             m_activeVolume.scorePropagate(*particle);
           }
           if(recordTrj)
@@ -160,6 +171,9 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
       {
         if(particle->getKillType()==Particle::KillType::ABSORB)
         {
+          #ifdef DEBUG_PTS
+            std::cout << "Absorb in volume " << m_activeVolume.getVolumeID() << std::endl;
+          #endif
           m_activeVolume.scoreAbsorb(*particle);
         }
       }

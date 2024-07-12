@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project(cinema)
+# add_compile_definitions(DEBUG_PTS)
 set(FIND_LIBRARY_USE_LIB64_PATHS TRUE)
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
