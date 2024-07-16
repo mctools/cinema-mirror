@@ -81,8 +81,8 @@ class Launcher():
                     trj = self.getTrajectory()
                     v.addTrj(trj)
             else:
-                gun.generate()
                 for i in range(particles):
+                    gun.generate()
                     self.simOneEvent(recordTrj=True)                    
                     trj = self.getTrajectory()
                     v.addTrj(trj)
