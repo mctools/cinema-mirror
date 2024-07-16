@@ -138,7 +138,7 @@ class VolFluenceHelperV1(ScorerHelperV1):
 # A C++ object is directly created in  
 from ..Interface import *
 _pt_ScorerDeposition_new = importFunc('pt_ScorerDeposition_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_bool, type_int])
-_pt_ScorerESpectrum_new = importFunc('pt_ScorerESpectrum_new', type_voidp, [type_cstr, type_bool, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
+_pt_ScorerESpectrum_new = importFunc('pt_ScorerESpectrum_new', type_voidp, [type_cstr, type_bool, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int, type_bool ])
 _pt_ScorerTOF_new = importFunc('pt_ScorerTOF_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerWlSpectrum_new = importFunc('pt_ScorerWlSpectrum_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerVolFluence_new = importFunc('pt_ScorerVolFluence_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_dbl, type_uint, type_int, type_bool, type_int])
@@ -152,6 +152,7 @@ class ScorerHelper:
         self.pdg = pdg
         self.ptstate = ptstate
         self.groupID = groupID
+        self.linear = True
 
     def __realinit(self):
         self.score.cfg_name = self.name
@@ -204,9 +205,10 @@ class TOFHelper(ScorerHelper):
 
 class ESpectrumHelper(ScorerHelper):
     def __init__(self, name, min=1e-5, max=1, numbin = 100, pdg : int = 2112, 
-                 ptstate: str = 'ENTRY', energyTransfer=False, groupID=0) -> None:
+                 ptstate: str = 'ENTRY', energyTransfer=False, groupID=0, linear = False) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
         self.energyTransfer = energyTransfer
+        self.linear = linear
 
     def make(self, vol):
         cobj = _pt_ScorerESpectrum_new(self.name.encode('utf-8'), 
@@ -216,7 +218,8 @@ class ESpectrumHelper(ScorerHelper):
                                         self.numbin,
                                         self.pdg,
                                         self.ptsNum,
-                                        self.groupID
+                                        self.groupID,
+                                        self.linear
                                         )
         vol.addScorer(self, cobj)
 

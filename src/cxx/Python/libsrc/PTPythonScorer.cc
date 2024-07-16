@@ -35,10 +35,10 @@ void* pt_ScorerDeposition_new(const char* name, double xmin, double xmax, unsign
   return static_cast<void *>(new pt::ScorerDeposition(name, xmin, xmax, nbins, pdg, t, linear, groupid));
 }
 
-void* pt_ScorerESpectrum_new(const char* name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, unsigned int pdg, int type, int groupid)
+void* pt_ScorerESpectrum_new(const char* name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, unsigned int pdg, int type, int groupid, bool linear)
 {
   pt::ScorerESpectrum::ScorerType t = static_cast<pt::ScorerESpectrum::ScorerType>(type); 
-  return static_cast<void *>(new pt::ScorerESpectrum(name, scoreTransfer, xmin, xmax, nxbins, pdg, t, groupid));
+  return static_cast<void *>(new pt::ScorerESpectrum(name, scoreTransfer, xmin, xmax, nxbins, pdg, t, groupid, linear));
 }
 
 void* pt_ScorerTOF_new(const char* name, double xmin, double xmax, unsigned nxbins, unsigned int pdg, int type, int groupid)
