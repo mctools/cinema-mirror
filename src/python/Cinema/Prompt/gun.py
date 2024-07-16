@@ -93,7 +93,7 @@ class SimpleThermalGun(IsotropicGun):
         self.cfg_position = f'{dir[0]}, {dir[1]}, {dir[2]}'
 
 
-class SurfaceSurce(ConfigString):
+class SurfaceSource(ConfigString):
     def __init__(self, src_whz=None, slit_whz=None) -> None:
         super().__init__()
         if src_whz:
@@ -111,7 +111,7 @@ class SurfaceSurce(ConfigString):
         self.cfg_slit_h = whz[1]
         self.cfg_slit_z = whz[2]
 
-class MaxwellianGun(SurfaceSurce):
+class MaxwellianGun(SurfaceSource):
     def __init__(self, src_whz=None, slit_whz=None, temperature=293.15) -> None:
         super().__init__(src_whz, slit_whz)
         self.setTemperature(temperature)
@@ -121,7 +121,7 @@ class MaxwellianGun(SurfaceSurce):
     def setTemperature(self, temp):
         self.cfg_temperature = temp
 
-class UniModeratorGun(SurfaceSurce):
+class UniModeratorGun(SurfaceSource):
     def __init__(self, src_whz=None, slit_whz=None, wl_mean=1, wl_range=0.0001) -> None:
         super().__init__(src_whz, slit_whz)
         self.setWlMean(wl_mean)
