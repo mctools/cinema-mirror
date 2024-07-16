@@ -56,7 +56,7 @@ namespace Prompt {
     void scoreAbsorb(Particle &particle);
 
     // It seems that the scorePropagate function have the same test as the following line, so commented
-    bool hasPropagateScorer() {return m_matphysscor->propagate_scorers.size(); };
+    // bool hasPropagateScorer() {return m_matphysscor->propagate_scorers.size(); };
 
     bool hasBoundaryPhyiscs() const;
     bool surfaceReaction(Particle &particle) const;
