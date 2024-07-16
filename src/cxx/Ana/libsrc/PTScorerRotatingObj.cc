@@ -23,7 +23,7 @@
 
 Prompt::ScorerRotatingObj::ScorerRotatingObj(const std::string &name, const Vector &dir, const Vector &point,
   double rotFreq, unsigned int pdg)
-:Scorer1D("ScorerRotatingObj_"+name, Scorer::ScorerType::PEA,
+:Scorer1D("ScorerRotatingObj_"+name, Scorer::ScorerType::PEA_POST,
   std::make_unique<Hist1D>("ScorerRotatingObj_"+name, 0, 1, 100), pdg),
   m_rotaxis(dir), m_point(point), m_angularfreq(2*M_PI*rotFreq)
 {

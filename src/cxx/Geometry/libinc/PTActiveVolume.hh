@@ -49,11 +49,13 @@ namespace Prompt {
     const vecgeom::VPlacedVolume *getVolume() const;
 
     void scoreEntry(Particle &particle);
-    void scorePropagate(Particle &particle);
+    void scorePropagatePre(Particle &particle);
+    void scorePropagatePost(Particle &particle);
     void scoreExit(Particle &particle);
     void scoreSurface(Particle &particle);
     void scoreAbsorb(Particle &particle);
 
+    // It seems that the scorePropagate function have the same test as the following line, so commented
     bool hasPropagateScorer() {return m_matphysscor->propagate_scorers.size(); };
 
     bool hasBoundaryPhyiscs() const;

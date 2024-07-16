@@ -146,10 +146,15 @@ void Prompt::ResourceManager::addScorer(size_t volID, const std::string& cfg, Sc
     it_vol->second->entry_scorers.push_back(sc);
     std::cout << "Added ENTRY type scorer: " << sc->getName() << std::endl;
   }
-  else if(type==Scorer::ScorerType::PROPAGATE)
+  else if(type==Scorer::ScorerType::PROPAGATE_PRE)
   {
-    it_vol->second->propagate_scorers.push_back(sc);
-    std::cout << "Added PROPAGATE type scorer: " << sc->getName() << std::endl;
+    it_vol->second->propagate_pre_scorers.push_back(sc);
+    std::cout << "Added PROPAGATE_PRE type scorer: " << sc->getName() << std::endl;
+  }
+  else if(type==Scorer::ScorerType::PROPAGATE_POST)
+  {
+    it_vol->second->propagate_post_scorers.push_back(sc);
+    std::cout << "Added PROPAGATE_POST type scorer: " << sc->getName() << std::endl;
   }
   else if(type==Scorer::ScorerType::EXIT)
   {
@@ -166,12 +171,19 @@ void Prompt::ResourceManager::addScorer(size_t volID, const std::string& cfg, Sc
     it_vol->second->absorb_scorers.push_back(sc);
     std::cout << "Added ABSORB type scorer: " << sc->getName() << std::endl;
   }
-  else if(type==Scorer::ScorerType::PEA)
+  else if(type==Scorer::ScorerType::PEA_PRE)
   {
-    it_vol->second->propagate_scorers.push_back(sc);
+    it_vol->second->propagate_pre_scorers.push_back(sc);
     it_vol->second->exit_scorers.push_back(sc);
     it_vol->second->absorb_scorers.push_back(sc);
-    std::cout << "Added PEA type scorer: " << sc->getName() << std::endl;
+    std::cout << "Added PEA_PRE type scorer: " << sc->getName() << std::endl;
+  }
+  else if(type==Scorer::ScorerType::PEA_POST)
+  {
+    it_vol->second->propagate_post_scorers.push_back(sc);
+    it_vol->second->exit_scorers.push_back(sc);
+    it_vol->second->absorb_scorers.push_back(sc);
+    std::cout << "Added PEA_POST type scorer: " << sc->getName() << std::endl;
   }
   else
     PROMPT_THROW2(BadInput, "unknown scorer type " << static_cast<int>(type) );

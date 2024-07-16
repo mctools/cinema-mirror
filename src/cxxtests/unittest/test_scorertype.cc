@@ -36,9 +36,11 @@ TEST_CASE("ScorerType")
 {
   CHECK(static_cast<int>(Prompt::Scorer::ScorerType::SURFACE) == 0 );
   CHECK(static_cast<int>(Prompt::Scorer::ScorerType::ENTRY) ==  1 );
-  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::PROPAGATE) ==  2 );
-  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::EXIT) ==  3 );
-  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::PEA) ==  4 );
-  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::ABSORB) ==  5 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::PROPAGATE_PRE) ==  2 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::PROPAGATE_POST) ==  3 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::EXIT) ==  4 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::PEA_PRE) ==  5 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::PEA_POST) ==  6 );
+  CHECK(static_cast<int>(Prompt::Scorer::ScorerType::ABSORB) ==  7 );
 
 }

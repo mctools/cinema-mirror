@@ -124,7 +124,7 @@ class TOFHelperV1(ScorerHelperV1):
         self._ScorerHelperV1__realinit()
 
 class VolFluenceHelperV1(ScorerHelperV1): 
-    def __init__(self, name, min=1e-6, max=10, numbin = 100, ptstate: str = 'PEA', linear = False) -> None:
+    def __init__(self, name, min=1e-6, max=10, numbin = 100, ptstate: str = 'PEA_PRE', linear = False) -> None:
         super().__init__(name, min, max, numbin, ptstate)
         self.score = VolFluence()
         if linear:
@@ -137,7 +137,7 @@ class VolFluenceHelperV1(ScorerHelperV1):
 # DepositionHelper is a special class that skipped the traditional string based initialisation.
 # A C++ object is directly created in  
 from ..Interface import *
-_pt_ScorerDeposition_new = importFunc('pt_ScorerDeposition_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_bool])
+_pt_ScorerDeposition_new = importFunc('pt_ScorerDeposition_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_bool, type_int])
 _pt_ScorerESpectrum_new = importFunc('pt_ScorerESpectrum_new', type_voidp, [type_cstr, type_bool, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerTOF_new = importFunc('pt_ScorerTOF_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerWlSpectrum_new = importFunc('pt_ScorerWlSpectrum_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
@@ -168,14 +168,18 @@ class ScorerHelper:
             return 0
         elif self.ptstate=='ENTRY':
             return 1
-        elif self.ptstate=='PROPAGATE':
+        elif self.ptstate=='PROPAGATE_PRE':
             return 2
-        elif self.ptstate=='EXIT':
+        elif self.ptstate=='PROPAGATE_POST':
             return 3
-        elif self.ptstate=='PEA':
+        elif self.ptstate=='EXIT':
             return 4
-        elif self.ptstate=='ABSORB':
+        elif self.ptstate=='PEA_PRE':
             return 5
+        elif self.ptstate=='PEA_POST':
+            return 6
+        elif self.ptstate=='ABSORB':
+            return 7
         else:
             raise RuntimeError(f'Scorer type {self.ptstate} is undefined.') 
         
@@ -233,7 +237,7 @@ class WlSpectrumHelper(ScorerHelper):
 
 class VolFluenceHelper(ScorerHelper):
     def __init__(self, name, min = 1e-6, max = 10, numbin = 100, pdg = 2112, linear : bool = False, groupID : int = 0) -> None:
-        super().__init__(name, min, max, numbin, pdg, ptstate = 'PEA', groupID = groupID)
+        super().__init__(name, min, max, numbin, pdg, ptstate = 'PEA_PRE', groupID = groupID)
         self.linear = linear
 
     def make(self, vol):
@@ -252,8 +256,8 @@ class VolFluenceHelper(ScorerHelper):
         vol.addScorer(self, cobj)
 
 class DepositionHelper(ScorerHelper):
-    def __init__(self, name : str, min, max, numbin, pdg, ptstate, linear : bool = False) -> None:
-        super().__init__(name, min, max, numbin, pdg, ptstate)
+    def __init__(self, name : str, min, max, numbin, pdg, ptstate, linear : bool = False, groupID : int = 0) -> None:
+        super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
         self.linear = linear
 
     def make(self, vol):
@@ -264,7 +268,8 @@ class DepositionHelper(ScorerHelper):
                                         self.numbin,
                                         self.pdg,
                                         self.ptsNum,
-                                        self.linear)
+                                        self.linear,
+                                        self.groupID)
         vol.addScorer(self, cobj)
 
 

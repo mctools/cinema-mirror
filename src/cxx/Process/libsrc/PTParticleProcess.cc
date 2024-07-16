@@ -53,10 +53,11 @@ double Prompt::ParticleProcess::macroCrossSection(const Prompt::Particle &partic
   return m_numdensity * m_compModel->totalCrossSection(particle.getPDG(), ekin, dir);
 }
 
-void Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
+bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
 {
   // if (m_compModel->getSupportedGPD() != particle.getPDG())
   //   PROMPT_THROW2(CalcError, "ParticleProcess::sampleFinalState " << m_name << " does not support particle " << particle.getPDG() << ", " << m_compModel->getSupportedGPD());
+  bool isPropagateInVol = false;
 
   if (!particle.isAlive())
     PROMPT_THROW(CalcError, "Particle is not alive");
@@ -68,7 +69,7 @@ void Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
     {
       particle.scaleWeight(m_compModel->calculateWeight(stepLength * m_numdensity, true));
     }
-    return;
+    return isPropagateInVol;
   }
 
   // else
@@ -133,8 +134,10 @@ void Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
   {
     particle.setEKin(lab_ekin);
     particle.setDirection(lab_dir);
+    isPropagateInVol = true;
   }
   particle.scaleWeight(weightCorrection);
+  return isPropagateInVol;
 }
 
 double Prompt::ParticleProcess::sampleStepLength(const Prompt::Particle &particle) const

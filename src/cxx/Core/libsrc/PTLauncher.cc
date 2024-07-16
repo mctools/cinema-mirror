@@ -150,13 +150,13 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
         {
           // std::cout << "Tracing Volume ID " << m_activeVolume.getVolumeID() << std::endl;
           // score if any scorer is available
-          if(particle->isAlive() && m_activeVolume.hasPropagateScorer())
-          {
-            #ifdef DEBUG_PTS
-              std::cout << "Propagating in volume " << m_activeVolume.getVolumeID() << std::endl;
-            #endif
-            m_activeVolume.scorePropagate(*particle);
-          }
+          // if(particle->isAlive() && m_activeVolume.hasPropagateScorer())
+          // {
+          //   #ifdef DEBUG_PTS
+          //     std::cout << "Propagating in volume " << m_activeVolume.getVolumeID() << std::endl;
+          //   #endif
+          //   m_activeVolume.scorePropagate(*particle);
+          // }
           if(recordTrj)
             m_trajectory.push_back(particle->getPosition());
         }

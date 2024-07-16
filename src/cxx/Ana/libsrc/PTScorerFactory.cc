@@ -438,7 +438,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
+      Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE_POST;
       
       // the optional parameters
       int minNumber = 0;
@@ -515,7 +515,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         nxbins = ptstoi(cfg.find("numbin"));
       }
 
-      Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE;
+      Scorer::ScorerType ptstate = Scorer::ScorerType::PEA_PRE;
       std::string ptstateInStr = cfg.find("ptstate");
       if(ptstateInStr.empty())
         parCount--;
@@ -657,17 +657,25 @@ Prompt::Scorer::ScorerType Prompt::ScorerFactory::getPTS(const std::string& ptst
   {
     return Scorer::ScorerType::SURFACE;
   }
-  else if(ptstateInStr=="PROPAGATE")
+  else if(ptstateInStr=="PROPAGATE_POST")
   {
-    return Scorer::ScorerType::PROPAGATE;
+    return Scorer::ScorerType::PROPAGATE_POST;
+  }
+  else if(ptstateInStr=="PROPAGATE_PRE")
+  {
+    return Scorer::ScorerType::PROPAGATE_PRE;
   }
   else if(ptstateInStr=="EXIT")
   {
     return Scorer::ScorerType::EXIT;
   }
-  else if(ptstateInStr=="PEA")
+  else if(ptstateInStr=="PEA_PRE")
   {
-    return Scorer::ScorerType::PEA;
+    return Scorer::ScorerType::PEA_PRE;
+  }
+  else if(ptstateInStr=="PEA_POST")
+  {
+    return Scorer::ScorerType::PEA_POST;
   }
   else {
     PROMPT_THROW2(BadInput, "ptstate does not support" << " " << ptstateInStr);

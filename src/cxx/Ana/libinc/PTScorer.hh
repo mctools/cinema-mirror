@@ -34,7 +34,8 @@ namespace Prompt {
   class Scorer {
   public:
     // PEA, PROPAGATE-EXIT-ABSORB, to account for everything inside a volume
-    enum class ScorerType {SURFACE, ENTRY, PROPAGATE, EXIT, PEA, ABSORB};
+    // PROPAGATE_PRE & PROPAGATE_POST for particle state before and after interaction, respectively
+    enum class ScorerType {SURFACE, ENTRY, PROPAGATE_PRE, PROPAGATE_POST, EXIT, PEA_PRE, PEA_POST, ABSORB};
   public:
     Scorer(const std::string& name, ScorerType type, unsigned int pdg, int groupid=0) ;  
     virtual ~Scorer() {std::cout<<"Destructing Scorer " << m_name <<std::endl;};

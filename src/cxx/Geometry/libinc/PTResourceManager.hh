@@ -41,7 +41,8 @@ namespace Prompt {
 
         std::vector< Scorer * >  surface_scorers;
         std::vector< Scorer * >  entry_scorers;
-        std::vector< Scorer * >  propagate_scorers;
+        std::vector< Scorer * >  propagate_pre_scorers;
+        std::vector< Scorer * >  propagate_post_scorers;
         std::vector< Scorer * >  exit_scorers;
         std::vector< Scorer * >  absorb_scorers;
         

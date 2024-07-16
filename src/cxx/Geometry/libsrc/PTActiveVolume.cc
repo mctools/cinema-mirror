@@ -178,11 +178,22 @@ void Prompt::ActiveVolume::scoreAbsorb(Prompt::Particle &particle)
   }
 }
 
-void Prompt::ActiveVolume::scorePropagate(Prompt::Particle &particle)
+void Prompt::ActiveVolume::scorePropagatePre(Prompt::Particle &particle)
 {
-  if(m_matphysscor->propagate_scorers.size())
+  if(m_matphysscor->propagate_pre_scorers.size())
   {
-    for(auto &v:m_matphysscor->propagate_scorers)
+    for(auto &v:m_matphysscor->propagate_pre_scorers)
+    {
+      v->score(particle);
+    }
+  }
+}
+
+void Prompt::ActiveVolume::scorePropagatePost(Prompt::Particle &particle)
+{
+  if(m_matphysscor->propagate_post_scorers.size())
+  {
+    for(auto &v:m_matphysscor->propagate_post_scorers)
     {
       v->score(particle);
     }
@@ -245,11 +256,20 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   if(stepLength < step)
     PROMPT_THROW2(CalcError, "stepLength < step " << stepLength << " " << step << "\n");
 
-  //Move next step
   const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
+  //Move next step
   particle.moveForward(sameVolume ? step : (step + resolution) );
-
-  m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
+  // Here is the state just before interaction
+  Particle particlePrePropagate(particle);
+  bool isPropagateInVol = m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
+  if(isPropagateInVol)
+  {
+    #ifdef DEBUG_PTS
+      std::cout << "Propagating in volume " << getVolumeID() << std::endl;
+    #endif
+    scorePropagatePre(particlePrePropagate);
+    scorePropagatePost(particle);
+  }
   if(!sameVolume)
   {
     #ifdef DEBUG_PTS
