@@ -29,7 +29,7 @@ namespace Prompt {
   class ScorerDeposition  : public Scorer1D {
   public:
     ScorerDeposition(const std::string &name, double e_min, double e_max, unsigned numbin, unsigned int pdg,
-      ScorerType stype=Scorer::ScorerType::ENTRY, bool linear=true);
+      ScorerType stype=Scorer::ScorerType::ENTRY, bool linear=true, int groupid=0);
     virtual ~ScorerDeposition();
     virtual void score(Particle &particle) override;
 

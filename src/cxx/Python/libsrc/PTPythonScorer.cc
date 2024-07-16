@@ -29,10 +29,10 @@ namespace pt = Prompt;
 
 
 //ScorerDeposition
-void* pt_ScorerDeposition_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int type, bool linear)
+void* pt_ScorerDeposition_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int type, bool linear, int groupid)
 {
   pt::ScorerDeposition::ScorerType t = static_cast<pt::ScorerDeposition::ScorerType>(type); 
-  return static_cast<void *>(new pt::ScorerDeposition(name, xmin, xmax, nbins, pdg, t, linear));
+  return static_cast<void *>(new pt::ScorerDeposition(name, xmin, xmax, nbins, pdg, t, linear, groupid));
 }
 
 void* pt_ScorerESpectrum_new(const char* name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, unsigned int pdg, int type, int groupid)

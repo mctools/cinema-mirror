@@ -21,9 +21,9 @@
 #include "PTScorerDeposition.hh"
 
 Prompt::ScorerDeposition::ScorerDeposition(const std::string &name, double e_min, double e_max, unsigned numbin, unsigned int pdg,
-      Prompt::ScorerDeposition::ScorerType stype, bool linear)
+      Prompt::ScorerDeposition::ScorerType stype, bool linear, int groupid)
 :Scorer1D("ScorerDeposition_" + name, stype, std::make_unique<Hist1D>("ScorerDeposition_" + name, 
-e_min, e_max, numbin, linear), pdg)
+e_min, e_max, numbin, linear), pdg, groupid)
 {
 }
 
