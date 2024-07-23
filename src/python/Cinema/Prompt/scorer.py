@@ -230,8 +230,8 @@ class ESpectrumHelper(ScorerHelper):
         _pt_addMultiScatter(scatterCounter.cobj, self.cobj, scatterNumberRequired)
 
 class MultiScatCounter(ScorerHelper):
-    def __init__(self, groupID=0) -> None:
-        super().__init__(name="ScatterCounter", min=0., max=1., numbin=1, pdg=2112, ptstate='PROPAGATE_POST', groupID=groupID)
+    def __init__(self) -> None:
+        super().__init__(name="ScatterCounter", min=0., max=1., numbin=1, pdg=2112, ptstate='PROPAGATE_POST', groupID=0)
 
     def make(self, vol):
         cobj = _pt_ScorerMultiScat_new(self.name.encode('utf-8'), 
