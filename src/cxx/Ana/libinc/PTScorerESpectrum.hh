@@ -23,16 +23,22 @@
 
 #include "PromptCore.hh"
 #include "PTScorer.hh"
+#include "PTScorerMultiScat.hh"
 
 namespace Prompt {
 
   class ScorerESpectrum  : public Scorer1D {
   public:
-    ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, unsigned int pdg, ScorerType stype=Scorer::ScorerType::ENTRY, int groupid=0, bool linear=false);
+    ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, 
+                    unsigned int pdg, ScorerType stype=Scorer::ScorerType::ENTRY, int groupid=0, bool linear=false);
     virtual ~ScorerESpectrum();
     virtual void score(Particle &particle) override;
+    void addMultiScatter(const ScorerMultiScat* scatterCounter, int scatNumReq);
+    bool rightScatterNumber();
   private:
     bool m_scoreTransfer;
+    const ScorerMultiScat* m_scatterCounter;
+    int m_scatterNumberRequired;
   };
 }
 

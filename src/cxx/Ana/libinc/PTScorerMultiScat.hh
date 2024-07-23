@@ -28,9 +28,12 @@ namespace Prompt {
 
   class ScorerMultiScat : public Scorer1D {
   public:
-    ScorerMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, unsigned int pdg, ScorerType stype=Scorer::ScorerType::PROPAGATE_POST, bool linear=true);
+    ScorerMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, 
+                    unsigned int pdg, ScorerType stype=Scorer::ScorerType::PROPAGATE_POST, bool linear=true,
+                    int groupid=0);
     virtual ~ScorerMultiScat();
     virtual void score(Particle &particle) override;
+    int getScatNumber() const {return m_p_counter;} 
   private:
     unsigned long long m_lasteventid;
     int m_p_counter;
