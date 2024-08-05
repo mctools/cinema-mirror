@@ -24,6 +24,8 @@ if [ ! -z ${CINEMAPATH:-} ]; then
     cinema_prunepath LD_LIBRARY_PATH "$CINEMAPATH/cinemabin:$CINEMAPATH/src/python/bin"
     cinema_prunepath DYLD_LIBRARY_PATH "$CINEMAPATH/cinemabin"
     cinema_prunepath PYTHONPATH "$CINEMAPATH/src/python;$CINEMAPATH/src/python/ptgeo/python"
+    cinema_prunepath NCRYSTAL_PLUGIN_LIST
+    cinema_prunepath NCRYSTAL_DATA_PATH
     echo "Cleaned up previously defined Cinema enviorment"
 fi
 
@@ -70,13 +72,27 @@ if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
     else
       echo "Found ncrystal"
     fi
-    $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup
+    eval $( $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup)  
     export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
   else
-    $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup > /dev/null
-    # .  $CINEMAPATH/external/ncrystal/install/setup.sh
+    eval $( $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup)  
     export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
     echo "NCrystal config done"
+fi
+
+if [ -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
+  if [ ! -f $CINEMAPATH/external/ncplugin-BzScope/testcode/utils/cache/bld/libNCPlugin_PiXiu.so ]; then
+    echo "Installing ncplugin-BzScope"
+    cd $CINEMAPATH/external
+    git clone ${PREFIX}/ncplugin-BzScope.git
+    cd ncplugin-BzScope
+    . testcode/utils/bootstrap.sh 
+    ncpluginbuild
+    cd -
+  fi
+  echo "Found ncplugin-BzScope"
+  . $CINEMAPATH/external/ncplugin-BzScope/testcode/utils/bootstrap.sh 
+  export NCRYSTAL_PLUGIN_LIST="$CINEMAPATH/external/ncplugin-BzScope/testcode/utils/cache/bld/libNCPlugin_BzScope.so:$NCRYSTAL_PLUGIN_LIST"
 fi
 
 #MCPL
