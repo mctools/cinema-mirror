@@ -85,7 +85,8 @@ if [ -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
     echo "Installing ncplugin-BzScope"
     cd $CINEMAPATH/external
     git clone ${PREFIX}/ncplugin-BzScope.git
-    cd ncplugin-BzScope
+    cd -
+    cd $CINEMAPATH/external/ncplugin-BzScope
     . testcode/utils/bootstrap.sh 
     ncpluginbuild
     cd -
