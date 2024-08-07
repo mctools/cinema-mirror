@@ -24,9 +24,7 @@
 Prompt::ScorerESpectrum::ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins,
                                          unsigned pdg, ScorerType stype, int groupid, bool linear)
 :Scorer1D("ScorerESpectrum_"+name, stype, std::make_unique<Hist1D>("ScorerESpectrum_"+name, xmin, xmax, nxbins, linear), pdg, groupid),
-m_scoreTransfer(scoreTransfer),
-m_scatterCounter(nullptr),
-m_scatterNumberRequired(0)
+m_scoreTransfer(scoreTransfer), ScorerMultiScatMixin(nullptr, -1)
 {}
 
 Prompt::ScorerESpectrum::~ScorerESpectrum() 
@@ -36,9 +34,6 @@ Prompt::ScorerESpectrum::~ScorerESpectrum()
 void Prompt::ScorerESpectrum::score(Prompt::Particle &particle)
 {
   if(!rightScorer(particle))
-  return;
-
-  if(!rightScatterNumber())
   return;
 
   m_scoreTransfer ? m_hist->fill(particle.getEKin0()-particle.getEKin(),  particle.getWeight() ) :
@@ -56,15 +51,15 @@ void Prompt::ScorerESpectrum::score(Prompt::Particle &particle)
 }
 
 
-void Prompt::ScorerESpectrum::addMultiScatter(const Prompt::ScorerMultiScat* scatterCounter, int scatNumReq=0 ) 
-{
-  m_scatterCounter=scatterCounter;
-  m_scatterNumberRequired = scatNumReq;
-  std::cout << "Scattering number req: " << m_scatterNumberRequired << std::endl;
-}
+// void Prompt::ScorerESpectrum::addMultiScatter(const Prompt::ScorerMultiScat* scatterCounter, int scatNumReq=0 ) 
+// {
+//   m_scatterCounter=scatterCounter;
+//   m_scatterNumberRequired = scatNumReq;
+//   std::cout << "Scattering number req: " << m_scatterNumberRequired << std::endl;
+// }
 
-bool Prompt::ScorerESpectrum::rightScatterNumber()
-{
-  return (m_scatterNumberRequired && m_scatterCounter!=nullptr) ? 
-  m_scatterCounter->getScatNumber()==m_scatterNumberRequired : true;
-}
+// bool Prompt::ScorerESpectrum::rightScatterNumber()
+// {
+//   return (m_scatterNumberRequired && m_scatterCounter!=nullptr) ? 
+//   m_scatterCounter->getScatNumber()==m_scatterNumberRequired : true;
+// }

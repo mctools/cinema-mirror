@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerESpectrum_hh
-#define Prompt_ScorerESpectrum_hh
+#ifndef Prompt_ScorerMultiScatMixin_hh
+#define Prompt_ScorerMultiScatMixin_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -22,20 +22,32 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
-#include "PTScorer.hh"
-#include "PTScorerMultiScatMixin.hh"
+#include "PTScorerMultiScat.hh"
+
 namespace Prompt {
-
-  class ScorerESpectrum  : public Scorer1D, public ScorerMultiScatMixin<ScorerESpectrum> {
+  template <typename T>
+  class ScorerMultiScatMixin {
   public:
-    ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, 
-                    unsigned int pdg, ScorerType stype=Scorer::ScorerType::ENTRY, int groupid=0, bool linear=false);
-    virtual ~ScorerESpectrum();
-    virtual void score(Particle &particle) override;
-  private:
-    bool m_scoreTransfer;
-  };
-  
-}
+    // Constructor to initialize the log level
+    ScorerMultiScatMixin(const ScorerMultiScat* scatterCounter, int scatNumReq=-1) : 
+      m_scatterNumberRequired(scatNumReq), m_scatterCounter(scatterCounter) {}
 
+    void addMultiScatter(const Prompt::ScorerMultiScat* scatterCounter, int scatNumReq=-1 ) 
+    {
+      m_scatterCounter=scatterCounter;
+      m_scatterNumberRequired = scatNumReq;
+      std::cout << "Scattering number req: " << m_scatterNumberRequired << std::endl;
+    }
+
+    bool rightScatterNumber() const {
+      return (m_scatterNumberRequired && m_scatterCounter!=nullptr) ? 
+      m_scatterCounter->getScatNumber()==m_scatterNumberRequired : true;
+    }
+
+  protected:
+    const ScorerMultiScat* m_scatterCounter;
+    int m_scatterNumberRequired;
+  };
+
+}
 #endif
