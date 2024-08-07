@@ -30,6 +30,8 @@ namespace Prompt {
   std::vector<double> linspace(double start, double stop, unsigned num);
 
   constexpr double neutronEKin2k(double ekin);
+  constexpr double neutronEkin2Speed(double ekin);
+  constexpr double neutronSpeed2Ekin(double speed);
   constexpr double neutronAngleCosine2Q(double anglecosine, double enin_eV, double enout_eV);
   constexpr double wl2ekin( double wl);
   constexpr double ekin2wl( double ekin);

@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+from Cinema.Prompt import Prompt, PromptMPI
+from Cinema.Prompt.geo import Volume, Transformation3D
+from Cinema.Prompt.solid import Box,Tube, Sphere
+from Cinema.Prompt.scorer import ESpectrumHelper, WlSpectrumHelper, TOFHelper, VolFluenceHelper
+from Cinema.Prompt.histogram import wl2ekin
+from Cinema.Prompt.physics import Material, Mirror
+from Cinema.Prompt.gun import IsotropicGun, PythonGun
+
+import numpy as np
+
+
+class MySim(PromptMPI):
+    def __init__(self, seed=4096) -> None:
+        super().__init__(seed)   
+
+    def makeWorld(self):
+        self.clear()
+        world = Volume("world", Box(400, 400, 400))
+
+        # lw = Material("'LiquidWaterH2O_T293.6K.ncmat;density=1gcm3'") # v2, 4.630884342994241. ml, 4.630884342994241. full spec 4.691033674854935 should 4.7046
+        # lw = Material('freegas::H2O/1gcm3/H_is_1.00_H1/O_is_1.00_O16') # v2, 4.5781432733636525. ml, 4.5781432733636525. full spec 4.638707241003883, should be 4.6490. gidi 3.615059805936363                                           
+        lw = Material('Ag_sg225.ncmat') # v2, 4.5781432733636525. ml, 4.5781432733636525. full spec 4.638707241003883, should be 4.6490. gidi 3.615059805936363                                           
+
+
+        lw.setBiasScat(1.)
+        lw.setBiasAbsp(1.)
+        sphere = Volume("sphere", Sphere(0, 300), matCfg=lw)
+        world.placeChild('sphere', sphere)
+
+        VolFluenceHelper('spct', max=20e6, numbin=500 ).make(sphere)
+        self.setWorld(world)
+
+
+
+sim = MySim(seed=1010)
+sim.makeWorld()
+
+# gun = IsotropicGun()
+# gun.setEnergy(10e6)
+
+class MyGun(PythonGun):
+    def __init__(self, pdg, ekin):
+        super().__init__(pdg)
+        self.ekin = ekin
+
+    def samplePosition(self):
+        return 0,0,0
+    
+    def sampleEnergy(self):
+        if isinstance(self.ekin, list):
+            r=np.random.uniform(self.ekin[0], self.ekin[1], 1)[0]
+            return r
+        else:
+            return self.ekin
+
+gun = MyGun(22, 1e6)
+sim.show(gun, 1)

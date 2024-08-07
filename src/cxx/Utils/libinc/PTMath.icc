@@ -47,6 +47,16 @@ inline constexpr double Prompt::neutronAngleCosine2Q(double angle_cos, double en
   return k0*scale;
 }
 
+inline constexpr double Prompt::neutronEkin2Speed(double ekin)
+{
+  return std::sqrt(2*ekin/const_neutron_mass_evc2);
+}
+
+inline constexpr double Prompt::neutronSpeed2Ekin(double speed)
+{
+  return 0.5*const_neutron_mass_evc2*speed*speed;
+}
+
 inline constexpr double Prompt::wl2ekin( double wl)
 {
   //angstrom to eV
