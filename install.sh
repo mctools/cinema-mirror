@@ -1,5 +1,6 @@
 #!/bin/bash
 # --set options
+PREFIX="https://gitlab.com/cinema-developers"
 while getopts ":f" option
   do
     case "${option}"
