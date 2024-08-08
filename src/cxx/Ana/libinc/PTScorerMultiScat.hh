@@ -25,8 +25,7 @@
 #include "PTScorer.hh"
 
 namespace Prompt {
-
-  class ScorerMultiScat : public Scorer1D {
+  class ScorerMultiScat : public ScorerWithoutMixin {
   public:
     ScorerMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, 
                     unsigned int pdg, ScorerType stype=Scorer::ScorerType::PROPAGATE_POST, bool linear=true,

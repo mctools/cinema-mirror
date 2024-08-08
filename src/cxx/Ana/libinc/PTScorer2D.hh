@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerMultiScatMixin_hh
-#define Prompt_ScorerMultiScatMixin_hh
+#ifndef Prompt_Scorer2D_hh
+#define Prompt_Scorer2D_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,33 +21,26 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
+#include "PTScorer.hh"
 #include "PTScorerMultiScat.hh"
+#include "PTMultiScatMixin.hh"
 
 namespace Prompt {
-  template <typename T>
-  class ScorerMultiScatMixin {
+  
+  class Scorer2D : public Scorer, public MultiScatMixin<Scorer2D> {
   public:
-    // Constructor to initialize the log level
-    ScorerMultiScatMixin(const ScorerMultiScat* scatterCounter, int scatNumReq=-1) : 
-      m_scatterNumberRequired(scatNumReq), m_scatterCounter(scatterCounter) {}
-
-    void addMultiScatter(const Prompt::ScorerMultiScat* scatterCounter, int scatNumReq=-1 ) 
-    {
-      m_scatterCounter=scatterCounter;
-      m_scatterNumberRequired = scatNumReq;
-      std::cout << "Scattering number req: " << m_scatterNumberRequired << std::endl;
-    }
-
-    bool rightScatterNumber() const {
-      return (m_scatterNumberRequired && m_scatterCounter!=nullptr) ? 
-      m_scatterCounter->getScatNumber()==m_scatterNumberRequired : true;
-    }
+    Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist, unsigned int pdg, int groupid=0)
+    : Scorer(name, type, groupid), MultiScatMixin(nullptr, -1), m_hist(std::move(hist)) {};
+    virtual ~Scorer2D() {  }
+    void save_mcpl() override { m_hist->save(m_name); }
+    const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }
+    virtual bool rightScorer(const Particle &particle) const override { return Scorer::rightParticle(particle) && rightScatterNumber(); };
 
   protected:
-    const ScorerMultiScat* m_scatterCounter;
-    int m_scatterNumberRequired;
+    std::unique_ptr<Hist2D> m_hist;
   };
 
 }
+
+
 #endif

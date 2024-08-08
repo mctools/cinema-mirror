@@ -26,9 +26,6 @@
 #include "PTHist1D.hh"
 #include "PTHist2D.hh"
 
-// #include "PTActiveVolume.hh"
-// #include "PTSingleton.hh"
-
 namespace Prompt {
   class ActiveVolume;
   class Scorer {
@@ -54,7 +51,7 @@ namespace Prompt {
      */
     inline bool rightParticle(const Particle &particle) const; 
     inline bool rightGroup() const;
-    inline bool rightScorer(const Particle &particle) const;
+    virtual bool rightScorer(const Particle &particle) const {return rightParticle(particle) &&  rightGroup();};
 
   protected:
     const std::string m_name;
@@ -67,30 +64,17 @@ namespace Prompt {
     
   };
 
-
-
-  class Scorer1D : public Scorer {
+  class ScorerWithoutMixin : public Scorer {
   public:
-    Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist, unsigned int pdg, int groupid=0)
+    ScorerWithoutMixin(const std::string& name, Scorer::ScorerType type, std::unique_ptr<Hist1D> hist, unsigned int pdg, int groupid=0)
     : Scorer(name, type, pdg, groupid), m_hist(std::move(hist)) {};
-    virtual ~Scorer1D() {  }
+    virtual ~ScorerWithoutMixin() {  }
     void save_mcpl() override { m_hist->save(m_name); }
     const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }
   protected:
     std::unique_ptr<Hist1D> m_hist;
   };
 
-  class Scorer2D : public Scorer {
-  public:
-    Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist, unsigned int pdg, int groupid=0)
-    : Scorer(name, type, groupid), m_hist(std::move(hist)) {};
-    virtual ~Scorer2D() {  }
-    void save_mcpl() override { m_hist->save(m_name); }
-    const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }
-
-  protected:
-    std::unique_ptr<Hist2D> m_hist;
-  };
 }
 
 #include "PTScorer.icc"

@@ -22,7 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
-#include "PTScorer.hh"
+#include "PTScorer1D.hh"
 #include "PTVector.hh"
 
 namespace Prompt {

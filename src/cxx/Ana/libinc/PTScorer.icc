@@ -21,4 +21,3 @@
 
 bool Prompt::Scorer::rightParticle(const Prompt::Particle &particle) const {return m_pdg ? particle.getPDG()==m_pdg : true;}
 bool Prompt::Scorer::rightGroup() const { return m_groupid ? getVolumeGroupID()==m_groupid : true;}
-bool Prompt::Scorer::rightScorer(const Prompt::Particle &particle) const { return rightParticle(particle) &&  rightGroup();}

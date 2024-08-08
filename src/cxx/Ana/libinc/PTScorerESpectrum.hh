@@ -22,11 +22,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
-#include "PTScorer.hh"
-#include "PTScorerMultiScatMixin.hh"
+#include "PTScorer1D.hh"
+#include "PTMultiScatMixin.hh"
 namespace Prompt {
 
-  class ScorerESpectrum  : public Scorer1D, public ScorerMultiScatMixin<ScorerESpectrum> {
+  class ScorerESpectrum  : public Scorer1D {
   public:
     ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins, 
                     unsigned int pdg, ScorerType stype=Scorer::ScorerType::ENTRY, int groupid=0, bool linear=false);

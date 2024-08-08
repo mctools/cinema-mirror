@@ -24,7 +24,7 @@
 Prompt::ScorerESpectrum::ScorerESpectrum(const std::string &name, bool scoreTransfer, double xmin, double xmax, unsigned nxbins,
                                          unsigned pdg, ScorerType stype, int groupid, bool linear)
 :Scorer1D("ScorerESpectrum_"+name, stype, std::make_unique<Hist1D>("ScorerESpectrum_"+name, xmin, xmax, nxbins, linear), pdg, groupid),
-m_scoreTransfer(scoreTransfer), ScorerMultiScatMixin(nullptr, -1)
+m_scoreTransfer(scoreTransfer)
 {}
 
 Prompt::ScorerESpectrum::~ScorerESpectrum() 
@@ -34,9 +34,6 @@ Prompt::ScorerESpectrum::~ScorerESpectrum()
 void Prompt::ScorerESpectrum::score(Prompt::Particle &particle)
 {
   if(!rightScorer(particle))
-    return;
-
-  if(!rightScatterNumber())
     return;
 
   m_scoreTransfer ? m_hist->fill(particle.getEKin0()-particle.getEKin(),  particle.getWeight() ) :

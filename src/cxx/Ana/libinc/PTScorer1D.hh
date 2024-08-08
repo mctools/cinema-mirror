@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerDeltaMomentum_hh
-#define Prompt_ScorerDeltaMomentum_hh
+#ifndef Prompt_Scorer1D_hh
+#define Prompt_Scorer1D_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,27 +21,26 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PromptCore.hh"
-#include "PTScorer1D.hh"
-#include <iostream>
-#include <fstream>
-	
+#include "PTScorer.hh"
+#include "PTScorerMultiScat.hh"
+#include "PTMultiScatMixin.hh"
+
 namespace Prompt {
-
-  class ScorerDeltaMomentum : public Scorer1D {
+  
+  class Scorer1D : public Scorer, public MultiScatMixin<Scorer1D> {
   public:
-    ScorerDeltaMomentum(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, unsigned int pdg,
-      ScorerType stype=Scorer::ScorerType::ENTRY, int method=0, int scatnum=-1, bool linear=true);
-    virtual ~ScorerDeltaMomentum();
-    virtual void score(Particle &particle) override;
-  protected:
-    const Vector m_samplePos, m_refDir;
-    const double m_sourceSampleDist;
-    int m_method;
-    int m_scatnum;
-    std::fstream m_file;
+    Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist, unsigned int pdg, int groupid=0)
+    : Scorer(name, type, pdg, groupid), MultiScatMixin(nullptr, -1), m_hist(std::move(hist)){};
+    virtual ~Scorer1D() {  }
+    void save_mcpl() override { m_hist->save(m_name); }
+    const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }
+    virtual bool rightScorer(const Particle &particle) const override { return Scorer::rightParticle(particle) && rightScatterNumber(); };
 
+  protected:
+    std::unique_ptr<Hist1D> m_hist;
   };
+
 }
+
+
 #endif

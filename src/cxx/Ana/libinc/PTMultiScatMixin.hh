@@ -1,5 +1,5 @@
-#ifndef Prompt_ScorerDeltaMomentum_hh
-#define Prompt_ScorerDeltaMomentum_hh
+#ifndef Prompt_MultiScatMixin_hh
+#define Prompt_MultiScatMixin_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -22,26 +22,32 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PromptCore.hh"
-#include "PTScorer1D.hh"
-#include <iostream>
-#include <fstream>
-	
+#include "PTScorerMultiScat.hh"
+
 namespace Prompt {
-
-  class ScorerDeltaMomentum : public Scorer1D {
+  template <typename T>
+  class MultiScatMixin {
   public:
-    ScorerDeltaMomentum(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double qmin, double qmax, unsigned numbin, unsigned int pdg,
-      ScorerType stype=Scorer::ScorerType::ENTRY, int method=0, int scatnum=-1, bool linear=true);
-    virtual ~ScorerDeltaMomentum();
-    virtual void score(Particle &particle) override;
-  protected:
-    const Vector m_samplePos, m_refDir;
-    const double m_sourceSampleDist;
-    int m_method;
-    int m_scatnum;
-    std::fstream m_file;
+    // Constructor to initialize the log level
+    MultiScatMixin(const ScorerMultiScat* scatterCounter, int scatNumReq=-1) : 
+      m_scatterNumberRequired(scatNumReq), m_scatterCounter(scatterCounter) {}
 
+    void addMultiScatter(const Prompt::ScorerMultiScat* scatterCounter, int scatNumReq=-1 ) 
+    {
+      m_scatterCounter=scatterCounter;
+      m_scatterNumberRequired = scatNumReq;
+      std::cout << "Scattering number req: " << m_scatterNumberRequired << std::endl;
+    }
+
+    bool rightScatterNumber() const {
+      return (m_scatterNumberRequired && m_scatterCounter!=nullptr) ? 
+      m_scatterCounter->getScatNumber()==m_scatterNumberRequired : true;
+    }
+
+  protected:
+    const ScorerMultiScat* m_scatterCounter;
+    int m_scatterNumberRequired;
   };
+
 }
 #endif
