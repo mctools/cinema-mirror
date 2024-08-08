@@ -40,7 +40,7 @@ namespace Prompt {
     }
 
     bool rightScatterNumber() const {
-      return (m_scatterNumberRequired && m_scatterCounter!=nullptr) ? 
+      return (m_scatterNumberRequired!=-1 && m_scatterCounter!=nullptr) ? 
       m_scatterCounter->getScatNumber()==m_scatterNumberRequired : true;
     }
 
