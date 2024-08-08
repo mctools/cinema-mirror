@@ -27,8 +27,6 @@
 extern "C" {
 #endif
 
-
-//ScorerDeposition
 void* pt_ScorerDeposition_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int type, bool linear, int groupid);
 
 void* pt_ScorerESpectrum_new(const char* name, bool scoreTransfer, double xmin, double xmax, unsigned nbins, unsigned pdg, int type, int groupid, bool linear);
@@ -41,7 +39,9 @@ void* pt_ScorerVolFluence_new(const char* name, double xmin, double xmax, unsign
 
 void* pt_ScorerMultiScat_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int type, int groupid);
 
-void pt_addMultiScatter(void* scatter, void* espScorer, int scatNumReq);
+void pt_addMultiScatter1D(void* scatter, void* espScorer, int scatNumReq);
+
+void pt_addMultiScatter2D(void* scatter, void* espScorer, int scatNumReq);
 
 #ifdef __cplusplus
 }

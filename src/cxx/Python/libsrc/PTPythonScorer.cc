@@ -25,7 +25,7 @@
 #include "PTScorerWlSpectrum.hh"
 #include "PTScorerVolFluence.hh"
 #include "PTScorerMultiScat.hh"
-
+#include "PTScorer2D.hh"
 namespace pt = Prompt;
 
 
@@ -66,9 +66,17 @@ void* pt_ScorerMultiScat_new(const char* name, double xmin, double xmax, unsigne
   return static_cast<void *>(new pt::ScorerMultiScat(name, xmin, xmax, nbins, pdg, t, true, groupid));
 }
 
-void pt_addMultiScatter(void* scatter, void* espScorer, int scatNumReq=0)
+void pt_addMultiScatter1D(void* scatter, void* espScorer, int scatNumReq=0)
 {
-    auto esp = static_cast<Prompt::ScorerESpectrum *>(espScorer);
-    const auto scat = static_cast<Prompt::ScorerMultiScat *>(scatter);
-    esp->addMultiScatter(scat, scatNumReq);
+  auto esp = static_cast<Prompt::Scorer1D *>(espScorer);
+  const auto scat = static_cast<Prompt::ScorerMultiScat *>(scatter);
+  esp->addMultiScatter(scat, scatNumReq);
+}
+
+
+void pt_addMultiScatter2D(void* scatter, void* espScorer, int scatNumReq=0)
+{
+  auto esp = static_cast<Prompt::Scorer2D *>(espScorer);
+  const auto scat = static_cast<Prompt::ScorerMultiScat *>(scatter);
+  esp->addMultiScatter(scat, scatNumReq);
 }

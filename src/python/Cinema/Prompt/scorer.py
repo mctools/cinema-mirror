@@ -143,7 +143,8 @@ _pt_ScorerTOF_new = importFunc('pt_ScorerTOF_new', type_voidp, [type_cstr, type_
 _pt_ScorerWlSpectrum_new = importFunc('pt_ScorerWlSpectrum_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerVolFluence_new = importFunc('pt_ScorerVolFluence_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_dbl, type_uint, type_int, type_bool, type_int])
 _pt_ScorerMultiScat_new = importFunc('pt_ScorerMultiScat_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int])
-_pt_addMultiScatter = importFunc('pt_addMultiScatter', None, [type_voidp, type_voidp, type_int])
+_pt_addMultiScatter1D = importFunc('pt_addMultiScatter1D', None, [type_voidp, type_voidp, type_int])
+_pt_addMultiScatter2D = importFunc('pt_addMultiScatter2D', None, [type_voidp, type_voidp, type_int])
 
 class ScorerHelper:
     def __init__(self, name, min, max, numbin, pdg = 2112, ptstate = 'ENTRY', groupID=0) -> None:
@@ -227,7 +228,7 @@ class ESpectrumHelper(ScorerHelper):
         self.cobj = cobj
 
     def addScatterCounter(self, scatterCounter, scatterNumberRequired):
-        _pt_addMultiScatter(scatterCounter.cobj, self.cobj, scatterNumberRequired)
+        _pt_addMultiScatter1D(scatterCounter.cobj, self.cobj, scatterNumberRequired)
 
 class MultiScatCounter(ScorerHelper):
     def __init__(self) -> None:
