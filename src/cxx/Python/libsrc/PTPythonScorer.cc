@@ -84,15 +84,15 @@ double sample_position_x, double sample_position_y, double sample_position_z, in
 
 void pt_addMultiScatter1D(void* scatter, void* scorer, int scatNumReq=-1)
 {
-  auto esp = static_cast<Prompt::Scorer1D *>(scorer);
+  auto scr = static_cast<Prompt::Scorer1D *>(scorer);
   const auto scat = static_cast<Prompt::ScorerMultiScat *>(scatter);
-  esp->addMultiScatter(scat, scatNumReq);
+  scr->addMultiScatter(scat, scatNumReq);
 }
 
 
 void pt_addMultiScatter2D(void* scatter, void* scorer, int scatNumReq=-1)
 {
-  auto esp = static_cast<Prompt::Scorer2D *>(scorer);
+  auto scr = static_cast<Prompt::Scorer2D *>(scorer);
   const auto scat = static_cast<Prompt::ScorerMultiScat *>(scatter);
-  esp->addMultiScatter(scat, scatNumReq);
+  scr->addMultiScatter(scat, scatNumReq);
 }
