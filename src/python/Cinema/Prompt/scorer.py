@@ -143,8 +143,14 @@ _pt_ScorerTOF_new = importFunc('pt_ScorerTOF_new', type_voidp, [type_cstr, type_
 _pt_ScorerWlSpectrum_new = importFunc('pt_ScorerWlSpectrum_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerVolFluence_new = importFunc('pt_ScorerVolFluence_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_dbl, type_uint, type_int, type_bool, type_int])
 _pt_ScorerMultiScat_new = importFunc('pt_ScorerMultiScat_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int])
+_pt_ScorerDirectSqw_new = importFunc('pt_ScorerDirectSqw_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, 
+                                                                            type_dbl, type_dbl, type_uint,
+                                                                            type_uint, type_int, type_dbl, type_dbl,
+                                                                            type_dbl, type_dbl, type_dbl,
+                                                                            type_dbl, type_dbl, type_dbl, type_int])
 _pt_addMultiScatter1D = importFunc('pt_addMultiScatter1D', None, [type_voidp, type_voidp, type_int])
 _pt_addMultiScatter2D = importFunc('pt_addMultiScatter2D', None, [type_voidp, type_voidp, type_int])
+
 
 class ScorerHelper:
     def __init__(self, name, min, max, numbin, pdg = 2112, ptstate = 'ENTRY', groupID=0) -> None:
@@ -190,6 +196,12 @@ class ScorerHelper:
     def make(self, vol):
         vol.addScorer(self.score.cfg)
 
+class ScorerHelper2D(ScorerHelper):
+    def __init__(self, name, xmin, xmax, xnumbin, ymin, ymax, ynumbin, pdg = 2112, ptstate = 'ENTRY', groupID=0) -> None:
+        super().__init__(name, xmin, xmax, xnumbin, pdg, ptstate, groupID)
+        self.ymin = ymin
+        self.ymax = ymax
+        self.ynumbin = ynumbin
 
 class TOFHelper(ScorerHelper):
     def __init__(self, name : str, min : float = 0., max : float = 40e-3, numbin : int = 100, 
@@ -298,6 +310,36 @@ class DepositionHelper(ScorerHelper):
                                         self.groupID)
         vol.addScorer(self, cobj)
 
+
+    # ScorerDirectSqw(const std::string &name, double qmin, double qmax, unsigned xbin,
+    #   double ekinmin, double ekinmax, unsigned nybins,
+    #   unsigned int pdg, int group_id,
+    #   double mod_smp_dist, double mean_ekin, const Vector& mean_incident_dir, const Vector& sample_position, 
+    #   ScorerType stype=Scorer::ScorerType::ENTRY);
+
+class DirectSqwHelper(ScorerHelper2D):
+    def __init__(self, name, mod_smp_dist, mean_ekin, mean_incident_dir, sample_position,
+                 qmin = 1e-1, qmax = 10, num_qbin = 50, 
+                 ekinmin=0. , ekinmax=0.5,  num_ebin = 30,
+                 pdg = 2112, groupID  = 0, ptstate = 'ENTRY') -> None:
+        super().__init__(name, qmin, qmax, num_qbin, ekinmin, ekinmax, num_ebin, pdg, ptstate, groupID)
+        self.mod_smp_dist = mod_smp_dist
+        self.mean_ekin = mean_ekin
+        self.mean_incident_dir = mean_incident_dir
+        self.sample_position = sample_position
+
+    def make(self, vol):
+        cobj = _pt_ScorerDirectSqw_new(
+            self.name.encode('utf-8'), 
+            self.min, self.max, self.numbin,
+            self.ymin, self.ymax, self.ynumbin,
+            self.pdg, self.groupID,
+            self.mod_smp_dist, self.mean_ekin,
+            self.mean_incident_dir[0], self.mean_incident_dir[1], self.mean_incident_dir[2],
+            self.sample_position[0], self.sample_position[1], self.sample_position[2],
+            self.ptsNum
+        )
+        vol.addScorer(self, cobj)
 
 
 # fixme: what is the function followed used for??? x.

@@ -25,6 +25,7 @@
 #include "PTScorerWlSpectrum.hh"
 #include "PTScorerVolFluence.hh"
 #include "PTScorerMultiScat.hh"
+#include "PTScorerDirectSqw.hh"
 #include "PTScorer2D.hh"
 namespace pt = Prompt;
 
@@ -64,6 +65,21 @@ void* pt_ScorerMultiScat_new(const char* name, double xmin, double xmax, unsigne
 {
   pt::ScorerMultiScat::ScorerType t = static_cast<pt::ScorerMultiScat::ScorerType>(type); 
   return static_cast<void *>(new pt::ScorerMultiScat(name, xmin, xmax, nbins, pdg, t, true, groupid));
+}
+
+void* pt_ScorerDirectSqw_new(const char* name, double qmin, double qmax, unsigned xbin, 
+double ekinmin, double ekinmax, unsigned nybins, unsigned int pdg, int group_id,
+double mod_smp_dist, double mean_ekin,
+double mean_incident_dir_x, double mean_incident_dir_y, double mean_incident_dir_z,
+double sample_position_x, double sample_position_y, double sample_position_z, int type)
+{
+  auto t = static_cast<pt::Scorer::ScorerType>(type); 
+  pt::Vector mean_incident_dir(mean_incident_dir_x, mean_incident_dir_y, mean_incident_dir_z);
+  pt::Vector sample_position(sample_position_x, sample_position_y, sample_position_z);
+
+  return static_cast<void *>(new pt::ScorerDirectSqw(name, qmin, qmax, xbin, ekinmin,  
+                                        ekinmax, nybins, pdg, group_id, mod_smp_dist, mean_ekin, 
+                                        mean_incident_dir, sample_position, t));
 }
 
 void pt_addMultiScatter1D(void* scatter, void* espScorer, int scatNumReq=0)
