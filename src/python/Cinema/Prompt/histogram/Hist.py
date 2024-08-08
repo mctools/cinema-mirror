@@ -296,6 +296,7 @@ class Hist2D(HistBase):
 
             fig.colorbar(pcm, ax=ax)
             plt.grid()
+            plt.title(title)
             # plt.title(f'{title}) \nWeight {H.sum()}')
             if show:
                 plt.show()
