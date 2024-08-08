@@ -19,7 +19,9 @@ class MySim(PromptMPI):
 
     def makeWorld(self):
         world = Volume("world", Box(2000, 2000, 21000))
-        mat = 'physics=idealElaScat;xs_barn=5;density_per_aa3=5;energy_transfer_eV=0.03'
+        # mat = 'physics=idealElaScat;xs_barn=1;density_per_aa3=5;energy_transfer_eV=0.03'
+        mat = 'skeleton_c1_vol_77K.ncmat;bragg=0'
+        # mat = 'bzscope_c1_vol_77K.ncmat;bragg=0'
         sample = Volume("sample", Sphere(0, 10), matCfg=mat)
         world.placeChild('samplePV', sample)
 
@@ -27,8 +29,8 @@ class MySim(PromptMPI):
 
         monitor = Volume("mon", Sphere(1499.99, 1500, starttheta=1.*deg, deltatheta=178*deg ))
         helper = DirectSqwHelper('sqw', self.mod_smp_dist, self.mean_ekin, [0,0,1.], [0,0,0],
-                 qmin = 1e-1, qmax = 10, num_qbin = 100, 
-                 ekinmin=-0.1, ekinmax=0.1,  num_ebin = 60,
+                 qmin = 1e-1, qmax = 20, num_qbin = 150, 
+                 ekinmin=-0.1, ekinmax=0.1,  num_ebin = 100,
                  pdg = 2112, groupID  = 0, ptstate = 'ENTRY')
         helper.make(monitor)
 
@@ -57,15 +59,16 @@ class MyGun(PythonGun):
             return self.ekin
 
 mod_smp_dist = 20000
-mean_ekin = 0.02
+mean_ekin = 0.05
 
 gun = MyGun(mod_smp_dist, mean_ekin)
 
 sim = MySim(mod_smp_dist, mean_ekin, seed=1010)
 sim.makeWorld()
 
-sim.show(gun, 100)
+# sim.show(gun, 100)
 
-# sim.simulate(gun, 1e6)
-# res = sim.gatherHistData('sqw')
-# res.plot(True, log=False)
+sim.simulate(gun, 1e7)
+res = sim.gatherHistData('sqw')
+res.plot(False, log=False)
+res.plot(True, log=True)
