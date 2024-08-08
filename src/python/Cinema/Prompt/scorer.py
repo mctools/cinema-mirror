@@ -320,7 +320,7 @@ class DepositionHelper(ScorerHelper):
 class DirectSqwHelper(ScorerHelper2D):
     def __init__(self, name, mod_smp_dist, mean_ekin, mean_incident_dir, sample_position,
                  qmin = 1e-1, qmax = 10, num_qbin = 50, 
-                 ekinmin=0. , ekinmax=0.5,  num_ebin = 30,
+                 ekinmin=-0.1 , ekinmax=0.1,  num_ebin = 30,
                  pdg = 2112, groupID  = 0, ptstate = 'ENTRY') -> None:
         super().__init__(name, qmin, qmax, num_qbin, ekinmin, ekinmax, num_ebin, pdg, ptstate, groupID)
         self.mod_smp_dist = mod_smp_dist

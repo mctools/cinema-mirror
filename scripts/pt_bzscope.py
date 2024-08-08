@@ -3,7 +3,7 @@
 from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.geo import Volume, Transformation3D
 from Cinema.Prompt.solid import Box,Tube, Sphere
-from Cinema.Prompt.scorer import ESpectrumHelper, WlSpectrumHelper, TOFHelper, VolFluenceHelper
+from Cinema.Prompt.scorer import DirectSqwHelper
 from Cinema.Prompt.histogram import wl2ekin
 from Cinema.Prompt.physics import Material, Mirror
 from Cinema.Prompt.gun import IsotropicGun, PythonGun
@@ -12,41 +12,42 @@ import numpy as np
 
 
 class MySim(PromptMPI):
-    def __init__(self, seed=4096) -> None:
+    def __init__(self, mod_smp_dist, mean_ekin, seed=4096) -> None:
         super().__init__(seed)   
+        self.mod_smp_dist = mod_smp_dist
+        self.mean_ekin = mean_ekin
 
     def makeWorld(self):
-        self.clear()
-        world = Volume("world", Box(400, 400, 400))
+        world = Volume("world", Box(2000, 2000, 21000))
+        mat = 'physics=idealElaScat;xs_barn=5;density_per_aa3=5;energy_transfer_eV=0.03'
+        sample = Volume("sample", Sphere(0, 10), matCfg=mat)
+        world.placeChild('samplePV', sample)
 
-        # lw = Material("'LiquidWaterH2O_T293.6K.ncmat;density=1gcm3'") # v2, 4.630884342994241. ml, 4.630884342994241. full spec 4.691033674854935 should 4.7046
-        # lw = Material('freegas::H2O/1gcm3/H_is_1.00_H1/O_is_1.00_O16') # v2, 4.5781432733636525. ml, 4.5781432733636525. full spec 4.638707241003883, should be 4.6490. gidi 3.615059805936363                                           
-        lw = Material('Ag_sg225.ncmat') # v2, 4.5781432733636525. ml, 4.5781432733636525. full spec 4.638707241003883, should be 4.6490. gidi 3.615059805936363                                           
+        deg = np.pi/180.
 
+        monitor = Volume("mon", Sphere(1499.99, 1500, starttheta=1.*deg, deltatheta=178*deg ))
+        helper = DirectSqwHelper('sqw', self.mod_smp_dist, self.mean_ekin, [0,0,1.], [0,0,0],
+                 qmin = 1e-1, qmax = 10, num_qbin = 100, 
+                 ekinmin=-0.1, ekinmax=0.1,  num_ebin = 60,
+                 pdg = 2112, groupID  = 0, ptstate = 'ENTRY')
+        helper.make(monitor)
 
-        lw.setBiasScat(1.)
-        lw.setBiasAbsp(1.)
-        sphere = Volume("sphere", Sphere(0, 300), matCfg=lw)
-        world.placeChild('sphere', sphere)
+        world.placeChild('monPV', monitor, Transformation3D(0, 0., 0))
 
-        VolFluenceHelper('spct', max=20e6, numbin=500 ).make(sphere)
+       
+        
+
         self.setWorld(world)
 
 
-
-sim = MySim(seed=1010)
-sim.makeWorld()
-
-# gun = IsotropicGun()
-# gun.setEnergy(10e6)
-
 class MyGun(PythonGun):
-    def __init__(self, ekin):
+    def __init__(self, mod_smp_dist, ekin ):
         super().__init__(2112)
         self.ekin = ekin
+        self.mod_smp_dist = mod_smp_dist
 
     def samplePosition(self):
-        return 0,0,0
+        return 0,0,-self.mod_smp_dist
     
     def sampleEnergy(self):
         if isinstance(self.ekin, list):
@@ -55,5 +56,16 @@ class MyGun(PythonGun):
         else:
             return self.ekin
 
-gun = MyGun(1e6)
-sim.show(gun, 1)
+mod_smp_dist = 20000
+mean_ekin = 0.02
+
+gun = MyGun(mod_smp_dist, mean_ekin)
+
+sim = MySim(mod_smp_dist, mean_ekin, seed=1010)
+sim.makeWorld()
+
+sim.show(gun, 100)
+
+# sim.simulate(gun, 1e6)
+# res = sim.gatherHistData('sqw')
+# res.plot(True, log=False)
