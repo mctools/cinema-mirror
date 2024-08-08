@@ -203,7 +203,21 @@ class ScorerHelper2D(ScorerHelper):
         self.ymax = ymax
         self.ynumbin = ynumbin
 
-class TOFHelper(ScorerHelper):
+class MultiScatMixin1D():
+    def __init__(self) -> None:
+        pass
+
+    def addScatterCounter1D(self, scatterCounter, scatterNumberRequired):
+        _pt_addMultiScatter1D(scatterCounter.cobj, self.cobj, scatterNumberRequired)
+
+class MultiScatMixin2D():
+    def __init__(self) -> None:
+        pass
+
+    def addScatterCounter2D(self, scatterCounter, scatterNumberRequired):
+        _pt_addMultiScatter2D(scatterCounter.cobj, self.cobj, scatterNumberRequired)
+
+class TOFHelper(ScorerHelper, MultiScatMixin2D):
     def __init__(self, name : str, min : float = 0., max : float = 40e-3, numbin : int = 100, 
                  pdg : int = 2112, ptstate : str = 'ENTRY', groupID : int = 0) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
@@ -218,7 +232,7 @@ class TOFHelper(ScorerHelper):
                                  self.groupID)
         vol.addScorer(self, cobj)
 
-class ESpectrumHelper(ScorerHelper):
+class ESpectrumHelper(ScorerHelper, MultiScatMixin1D):
     def __init__(self, name, min=1e-5, max=1, numbin = 100, pdg : int = 2112, 
                  ptstate: str = 'ENTRY', energyTransfer=False, groupID=0, linear = False) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
@@ -239,9 +253,6 @@ class ESpectrumHelper(ScorerHelper):
         vol.addScorer(self, cobj)
         self.cobj = cobj
 
-    def addScatterCounter(self, scatterCounter, scatterNumberRequired):
-        _pt_addMultiScatter1D(scatterCounter.cobj, self.cobj, scatterNumberRequired)
-
 class MultiScatCounter(ScorerHelper):
     def __init__(self) -> None:
         super().__init__(name="ScatterCounter", min=0., max=1., numbin=1, pdg=2112, ptstate='PROPAGATE_POST', groupID=0)
@@ -258,7 +269,7 @@ class MultiScatCounter(ScorerHelper):
         self.cobj = cobj
         
     
-class WlSpectrumHelper(ScorerHelper):
+class WlSpectrumHelper(ScorerHelper, MultiScatMixin1D):
     def __init__(self, name, min=0.1, max=10, numbin = 100, pdg : int = 2112, ptstate : str = 'ENTRY', groupID : int = 0) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
 
@@ -273,7 +284,7 @@ class WlSpectrumHelper(ScorerHelper):
                                         )
         vol.addScorer(self, cobj)
 
-class VolFluenceHelper(ScorerHelper):
+class VolFluenceHelper(ScorerHelper, MultiScatMixin1D):
     def __init__(self, name, min = 1e-6, max = 10, numbin = 100, pdg = 2112, linear : bool = False, groupID : int = 0) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate = 'PEA_PRE', groupID = groupID)
         self.linear = linear
@@ -293,7 +304,7 @@ class VolFluenceHelper(ScorerHelper):
         )
         vol.addScorer(self, cobj)
 
-class DepositionHelper(ScorerHelper):
+class DepositionHelper(ScorerHelper, MultiScatMixin1D):
     def __init__(self, name : str, min, max, numbin, pdg, ptstate, linear : bool = False, groupID : int = 0) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
         self.linear = linear
@@ -317,7 +328,7 @@ class DepositionHelper(ScorerHelper):
     #   double mod_smp_dist, double mean_ekin, const Vector& mean_incident_dir, const Vector& sample_position, 
     #   ScorerType stype=Scorer::ScorerType::ENTRY);
 
-class DirectSqwHelper(ScorerHelper2D):
+class DirectSqwHelper(ScorerHelper2D, MultiScatMixin2D):
     def __init__(self, name, mod_smp_dist, mean_ekin, mean_incident_dir, sample_position,
                  qmin = 1e-1, qmax = 10, num_qbin = 50, 
                  ekinmin=-0.1 , ekinmax=0.1,  num_ebin = 30,
