@@ -3,7 +3,7 @@
 from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.geo import Volume, Transformation3D
 from Cinema.Prompt.solid import Box,Tube, Sphere
-from Cinema.Prompt.scorer import DirectSqwHelper
+from Cinema.Prompt.scorer import DirectSqwHelper, MultiScatCounter
 from Cinema.Prompt.histogram import wl2ekin
 from Cinema.Prompt.physics import Material, Mirror
 from Cinema.Prompt.gun import IsotropicGun, PythonGun
@@ -20,19 +20,22 @@ class MySim(PromptMPI):
     def makeWorld(self):
         world = Volume("world", Box(2000, 2000, 21000))
         # mat = 'physics=idealElaScat;xs_barn=1;density_per_aa3=5;energy_transfer_eV=0.03'
-        mat = 'skeleton_c1_vol_77K.ncmat;bragg=0'
+        mat = "physics=ncrystal;nccfg='bzscope_c1_vol_77K.ncmat;bragg=0';scatter_bias=10.0;abs_bias=1.0;"
         # mat = 'bzscope_c1_vol_77K.ncmat;bragg=0'
         sample = Volume("sample", Sphere(0, 10), matCfg=mat)
+        ms = MultiScatCounter()
+        ms.make(sample)
         world.placeChild('samplePV', sample)
 
         deg = np.pi/180.
 
         monitor = Volume("mon", Sphere(1499.99, 1500, starttheta=1.*deg, deltatheta=178*deg ))
         helper = DirectSqwHelper('sqw', self.mod_smp_dist, self.mean_ekin, [0,0,1.], [0,0,0],
-                 qmin = 1e-1, qmax = 20, num_qbin = 150, 
-                 ekinmin=-0.1, ekinmax=0.1,  num_ebin = 100,
+                 qmin = 1e-1, qmax = 20, num_qbin = 300, 
+                 ekinmin=-0.1, ekinmax=0.1,  num_ebin = 300,
                  pdg = 2112, groupID  = 0, ptstate = 'ENTRY')
         helper.make(monitor)
+        helper.addScatterCounter2D(ms, 1)
 
         world.placeChild('monPV', monitor, Transformation3D(0, 0., 0))
 
@@ -59,7 +62,7 @@ class MyGun(PythonGun):
             return self.ekin
 
 mod_smp_dist = 20000
-mean_ekin = 0.05
+mean_ekin = 0.1
 
 gun = MyGun(mod_smp_dist, mean_ekin)
 
@@ -68,7 +71,9 @@ sim.makeWorld()
 
 # sim.show(gun, 100)
 
-sim.simulate(gun, 1e7)
+sim.simulate(gun, 1e6)
 res = sim.gatherHistData('sqw')
-res.plot(False, log=False)
-res.plot(True, log=True)
+destination = 0
+if sim.rank==0:
+    # res.plot(False, log=False)
+    res.plot(True, title=f'Total Weight: {res.getAccWeight()}', log=True)

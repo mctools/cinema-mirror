@@ -296,6 +296,7 @@ class Hist2D(HistBase):
 
             fig.colorbar(pcm, ax=ax)
             plt.grid()
+            plt.title(title)
             # plt.title(f'{title}) \nWeight {H.sum()}')
             if show:
                 plt.show()
@@ -306,8 +307,8 @@ class Hist2D(HistBase):
         except Exception as e:
             print(e)
 
-    def savefig(self, fname, title="Histogram"):
-        plt = self.plot(title=title)
+    def savefig(self, fname, title="Histogram", log=False):
+        plt = self.plot(title=title, log=log)
         plt.savefig(fname=fname)
         plt.close()
 

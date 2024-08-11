@@ -203,22 +203,38 @@ class ScorerHelper2D(ScorerHelper):
         self.ymax = ymax
         self.ynumbin = ynumbin
 
-class TOFHelper(ScorerHelper):
-    def __init__(self, name : str, min : float = 0., max : float = 40e-3, numbin : int = 100, 
-                 pdg : int = 2112, ptstate : str = 'ENTRY', groupID : int = 0) -> None:
-        super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
+class MultiScatMixin1D():
+    def __init__(self) -> None:
+        pass
+
+    def addScatterCounter1D(self, scatterCounter, scatterNumberRequired):
+        _pt_addMultiScatter1D(scatterCounter.cobj, self.cobj, scatterNumberRequired)
+
+class MultiScatMixin2D():
+    def __init__(self) -> None:
+        pass
+
+    def addScatterCounter2D(self, scatterCounter, scatterNumberRequired):
+        _pt_addMultiScatter2D(scatterCounter.cobj, self.cobj, scatterNumberRequired)
+
+# Counter 
+class MultiScatCounter(ScorerHelper):
+    def __init__(self) -> None:
+        super().__init__(name="ScatterCounter", min=0., max=1., numbin=1, pdg=2112, ptstate='PROPAGATE_POST', groupID=0)
 
     def make(self, vol):
-        cobj = _pt_ScorerTOF_new(self.name.encode('utf-8'),
-                                 self.min,
-                                 self.max,
-                                 self.numbin,
-                                 self.pdg,
-                                 self.ptsNum,
-                                 self.groupID)
+        cobj = _pt_ScorerMultiScat_new(self.name.encode('utf-8'), 
+                                        self.min,
+                                        self.max,
+                                        self.numbin,
+                                        self.pdg,
+                                        self.ptsNum,
+                                        self.groupID)
         vol.addScorer(self, cobj)
-
-class ESpectrumHelper(ScorerHelper):
+        self.cobj = cobj
+        
+# 1D Scorer
+class ESpectrumHelper(ScorerHelper, MultiScatMixin1D):
     def __init__(self, name, min=1e-5, max=1, numbin = 100, pdg : int = 2112, 
                  ptstate: str = 'ENTRY', energyTransfer=False, groupID=0, linear = False) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
@@ -239,26 +255,9 @@ class ESpectrumHelper(ScorerHelper):
         vol.addScorer(self, cobj)
         self.cobj = cobj
 
-    def addScatterCounter(self, scatterCounter, scatterNumberRequired):
-        _pt_addMultiScatter1D(scatterCounter.cobj, self.cobj, scatterNumberRequired)
-
-class MultiScatCounter(ScorerHelper):
-    def __init__(self) -> None:
-        super().__init__(name="ScatterCounter", min=0., max=1., numbin=1, pdg=2112, ptstate='PROPAGATE_POST', groupID=0)
-
-    def make(self, vol):
-        cobj = _pt_ScorerMultiScat_new(self.name.encode('utf-8'), 
-                                        self.min,
-                                        self.max,
-                                        self.numbin,
-                                        self.pdg,
-                                        self.ptsNum,
-                                        self.groupID)
-        vol.addScorer(self, cobj)
-        self.cobj = cobj
-        
+     
     
-class WlSpectrumHelper(ScorerHelper):
+class WlSpectrumHelper(ScorerHelper, MultiScatMixin1D):
     def __init__(self, name, min=0.1, max=10, numbin = 100, pdg : int = 2112, ptstate : str = 'ENTRY', groupID : int = 0) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
 
@@ -272,8 +271,9 @@ class WlSpectrumHelper(ScorerHelper):
                                         self.groupID
                                         )
         vol.addScorer(self, cobj)
+        self.cobj = cobj
 
-class VolFluenceHelper(ScorerHelper):
+class VolFluenceHelper(ScorerHelper, MultiScatMixin1D):
     def __init__(self, name, min = 1e-6, max = 10, numbin = 100, pdg = 2112, linear : bool = False, groupID : int = 0) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate = 'PEA_PRE', groupID = groupID)
         self.linear = linear
@@ -292,8 +292,9 @@ class VolFluenceHelper(ScorerHelper):
             self.groupID
         )
         vol.addScorer(self, cobj)
+        self.cobj = cobj
 
-class DepositionHelper(ScorerHelper):
+class DepositionHelper(ScorerHelper, MultiScatMixin1D):
     def __init__(self, name : str, min, max, numbin, pdg, ptstate, linear : bool = False, groupID : int = 0) -> None:
         super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
         self.linear = linear
@@ -309,6 +310,7 @@ class DepositionHelper(ScorerHelper):
                                         self.linear,
                                         self.groupID)
         vol.addScorer(self, cobj)
+        self.cobj = cobj
 
 
     # ScorerDirectSqw(const std::string &name, double qmin, double qmax, unsigned xbin,
@@ -317,7 +319,23 @@ class DepositionHelper(ScorerHelper):
     #   double mod_smp_dist, double mean_ekin, const Vector& mean_incident_dir, const Vector& sample_position, 
     #   ScorerType stype=Scorer::ScorerType::ENTRY);
 
-class DirectSqwHelper(ScorerHelper2D):
+# 2D Scorer
+class TOFHelper(ScorerHelper, MultiScatMixin2D):
+    def __init__(self, name : str, min : float = 0., max : float = 40e-3, numbin : int = 100, 
+                 pdg : int = 2112, ptstate : str = 'ENTRY', groupID : int = 0) -> None:
+        super().__init__(name, min, max, numbin, pdg, ptstate, groupID)
+
+    def make(self, vol):
+        cobj = _pt_ScorerTOF_new(self.name.encode('utf-8'),
+                                 self.min,
+                                 self.max,
+                                 self.numbin,
+                                 self.pdg,
+                                 self.ptsNum,
+                                 self.groupID)
+        vol.addScorer(self, cobj)
+        self.cobj = cobj
+class DirectSqwHelper(ScorerHelper2D, MultiScatMixin2D):
     def __init__(self, name, mod_smp_dist, mean_ekin, mean_incident_dir, sample_position,
                  qmin = 1e-1, qmax = 10, num_qbin = 50, 
                  ekinmin=-0.1 , ekinmax=0.1,  num_ebin = 30,
@@ -340,6 +358,7 @@ class DirectSqwHelper(ScorerHelper2D):
             self.ptsNum
         )
         vol.addScorer(self, cobj)
+        self.cobj = cobj
 
 
 # fixme: what is the function followed used for??? x.

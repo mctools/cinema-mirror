@@ -82,17 +82,17 @@ double sample_position_x, double sample_position_y, double sample_position_z, in
                                         mean_incident_dir, sample_position, t));
 }
 
-void pt_addMultiScatter1D(void* scatter, void* espScorer, int scatNumReq=0)
+void pt_addMultiScatter1D(void* scatter, void* scorer, int scatNumReq=-1)
 {
-  auto esp = static_cast<Prompt::Scorer1D *>(espScorer);
+  auto scr = static_cast<Prompt::Scorer1D *>(scorer);
   const auto scat = static_cast<Prompt::ScorerMultiScat *>(scatter);
-  esp->addMultiScatter(scat, scatNumReq);
+  scr->addMultiScatter(scat, scatNumReq);
 }
 
 
-void pt_addMultiScatter2D(void* scatter, void* espScorer, int scatNumReq=0)
+void pt_addMultiScatter2D(void* scatter, void* scorer, int scatNumReq=-1)
 {
-  auto esp = static_cast<Prompt::Scorer2D *>(espScorer);
+  auto scr = static_cast<Prompt::Scorer2D *>(scorer);
   const auto scat = static_cast<Prompt::ScorerMultiScat *>(scatter);
-  esp->addMultiScatter(scat, scatNumReq);
+  scr->addMultiScatter(scat, scatNumReq);
 }
