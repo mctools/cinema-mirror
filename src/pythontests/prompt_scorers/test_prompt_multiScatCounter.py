@@ -22,7 +22,7 @@ class MySim(Prompt):
     def makeEspScatNum(self, vol, scatterCounter, interNum):
         esp0 = ESpectrumHelper(f'Scatter{interNum}', 1e-6, 20e6, 100)
         esp0.make(vol)
-        esp0.addScatterCounter1D(scatterCounter, interNum)
+        esp0.addScatterCounter(scatterCounter, interNum)
         
     def makeWorld(self):
 

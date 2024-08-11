@@ -35,7 +35,7 @@ class MySim(PromptMPI):
                  ekinmin=-0.1, ekinmax=0.1,  num_ebin = 300,
                  pdg = 2112, groupID  = 0, ptstate = 'ENTRY')
         helper.make(monitor)
-        helper.addScatterCounter2D(ms, 1)
+        helper.addScatterCounter(ms, 1)
 
         world.placeChild('monPV', monitor, Transformation3D(0, 0., 0))
 
