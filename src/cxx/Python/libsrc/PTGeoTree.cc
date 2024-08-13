@@ -50,9 +50,8 @@ void Prompt::GeoTree::Node::addChild(std::shared_ptr<Node> c)
 
 void Prompt::GeoTree::Node::setMatrix(const vecgeom::Transformation3D *mat)
 {
-  
-  // matrix = vecgeom::Transformation3D(* const_cast<vecgeom::Transformation3D*>(mat));
-  matrix = mat->Inverse();
+  matrix = vecgeom::Transformation3D(* const_cast<vecgeom::Transformation3D*>(mat));
+  matrix.Inverse(matrix);
 }
 
 Prompt::GeoTree::GeoTree()

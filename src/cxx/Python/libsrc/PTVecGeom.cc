@@ -21,16 +21,17 @@
 #include "VecGeom/volumes/UnplacedTessellated.h"
 #include "VecGeom/volumes/MultiUnion.h"
 
-#include "VecGeom/management/BVHManager.h"
-#include "VecGeom/management/GeoManager.h"
-
-#include "VecGeom/navigation/VNavigator.h"
-#include "VecGeom/navigation/GlobalLocator.h"
+#include "VecGeom/navigation/BVHNavigator.h"
 #include "VecGeom/navigation/NewSimpleNavigator.h"
 #include "VecGeom/navigation/SimpleABBoxNavigator.h"
-#include "VecGeom/navigation/HybridNavigator2.h"
-#include "VecGeom/navigation/BVHNavigatorV.h"
+#include "VecGeom/navigation/SimpleABBoxLevelLocator.h"
+#include "VecGeom/navigation/BVHLevelLocator.h"
 
+
+#include "VecGeom/management/HybridManager2.h"
+#include "VecGeom/navigation/HybridNavigator2.h"
+#include "VecGeom/navigation/HybridLevelLocator.h"
+#include "VecGeom/navigation/HybridSafetyEstimator.h"
 
 namespace vg = VECGEOM_NAMESPACE;
 
@@ -47,17 +48,26 @@ void pt_initNavigators(bool use_bvh_navigator)
       lvol.second->SetNavigator(vg::NewSimpleNavigator<>::Instance());
     } else if (ndaughters <= 10) {
       if (use_bvh_navigator) {
-        lvol.second->SetNavigator(vg::BVHNavigatorV<>::Instance());
+        lvol.second->SetNavigator(vg::BVHNavigator<>::Instance());
       } else {
         lvol.second->SetNavigator(vg::SimpleABBoxNavigator<>::Instance());
       }
     } else { // ndaughters > 10
       if (use_bvh_navigator) {
-        lvol.second->SetNavigator(vg::BVHNavigatorV<>::Instance());
+        lvol.second->SetNavigator(vg::BVHNavigator<>::Instance());
       } else {
         lvol.second->SetNavigator(vg::HybridNavigator<>::Instance());
         vg::HybridManager2::Instance().InitStructure((lvol.second));
       }
+    }
+
+    if (lvol.second->ContainsAssembly()) {
+      lvol.second->SetLevelLocator(vg::SimpleAssemblyAwareABBoxLevelLocator::GetInstance());
+    } else {
+      if (use_bvh_navigator)
+        lvol.second->SetLevelLocator(vg::BVHLevelLocator::GetInstance());
+      else
+        lvol.second->SetLevelLocator(vg::SimpleABBoxLevelLocator::GetInstance());
     }
   }
 }
