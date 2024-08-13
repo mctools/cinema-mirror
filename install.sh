@@ -206,7 +206,7 @@ if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
     if [ -d VecGeom ]; then
       rm -rf VecGeom
     fi
-    git clone  -b v1.2.8 https://code.ihep.ac.cn/caixx/VecGeom.git
+    git clone  -b v1.2.8 --single-branch https://code.ihep.ac.cn/caixx/VecGeom.git
     cd -
     mkdir $CINEMAPATH/external/VecGeom/build && cd $CINEMAPATH/external/VecGeom/build
     # patch $CINEMAPATH/external/VecGeom/persistency/gdml/source/src/Middleware.cpp < $CINEMAPATH/external/vecgoem1.2.0_Middleware_cpp.patch
