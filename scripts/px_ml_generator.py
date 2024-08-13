@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# /home/xxcai1/git/cinema/external/KDSource/install/bin/mcpltool -m merged test_killermcpl*
+# pymcpltool --stats --pdf merged.mcpl
+
 import numpy as np
 from Cinema.PiXiu.io.cell import QeXmlCell
 import phonopy

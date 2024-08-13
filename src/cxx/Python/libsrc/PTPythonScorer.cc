@@ -27,6 +27,7 @@
 #include "PTScorerMultiScat.hh"
 #include "PTScorerDirectSqw.hh"
 #include "PTScorer2D.hh"
+#include "PTKillerMCPL.hh"
 namespace pt = Prompt;
 
 
@@ -95,4 +96,10 @@ void pt_addMultiScatter2D(void* scatter, void* scorer, int scatNumReq=-1)
   auto scr = static_cast<Prompt::Scorer2D *>(scorer);
   const auto scat = static_cast<Prompt::ScorerMultiScat *>(scatter);
   scr->addMultiScatter(scat, scatNumReq);
+}
+
+
+void* pt_KillerMCPL_new(const char* name, unsigned pdg, int groupid)
+{
+  return static_cast<void *>(new pt::KillerMCPL(name, pdg, groupid));
 }

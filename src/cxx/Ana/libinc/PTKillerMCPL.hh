@@ -1,5 +1,5 @@
-#ifndef Prompt_Scorer1D_hh
-#define Prompt_Scorer1D_hh
+#ifndef Prompt_KillerMCPL_hh
+#define Prompt_KillerMCPL_hh
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -21,26 +21,21 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTScorer.hh"
-#include "PTScorerMultiScat.hh"
-#include "PTMultiScatMixin.hh"
+#include "PromptCore.hh"
+#include "PTScorer1D.hh"
 
 namespace Prompt {
-  
-  class Scorer1D : public Scorer, public MultiScatMixin<Scorer1D> {
+  class MCPLBinaryWrite;
+
+  class KillerMCPL  : public Scorer1D {
   public:
-    Scorer1D(const std::string& name, ScorerType type, std::unique_ptr<Hist1D> hist, unsigned int pdg=0, int groupid=0)
-    : Scorer(name, type, pdg, groupid), MultiScatMixin(nullptr, -1), m_hist(std::move(hist)){};
-    virtual ~Scorer1D() {  }
-    void save_mcpl() override { m_hist->save(m_name); }
-    const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }
-    virtual bool rightScorer(const Particle &particle) const override { return Scorer::rightScorer(particle) && rightScatterNumber(); };
-
-  protected:
-    std::unique_ptr<Hist1D> m_hist;
+    KillerMCPL(const std::string &name, unsigned int pdg, int groupid);
+    virtual ~KillerMCPL();
+    virtual void score(Particle &particle) override;
+  private:
+    MCPLBinaryWrite *m_writer;
   };
-
+  
 }
-
 
 #endif

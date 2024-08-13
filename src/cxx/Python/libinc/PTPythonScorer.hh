@@ -49,6 +49,8 @@ void pt_addMultiScatter1D(void* scatter, void* espScorer, int scatNumReq);
 
 void pt_addMultiScatter2D(void* scatter, void* espScorer, int scatNumReq);
 
+void* pt_KillerMCPL_new(const char* name, unsigned pdg, int groupid);
+
 #ifdef __cplusplus
 }
 #endif

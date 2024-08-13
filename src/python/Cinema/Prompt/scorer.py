@@ -151,6 +151,8 @@ _pt_ScorerDirectSqw_new = importFunc('pt_ScorerDirectSqw_new', type_voidp, [type
 _pt_addMultiScatter1D = importFunc('pt_addMultiScatter1D', None, [type_voidp, type_voidp, type_int])
 _pt_addMultiScatter2D = importFunc('pt_addMultiScatter2D', None, [type_voidp, type_voidp, type_int])
 
+_pt_KillerMCPL_new = importFunc('pt_KillerMCPL_new', type_voidp, [type_cstr, type_uint, type_int])
+
 
 class ScorerHelper:
     def __init__(self, name, min, max, numbin, pdg = 2112, ptstate = 'ENTRY', groupID=0) -> None:
@@ -389,3 +391,28 @@ def makePSD(name, vol, numbin_dim1=1, numbin_dim2=1, ptstate : str = 'ENTRY', ty
     vol.addScorer(det.cfg)
 
         
+class KillMCPLHelper(MultiScatMixin1D):
+    def __init__(self, name, pdg : int = 0, groupID : int = 0) -> None:
+        def get_rank_id():
+            try:
+                # Initialize the MPI environment
+                from mpi4py import MPI
+                comm = MPI.COMM_WORLD
+                rank = comm.Get_rank()
+                return rank
+            except:
+                return None
+        
+        process_id = get_rank_id()
+
+        self.name = name+f'_pro{process_id}' if process_id else name
+        self.pdg = pdg 
+        self.groupID = groupID
+
+    def make(self, vol):
+        cobj = _pt_KillerMCPL_new(self.name.encode('utf-8'), 
+                                        self.pdg,
+                                        self.groupID
+                                        )
+        vol.addScorer(self, cobj)
+        self.cobj = cobj
