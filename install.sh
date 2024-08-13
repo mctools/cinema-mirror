@@ -206,11 +206,9 @@ if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
     if [ -d VecGeom ]; then
       rm -rf VecGeom
     fi
-    git clone -b v1.2.6 --single-branch ${PREFIX}/VecGeom.git
+    git clone https://code.ihep.ac.cn/caixx/VecGeom.git
     cd -
     mkdir $CINEMAPATH/external/VecGeom/build && cd $CINEMAPATH/external/VecGeom/build
-    # patch $CINEMAPATH/external/VecGeom/persistency/gdml/source/src/Middleware.cpp < $CINEMAPATH/external/vecgoem1.2.0_Middleware_cpp.patch
-    # patch $CINEMAPATH/external/VecGeom/persistency/gdml/source/include/Middleware.h < $CINEMAPATH/external/vecgeom1.2.0_Middleware_h.patch
     cmake -DXercesC_INCLUDE_DIR=$CINEMAPATH/external/xerces-c/install/include   -DVECGEOM_BUILTIN_VECCORE=ON -DVECGEOM_FAST_MATH=OFF -DBUILD_TESTING=OFF -DXercesC_LIBRARY_RELEASE=$CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/VecGeom/install -DVECGEOM_GDML=ON -DVECGEOM_USE_NAVINDEX=ON  ..
     make -j${NUMCPU} && make install
     cd -
