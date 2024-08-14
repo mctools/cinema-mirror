@@ -1,38 +1,74 @@
 #!/bin/bash
 
-USAGE="Usage: $0 -t for unit test"
+USAGE="Usage: $0 [-t] [-d | -r] [-c]"
 
-# .  $CINEMAPATH/external/ncrystal/install/setup.sh
-$CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup
+# Initialize variables
+TESTFLAG=""
+BUILDTYPE=""
+CLEANFLAG=""
 
-while getopts ti:dr option
-  do
-    case "${option}"
-     in
-      h) echo "$USAGE"
-         exit 0;;
-      t) TESTFLAG="test";;
-      d) echo "Building cinema in the debug mode"
-         BUILDTYPE="debug";;
-      r) echo "Building cinema in the release mode"
-         BUILDTYPE="release";;
-    esac
+# Parse command-line options
+while getopts "htdrc" option; do
+  case "${option}" in
+    h)
+      echo "$USAGE"
+      exit 0
+      ;;
+    t)
+      TESTFLAG="test"
+      ;;
+    d)
+      echo "Building cinema in debug mode"
+      BUILDTYPE="Debug"
+      ;;
+    r)
+      echo "Building cinema in release mode"
+      BUILDTYPE="Release"
+      ;;
+    c)
+      CLEANFLAG="clean"
+      ;;
+    *)
+      echo "$USAGE"
+      exit 1
+      ;;
+  esac
 done
 
+# Ensure CINEMAPATH is set
+if [ -z "$CINEMAPATH" ]; then
+  echo "Error: CINEMAPATH environment variable is not set."
+  exit 1
+fi
 
-cd $CINEMAPATH/cinemabin
+# Change to the build directory
+cd "$CINEMAPATH/cinemabin" || { echo "Error: Could not change to directory $CINEMAPATH/cinemabin"; exit 1; }
 
-if [ -z ${BUILDTYPE} ]; then
+# Clear the build if -c option is set
+if [ "$CLEANFLAG" == "clean" ]; then
+  echo "Cleaning the build directory"
+  make clean
+fi
+
+# Run cmake with appropriate build type
+if [ -z "$BUILDTYPE" ]; then
   cmake ..
 else
-  cmake -DCMAKE_BUILD_TYPE=${BUILDTYPE} -DCMAKE_CXX_FLAGS_DEBUG="-g -O0 " -DCMAKE_C_FLAGS_DEBUG="-g -O0" ..
+  cmake -DCMAKE_BUILD_TYPE="$BUILDTYPE" -DCMAKE_CXX_FLAGS_DEBUG="-g -O0" -DCMAKE_C_FLAGS_DEBUG="-g -O0" ..
 fi
 
-if [ -z ${TESTFLAG} ]; then
-  echo "Skipped unittest";
-  make -j
+# Build and optionally run tests
+make -j
+
+if [ "$TESTFLAG" == "test" ]; then
+  # Calculate half of the available CPUs
+  CPU_COUNT=$(nproc)
+  TEST_CPU_COUNT=$((CPU_COUNT / 2))
+  echo "Running tests with $TEST_CPU_COUNT CPUs"
+  ctest -j"$TEST_CPU_COUNT"
 else
-  make -j
-  ctest -j8
+  echo "Skipped unittest"
 fi
-cd -
+
+# Return to the previous directory
+cd - || exit 1
