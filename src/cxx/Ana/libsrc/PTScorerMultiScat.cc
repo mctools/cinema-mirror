@@ -39,7 +39,6 @@ void Prompt::ScorerMultiScat::score(Particle &particle)
   if (m_lasteventid==particle.getEventID())
   {
     m_p_counter++;
-    particle.setNumScat(m_p_counter);
     m_p_weight=particle.getWeight();
   }
   else
@@ -48,7 +47,6 @@ void Prompt::ScorerMultiScat::score(Particle &particle)
     {
       m_lasteventid=particle.getEventID();
       m_p_counter=1;
-      particle.setNumScat(m_p_counter);
       m_p_weight=particle.getWeight();
     }
     else
@@ -56,7 +54,6 @@ void Prompt::ScorerMultiScat::score(Particle &particle)
       m_hist->fill(m_p_counter, m_p_weight);
       m_lasteventid=particle.getEventID();
       m_p_counter=1;
-      particle.setNumScat(m_p_counter);
       m_p_weight=particle.getWeight();
     }
   }

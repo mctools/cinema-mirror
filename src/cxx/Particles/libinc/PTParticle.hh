@@ -68,8 +68,6 @@ namespace Prompt {
     double getWeight() const { return m_weight; }
     void scaleWeight(double factor) { m_weight *= factor; }
     unsigned long long getEventID() const { return m_eventid; }
-    void setNumScat(int counter);
-    int getNumScat() const { return m_counter; }
     KillType getKillType() const { return m_killtype; }
 
     void kill(KillType t);
@@ -90,14 +88,15 @@ namespace Prompt {
   protected:
     Vector m_dir, m_pos;
     double m_ekin0, m_ekin, m_time;
-    double m_step, m_deltaEn, m_deposition;
     double m_weight;
     double m_rest_mass;
     unsigned long long m_eventid, m_id, m_parentid;
     int m_pdg;
-    int m_counter;
     KillType m_killtype;
     bool m_alive;
+
+    // to be remove
+    double m_step, m_deltaEn, m_deposition;
 
     // for Doppler models
     Vector m_effdir; 
@@ -110,7 +109,7 @@ namespace Prompt {
 
 inline Prompt::Particle::Particle(int pdg)
   :m_ekin0(0.), m_ekin(0.), m_effekin(0.), m_time(0.), m_dir(), m_effdir(), m_pos(), m_pdg(pdg),
-  m_weight(1.), m_rest_mass(0.), m_alive(true), m_eventid(0), m_id(0), m_parentid(0), m_counter(0),
+  m_weight(1.), m_rest_mass(0.), m_alive(true), m_eventid(0), m_id(0), m_parentid(0),
   m_step(0.), m_deltaEn(0.), m_deposition(0.)
 {
   if(m_pdg == const_neutron_pgd)
@@ -119,7 +118,7 @@ inline Prompt::Particle::Particle(int pdg)
 
 inline Prompt::Particle::Particle(double ekin, const Vector& dir, const Vector& pos, int pdg)
   :m_ekin0(ekin), m_ekin(ekin), m_effekin(0.), m_time(0.), m_dir(dir), m_effdir(), m_pos(pos), m_pdg(pdg),
-  m_weight(1.), m_rest_mass(0), m_alive(true), m_eventid(0), m_id(0), m_parentid(0), m_counter(0),
+  m_weight(1.), m_rest_mass(0), m_alive(true), m_eventid(0), m_id(0), m_parentid(0),
   m_step(0.), m_deltaEn(0.), m_deposition(0.)
 {
   if(m_pdg == const_neutron_pgd)
@@ -170,11 +169,6 @@ inline double Prompt::Particle::calcSpeed() const
 inline double Prompt::Particle::calcEffSpeed() const
 {
   return m_rest_mass ? std::sqrt(2*m_effekin/m_rest_mass) : const_c;
-}
-
-inline void Prompt::Particle::setNumScat(int counter)
-{
-  m_counter = counter;
 }
 
 inline bool Prompt::Particle::isAlive()

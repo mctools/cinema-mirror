@@ -47,8 +47,6 @@ void Prompt::ScorerDeltaMomentum::score(Prompt::Particle &particle)
   if(particle.getPDG()!=const_neutron_pgd)
     return; // for neutron only
   
-  if(m_scatnum==-1||particle.getNumScat()==m_scatnum)
-  {
     double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
     {
       double time = particle.getTime();
@@ -85,5 +83,5 @@ void Prompt::ScorerDeltaMomentum::score(Prompt::Particle &particle)
     }
     else 
       PROMPT_THROW(BadInput,"m_method should be either 0 or 1"); 
-  }
+  
 }
