@@ -45,8 +45,8 @@ void* pt_Transformation3D_newfromID(int id)
   // const vgdml::VPlacedVolume
   auto *vol = geoManager.Convert(id);
 
-  auto p = new vecgeom::Transformation3D(* const_cast<vecgeom::Transformation3D*>(vol->GetTransformation()));
-  p->Inverse(*p); //NOTICE the inversion here, so the tranform function is from local to mater
+  auto p = new vecgeom::Transformation3D();
+  *p = vol->GetTransformation()->Inverse();
   return static_cast<void *>(p);
 }
 
