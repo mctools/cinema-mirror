@@ -67,7 +67,7 @@ void pt_setWorld(void* logicalWorld)
 {
     vg::GeoManager::Instance().SetWorld(static_cast<vg::LogicalVolume *>(logicalWorld)->Place());
     vg::GeoManager::Instance().CloseGeometry();
-    pt_initNavigators(false);
+    pt_initNavigators(true);
 }
 
 //   Box *worldUnplaced      = new UnplacedBox(10, 10, 10)
