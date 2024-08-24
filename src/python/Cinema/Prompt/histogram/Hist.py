@@ -201,7 +201,7 @@ class Hist1D(HistBase):
             print (e)
     
     def savefig(self, fname, title="Histogram", log = False):
-        plt = self.plot(title=title, log = log)
+        plt = self.plot(False, title=title, log = log)
         plt.savefig(fname=fname)
         plt.close()
 
@@ -308,7 +308,7 @@ class Hist2D(HistBase):
             print(e)
 
     def savefig(self, fname, title="Histogram", log=False):
-        plt = self.plot(title=title, log=log)
+        plt = self.plot(False, title=title, log=log)
         plt.savefig(fname=fname)
         plt.close()
 
