@@ -333,7 +333,7 @@ def makeDiskChopper(r_outer, r_inner, phase, num_slit, freq, theta):
     chp.cfg_phase = phase
     chp.cfg_r = r_inner
     chp.cfg_theta0 = theta
-    vol.setSurface(chp.get_cfg())
+    vol.setSurface(chp.cfg)
 
     return vol
     
