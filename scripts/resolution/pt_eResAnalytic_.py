@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# violini:
-# energy resolution from (23) of
-# https://www.sciencedirect.com/science/article/pii/S016890021301423X
+# unruh:
+# energy resolution from (4) of
+# https://www.sciencedirect.com/science/article/pii/S0168900207014362?ref=pdf_download&fr=RR-2&rr=8bb16c0158b4079f
 # 
 # Suffix: 
 # ms -> monochromatic to sample
@@ -23,13 +23,6 @@ def ekin2velocity(ekin):
     '''
     return np.sqrt(2*ekin/const_neutron_mass_evc2) 
 
-
-def ste2timeWindow(ste):
-    '''
-    Uniform time window calcul from standard deviation.
-    '''
-    return np.sqrt(12 * ste**2)
-
 # mv^3 = [eV * m/s]
 # (mv^3)^2 = [eV^2 * (m/s)^2]
 # abg = [m^2 * s^2] = [m^2 * s^2]
@@ -37,8 +30,8 @@ def ste2timeWindow(ste):
 # sigma_hw = [eV^2 * (m/s)^2 * m^2 * s^2 / m^4] = [eV^2]
 
 
-e_in = 0.10324919397990652 #eV
-w = 0.055
+e_in = 0.0174567454 #eV
+w = 0.003
 e_out = e_in - w
 
 lms_ave = 1300 * 1e-3 #mm 1.3m
@@ -49,17 +42,14 @@ ste_p = 38 *1e-6#us
 ste_m = 6 *1e-6#us
 std_lms = 0 *1e-2#cm
 
-v_ave = ekin2velocity(e_in)
+v_ave = ekin2velocity(e_in) 
 vprime_ave = ekin2velocity(e_out)
 
 print(v_ave, vprime_ave, v_ave/vprime_ave)
-alpha_square = (lms_ave + lsd_ave * (v_ave/vprime_ave)**3)**2 * ste_p**2
+alpha_square = (lpm_ave + lms_ave + lsd_ave * (v_ave/vprime_ave)**3)**2 * ste_p**2
 beta_square = ((lms_ave + lsd_ave * (v_ave/vprime_ave)**3)**2 + lpm_ave**2) * ste_m **2
 gamma_square = (lpm_ave/v_ave)**2 * std_lms**2
 
 var_hw = (const_neutron_mass_evc2 * v_ave**3)**2 * (alpha_square + beta_square + gamma_square) / (lpm_ave*lsd_ave)**2
 ste_hw = np.sqrt(var_hw)
 print(ste_hw)
-# print("Time windows: ")
-# print(f"First chopper: {ste2timeWindow(ste_p) * 1e6} us")
-# print(f"Second chopper: {ste2timeWindow(ste_m) * 1e6} us")

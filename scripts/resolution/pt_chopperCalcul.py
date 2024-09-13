@@ -10,7 +10,11 @@ const_neutron_mass_evc2 = const_neutron_mass_amu * const_dalton2eVc2  #[ eV/(Aa/
 
 delta_t = 6 * 1e-6 #s
 
-theta_degree = 10
+def uniform_ste2timewin(ste):
+    return np.sqrt(12 * ste**2)
+
+delta_t = uniform_ste2timewin(delta_t)
+theta_degree = 5
 theta=np.deg2rad(theta_degree) #rad
 radius=17.5 #mm
 length_slit = theta * radius #mm
@@ -28,8 +32,8 @@ def get_energy(velocity):
 def get_period(angle_velocity):
     return 2 * np.pi / angle_velocity  #s
 
-def get_time_window(theta_rad, angle_velocity, order):
-    angle_window = np.array([-theta_rad/2, theta_rad/2])
+def get_time_window(theta_rad, angle_velocity, order, phase = 0):
+    angle_window = np.array([-theta_rad/2, theta_rad/2]) + phase
     period = get_period(angle_velocity)
     time_window = angle_window / angle_velocity + period * order
     return time_window
@@ -45,9 +49,9 @@ def time_flight2distance(time_window, distance2Chopper, distance2destination):
     
 
 if __name__ == '__main__':
-    for i in np.arange(20):
+    for i in np.arange(6):
         print(f'theta_degree: {theta_degree}, frequency: {frequency}')
         print(f'Order: {i}' )
-        tw = get_time_window(theta, angle_velocity, i)
+        tw = get_time_window(theta, angle_velocity, i, phase=np.deg2rad(110))
         # time_flight2distance(tw, distance_source_chopper, (10000+ 25000)*1e-3)
         get_gun_energy_window(tw, distance_source_chopper)

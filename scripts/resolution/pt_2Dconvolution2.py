@@ -171,7 +171,12 @@ w, q, s = read_hdf5(file)
 print(w.shape, q.shape, w.max())
 wf, qf, sf = fix_range(w,q,s,0.1)
 qfInd = np.argmin(np.absolute(qf-15))
-plot_swq(wf, qf[:qfInd], sf[:qfInd,:], True)
+# plot_swq(wf, qf[:qfInd], sf[:qfInd,:], True)
+plot_swq(w, q, s, True)
+plt.xlabel(r'Q($\AA^{-1}$)')
+plt.ylabel(r'$\omega$(eV)')
+plt.title(r"S(Q,$\omega$)")
+plt.savefig("test.png")
 # w_point = 0.01
 # q_point = 20
 # get_scat_kernel(w, q, s, w_point, q_point)
@@ -194,7 +199,6 @@ numq = 20
 # plot_swq(wf, qf[:qfInd], iwq[:qfInd,:], True)
 # # iwqs = imshow(iwq)
 # # plt.colorbar(iwqs)
-plt.show()
 
 def moveAxis(axis, deviation):
     for i in range(len(axis)):
