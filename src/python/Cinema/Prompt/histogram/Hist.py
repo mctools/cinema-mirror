@@ -163,6 +163,31 @@ class Hist1D(HistBase):
         center = edge[:-1]+np.diff(edge)*0.5
         return center
 
+    def getMean(self):
+        if self.getAccWeight()==0:
+            return 0
+        else:
+            return (self.getCentre() * self.getWeight()).sum()/self.getAccWeight()
+
+
+    def getVar(self):
+        """
+        Get Variance
+        """
+        if self.getAccWeight()==0:
+            return 0
+        else:
+            mean = self.getMean()
+            var = ((self.getCentre() - mean)**2 * self.getWeight()).sum() / self.getAccWeight()
+        return var 
+    
+    def getStd(self):
+        """
+        Get Standard deviation
+        """
+        return np.sqrt(self.getVar())
+
+
     def fill(self, x, weight=1.):
         _pt_Hist1D_fill(self.cobj, x, weight)
 
