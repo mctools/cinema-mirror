@@ -38,7 +38,7 @@ def ste2timeWindow(ste):
 
 
 e_in = 0.10324919397990652 #eV
-w = 0.055
+w = 0.03
 e_out = e_in - w
 
 lms_ave = 1300 * 1e-3 #mm 1.3m

@@ -34,3 +34,40 @@ def gaussian_plot(x, y, bounds, scale=1):
     plt.title(f"Gaussian fitting mean={popt[1]*scale:.6f}\n \
               ste={popt[2]*scale:.6f}, scale={scale:.1e}")
     
+class HistPost():
+    def __init__(self, x, y) -> None:
+        self.x = x
+        self.y = y
+
+    def getAccWeight(self):
+        return self.y.sum()
+    
+    def getCentre(self):
+        return self.x[:-1] + 0.5 * np.diff(self.x)
+    
+    def getWeight(self):
+        return self.y
+    
+    def getMean(self):
+        if self.getAccWeight()==0:
+            return 0
+        else:
+            return (self.getCentre() * self.getWeight()).sum()/self.getAccWeight()
+
+
+    def getVar(self):
+        """
+        Get Variance
+        """
+        if self.getAccWeight()==0:
+            return 0
+        else:
+            mean = self.getMean()
+            var = ((self.getCentre() - mean)**2 * self.getWeight()).sum() / self.getAccWeight()
+        return var 
+    
+    def getStd(self):
+        """
+        Get Standard deviation
+        """
+        return np.sqrt(self.getVar())
