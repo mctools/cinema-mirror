@@ -109,6 +109,16 @@ void pt_HistBase_getRaw(void* obj, double *data)
   }
 }
 
+void pt_HistBase_getww(void *obj, double *data)
+{
+  auto cdata = static_cast<pt::Hist1D *>(obj)->getww();
+  for(size_t i=0;i<cdata.size();i++)
+  {
+    data[i] = cdata[i];
+  }
+
+}
+
 void pt_HistBase_getHit(void* obj, double* data)
 {
   auto cdata = static_cast<pt::Hist1D *>(obj)->getHit();
@@ -117,6 +127,7 @@ void pt_HistBase_getHit(void* obj, double* data)
     data[i] = cdata[i];
   }
 }
+
 const char* pt_HistBase_getName(void* obj)
 {
   return static_cast<pt::Hist1D *>(obj)->getName().c_str();

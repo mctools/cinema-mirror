@@ -43,3 +43,63 @@ angleCosine2QMany = np.vectorize(angleCosine2Q)
 v2ekinMany = np.vectorize(v2ekin)
 
 # def qElastic(l)
+
+try:
+    import gvar as gv
+except ImportError:
+    print("The 'gvar' library is not installed. You can install it using pip or conda.")
+    print("To install using pip, run: pip install gvar")
+    print("To install using conda, run: conda install -c conda-forge gvar")
+
+class CinemaArray(np.ndarray):
+    def __new__(cls, input_array):
+        # Convert input to ndarray, then view as CinemaArray
+        obj = np.asarray(input_array).view(cls)
+        return obj
+
+    def __array_finalize__(self, obj):
+        if obj is None: return
+        # Copy attributes from the original object
+        self.gvar = getattr(obj, 'gvar', None)
+
+    def __array_wrap__(self, out_arr, context=None):
+        # Wrap the output array as CinemaArray
+        return np.ndarray.__array_wrap__(self, out_arr, context)
+
+    def __getitem__(self, item):
+        result = super(CinemaArray, self).__getitem__(item)
+        if isinstance(result, np.ndarray):
+            return result.view(CinemaArray)
+        else:
+            return result
+
+    @property
+    def mean(self):
+        if self.gvar is not None:
+            return np.vectorize(lambda x: x.mean if isinstance(x, gv.GVar) else x)(self)
+        return self
+
+    @property
+    def sdev(self):
+        if self.gvar is not None:
+            return np.vectorize(lambda x: x.sdev if isinstance(x, gv.GVar) else 0)(self)
+        return np.zeros_like(self)
+
+    @staticmethod
+    def from_sdev(mean, sdev=None):
+        if sdev is None:
+            return CinemaArray(mean)
+        else:
+            gvars = gv.gvar(mean, sdev)
+            obj = np.asarray(gvars).view(CinemaArray)
+            obj.gvar = True
+            return obj
+
+    @staticmethod
+    def from_counts(counts):
+        gvars = gv.gvar(counts, counts/np.sqrt(counts))
+        obj = np.asarray(gvars).view(CinemaArray)
+        obj.gvar = True
+        return obj
+
+

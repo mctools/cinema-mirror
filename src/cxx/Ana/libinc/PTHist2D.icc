@@ -54,4 +54,6 @@ inline void Prompt::Hist2D::fill_unguard(double xval, double yval, double w)
   const unsigned iy = floor((yval-m_ymin)*m_ybinfactor);
   m_data[ix*m_ynbins + iy] += w;
   m_hit[ix*m_ynbins + iy] += 1;
+  m_ww[ix*m_ynbins + iy] += w*w;
+
 }

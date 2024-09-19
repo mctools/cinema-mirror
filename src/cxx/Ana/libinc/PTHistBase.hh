@@ -72,6 +72,8 @@ namespace Prompt {
 
     const std::vector<double>& getRaw() const {return m_data;}
     const std::vector<double>& getHit() const {return m_hit;}
+    const std::vector<double>& getww() const {return m_ww;}
+    
     const std::string& getName() const {return m_name;}
 
     virtual unsigned dimension() const = 0;
@@ -81,7 +83,7 @@ namespace Prompt {
 
     std::string m_name;
     mutable std::mutex m_hist_mutex;
-    std::vector<double> m_data, m_hit;
+    std::vector<double> m_data, m_hit, m_ww;
     double m_xmin;
     double m_xmax;
     double m_sumW;

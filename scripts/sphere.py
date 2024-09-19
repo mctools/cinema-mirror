@@ -20,8 +20,8 @@ class MySim(PromptMPI):
         world = Volume("world", Box(400, 400, 400))
 
         # lw = Material("'LiquidWaterH2O_T293.6K.ncmat;density=1gcm3'") # v2, 4.630884342994241. ml, 4.630884342994241. full spec 4.691033674854935 should 4.7046
-        # lw = Material('freegas::H2O/1gcm3/H_is_1.00_H1/O_is_1.00_O16') # v2, 4.5781432733636525. ml, 4.5781432733636525. full spec 4.638707241003883, should be 4.6490. gidi 3.615059805936363                                           
-        lw = Material('Ag_sg225.ncmat') # v2, 4.5781432733636525. ml, 4.5781432733636525. full spec 4.638707241003883, should be 4.6490. gidi 3.615059805936363                                           
+        lw = Material('freegas::H2O/1gcm3/H_is_1.00_H1/O_is_1.00_O16') # v2, 4.5781432733636525. ml, 4.5781432733636525. full spec 4.638707241003883, should be 4.6490. gidi 3.615059805936363                                           
+        # lw = Material('Ag_sg225.ncmat') # v2, 4.5781432733636525. ml, 4.5781432733636525. full spec 4.638707241003883, should be 4.6490. gidi 3.615059805936363                                           
 
 
         lw.setBiasScat(1.)
@@ -29,7 +29,7 @@ class MySim(PromptMPI):
         sphere = Volume("sphere", Sphere(0, 300), matCfg=lw)
         world.placeChild('sphere', sphere)
 
-        VolFluenceHelper('spct', max=20e6, numbin=500 ).make(sphere)
+        VolFluenceHelper('spct', max=20e6, numbin=300 ).make(sphere)
         self.setWorld(world)
 
 
@@ -55,18 +55,18 @@ class MyGun(PythonGun):
         else:
             return self.ekin
 
-gun = MyGun(22, 1e6)
-sim.show(gun, 1)
+gun = MyGun(2112, 1)
+# sim.show(gun, 1)
 
-# partnum = 1e4
-# # vis or production
-# if False:
-#     sim.show(gun, 1)
-# else:
-#     sim.simulate(gun, partnum)
+partnum = 1e4
+# vis or production
+if False:
+    sim.show(gun, 1)
+else:
+    sim.simulate(gun, partnum)
 
-# destination = 0
-# spct = sim.gatherHistData('spct', dst=destination)
-# if sim.rank==destination:
-#     print('total flux', spct.getWeight().sum())
-#     spct.plot(show=True, log=True)
+destination = 0
+spct = sim.gatherHistData('spct', dst=destination)
+if sim.rank==destination:
+    print('total flux', spct.getWeight().sum())
+    spct.plot(show=True, log=True)

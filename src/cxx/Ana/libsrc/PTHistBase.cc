@@ -26,7 +26,7 @@
 
 
 Prompt::HistBase::HistBase(const std::string &name, unsigned nbin)
-:m_name(name), m_data(nbin,0.), m_hit(nbin,0.), m_xmin(0), m_xmax(0),
+:m_name(name), m_data(nbin,0.), m_hit(nbin,0.),  m_ww(nbin,0.), m_xmin(0), m_xmax(0),
  m_sumW(0), m_underflow(0), m_overflow(0),m_nbins(0)
 {
   auto seed = Singleton<SingletonPTRand>::getInstance().getSeed();
@@ -54,6 +54,7 @@ void Prompt::HistBase::merge(const Prompt::HistBase &hist)
   {
     m_data[i] += hist.m_data[i];
     m_hit[i] += hist.m_hit[i];
+    m_ww[i] = sqrt(m_ww[i]*m_ww[i] + hist.m_ww[i]*hist.m_ww[i]);
   }
 
   m_underflow += hist.m_underflow;
@@ -92,10 +93,9 @@ void Prompt::HistBase::scale(double scalefact)
 
 void Prompt::HistBase::reset()
 {
-  std::lock_guard<std::mutex> guard(m_hist_mutex);
-
   std::fill(m_data.begin(), m_data.begin()+m_nbins, 0.);
   std::fill(m_hit.begin(), m_hit.begin()+m_nbins, 0.);
+  std::fill(m_ww.begin(), m_ww.begin()+m_nbins, 0.);
 
   m_sumW = 0.;
   m_underflow = 0.;

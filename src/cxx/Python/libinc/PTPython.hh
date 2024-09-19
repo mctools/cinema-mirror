@@ -66,6 +66,7 @@ void pt_HistBase_scale(void* obj, double scale);
 void pt_HistBase_reset(void* obj);
 void pt_HistBase_getRaw(void* obj, double* data);
 void pt_HistBase_getHit(void* obj, double* data);
+void pt_HistBase_getww(void *obj, double *data);
 unsigned pt_HistBase_dimension(void* obj);
 const char* pt_HistBase_getName(void* obj);
 

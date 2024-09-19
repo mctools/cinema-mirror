@@ -65,6 +65,7 @@ _pt_HistBase_scale = importFunc('pt_HistBase_scale', None, [type_voidp, type_dbl
 _pt_HistBase_reset = importFunc('pt_HistBase_reset', None, [type_voidp])
 _pt_HistBase_getRaw = importFunc('pt_HistBase_getRaw', None, [type_voidp, type_npdbl1d])
 _pt_HistBase_getHit = importFunc('pt_HistBase_getHit', None, [type_voidp, type_npdbl1d])
+_pt_HistBase_getww = importFunc('pt_HistBase_getww', None, [type_voidp, type_npdbl1d])
 _pt_HistBase_dimension = importFunc('pt_HistBase_dimension', type_uint, [type_voidp])
 _pt_HistBase_getName = importFunc('pt_HistBase_getName', type_cstr, [type_voidp])
 _pt_HistBase_setWeight = importFunc('pt_HistBase_setWeight', None, [type_voidp, type_npdbl1d, type_sizet])
@@ -115,6 +116,11 @@ class HistBase():
 
     def reset(self):
         _pt_HistBase_reset(self.cobj)
+
+    def getSdev(self):
+        d = np.zeros(self.getDataSize())
+        _pt_HistBase_getww(self.cobj, d)
+        return np.sqrt(d)
     
     def getWeight(self):
         d = np.zeros(self.getDataSize())
@@ -206,12 +212,11 @@ class Hist1D(HistBase):
             plotStyle()
             center = self.getCentre()
             w = self.getWeight()
-            uncet = np.sqrt(self.getHit()/10.)
-            err = np.divide(w, uncet, where=(uncet!=0.))
+            err = self.getSdev()
             if label is None:
                 label = f'Weight {w.sum()}'
-            # plt.errorbar(center, w, yerr=err, fmt='-', label=label)
-            plt.plot(center, w, '-s', label=label)
+            plt.errorbar(center, w, yerr=err, fmt='s', label=label)
+            # plt.plot(center, w, '-s', label=label)
             if log:
                 plt.yscale('log')
                 plt.xscale('log')

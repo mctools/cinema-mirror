@@ -126,4 +126,5 @@ void Prompt::Hist1D::fill(double val, double w)
   unsigned i = m_linear ? floor((val-m_xmin)*m_binfactor) : floor((log10(val)-m_logxmin)*m_binfactor) ;
   m_data[i] += w;
   m_hit[i] += 1;
+  m_ww[i] += w*w;
 }
