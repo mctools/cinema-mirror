@@ -235,12 +235,13 @@ class Hist1D(HistBase):
         plt.savefig(fname=fname)
         plt.close()
 
-    def savedata(self, fn):
+    def save(self, fn):
         import h5py
         f0=h5py.File(fn,"w")
         f0.create_dataset("center", data=self.getCentre(), compression="gzip")
         f0.create_dataset("weight", data=self.getWeight(), compression="gzip")
         f0.create_dataset("hit", data=self.getHit(), compression="gzip")
+        f0.create_dataset("sdev", data=self.getSdev(), compression="gzip")
         f0.close()
 
 class Hist2D(HistBase):
@@ -350,6 +351,7 @@ class Hist2D(HistBase):
         f0.create_dataset("ycenter", data=self.ycenter, compression="gzip")
         f0.create_dataset("weight", data=self.getWeight(), compression="gzip")
         f0.create_dataset("hit", data=self.getHit(), compression="gzip")
+        f0.create_dataset("sdev", data=self.getSdev(), compression="gzip")
         f0.close()
 
     def merge(self, hist2):
