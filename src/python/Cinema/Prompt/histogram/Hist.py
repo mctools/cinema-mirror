@@ -205,7 +205,7 @@ class Hist1D(HistBase):
         
         _pt_Hist1D_fill_many(self.cobj, x.size, np.ascontiguousarray(x), np.ascontiguousarray(weight) )
 
-    def plot(self, show=False, label=None, title='Histogram', log=False):
+    def plot(self, show=False, label=None, title='Histogram', log=False, sigma=2):
         try:
             import matplotlib.pyplot as plt
             from Cinema.Interface import plotStyle
@@ -215,8 +215,7 @@ class Hist1D(HistBase):
             err = self.getSdev()
             if label is None:
                 label = f'Weight {w.sum()}'
-            plt.errorbar(center, w, yerr=err, fmt='s', label=label)
-            # plt.plot(center, w, '-s', label=label)
+            plt.errorbar(center, w, yerr=err*sigma, fmt='s', label=label)
             if log:
                 plt.yscale('log')
                 plt.xscale('log')
