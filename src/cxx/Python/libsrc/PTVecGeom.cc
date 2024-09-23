@@ -15,6 +15,7 @@
 #include "VecGeom/volumes/UnplacedParaboloid.h"
 #include "VecGeom/volumes/UnplacedPolycone.h"
 #include "VecGeom/volumes/UnplacedTet.h"
+#include "VecGeom/volumes/UnplacedEllipsoid.h"
 
 #include "VecGeom/volumes/UnplacedVolume.h"
 #include "VecGeom/volumes/SpecializedTessellated.h"
@@ -233,6 +234,14 @@ void *pt_Tet_new(double (*p1), double (*p2), double (*p3), double (*p4))
   return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedTet>(
                       p1, p2, p3, p4));
 }
+
+// Ellipsoid
+void *pt_Ellipsoid_new(double dx, double dy, double dz, double zBottomCut, double zTopCut)
+{
+  return static_cast<void *> (vg::GeoManager::MakeInstance<vg::UnplacedEllipsoid>(
+    dx, dy, dz, zBottomCut, zTopCut));
+}
+
 
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume)

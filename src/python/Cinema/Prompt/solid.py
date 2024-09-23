@@ -36,6 +36,7 @@ _pt_Orb_new = importFunc('pt_Orb_new', type_voidp, [type_dbl])
 _pt_Paraboloid_new = importFunc('pt_Paraboloid_new', type_voidp, [type_dbl, type_dbl, type_dbl])
 _pt_Polycone_new = importFunc('pt_Polycone_new', type_voidp, [type_dbl, type_dbl, type_int, type_npdbl1d, type_npdbl1d, type_npdbl1d])
 _pt_Tet_new = importFunc('pt_Tet_new', type_voidp, [type_npdbl1d, type_npdbl1d, type_npdbl1d, type_npdbl1d])
+_pt_Ellipsoid_new = importFunc('pt_Ellipsoid_new', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 
 
 #Tessellated
@@ -229,3 +230,18 @@ class GenTrapezoid(Solid):
         self.sanityCheckRelation(Alpha1, 90)
         self.sanityCheckRelation(Alpha2, 90)
         self.cobj = _pt_GenTrapezoid_new(dz, np.deg2rad(theta), np.deg2rad(phi), dy1, dx1, dx2, np.deg2rad(Alpha1), dy2, dx3, dx4, np.deg2rad(Alpha2))
+
+class Ellipsoid(Solid):
+    def __init__(self, dx, dy, dz, zBottomCut = 0, zTopCut = 0) -> None:
+        super().__init__()
+        self.dx = dx
+        self.dy = dy
+        self.dz = dz
+        self.zBottomCut = zBottomCut
+        self.zTopCut = zTopCut
+        self.checkParamaters()
+        self.cobj = _pt_Ellipsoid_new(dx, dy, dz, zBottomCut, zTopCut)
+
+    def checkParamaters(self):
+        if self.zBottomCut >= self.dz or self.zTopCut <= - self.dz or self.zBottomCut >= self.zTopCut != 0:
+            raise ValueError(f"Wrong cut planes. Please check! zBottomCut = {self.zBottomCut}; zTopCut = {self.zTopCut}")

@@ -60,6 +60,9 @@ void *pt_Polycone_new(double sphi, double dphi, int planeNum, double (*z), doubl
 // Tet
 void *pt_Tet_new(double (*p1), double (*p2), double (*p3), double (*p4));
 
+// Ellipsoid
+void *pt_Ellipsoid_new(double dx, double dy, double dz, double zBottomCut, double zTopCut);
+
 // Volume 
 void* pt_Volume_new(const char* name, void *unplacedVolume);
 void pt_Volume_delete(void* obj);
