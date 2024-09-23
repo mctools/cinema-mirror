@@ -12,8 +12,6 @@ from Cinema.Prompt.gun import UniModeratorGun
 
 import numpy as np
 
-# Reproduction of the figure 13 of the paper https://doi.org/10.1016/j.cpc.2023.109004
-
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)   
