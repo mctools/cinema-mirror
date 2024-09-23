@@ -37,7 +37,7 @@ class MySim(PromptMPI):
 
         # guide = makeTrapezoidGuide(500, 25,25,25,25, 1.0, 10)
         wallMat = 'solid::Cd/8.65gcm3'
-        guideWall = Volume('guideWall', Tube(0., 100., 1000, ), matCfg=wallMat)
+        guideWall = Volume('guideWall', Box(100, 100., 1000, ), matCfg=wallMat)
         mirror = Mirror(10)
         guide = Volume('guideEllipsoid', Ellipsoid(70, 70, 1800, -1000, 1000), surfaceCfg=mirror.cfg)
         guideWall.placeChild("guide", guide)
@@ -60,7 +60,7 @@ gun.setSource([80,80,-2000])
 
 # vis or production
 if True:
-    sim.show(gun, 100)
+    sim.show(gun, 10)
 else:
     sim.simulate(gun, 1e7)
 
