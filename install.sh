@@ -206,8 +206,8 @@ if [ ! -f $CINEMAPATH/external/VecGeom/install/lib/libvecgeom.a ]; then
     if [ -d VecGeom ]; then
       rm -rf VecGeom
     fi
-    # git clone  -b v1.2.8 --single-branch https://code.ihep.ac.cn/caixx/VecGeom.git
-    git clone  -b  v2.0.0-rc2 --single-branch https://code.ihep.ac.cn/caixx/VecGeom.git
+    # git clone  -b  v2.0.0-rc2 --single-branch https://code.ihep.ac.cn/caixx/VecGeom.git
+    git clone --branch cinema https://code.ihep.ac.cn/caixx/VecGeom.git
     cd -
 
     mkdir $CINEMAPATH/external/VecGeom/build && cd $CINEMAPATH/external/VecGeom/build
