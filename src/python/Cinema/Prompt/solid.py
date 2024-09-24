@@ -19,6 +19,7 @@
 ################################################################################
 import numpy as np
 from ..Interface import *
+from typing import Union
 
 #box
 _pt_Box_new = importFunc('pt_Box_new', type_voidp, [type_dbl, type_dbl, type_dbl])
@@ -48,7 +49,7 @@ class Solid:
     def __init__(self) -> None:
         pass
 
-    def sanityCheckPositive(self, *args: float or int or np.ndarray): 
+    def sanityCheckPositive(self, *args: Union[float, int, np.ndarray]):
         for p in args:
             if isinstance(p, np.ndarray):
                 if any(p < 0):
