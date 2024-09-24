@@ -10,6 +10,7 @@ from Cinema.Prompt.solid import Box, Sphere, Tube, Trapezoid, ArbTrapezoid, Cone
 from Cinema.Prompt.gun import PythonGun
 from Cinema.Prompt.scorer import WlSpectrum
 import numpy as np
+import pyvista
 
 from Cinema.Prompt import Prompt
 from Cinema.Prompt.geo import Volume
@@ -23,24 +24,23 @@ class MySim(Prompt):
         super().__init__(seed)
 
     def makeWorld(self):
-        world = Volume('world', Box(50, 50, 200))
-        import pyvista
-        sphere = pyvista.Sphere(radius=10)
-        t = Tessellated(sphere.faces, sphere.points)
+        world = Volume('world', Box(10, 10, 20))
 
+        dtt = Volume('detector', Box(2, 2, 2))
+
+        t = Tessellated(pyvista.Sphere(radius=1))
         tes = Volume('T', t) 
-        world.placeChild("Tessellated_TP", tes, Transformation3D(0., 0., 0))
+        dtt.placeChild("Tessellated_TP", tes, Transformation3D(0., 0, 0))
 
+        world.placeChild('detectorPhy', dtt, Transformation3D(0,1,0))
 
         self.setWorld(world)
 
-
-
 sim = MySim(seed=4096)
 sim.makeWorld()
-gunCfg = "gun=MaxwellianGun;src_w=20;src_h=20;src_z=-100;slit_w=20;slit_h=20;slit_z=1e99;temperature=293;"
-# gunCfg = "gun=UniModeratorGun;mean_wl=1;range_wl=0.001;src_w=2;src_h=2;src_z=-100;slit_w=2;slit_h=2;slit_z=1e99"
+gunCfg = "gun=MaxwellianGun;src_w=2;src_h=2;src_z=-10;slit_w=2;slit_h=2;slit_z=1e99;temperature=293;"
 sim.show(gunCfg, 100)
+# sim.simulate(gunCfg, 1e6)
 
 
 
