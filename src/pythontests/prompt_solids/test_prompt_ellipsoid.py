@@ -12,6 +12,9 @@ from Cinema.Prompt.gun import UniModeratorGun
 
 import numpy as np
 
+para_half_length = 1000
+para_source_location = -2000
+
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)   
@@ -23,13 +26,13 @@ class MySim(PromptMPI):
 
         world = Volume("world", Box(200, 200, 2100), matCfg=universe)
 
-        detector1 = Volume("det1", Box(100, 100, 0.0001))
-        makePSD('psd1', detector1, 50, 50 )
-        world.placeChild("det", detector1, Transformation3D(0., 0., -1000))
+        detector1 = Volume("det1", Box(40, 40, 0.0001))
+        makePSD('psd1', detector1, 20, 20 )
+        world.placeChild("det", detector1, Transformation3D(0., 0., para_source_location +1000))
 
-        detector2 = Volume("det2", Box(100, 100, 0.0001))
-        makePSD('psd2', detector2, 50, 50 )
-        world.placeChild("det2", detector2, Transformation3D(0., 0., 1000))
+        detector2 = Volume("det2", Box(40, 40, 0.0001))
+        makePSD('psd2', detector2, 20, 20 )
+        world.placeChild("det2", detector2, Transformation3D(0., 0., para_half_length + 200))
 
         ESpectrumHelper('espec').make(detector2)
         WlSpectrumHelper('wlspec').make(detector2)
@@ -37,9 +40,9 @@ class MySim(PromptMPI):
 
         # guide = makeTrapezoidGuide(500, 25,25,25,25, 1.0, 10)
         wallMat = 'solid::Cd/8.65gcm3'
-        guideWall = Volume('guideWall', Box(100, 100., 1000, ), matCfg=wallMat)
+        guideWall = Volume('guideWall', Box(100, 100., para_half_length, ), matCfg=wallMat)
         mirror = Mirror(10)
-        guide = Volume('guideEllipsoid', Ellipsoid(70, 70, 1800, -1000, 1000), surfaceCfg=mirror.cfg)
+        guide = Volume('guideEllipsoid', Ellipsoid(50, 50, 1200, -para_half_length, para_half_length), surfaceCfg=mirror.cfg)
         guideWall.placeChild("guide", guide)
         world.placeChild("guideWall", guideWall)
 
@@ -54,21 +57,22 @@ sim.makeWorld()
 gun = UniModeratorGun()
 gun.setWlMean(3.39)
 gun.setWlRange(0.3)
-gun.setSlit([80,80,-1500])
-gun.setSource([80,80,-2000])
-
-
-# vis or production
-if True:
-    sim.show(gun, 10)
-else:
-    sim.simulate(gun, 1e7)
+gun.setSlit([50,50,para_source_location+500])
+gun.setSource([50,50,para_source_location])
 
 destination = 0
 psd1 = sim.gatherHistData('psd1', dst=destination)
 psd2 = sim.gatherHistData('psd2', dst=destination)
 wlspec = sim.gatherHistData('wlspec', dst=destination)
-if sim.rank==destination:
-    psd1.plot(show=True, log=False, title='GUIDE-')
-    psd2.plot(show=True, log=False, title='GUIDE+')
-    # wlspec.plot(show=True, log=False)
+
+# vis or production
+if False:
+    sim.show(gun, 10)
+    if sim.rank==destination:
+        psd1.plot(show=False, log=False, title='GUIDE-')
+        psd2.plot(show=True, log=False, title='GUIDE+')
+else:
+    sim.simulate(gun, 1e5)
+    print(list(psd2.getWeight().sum(0)), sep=',')
+    expected_value = [0.0, 0.0, 19.0, 99.0, 138.0, 192.0, 207.0, 206.0, 217.0, 231.0, 234.0, 191.0, 224.0, 181.0, 200.0, 158.0, 92.0, 11.0, 0.0, 0.0]
+    np.testing.assert_allclose(psd2.getWeight().sum(0), expected_value)
