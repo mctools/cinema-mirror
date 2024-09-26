@@ -1,6 +1,8 @@
 #ifndef Prompt_CentralData_hh
 #define Prompt_CentralData_hh
 
+#ifdef ENABLE_GIDI
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -65,4 +67,5 @@ namespace Prompt
 
 
 }
+#endif
 #endif

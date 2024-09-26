@@ -23,6 +23,11 @@ project(prompt_core)
 find_package(HDF5 REQUIRED COMPONENTS C)
 message(STATUS "FOUND HDF5:  ${HDF5_INCLUDE_DIR}")
 
+# Add an option to enable/disable GIDI
+option(ENABLE_GIDI "Enable the GIDI module" ON)
+
+# Add an option to enable/disable  Catima
+option(ENABLE_CATIMA "Enable the  Catima module" OFF)
 
 option(BUILD_WITH_OPENMP "Build OpenMP" ON)
 find_package(OpenMP REQUIRED)
@@ -43,12 +48,23 @@ file(GLOB PYN_SRC "${PROJECT_SOURCE_DIR}/Python/libsrc/*.cc")
 file(GLOB RAC_SRC "${PROJECT_SOURCE_DIR}/Process/libsrc/*.cc")
 file(GLOB TRJ_SRC "${PROJECT_SOURCE_DIR}/Trj/libsrc/*.cc")
 file(GLOB MCPL_SRC "${PROJECT_SOURCE_DIR}/MCPL/libsrc/*.cc" )
-
+file(GLOB BUK_SRC "${PROJECT_SOURCE_DIR}/ModelBulk/NCrystal/libsrc/*.cc")
+file(GLOB BUK_SRC "${PROJECT_SOURCE_DIR}/ModelBulk/Catima/libsrc/*.cc")
+file(GLOB BUK_SRC "${PROJECT_SOURCE_DIR}/ModelBulk/Gidi/libsrc/*.cc")
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${MCPL_SRC} ${COR_SRC} ${RAC_SRC} ${SUR_SRC} ${RND_SRC} 
                                 ${UTL_SRC} ${RTR_SRC} ${ANA_SRC} ${PAR_SRC} ${BUK_SRC} 
                                 ${GEO_SRC} ${MAT_SRC} ${PYN_SRC} ${GUN_SRC} ${TRJ_SRC} ) 
-                                
+
+# Add the definition based on the option value for the library target
+if(ENABLE_CATIMA)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC ENABLE_CATIMA)
+endif()
+
+if(ENABLE_GIDI)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC ENABLE_GIDI)
+endif()
+
 find_package(Python REQUIRED COMPONENTS Interpreter)
 
 FIND_LIBRARY(mcpl mcpl ${KDS_LIB})
@@ -67,6 +83,9 @@ target_include_directories( ${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/Utils/libinc
     ${PROJECT_SOURCE_DIR}/Ana/libinc
     ${PROJECT_SOURCE_DIR}/Particles/libinc
+    ${PROJECT_SOURCE_DIR}/ModelBulk/NCrystal/libinc
+    ${PROJECT_SOURCE_DIR}/ModelBulk/Catima/libinc
+    ${PROJECT_SOURCE_DIR}/ModelBulk/Gidi/libinc
     ${PROJECT_SOURCE_DIR}/ModelBulk/libinc
     ${PROJECT_SOURCE_DIR}/ModelRayTracing/libinc
     ${PROJECT_SOURCE_DIR}/ModelSurface/libinc
