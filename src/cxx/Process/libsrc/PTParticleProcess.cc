@@ -172,6 +172,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
   {
     m_numdensity = pfact.nccalNumDensity(cfgstr);
 
+    #ifdef ENABLE_GIDI
     if(enablegidi)
     {
       std::cout << "enabled gidi model for " << cfgstr 
@@ -204,6 +205,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
       }
     }
     else
+    #endif
     {
       m_compModel->addPhysicsModel(std::make_shared<NCrystalAbs>(cfgstr, 1.0, 0));
       m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0));
@@ -223,7 +225,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
     cfg.getStringIfExist("nccfg", nccfg);
     m_numdensity = pfact.nccalNumDensity(nccfg);
 
-
+    #ifdef ENABLE_GIDI
     if(enablegidi)
     {
       std::cout << "enabled gidi model for " << cfgstr 
@@ -262,6 +264,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
       }
     }
     else
+    #endif
     {
       m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0));
       m_compModel->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias, 0));
