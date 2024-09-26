@@ -115,26 +115,26 @@ void pt_deleteModelCollection(void* obj);
 double pt_ModelCollection_getxs(void* obj, int pdg, double ekin);
 double pt_ModelCollection_generate(void* obj, double ekin);
 
-// Prompt::CentralData
-void* pt_CentralData_getInstance();
+// Prompt::GidiSetting
+void* pt_GidiSetting_getInstance();
 
-double pt_CentralData_getGidiThreshold(void* obj);
-void pt_CentralData_setGidiThreshold(void* obj, double t);
+double pt_GidiSetting_getGidiThreshold(void* obj);
+void pt_GidiSetting_setGidiThreshold(void* obj, double t);
 
-const char * pt_CentralData_getGidiPops(void* obj);
-void pt_CentralData_setGidiPops(void* obj, const char *s);
+const char * pt_GidiSetting_getGidiPops(void* obj);
+void pt_GidiSetting_setGidiPops(void* obj, const char *s);
 
-const char * pt_CentralData_getGidiMap(void* obj);
-void pt_CentralData_setGidiMap(void* obj, const char *s);
+const char * pt_GidiSetting_getGidiMap(void* obj);
+void pt_GidiSetting_setGidiMap(void* obj, const char *s);
 
-bool pt_CentralData_getEnableGidi(void* obj); 
-void pt_CentralData_setEnableGidi(void* obj, bool t);
+bool pt_GidiSetting_getEnableGidi(void* obj); 
+void pt_GidiSetting_setEnableGidi(void* obj, bool t);
 
-bool pt_CentralData_getEnableGidiPowerIteration(void* obj);
-void pt_CentralData_setEnableGidiPowerIteration(void* obj, bool t);
+bool pt_GidiSetting_getEnableGidiPowerIteration(void* obj);
+void pt_GidiSetting_setEnableGidiPowerIteration(void* obj, bool t);
 
-bool pt_CentralData_getGammaTransport(void* obj);
-void pt_CentralData_setGammaTransport(void* obj, bool t);
+bool pt_GidiSetting_getGammaTransport(void* obj);
+void pt_GidiSetting_setGammaTransport(void* obj, bool t);
 
 double pt_nccalNumDensity(const char *s);  
 

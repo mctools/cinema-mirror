@@ -6,12 +6,12 @@ from Cinema.Prompt.solid import Sphere, Box
 from Cinema.Prompt.scorer import ESpectrumHelper, MultiScatCounter
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import PythonGun
-from Cinema.Prompt.centralData import CentralData 
+from Cinema.Prompt.GidiSetting import GidiSetting 
 import matplotlib.pyplot as plt
 from Cinema.Interface import plotStyle
 import numpy as np
 
-cdata=CentralData()
+cdata=GidiSetting()
 cdata.setEnableGidi(False)
 cdata.setGammaTransport(False)
 

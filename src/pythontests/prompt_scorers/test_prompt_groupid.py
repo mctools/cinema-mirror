@@ -6,10 +6,10 @@ from Cinema.Prompt.solid import Box, Tube
 from Cinema.Prompt.scorer import ESpectrumHelper
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun
-from Cinema.Prompt.centralData import CentralData 
+from Cinema.Prompt.GidiSetting import GidiSetting 
 import numpy as np
 
-cdata=CentralData()
+cdata=GidiSetting()
 cdata.setEnableGidi(False)
 cdata.setGammaTransport(False)
 

@@ -34,7 +34,7 @@
 #include "PTGIDIFactory.hh"
 
 Prompt::GIDIFactory::GIDIFactory()
-:m_ctrdata(Singleton<Prompt::CentralData>::getInstance()),
+:m_ctrdata(Singleton<Prompt::GidiSetting>::getInstance()),
 m_pops(new PoPI::Database( m_ctrdata.getGidiPops())),
 m_map (new GIDI::Map::Map( m_ctrdata.getGidiMap(), *m_pops )),
 m_particles(new GIDI::Transporting::Particles()),

@@ -28,7 +28,7 @@
 #include "PromptCore.hh"
 #include "PTDiscreteModel.hh"
 #include "PTSingleton.hh"
-#include "PTCentralData.hh"
+#include "PTGidiSetting.hh"
 #include "PTLauncher.hh"
 #include "PTGIDIModel.hh"
 

@@ -8,7 +8,7 @@ from Cinema.Prompt.solid import Box, Sphere, Tube
 from Cinema.Prompt.scorer import ESpectrumHelper
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun, SimpleThermalGun, PythonGun
-from Cinema.Prompt.centralData import CentralData 
+from Cinema.Prompt.GidiSetting import GidiSetting 
 import matplotlib.pyplot as plt
 from Cinema.Interface import plotStyle
 import numpy as np
@@ -21,7 +21,7 @@ def promptRun(cfg, energy, gidiThreshold = -5,
               isGammaTransport=False, partnum = 1e5, setGidi= True,
               plot=False):
 
-    cdata=CentralData()
+    cdata=GidiSetting()
     cdata.setEnableGidi(True)
     cdata.setGidiThreshold(gidiThreshold)
     cdata.setEnableGidiPowerIteration(False)

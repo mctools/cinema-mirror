@@ -28,7 +28,7 @@
 #include "PTModelCollection.hh"
 #include "PTMaterialDecomposer.hh"
 #include "PTGIDIFactory.hh"
-#include "PTCentralData.hh"
+#include "PTGidiSetting.hh"
 
 
 namespace pt = Prompt;
@@ -38,8 +38,8 @@ TEST_CASE("H1")
   std::vector<double> expectedXS;
   expectedXS = {2.06942784133667e-21, 5.29027296368866e-24};
   std::cout.precision(15);
-  auto &cdata = Prompt::Singleton<Prompt::CentralData>::getInstance();
-  std::cout << "CentralData info: " << std::endl;
+  auto &cdata = Prompt::Singleton<Prompt::GidiSetting>::getInstance();
+  std::cout << "GidiSetting info: " << std::endl;
   std::cout << cdata.getGidiMap() << std::endl;
   std::cout << cdata.getGidiPops() << std::endl;
   auto isotope = Prompt::IsotopeComposition{1, 1, 1., "H1"};
@@ -65,8 +65,8 @@ TEST_CASE("U235")
 {
   std::vector<double> expectedXS;
   expectedXS = {1.26423125537086e-21, 7.99475113325076e-21};
-  auto &cdata = Prompt::Singleton<Prompt::CentralData>::getInstance();
-  std::cout << "CentralData info: " << std::endl;
+  auto &cdata = Prompt::Singleton<Prompt::GidiSetting>::getInstance();
+  std::cout << "GidiSetting info: " << std::endl;
   std::cout << cdata.getGidiMap() << std::endl;
   std::cout << cdata.getGidiPops() << std::endl;
   auto isotope = Prompt::IsotopeComposition{235, 92, 1., "U235"};

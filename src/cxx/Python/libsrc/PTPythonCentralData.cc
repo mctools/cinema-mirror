@@ -1,71 +1,71 @@
 
 #include "PTPython.hh"
-#include "PTCentralData.hh"
+#include "PTGidiSetting.hh"
 
 namespace pt = Prompt;
 
-void* pt_CentralData_getInstance()
+void* pt_GidiSetting_getInstance()
 {
-  return static_cast<void *>(std::addressof(pt::Singleton<pt::CentralData>::getInstance()));
+  return static_cast<void *>(std::addressof(pt::Singleton<pt::GidiSetting>::getInstance()));
 }
 
-double pt_CentralData_getGidiThreshold(void* obj)
+double pt_GidiSetting_getGidiThreshold(void* obj)
 {
-    return static_cast<pt::CentralData *>(obj)->getGidiThreshold();
+    return static_cast<pt::GidiSetting *>(obj)->getGidiThreshold();
 }
 
-void pt_CentralData_setGidiThreshold(void* obj, double t)
+void pt_GidiSetting_setGidiThreshold(void* obj, double t)
 {
-    static_cast<pt::CentralData *>(obj)->setGidiThreshold(t);
+    static_cast<pt::GidiSetting *>(obj)->setGidiThreshold(t);
 }
 
-const char * pt_CentralData_getGidiPops(void* obj)
+const char * pt_GidiSetting_getGidiPops(void* obj)
 {
-    return static_cast<pt::CentralData *>(obj)->getGidiPops().c_str();
+    return static_cast<pt::GidiSetting *>(obj)->getGidiPops().c_str();
 }
 
-void pt_CentralData_setGidiPops(void* obj, const char *s)
+void pt_GidiSetting_setGidiPops(void* obj, const char *s)
 {
-    static_cast<pt::CentralData *>(obj)->setGidiPops(s);
+    static_cast<pt::GidiSetting *>(obj)->setGidiPops(s);
 }
 
-const char * pt_CentralData_getGidiMap(void* obj)
+const char * pt_GidiSetting_getGidiMap(void* obj)
 {
-    return static_cast<pt::CentralData *>(obj)->getGidiMap().c_str();
+    return static_cast<pt::GidiSetting *>(obj)->getGidiMap().c_str();
 }
 
-void pt_CentralData_setGidiMap(void* obj, const char *s)
+void pt_GidiSetting_setGidiMap(void* obj, const char *s)
 {
-    static_cast<pt::CentralData *>(obj)->setGidiMap(s);
+    static_cast<pt::GidiSetting *>(obj)->setGidiMap(s);
 }
 
-bool pt_CentralData_getEnableGidi(void* obj)
+bool pt_GidiSetting_getEnableGidi(void* obj)
 {
-    return static_cast<pt::CentralData *>(obj)->getEnableGidi();
+    return static_cast<pt::GidiSetting *>(obj)->getEnableGidi();
 }
 
-void pt_CentralData_setEnableGidi(void* obj, bool t)
+void pt_GidiSetting_setEnableGidi(void* obj, bool t)
 {
-    return static_cast<pt::CentralData *>(obj)->setEnableGidi(t);
+    return static_cast<pt::GidiSetting *>(obj)->setEnableGidi(t);
 }
 
 
-bool pt_CentralData_getEnableGidiPowerIteration(void* obj)
+bool pt_GidiSetting_getEnableGidiPowerIteration(void* obj)
 {
-    return static_cast<pt::CentralData *>(obj)->getEnableGidiPowerIteration();
+    return static_cast<pt::GidiSetting *>(obj)->getEnableGidiPowerIteration();
 }
 
-void pt_CentralData_setEnableGidiPowerIteration(void* obj, bool t)
+void pt_GidiSetting_setEnableGidiPowerIteration(void* obj, bool t)
 {
-    return static_cast<pt::CentralData *>(obj)->setEnableGidiPowerIteration(t);
+    return static_cast<pt::GidiSetting *>(obj)->setEnableGidiPowerIteration(t);
 }
 
-bool pt_CentralData_getGammaTransport(void* obj)
+bool pt_GidiSetting_getGammaTransport(void* obj)
 {
-    return static_cast<pt::CentralData *>(obj)->getGammaTransport();
+    return static_cast<pt::GidiSetting *>(obj)->getGammaTransport();
 }
 
-void pt_CentralData_setGammaTransport(void* obj, bool t)
+void pt_GidiSetting_setGammaTransport(void* obj, bool t)
 {
-    return static_cast<pt::CentralData *>(obj)->setGammaTransport(t);
+    return static_cast<pt::GidiSetting *>(obj)->setGammaTransport(t);
 }

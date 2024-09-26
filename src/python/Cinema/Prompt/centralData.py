@@ -24,65 +24,65 @@
 from ..Interface import *
 
 
-_pt_CentralData_getInstance = importFunc('pt_CentralData_getInstance', type_voidp, [] )
+_pt_GidiSetting_getInstance = importFunc('pt_GidiSetting_getInstance', type_voidp, [] )
 
-_pt_CentralData_getGidiThreshold = importFunc('pt_CentralData_getGidiThreshold', type_dbl, [type_voidp] )
-_pt_CentralData_setGidiThreshold = importFunc('pt_CentralData_setGidiThreshold', None, [type_voidp, type_dbl] )
+_pt_GidiSetting_getGidiThreshold = importFunc('pt_GidiSetting_getGidiThreshold', type_dbl, [type_voidp] )
+_pt_GidiSetting_setGidiThreshold = importFunc('pt_GidiSetting_setGidiThreshold', None, [type_voidp, type_dbl] )
 
-_pt_CentralData_getGidiPops = importFunc('pt_CentralData_getGidiPops', type_cstr, [type_voidp] )
-_pt_CentralData_setGidiPops = importFunc('pt_CentralData_setGidiPops', None, [type_voidp, type_cstr] )
+_pt_GidiSetting_getGidiPops = importFunc('pt_GidiSetting_getGidiPops', type_cstr, [type_voidp] )
+_pt_GidiSetting_setGidiPops = importFunc('pt_GidiSetting_setGidiPops', None, [type_voidp, type_cstr] )
 
-_pt_CentralData_getGidiMap = importFunc('pt_CentralData_getGidiMap', type_cstr, [type_voidp] )
-_pt_CentralData_setGidiMap = importFunc('pt_CentralData_setGidiMap', None, [type_voidp, type_cstr] )
+_pt_GidiSetting_getGidiMap = importFunc('pt_GidiSetting_getGidiMap', type_cstr, [type_voidp] )
+_pt_GidiSetting_setGidiMap = importFunc('pt_GidiSetting_setGidiMap', None, [type_voidp, type_cstr] )
 
-_pt_CentralData_getEnableGidi = importFunc('pt_CentralData_getEnableGidi', type_bool, [type_voidp] )
-_pt_CentralData_setEnableGidi = importFunc('pt_CentralData_setEnableGidi', None, [type_voidp, type_bool] )
+_pt_GidiSetting_getEnableGidi = importFunc('pt_GidiSetting_getEnableGidi', type_bool, [type_voidp] )
+_pt_GidiSetting_setEnableGidi = importFunc('pt_GidiSetting_setEnableGidi', None, [type_voidp, type_bool] )
 
-_pt_CentralData_getEnableGidiPowerIteration = importFunc('pt_CentralData_getEnableGidiPowerIteration', type_bool, [type_voidp] )
-_pt_CentralData_setEnableGidiPowerIteration = importFunc('pt_CentralData_setEnableGidiPowerIteration', None, [type_voidp, type_bool] )
+_pt_GidiSetting_getEnableGidiPowerIteration = importFunc('pt_GidiSetting_getEnableGidiPowerIteration', type_bool, [type_voidp] )
+_pt_GidiSetting_setEnableGidiPowerIteration = importFunc('pt_GidiSetting_setEnableGidiPowerIteration', None, [type_voidp, type_bool] )
 
-_pt_CentralData_getGammaTransport = importFunc('pt_CentralData_getGammaTransport', type_bool, [type_voidp] )
-_pt_CentralData_setGammaTransport = importFunc('pt_CentralData_setGammaTransport', type_bool, [type_voidp, type_bool] )
+_pt_GidiSetting_getGammaTransport = importFunc('pt_GidiSetting_getGammaTransport', type_bool, [type_voidp] )
+_pt_GidiSetting_setGammaTransport = importFunc('pt_GidiSetting_setGammaTransport', type_bool, [type_voidp, type_bool] )
 
 
 @singleton
-class CentralData():
+class GidiSetting():
     def __init__(self):
-        self.cobj = _pt_CentralData_getInstance()
+        self.cobj = _pt_GidiSetting_getInstance()
 
     def getGidiThreshold(self):
-        return _pt_CentralData_getGidiThreshold(self.cobj)
+        return _pt_GidiSetting_getGidiThreshold(self.cobj)
     
     def setGidiThreshold(self, t):
-        _pt_CentralData_setGidiThreshold(self.cobj, t)
+        _pt_GidiSetting_setGidiThreshold(self.cobj, t)
 
     # fixme: backslash in the path can not be decoded!
     def getGidiPops(self):
-        return _pt_CentralData_getGidiPops(self.cobj).decode('utf-8')
+        return _pt_GidiSetting_getGidiPops(self.cobj).decode('utf-8')
     
     def setGidiPops(self, s):
-        _pt_CentralData_setGidiPops(self.cobj, s.encode('utf-8'))
+        _pt_GidiSetting_setGidiPops(self.cobj, s.encode('utf-8'))
 
     def getGidiMap(self):
-        return _pt_CentralData_getGidiMap(self.cobj).decode('utf-8')
+        return _pt_GidiSetting_getGidiMap(self.cobj).decode('utf-8')
     
     def setGidiMap(self, s):
-        _pt_CentralData_setGidiMap(self.cobj, s.encode('utf-8'))
+        _pt_GidiSetting_setGidiMap(self.cobj, s.encode('utf-8'))
 
     def getEnableGidi(self):
-        return _pt_CentralData_getEnableGidi(self.cobj)
+        return _pt_GidiSetting_getEnableGidi(self.cobj)
     
     def setEnableGidi(self, b):
-        _pt_CentralData_setEnableGidi(self.cobj, b)
+        _pt_GidiSetting_setEnableGidi(self.cobj, b)
 
     def getEnableGidiPowerIteration(self):
-        return _pt_CentralData_getEnableGidiPowerIteration(self.cobj)
+        return _pt_GidiSetting_getEnableGidiPowerIteration(self.cobj)
     
     def setEnableGidiPowerIteration(self, b):
-        _pt_CentralData_setEnableGidiPowerIteration(self.cobj, b)
+        _pt_GidiSetting_setEnableGidiPowerIteration(self.cobj, b)
     
     def getGammaTransport(self):
-        return _pt_CentralData_getGammaTransport(self.cobj)
+        return _pt_GidiSetting_getGammaTransport(self.cobj)
     
     def setGammaTransport(self, b):
-        _pt_CentralData_setGammaTransport(self.cobj, b)
+        _pt_GidiSetting_setGammaTransport(self.cobj, b)

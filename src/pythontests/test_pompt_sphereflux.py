@@ -6,9 +6,9 @@ from Cinema.Prompt.solid import Box, Sphere
 from Cinema.Prompt.scorer import VolFluenceHelper
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun
-from Cinema.Prompt.centralData import CentralData 
+from Cinema.Prompt.GidiSetting import GidiSetting 
 
-cdata=CentralData()
+cdata=GidiSetting()
 cdata.setEnableGidi(True)
 cdata.setGammaTransport(False)
 

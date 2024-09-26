@@ -6,10 +6,10 @@ from Cinema.Prompt.solid import Box, Sphere, Tube
 from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun
-from Cinema.Prompt.centralData import CentralData 
+from Cinema.Prompt.GidiSetting import GidiSetting 
 import matplotlib.pyplot as plt
 
-cdata=CentralData()
+cdata=GidiSetting()
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(True)
 cdata.setGidiThreshold(-10)

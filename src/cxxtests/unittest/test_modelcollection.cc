@@ -23,7 +23,7 @@
 #include "PTModelCollection.hh"
 #include "PTParticleProcess.hh"
 #include "PTLauncher.hh"
-#include "PTCentralData.hh"
+#include "PTGidiSetting.hh"
 
 TEST_CASE("ModelCollection")
 {
@@ -51,7 +51,7 @@ TEST_CASE("ModelCollection")
     };
   double inE(0.0253);
   auto inDir = Vector({1.,0.,0.});
-  auto &cd = Singleton<CentralData>::getInstance();
+  auto &cd = Singleton<GidiSetting>::getInstance();
   cd.setEnableGidi(true);
   auto pp = ParticleProcess("Al_sg225.ncmat");
   auto compModel = pp.getModelCollection();

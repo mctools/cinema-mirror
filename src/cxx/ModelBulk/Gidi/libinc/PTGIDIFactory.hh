@@ -28,7 +28,7 @@
 #include "PromptCore.hh"
 #include "PTDiscreteModel.hh"
 #include "PTSingleton.hh"
-#include "PTCentralData.hh"
+#include "PTGidiSetting.hh"
 #include "PTLauncher.hh"
 
 
@@ -90,7 +90,7 @@ namespace Prompt {
 
     int getHashID(double energy) const;
     bool available() const;
-    CentralData &getCentralData() const {return m_ctrdata;};
+    GidiSetting &getGidiSetting() const {return m_ctrdata;};
 
     inline bool NCrystal4Elastic(double ekin) const 
     {
@@ -104,7 +104,7 @@ namespace Prompt {
     GIDIFactory();
     ~GIDIFactory();
 
-    CentralData &m_ctrdata;
+    GidiSetting &m_ctrdata;
     PoPI::Database *m_pops;
     GIDI::Map::Map *m_map;
     GIDI::Transporting::Particles *m_particles;

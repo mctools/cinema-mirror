@@ -6,7 +6,7 @@ from Cinema.Prompt.solid import Box, Sphere, Tube
 from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper, DepositionHelper
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun, SimpleThermalGun, PythonGun
-from Cinema.Prompt.centralData import CentralData 
+from Cinema.Prompt.GidiSetting import GidiSetting 
 import matplotlib.pyplot as plt
 from Cinema.Interface import plotStyle
 import numpy as np
@@ -18,7 +18,7 @@ os.environ['OPENMC_CROSS_SECTIONS']='/home/caixx/git/openmc/data/endfb-viii.0-hd
 
 plotStyle()
 
-cdata=CentralData()
+cdata=GidiSetting()
 cdata.setGidiThreshold(-5)
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(False)

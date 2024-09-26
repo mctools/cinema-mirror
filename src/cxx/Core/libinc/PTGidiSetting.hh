@@ -1,3 +1,8 @@
+#ifndef Prompt_GidiSetting_hh
+#define Prompt_GidiSetting_hh
+
+// #ifdef ENABLE_GIDI
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  This file is part of Prompt (see https://gitlab.com/xxcai1/Prompt)        //
@@ -18,19 +23,49 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PTCentralData.hh"
-   
-Prompt::CentralData::CentralData()
-: m_enablegidi(false), m_gidithreshold(5.), 
-m_gidiSampleNonTransportingParticles(true), 
-m_gidiEnableGamma(true),
-m_gidiPowerIteration(false),
-m_gidipops("/home/caixx/git/cinema/external/ptdata/pops.xml"), 
-m_gidimap("/home/caixx/git/cinema/external/ptdata/all.map")
+#include "PromptCore.hh"
+
+#include "PTSingleton.hh"
+
+namespace Prompt
 {
-}
+  //fixme: add locker to disable modification when MC loop starts 
+  class GidiSetting {
+  public:
+    double getGidiThreshold() const { return m_gidithreshold; };
+    void setGidiThreshold(double t ) { m_gidithreshold = t; };
+
+    bool getGidiSampleNTP() const { return m_gidiSampleNonTransportingParticles; };
+    void setGidiSampleNTP(bool t ) { m_gidiSampleNonTransportingParticles = t; };
+
+    bool getGammaTransport() const { return m_gidiEnableGamma; }
+    void setGammaTransport(bool t) { m_gidiEnableGamma=t; }
+
+    bool getEnableGidi() const { return m_enablegidi; }
+    void setEnableGidi(bool t) { m_enablegidi=t; }
+
+    bool getEnableGidiPowerIteration() const { return m_gidiPowerIteration; }
+    void setEnableGidiPowerIteration(bool t) { m_gidiPowerIteration=t; }
+
+    std::string getGidiPops() const {return m_gidipops;};
+    void setGidiPops(const std::string &s ) { m_gidipops = s; };
+
+    std::string getGidiMap() const {return m_gidimap;};
+    void setGidiMap(const std::string &s ) { m_gidimap = s; };
+
+  private:
+    friend class Singleton<GidiSetting>;
+    GidiSetting();
+    ~GidiSetting();
+    bool m_enablegidi;
+    double m_gidithreshold;
+    bool m_gidiSampleNonTransportingParticles;
+    bool m_gidiEnableGamma;
+    bool m_gidiPowerIteration;
+    std::string m_gidipops, m_gidimap;    
+  };
 
 
-Prompt::CentralData::~CentralData()
-{
 }
+#endif
+// #endif

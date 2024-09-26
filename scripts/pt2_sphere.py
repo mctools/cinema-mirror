@@ -6,7 +6,7 @@ from Cinema.Prompt.solid import Box, Sphere
 from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun
-from Cinema.Prompt.centralData import CentralData 
+from Cinema.Prompt.GidiSetting import GidiSetting 
 import matplotlib.pyplot as plt
 from Cinema.Interface import plotStyle
 
@@ -14,7 +14,7 @@ plotStyle()
 import os
 os.environ['OPENMC_CROSS_SECTIONS']='/home/caixx/git/openmc/data/endfb-viii.0-hdf5/cross_sections.xml'
 
-cdata=CentralData()
+cdata=GidiSetting()
 cdata.setGidiThreshold(-5)
 cdata.setEnableGidi(True)
 

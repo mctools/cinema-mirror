@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 from Cinema.Interface import plotStyle
-from Cinema.Prompt.centralData import CentralData 
+from Cinema.Prompt.GidiSetting import GidiSetting 
 from Cinema.Prompt.utils import nccalNumDensity
 
 try:
@@ -31,7 +31,7 @@ parser.add_argument('-p', '--pdg', action='store',  nargs='+', type=int, default
                     dest='pdg', help='pdg number')
 
 
-cdata=CentralData()
+cdata=GidiSetting()
 cdata.setEnableGidi(True)
 
 args=parser.parse_args()

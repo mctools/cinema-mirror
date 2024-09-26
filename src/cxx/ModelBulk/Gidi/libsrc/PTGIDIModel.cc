@@ -171,7 +171,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
       {
         Photon sec(labekin, labdir, primary.getPosition());
         sec.setTime(primary.getTime() + aproduct.m_birthTimeSec);
-        if(m_factory.getCentralData().getGammaTransport() )
+        if(m_factory.getGidiSetting().getGammaTransport() )
         {
           secondaries.push_back(sec);
         }
@@ -216,17 +216,17 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
 
     for(const auto &p: secondaries)
     {
-      if(m_factory.getCentralData().getEnableGidiPowerIteration() && p.getWeight()!=1.) 
+      if(m_factory.getGidiSetting().getEnableGidiPowerIteration() && p.getWeight()!=1.) 
       {
         PROMPT_THROW2(CalcError, "particle weight in gidi model is not unity.") 
       }
-      if(m_factory.getCentralData().getGammaTransport() && p.getPDG()==22)
+      if(m_factory.getGidiSetting().getGammaTransport() && p.getPDG()==22)
       {
-        Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getCentralData().getEnableGidiPowerIteration());
+        Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getGidiSetting().getEnableGidiPowerIteration());
       }
       else if (p.getPDG()==2112)
       {
-        Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getCentralData().getEnableGidiPowerIteration());
+        Singleton<StackManager>::getInstance().addSecondary(p, m_factory.getGidiSetting().getEnableGidiPowerIteration());
       }
       
     }

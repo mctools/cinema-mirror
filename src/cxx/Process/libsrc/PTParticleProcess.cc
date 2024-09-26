@@ -33,7 +33,7 @@
 #include "PTMaterialDecomposer.hh"
 #include "PTGIDIModel.hh"
 #include "PTGIDIFactory.hh"
-#include "PTCentralData.hh"
+#include "PTGidiSetting.hh"
 #include "PTStackManager.hh"
 
 Prompt::ParticleProcess::ParticleProcess(const std::string &name, int pdg)
@@ -164,7 +164,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
   auto &pfact = Singleton<PhysicsFactory>::getInstance();
   PhysicsFactory::PhysicsType type = pfact.checkPhysicsType(cfgstr);
 
-  auto &cd = Singleton<CentralData>::getInstance();
+  auto &cd = Singleton<GidiSetting>::getInstance();
 
   const bool enablegidi = cd.getEnableGidi();
   const double gidimin = cd.getGidiThreshold();
