@@ -19,6 +19,8 @@
 ################################################################################
 import numpy as np
 from ..Interface import *
+from typing import Union
+import pyvista
 
 #box
 _pt_Box_new = importFunc('pt_Box_new', type_voidp, [type_dbl, type_dbl, type_dbl])
@@ -48,7 +50,7 @@ class Solid:
     def __init__(self) -> None:
         pass
 
-    def sanityCheckPositive(self, *args: float or int or np.ndarray): 
+    def sanityCheckPositive(self, *args: Union[float, int, np.ndarray]):
         for p in args:
             if isinstance(p, np.ndarray):
                 if any(p < 0):
@@ -112,10 +114,16 @@ class Polyhedron(Solid):
                  zp, rmin, rmax)
 
 class Tessellated(Solid): #this one is not working
-    def __init__(self, faces, points, tranMat=None) -> None:
+    def __init__(self, polydata, tranMat=None) -> None:
         super().__init__()
+        if not isinstance(polydata, pyvista.core.pointset.PolyData):
+            raise RuntimeError('Tessellated solid only supports pyvista.core.pointset.PolyData')
+        points = polydata.points
+        faces = polydata.faces
         if tranMat is not None:
             tranMat.transformInplace(points)
+        if polydata.n_faces_strict > 100:
+            print(f'Warning: Tessellated solid is initiallised by {polydata.n_faces_strict} faces.')
         self.cobj = _pt_Tessellated_new(faces.shape[0], faces, points)
 
 class ArbTrapezoid(Solid):

@@ -124,42 +124,39 @@ void *pt_Polyhedron_new(double phiStart, double phiDelta, const int sideCount, c
                           zPlaneCount, zPlanes, rMin, rMax));
 }
 
-void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, float *point)
+void *pt_Tessellated_new(size_t faces_length, size_t* faces, float *points)
 {
-  // Create a tessellated solid from Trd parameters
-//   vg::SimpleTessellated *stsl  = new vg::SimpleTessellated("pt_Tessellated_new");
-//   vg::UnplacedTessellated *tsl = (vg::UnplacedTessellated *)stsl->GetUnplacedVolume();
-
     vg::UnplacedTessellated *tsl = new vg::UnplacedTessellated ();
 
-    for(size_t i=0;i<faceVecSize;i++)
-    {
-        auto nVert = (*(faces++));
-        if(nVert==3)
-        {
-            tsl->AddTriangularFacet(*reinterpret_cast<const vg::Vector3D<float>*>((point+ (*(faces++))*3)),
-            *reinterpret_cast<const vg::Vector3D<float>*>(point+ (*(faces++))*3),
-            *reinterpret_cast<const vg::Vector3D<float>*>(point+ (*(faces++))*3));
-            i += 3;
+    size_t i = 0;
+
+    while (i < faces_length) {
+        size_t n_points = faces[i];
+
+          if (n_points == 3) {
+            size_t idx1 = faces[i + 1];
+            size_t idx2 = faces[i + 2];
+            size_t idx3 = faces[i + 3];
+
+            const vg::Vector3D<float>* p1 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx1 * 3]);
+            const vg::Vector3D<float>* p2 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx2 * 3]);
+            const vg::Vector3D<float>* p3 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx3 * 3]);
+
+            tsl->AddTriangularFacet(*p1, *p2, *p3);
+        } else if (n_points == 4) {
+            size_t idx1 = faces[i + 1];
+            size_t idx2 = faces[i + 2];
+            size_t idx3 = faces[i + 3];
+            size_t idx4 = faces[i + 4];
+
+            const vg::Vector3D<float>* p1 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx1 * 3]);
+            const vg::Vector3D<float>* p2 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx2 * 3]);
+            const vg::Vector3D<float>* p3 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx3 * 3]);
+            const vg::Vector3D<float>* p4 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx4 * 3]);
+
+            tsl->AddQuadrilateralFacet(*p1, *p2, *p3, *p4);
         }
-        else if(nVert==4)
-        {
-            tsl->AddQuadrilateralFacet(*reinterpret_cast<const vg::Vector3D<float>*>(point+(*(faces++))*3),
-            *reinterpret_cast<const vg::Vector3D<float>*>(point+(*(faces++))*3),
-            *reinterpret_cast<const vg::Vector3D<float>*>(point+(*(faces++))*3),
-            *reinterpret_cast<const vg::Vector3D<float>*>(point+(*(faces++))*3));
-            i += 4;
-        }
-        else
-        {
-            std::cout << *(faces++) << " "
-            << *(faces++) << " "
-            << *(faces++) << " "
-            << *(faces++) << " "
-            << *(faces++) << "\n";
-            PROMPT_THROW2(CalcError, "the face should constain either 3 or 4 vert " 
-                << faceVecSize << " " << i << " " << nVert);
-        }
+        i += n_points + 1;
     }
     tsl->Close();
 
