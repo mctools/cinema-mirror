@@ -22,8 +22,8 @@
    
 Prompt::GidiSetting::GidiSetting()
 : m_enablegidi(false), m_gidithreshold(5.), 
-m_gidiSampleNonTransportingParticles(true), 
-m_gidiEnableGamma(true),
+m_gidiSampleNonTransportingParticles(false), 
+m_gidiEnableGamma(false),
 m_gidiPowerIteration(false),
 m_gidipops(getDataPath()+"pops.xml"), 
 m_gidimap(getDataPath()+"all.map")
