@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 cdata=GidiSetting()
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(True)
-cdata.setGidiThreshold(-5)
+cdata.setGidiThreshold(5)
 
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
@@ -20,8 +20,9 @@ class MySim(PromptMPI):
 
     def makeWorld(self):
         radius = 87.407
+        # fuel = Material('freegas::U/18gcm3/U_is_U235')
         fuel = Material('freegas::UH999/1.1gcm3/U_is_U235/H_is_H1;temp=293.6') 
-        world = Volume("world", Sphere(0, radius))
+        world = Volume("world", Sphere(0, radius+2))
         godiva = Volume('Godiva', Sphere(0, radius), matCfg=fuel)
         world.placeChild('frod', godiva)     
 

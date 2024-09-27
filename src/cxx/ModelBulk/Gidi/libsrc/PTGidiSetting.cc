@@ -22,7 +22,7 @@
    
 Prompt::GidiSetting::GidiSetting()
 : m_enablegidi(false), m_gidithreshold(5.), 
-m_gidiSampleNonTransportingParticles(false), 
+m_gidiSampleNonTransportingParticles(true), 
 m_gidiEnableGamma(false),
 m_gidiPowerIteration(false),
 m_gidipops(getDataPath()+"pops.xml"), 

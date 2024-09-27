@@ -25,7 +25,6 @@
 #include <limits>
 
 #include "PTGIDIModel.hh"
-#include "PTGIDINeutronElastic.hh"
 #include "PTGIDIFactory.hh"
 #include <iostream>
 #include <iomanip>
@@ -37,7 +36,7 @@
 
 Prompt::GIDIModel::GIDIModel(int pgd, const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
                              double temperature, 
-                             double bias, double frac, double lowerlimt, double upperlimt)
+                             double bias, double frac, double lowerlimt, double upperlimt, double elasticThreshold)
 :Prompt::DiscreteModel(name+"_Gidi_"+std::to_string(mcprotare->numberOfReactions()), pgd,
                       lowerlimt,
                       upperlimt, 
@@ -51,7 +50,9 @@ m_cacheEkin(0.),
 m_cacheGidiXS(0.),
 m_temperature(temperature),
 m_frac(frac),
-m_input(new MCGIDI::Sampling::Input(true, MCGIDI::Sampling::Upscatter::Model::B) )
+m_input(new MCGIDI::Sampling::Input(false, MCGIDI::Sampling::Upscatter::Model::B) ),
+m_hashIndex(0), m_mt2_reaction_idx(-1),
+m_elasticThreshold(elasticThreshold)
 { 
 
   MCGIDI::Vector<MCGIDI::Protare *> protares(1);
@@ -72,6 +73,21 @@ m_input(new MCGIDI::Sampling::Input(true, MCGIDI::Sampling::Upscatter::Model::B)
     // The type of ENDF_MT can be found at https://t2.lanl.gov/nis/endf/mts.html
     std::cout << "Reaction " << i << ", ENDF_MT=" << reaction->ENDF_MT()  << std::endl;
   }
+
+  if(m_elasticThreshold)
+  {
+    for( int i = 0; i < numberOfReactions; ++i ) 
+    {
+      if(m_mcprotare->reaction(i)->ENDF_MT()==2)
+      {
+        m_mt2_reaction_idx = i;
+        break;
+      }
+    }
+    if(m_mt2_reaction_idx<0)        
+      PROMPT_THROW(CalcError, "MT2 is not in the data");
+  }
+
 }
 
 Prompt::GIDIModel::~GIDIModel()
@@ -88,32 +104,42 @@ Prompt::GIDIModel::~GIDIModel()
 double Prompt::GIDIModel::getCrossSection(double ekin) const
 {
 
+  double xs(0.);
+
   if(ekin==m_cacheEkin)
   {
-    return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
+    xs = m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
   else
   {    
     m_cacheEkin = ekin;
     double ekin_MeV = ekin*1e-6;
-    int hashIndex = m_factory.getHashID(ekin_MeV);
+    m_hashIndex = m_factory.getHashID(ekin_MeV);
+
     if(m_mcprotare->hasURR_probabilityTables())
     {
       if(ekin_MeV>m_mcprotare->URR_domainMin() && ekin_MeV<m_mcprotare->URR_domainMax()) 
       {
         m_urr_info->updateProtare(m_mcprotare.get(), ekin_MeV, getRandNumber, nullptr);
-        m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex,  0, ekin_MeV, true );  
+        m_cacheGidiXS = m_mcprotare->URR_crossSection( *m_urr_info, m_hashIndex,  0, ekin_MeV, true );  
       }
       else
       {
         m_urr_info->updateProtare(m_mcprotare.get(), ekin_MeV, getZero, nullptr);
-        m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, 0, ekin_MeV, true );  
+        m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, m_hashIndex, 0, ekin_MeV, true );  
       }
     }
     else
-      m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, hashIndex, m_input->m_temperature*1e-3, ekin_MeV, true );  
+     m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, m_hashIndex, m_input->m_temperature*1e-3, ekin_MeV, true );
 
-    return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
+    xs = m_cacheGidiXS*m_bias*Unit::barn*m_frac;
+  }
+
+  if(ekin > m_elasticThreshold) 
+    return xs;
+  else {
+    MCGIDI::Reaction const *reaction = m_mcprotare->reaction( m_mt2_reaction_idx );
+    return xs - reaction->crossSection(*m_urr_info, m_input->m_temperature*1e-3, ekin*1e-6)*m_bias*Unit::barn*m_frac;
   }
 }
 
@@ -131,8 +157,21 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
   std::vector<Particle> secondaries;
 
 
-  int hashIndex = m_factory.getHashID(ekin_MeV); //fixme, to remove if   pt_assert_always(ekin==m_cacheEkin)
-  int reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, hashIndex, m_input->m_temperature*1e-3, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
+  // m_hashIndex = m_factory.getHashID(ekin_MeV); //fixme, to remove if   pt_assert_always(ekin==m_cacheEkin)
+
+  int reactionIndex = m_mt2_reaction_idx;
+  if(ekin < m_elasticThreshold) 
+  {
+    while (reactionIndex == m_mt2_reaction_idx)
+    {
+      reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, m_hashIndex, m_input->m_temperature*1e-3, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
+    }
+  }
+  else {
+    reactionIndex = m_mcprotare->sampleReaction( *m_urr_info, m_hashIndex, m_input->m_temperature*1e-3, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
+  }
+
+   
 
   MCGIDI::Reaction const *reaction = m_mcprotare->reaction( reactionIndex );
   pt_assert_always(m_mcprotare->threshold( reactionIndex ) < ekin_MeV);

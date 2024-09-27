@@ -169,7 +169,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
   #ifdef ENABLE_GIDI
   auto &cd = Singleton<GidiSetting>::getInstance();
   const bool enablegidi = cd.getEnableGidi();
-  const double gidimin = cd.getGidiThreshold();
+  const double gidithreshold = cd.getGidiThreshold();
   #endif
   if (type == PhysicsFactory::PhysicsType::NC_RAW)
   {
@@ -178,11 +178,13 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
     #ifdef ENABLE_GIDI
     if(enablegidi)
     {
+      // in this mode, abs and nonelastic scattering (e.g. MT!=2) are all be done in GIDI+
+      // ncrystal only does the scattering below the threshold
       std::cout << "enabled gidi model for " << cfgstr 
-      << ", the switching energy at " << gidimin << "eV.\n";
+      << ", the swithching energy from ncrystal to digi is at " << gidithreshold << "eV.\n";
       // NCrystal models
-      if(gidimin>0)
-         m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0, gidimin));    
+      if(gidithreshold>0)
+         m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0, gidithreshold));    
       
       // GIDI models 
       auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
@@ -191,7 +193,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
         std::cout << v << std::endl;
 
       auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-      auto models = gidifactory.createNeutronGIDIModel(isotopes, 1., gidimin<=0.?0:gidimin);
+      auto models = gidifactory.createNeutronGIDIModel(isotopes, 1., gidithreshold<=0.?0:gidithreshold);
 
       for(const auto &v: models)
         m_discretModels->addPhysicsModel(v);
@@ -232,7 +234,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
     if(enablegidi)
     {
       std::cout << "enabled gidi model for " << cfgstr 
-      << ", the switching energy at " << gidimin << "eV.\n";
+      << ", the switching energy at " << gidithreshold << "eV.\n";
 
       // GIDI models
       auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
@@ -242,15 +244,15 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
 
 
       auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-      auto models = gidifactory.createNeutronGIDIModel(isotopes, abs_bias, gidimin<=0.?0:gidimin);
+      auto models = gidifactory.createNeutronGIDIModel(isotopes, abs_bias, gidithreshold<=0.?0:gidithreshold);
 
       for(const auto &v: models)
         m_discretModels->addPhysicsModel(v);
 
       // NCrystal models 
-      if(gidimin>0.)
+      if(gidithreshold>0.)
       {
-        m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0, gidimin));
+        m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0, gidithreshold));
       }
       else
         std::cout << "!The ncrystal elastic scatter is not created!\n";

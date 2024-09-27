@@ -19,20 +19,21 @@ os.environ['OPENMC_CROSS_SECTIONS']='/home/caixx/git/openmc/data/endfb-viii.0-hd
 plotStyle()
 
 cdata=GidiSetting()
-cdata.setGidiThreshold(-5)
+cdata.setGidiThreshold(5)
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(False)
 
 # energy = [5e6, 10e6]
 
-energy=1e6
-partnum = 1e3
+energy=10e6
+
+partnum = 1e4
 loweredge=1e-5
-upperedge=30e6
+upperedge=70e6
 
 numbin_en=300
-numbin_mu=10
-
+numbin_mu=100
+radius_mm = 1e-4
 
 #########################################################
 
@@ -60,10 +61,10 @@ endf_bxs=endf_fxs/awr/awr
 # cfg='freegas::H/1gcm3/H_is_H1;temp=293.6'
 # cfg='freegas::O/1gcm3/O_is_O16'
 
-cfg='freegas::U/18gcm3/U_is_U235'
+cfg='freegas::U/1.8gcm3/U_is_U235'
 # cfg='freegas::C/18gcm3/C_is_C13'
 # cfg='freegas::Bi/18gcm3'
-# cfg='freegas::U/18gcm3/U_is_U235'
+# cfg='freegas::U/18gcm3/U_is_U238'
 
 
 # cfg='Al_sg225.ncmat'
@@ -74,7 +75,7 @@ class MySim(Prompt):
         super().__init__(seed)   
 
     def makeWorld(self):
-        size = 1e-6
+        size = 1e-3
 
         world = Volume("world", Tube(0, size, 1.1e50))
         # lw = Material('freegas::He/1gcm3/He_is_1_He3') 
@@ -85,14 +86,14 @@ class MySim(Prompt):
         # lw = Material('freegas::O/1gcm3/O_is_O16') 
         lw.setBiasAbsp(1)
         lw.setBiasScat(1)
-        media = Volume("media", Tube(0, size*0.5, 1e50), matCfg= lw)
+        media = Volume("media", Tube(0, radius_mm, 1e50), matCfg= lw)
         world.placeChild('media', media)
 
         # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
         ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='EXIT').make(media)
         media.addScorer(f'Scorer=Angular;name=SofAngle;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;ptstate=EXIT;linear=yes;min=-1;max=1;numbin={numbin_mu}')
 
-        DepositionHelper('dep', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='PROPAGATE', linear=False).make(media)
+        DepositionHelper('dep', pdg=2112, min=loweredge, max=upperedge, numbin=numbin_en, ptstate='PROPAGATE_POST', linear=False).make(media)
         self.setWorld(world)
 
 
@@ -157,7 +158,7 @@ def run(energy, numPart):
 
 
     # Instantiate surfaces
-    cyl = openmc.XCylinder(boundary_type='vacuum', r=1.e-6)
+    cyl = openmc.XCylinder(boundary_type='vacuum', r=radius_mm*0.1)
     px1 = openmc.XPlane(boundary_type='vacuum', x0=-1.)
     px2 = openmc.XPlane(boundary_type='transmission', x0=1.)
     px3 = openmc.XPlane(boundary_type='vacuum', x0=1.e9)

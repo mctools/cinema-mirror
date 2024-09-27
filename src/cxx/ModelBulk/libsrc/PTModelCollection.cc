@@ -72,7 +72,7 @@ double Prompt::ModelCollection::totalCrossSection(int pdg, double ekin, const Ve
           channelxs = m_models[i]->getCrossSection(ekin);
           // std::cout << "model name: " << m_models[i]->getName()
           // << ", ekin=" << ekin
-          // << ", biasing=" << m_models[i]->getBias() << ", channelxs=" << channelxs << "\n";
+          // << ", biasing=" << m_models[i]->getBias() << ", channelxs=" << channelxs << "\n\n";
         }
         m_cache.cache_xs[i] = channelxs;
         m_cache.bias[i] = m_models[i]->getBias();

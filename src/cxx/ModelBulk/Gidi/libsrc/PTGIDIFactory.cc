@@ -29,7 +29,6 @@
 #include <functional>
 #include "PTMaterialDecomposer.hh"
 #include "PTGIDIModel.hh"
-#include "PTGIDINeutronElastic.hh"
 
 #include "PTGIDIFactory.hh"
 
@@ -84,7 +83,7 @@ bool Prompt::GIDIFactory::available() const
 }
 
 std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createNeutronGIDIModel(const std::vector<Prompt::IsotopeComposition> &vecComp, 
-double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelastic, double maxEKinNonelastic) const
+double bias, double elasticThreshold, double minEKin, double maxEKin) const
 {
   std::vector<std::shared_ptr<GIDIModel>> gidimodels;
   MCGIDI::Vector<MCGIDI::Protare *> protares(vecComp.size());
@@ -148,39 +147,41 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     if( gidiprotare->protareType( ) != GIDI::ProtareType::single ) {
         PROMPT_THROW(CalcError, "ProtareType must be single");
     }
-    
-    std::set<int> nonElastic, elastic;
     int numberOfReactions = gidiprotare->numberOfReactions();
     std::cout <<"Isotope " << name << " has " << numberOfReactions << " reactions in total"<< "\n";
+
+
+    std::set<int> reactionsToExclude;
+    auto mcprotare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+                                                                *m_particles, *m_domainHash, temperatures, reactionsToExclude );
+    gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name, mcprotare, temperature_K, bias, frac, minEKin, maxEKin, elasticThreshold));
+
       
-    for( int i = 0; i < numberOfReactions; ++i ) 
-    {
-      // The type of ENDF_MT can be found at https://t2.lanl.gov/nis/endf/mts.html
-      if(gidiprotare->reaction(i)->ENDF_MT()==2)
-      {
-        elastic.emplace(i);
-      }
-      else
-      {
-        nonElastic.emplace(i);
-      }
-    }
+    // std::set<int> nonElastic, elastic;
+    // for( int i = 0; i < numberOfReactions; ++i ) 
+    // {
+    //   // The type of ENDF_MT can be found at https://t2.lanl.gov/nis/endf/mts.html
+    //   if(gidiprotare->reaction(i)->ENDF_MT()==2)
+    //   {
+    //     elastic.emplace(i);
+    //   }
+    //   else
+    //   {
+    //     nonElastic.emplace(i);
+    //   }
+    // }
 
-    auto mcProtare_elastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
-                                                             *m_particles, *m_domainHash, temperatures, nonElastic );
+    // auto mcProtare_elastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+    //                                                          *m_particles, *m_domainHash, temperatures, nonElastic );
 
-    auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
-                                                                *m_particles, *m_domainHash, temperatures, elastic );
+    // auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+    //                                                             *m_particles, *m_domainHash, temperatures, elastic );
 
-    gidimodels.emplace_back(std::make_shared<GIDINeutronElastic>(name, mcProtare_elastic,    temperature_K, bias, frac, minEKinElastic, maxEKinElastic));
-    gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name, mcProtare_nonelastic, temperature_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
+    // gidimodels.emplace_back(std::make_shared<GIDINeutronElastic>(name, mcProtare_elastic,    temperature_K, bias, frac, minEKinElastic, maxEKinElastic));
+    // gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name, mcProtare_nonelastic, temperature_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
 
     delete gidiprotare;
   }
-
-  // auto URR_protare_infos = std::make_shared<MCGIDI::URR_protareInfos>();
-  // for(auto s : singleProtares)
-  //   gidimodels.emplace_back(std::make_shared<GIDIModel>(std::get<1>(s), std::get<0>(s), std::get<2>(s), bias, std::get<3>(s), minEKin, maxEKin));
 
   return std::move(gidimodels);
 }

@@ -19,7 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <limits>
-
+#include "PTException.hh"
 #include "PTNCrystalScat.hh"
 #include "PTUnitSystem.hh"
 #include "PTRandCanonical.hh"
@@ -44,6 +44,8 @@ Prompt::NCrystalScat::~NCrystalScat()
 
 double Prompt::NCrystalScat::getCrossSection(double ekin) const
 {
+  pt_assert_always(ekin < m_modelvalid.maxEkin);
+
   if( m_scat.isOriented() ) {
     PROMPT_THROW(CalcError, "direction should be provided for oriented material");
   }
@@ -56,6 +58,8 @@ double Prompt::NCrystalScat::getCrossSection(double ekin) const
 
 double Prompt::NCrystalScat::getCrossSection(double ekin, const Prompt::Vector &dir) const
 {
+  // fixme
+  pt_assert_always(ekin < m_modelvalid.maxEkin);
 
   NCrystal::CrossSect xsect;
   if( m_scat.isOriented() ) {
