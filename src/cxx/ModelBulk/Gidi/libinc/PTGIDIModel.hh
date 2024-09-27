@@ -49,7 +49,7 @@ namespace Prompt {
   class GIDIModel  : public DiscreteModel {
   public:
     GIDIModel(int pgd, const std::string &name, std::shared_ptr<MCGIDI::Protare> mcprotare,
-              double temperature, double bias=1.0, double frac=1.0, double lowerlimt = 0., double upperlimt = std::numeric_limits<double>::max(), double elasticThreshold=0.);
+              double temperature, double bias=1.0, double frac=1.0, double lowerlimt = 0., double upperlimt = std::numeric_limits<double>::max());
     virtual ~GIDIModel();
 
     virtual double getCrossSection(double ekin) const override;
@@ -68,9 +68,6 @@ namespace Prompt {
     const double m_temperature, m_frac;
     MCGIDI::Sampling::Input *m_input;
     mutable int m_hashIndex;
-    int m_mt2_reaction_idx;
-    double m_elasticThreshold;
-
   };
 
   
