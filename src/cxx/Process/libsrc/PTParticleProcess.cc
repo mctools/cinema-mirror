@@ -40,7 +40,7 @@
 
 Prompt::ParticleProcess::ParticleProcess(const std::string &name, int pdg)
     : m_rng(Singleton<SingletonPTRand>::getInstance()),
-      m_compModel(std::make_unique<ModelCollection>(pdg)),
+      m_discretModels(std::make_unique<ModelCollection>(pdg)),
       m_numdensity(0.), m_name(name)
 {
   cfgPhysicsModel(name);
@@ -52,13 +52,13 @@ double Prompt::ParticleProcess::macroCrossSection(const Prompt::Particle &partic
 {
   double ekin = particle.hasEffEnergy() ? particle.getEffEKin() : particle.getEKin();
   const auto &dir = particle.hasEffEnergy() ? particle.getEffDirection() : particle.getDirection();
-  return m_numdensity * m_compModel->totalCrossSection(particle.getPDG(), ekin, dir);
+  return m_numdensity * m_discretModels->totalCrossSection(particle.getPDG(), ekin, dir);
 }
 
 bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, double stepLength, bool hitWall) const
 {
-  // if (m_compModel->getSupportedGPD() != particle.getPDG())
-  //   PROMPT_THROW2(CalcError, "ParticleProcess::sampleFinalState " << m_name << " does not support particle " << particle.getPDG() << ", " << m_compModel->getSupportedGPD());
+  // if (m_discretModels->getSupportedGPD() != particle.getPDG())
+  //   PROMPT_THROW2(CalcError, "ParticleProcess::sampleFinalState " << m_name << " does not support particle " << particle.getPDG() << ", " << m_discretModels->getSupportedGPD());
   bool isPropagateInVol = false;
 
   if (!particle.isAlive())
@@ -69,7 +69,7 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
   {
     if (stepLength)
     {
-      particle.scaleWeight(m_compModel->calculateWeight(stepLength * m_numdensity, true));
+      particle.scaleWeight(m_discretModels->calculateWeight(stepLength * m_numdensity, true));
     }
     return isPropagateInVol;
   }
@@ -86,7 +86,7 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
     Vector comove_dir;
 
     // sample in the comoving frame
-    m_compModel->generate(ekineff, direff, comove_ekin, comove_dir);
+    m_discretModels->generate(ekineff, direff, comove_ekin, comove_dir);
     if (comove_ekin != -1) // non-capture fixme: this should not be called when EXITing
     {
       Vector v_comoving = comove_dir * std::sqrt(2 * comove_ekin / particle.getMass());
@@ -108,7 +108,7 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
   }
   else
   {
-    m_compModel->generate(particle.getEKin(), particle.getDirection(), lab_ekin, lab_dir);
+    m_discretModels->generate(particle.getEKin(), particle.getDirection(), lab_ekin, lab_dir);
   }
 
   // fixme: when a particle exiting a volume, a reaction channel is forced to sampled at the moment
@@ -116,7 +116,7 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
   // std::cout << particle.getEventID() << ", is alive? " << particle.isAlive() << ", wall? "<< hitWall<<
   //  ", labEkin " << lab_ekin   << ", effEkin " << particle.getEffEKin() << "\n";
 
-  double weightCorrection = m_compModel->calculateWeight(stepLength * m_numdensity, false);
+  double weightCorrection = m_discretModels->calculateWeight(stepLength * m_numdensity, false);
 
   // treating secondaries
   auto &stm = Singleton<StackManager>::getInstance();
@@ -144,8 +144,8 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
 
 double Prompt::ParticleProcess::sampleStepLength(const Prompt::Particle &particle) const
 {
-  // if (m_compModel->getSupportedGPD() != particle.getPDG())
-  //   PROMPT_THROW2(CalcError, "ParticleProcess::sampleStepLength " << m_name << " does not support particle " << particle.getPDG() << ", " << m_compModel->getSupportedGPD());
+  // if (m_discretModels->getSupportedGPD() != particle.getPDG())
+  //   PROMPT_THROW2(CalcError, "ParticleProcess::sampleStepLength " << m_name << " does not support particle " << particle.getPDG() << ", " << m_discretModels->getSupportedGPD());
 
   double mxs = macroCrossSection(particle);
   if (mxs)
@@ -182,7 +182,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
       << ", the switching energy at " << gidimin << "eV.\n";
       // NCrystal models
       if(gidimin>0)
-         m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0, gidimin));    
+         m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0, gidimin));    
       
       // GIDI models 
       auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
@@ -194,24 +194,24 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
       auto models = gidifactory.createNeutronGIDIModel(isotopes, 1., gidimin<=0.?0:gidimin);
 
       for(const auto &v: models)
-        m_compModel->addPhysicsModel(v);
+        m_discretModels->addPhysicsModel(v);
 
       if(cd.getGammaTransport())
       {
         auto models = gidifactory.createPhotonGIDIModel(isotopes, 1.);
         for(const auto &v: models)
-           m_compModel->addPhysicsModel(v);
+           m_discretModels->addPhysicsModel(v);
 
         auto atomic_models = gidifactory.createPhotonGIDIModel(shrink2element(isotopes), 1.);
         for(const auto &v: atomic_models)
-           m_compModel->addPhysicsModel(v);
+           m_discretModels->addPhysicsModel(v);
       }
     }
     else
     #endif
     {
-      m_compModel->addPhysicsModel(std::make_shared<NCrystalAbs>(cfgstr, 1.0, 0));
-      m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0));
+      m_discretModels->addPhysicsModel(std::make_shared<NCrystalAbs>(cfgstr, 1.0, 0));
+      m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0));
     }
 
   }
@@ -245,12 +245,12 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
       auto models = gidifactory.createNeutronGIDIModel(isotopes, abs_bias, gidimin<=0.?0:gidimin);
 
       for(const auto &v: models)
-        m_compModel->addPhysicsModel(v);
+        m_discretModels->addPhysicsModel(v);
 
       // NCrystal models 
       if(gidimin>0.)
       {
-        m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0, gidimin));
+        m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0, gidimin));
       }
       else
         std::cout << "!The ncrystal elastic scatter is not created!\n";
@@ -259,25 +259,25 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
       {
         auto models = gidifactory.createPhotonGIDIModel(isotopes, 1.);
         for(const auto &v: models)
-           m_compModel->addPhysicsModel(v);
+           m_discretModels->addPhysicsModel(v);
 
         auto atomic_models = gidifactory.createPhotonGIDIModel(shrink2element(isotopes), 1.);
         for(const auto &v: atomic_models)
-           m_compModel->addPhysicsModel(v);
+           m_discretModels->addPhysicsModel(v);
       }
     }
     else
     #endif
     {
-      m_compModel->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0));
-      m_compModel->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias, 0));
+      m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0));
+      m_discretModels->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias, 0));
     }
 
   }
   else if (type == PhysicsFactory::PhysicsType::NC_IDEALSCAT)
   {
     auto idsct = pfact.createIdealElaScat(cfgstr);
-    m_compModel->addPhysicsModel(idsct);
+    m_discretModels->addPhysicsModel(idsct);
     m_numdensity =  reinterpret_cast<IdealElaScat *>(idsct.get())->getNumberDensity();
   }
 
