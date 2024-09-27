@@ -48,15 +48,27 @@ namespace Prompt
     void setEnableGidiPowerIteration(bool t) { m_gidiPowerIteration=t; }
 
     std::string getGidiPops() const {return m_gidipops;};
-    void setGidiPops(const std::string &s ) { m_gidipops = s; };
-
     std::string getGidiMap() const {return m_gidimap;};
+    
+    void setGidiPops(const std::string &s ) { m_gidipops = s; };
     void setGidiMap(const std::string &s ) { m_gidimap = s; };
+
+    std::string getDataPath() const {
+      const char* envVar = std::getenv("CINEMAPATH");
+      if (envVar!= nullptr) {
+          std::string cinemaPath(envVar);
+          cinemaPath += "/external/ptdata/";
+          std::cout << "getDataPath" << cinemaPath << std::endl;
+          return cinemaPath;
+      } else 
+          return "";
+    }
 
   private:
     friend class Singleton<GidiSetting>;
     GidiSetting();
     ~GidiSetting();
+
     bool m_enablegidi;
     double m_gidithreshold;
     bool m_gidiSampleNonTransportingParticles;

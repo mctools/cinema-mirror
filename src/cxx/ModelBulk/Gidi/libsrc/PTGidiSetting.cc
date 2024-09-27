@@ -25,8 +25,8 @@ Prompt::GidiSetting::GidiSetting()
 m_gidiSampleNonTransportingParticles(true), 
 m_gidiEnableGamma(true),
 m_gidiPowerIteration(false),
-m_gidipops("/home/caixx/git/cinema/external/ptdata/pops.xml"), 
-m_gidimap("/home/caixx/git/cinema/external/ptdata/all.map")
+m_gidipops(getDataPath()+"pops.xml"), 
+m_gidimap(getDataPath()+"all.map")
 {
 }
 

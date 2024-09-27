@@ -19,6 +19,7 @@
 
 #include <MCGIDI.hpp>
 #include "PTRandCanonical.hh"
+#include "PTGidiSetting.hh"
 
 class Bins {
 
@@ -227,10 +228,10 @@ void main2( int argc, char **argv ) {
 
 
     GIDI::Construction::Settings construction( GIDI::Construction::ParseMode::all, GIDI::Construction::PhotoMode::nuclearAndAtomic );
-    // GIDI::Protare *protare = parseTestOptions.protare( pops, "/home/caixx/git/cinema/external/ptdata/pops.xml", "/home/caixx/git/cinema/external/ptdata/all.map", construction, PoPI::IDs::neutron, "U235" );
-    PoPI::Database pops("/home/caixx/git/cinema/external/ptdata/pops.xml" );
-
-    GIDI::Map::Map map( "/home/caixx/git/cinema/external/ptdata/all.map", pops );
+    // GIDI::Protare *protare = parseTestOptions.protare( pops, "/home/xxcai1/git/cinema/external/ptdata/pops.xml", "/home/xxcai1/git/cinema/external/ptdata/all.map", construction, PoPI::IDs::neutron, "U235" );
+    auto &gs = Prompt::Singleton<Prompt::GidiSetting>::getInstance();
+    PoPI::Database pops(gs.getGidiPops() );
+    GIDI::Map::Map map( gs.getGidiMap(), pops );
 
     GIDI::Protare *protare =  (GIDI::Protare *) map.protare( construction, pops, "n", "U236" ) ;
 
