@@ -121,7 +121,7 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
       if(ekin_MeV>m_mcprotare->URR_domainMin() && ekin_MeV<m_mcprotare->URR_domainMax()) 
       {
         m_urr_info->updateProtare(m_mcprotare.get(), ekin_MeV, getRandNumber, nullptr);
-        m_cacheGidiXS = m_mcprotare->URR_crossSection( *m_urr_info, m_hashIndex,  0, ekin_MeV, true );  
+        m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, m_hashIndex,  0, ekin_MeV, true );  
       }
       else
       {

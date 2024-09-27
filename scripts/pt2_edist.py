@@ -25,7 +25,7 @@ cdata.setEnableGidiPowerIteration(False)
 
 # energy = [5e6, 10e6]
 
-energy=10e6
+energy=1e6
 
 partnum = 1e4
 loweredge=1e-5
