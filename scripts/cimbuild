@@ -1,74 +1,67 @@
-#!/bin/bash
+#!/usr/bin/env python3
+import os
+import argparse
+import subprocess
 
-USAGE="Usage: $0 [-t] [-d | -r] [-c]"
+def run_command(command):
+    try:
+        subprocess.run(command, shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error running command: {command}. Error: {e}")
+        exit(1)
 
-# Initialize variables
-TESTFLAG=""
-BUILDTYPE=""
-CLEANFLAG=""
+def main():
+    parser = argparse.ArgumentParser(description="Build and test cinema.")
+    parser.add_argument('-t', action='store_const', const='test', dest='testflag', help='Run tests.')
+    build_group = parser.add_mutually_exclusive_group()
+    build_group.add_argument('-d', action='store_const', const='Debug', dest='buildtype', help='Build in debug mode.')
+    build_group.add_argument('-r', action='store_const', const='Release', dest='buildtype', help='Build in release mode.')
+    parser.add_argument('-c', action='store_const', const='clean', dest='cleanflag', help='Clean the build.')
+    parser.add_argument('--withgidi', action='store_true', help='Enable GIDI in CMake. (Default: False)')
+    parser.add_argument('--withcatima', action='store_true', help='Enable CATIMA in CMake. (Default: False)')
+    args = parser.parse_args()
 
-# Parse command-line options
-while getopts "htdrc" option; do
-  case "${option}" in
-    h)
-      echo "$USAGE"
-      exit 0
-      ;;
-    t)
-      TESTFLAG="test"
-      ;;
-    d)
-      echo "Building cinema in debug mode"
-      BUILDTYPE="Debug"
-      ;;
-    r)
-      echo "Building cinema in release mode"
-      BUILDTYPE="Release"
-      ;;
-    c)
-      CLEANFLAG="clean"
-      ;;
-    *)
-      echo "$USAGE"
-      exit 1
-      ;;
-  esac
-done
+    cinema_path = os.environ.get('CINEMAPATH')
+    if not cinema_path:
+        print("Error: CINEMAPATH environment variable is not set.")
+        exit(1)
 
-# Ensure CINEMAPATH is set
-if [ -z "$CINEMAPATH" ]; then
-  echo "Error: CINEMAPATH environment variable is not set."
-  exit 1
-fi
+    build_dir = os.path.join(cinema_path, 'cinemabin')
+    os.chdir(build_dir)
 
-# Change to the build directory
-cd "$CINEMAPATH/cinemabin" || { echo "Error: Could not change to directory $CINEMAPATH/cinemabin"; exit 1; }
+    if args.cleanflag == 'clean':
+        print("Cleaning the build directory")
+        run_command('make clean')
 
-# Clear the build if -c option is set
-if [ "$CLEANFLAG" == "clean" ]; then
-  echo "Cleaning the build directory"
-  make clean
-fi
+    cmake_args = []
+    if args.buildtype:
+        cmake_args.extend([f'-DCMAKE_BUILD_TYPE={args.buildtype}', '-DCMAKE_CXX_FLAGS_DEBUG="-g -O0"', '-DCMAKE_C_FLAGS_DEBUG="-g -O0"'])
+    else:
+        cmake_args.append('..')
+    if args.withgidi:
+        cmake_args.append('-DENABLE_GIDI=ON')
+    else:
+        cmake_args.append('-DENABLE_GIDI=OFF')
+    if args.withcatima:
+        cmake_args.append('-DENABLE_CATIMA=ON')
+    else:
+        cmake_args.append('-DENABLE_CATIMA=OFF')
+    run_command(f'cmake {" ".join(cmake_args)}')
 
-# Run cmake with appropriate build type
-if [ -z "$BUILDTYPE" ]; then
-  cmake ..
-else
-  cmake -DCMAKE_BUILD_TYPE="$BUILDTYPE" -DCMAKE_CXX_FLAGS_DEBUG="-g -O0" -DCMAKE_C_FLAGS_DEBUG="-g -O0" ..
-fi
+    run_command('make -j')
 
-# Build and optionally run tests
-make -j
+    if args.testflag == 'test':
+        cpu_count = os.cpu_count()
+        if cpu_count is None:
+            test_cpu_count = 1
+        else:
+            test_cpu_count = cpu_count // 2
+        print(f"Running tests with {test_cpu_count} CPUs")
+        run_command(f'ctest -j{test_cpu_count}')
+    else:
+        print("Skipped unittest")
 
-if [ "$TESTFLAG" == "test" ]; then
-  # Calculate half of the available CPUs
-  CPU_COUNT=$(nproc)
-  TEST_CPU_COUNT=$((CPU_COUNT / 2))
-  echo "Running tests with $TEST_CPU_COUNT CPUs"
-  ctest -j"$TEST_CPU_COUNT"
-else
-  echo "Skipped unittest"
-fi
+    os.chdir('..')
 
-# Return to the previous directory
-cd - || exit 1
+if __name__ == '__main__':
+    main()
