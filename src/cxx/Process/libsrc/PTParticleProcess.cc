@@ -31,9 +31,11 @@
 #include "PTNCrystalAbs.hh"
 #include "PTCfgParser.hh"
 #include "PTMaterialDecomposer.hh"
+#ifdef ENABLE_GIDI
 #include "PTGIDIModel.hh"
 #include "PTGIDIFactory.hh"
 #include "PTGidiSetting.hh"
+#endif
 #include "PTStackManager.hh"
 
 Prompt::ParticleProcess::ParticleProcess(const std::string &name, int pdg)
@@ -164,10 +166,11 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
   auto &pfact = Singleton<PhysicsFactory>::getInstance();
   PhysicsFactory::PhysicsType type = pfact.checkPhysicsType(cfgstr);
 
+  #ifdef ENABLE_GIDI
   auto &cd = Singleton<GidiSetting>::getInstance();
-
   const bool enablegidi = cd.getEnableGidi();
   const double gidimin = cd.getGidiThreshold();
+  #endif
   if (type == PhysicsFactory::PhysicsType::NC_RAW)
   {
     m_numdensity = pfact.nccalNumDensity(cfgstr);
