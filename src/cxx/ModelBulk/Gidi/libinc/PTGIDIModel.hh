@@ -57,6 +57,9 @@ namespace Prompt {
     virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
 
   protected:
+    Vector randIsotropicDirection() const;
+    Vector randDirectionGivenScatterMu( double mu, const Vector& indir ) const;
+
     const GIDIFactory &m_factory;
     Launcher &m_launcher; 
     std::shared_ptr<MCGIDI::Protare> m_mcprotare;

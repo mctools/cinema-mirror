@@ -131,8 +131,8 @@ double bias, double elasticThreshold, double minEKin, double maxEKin) const
 
     
 
-    // std::string label( temperatures[0].heatedCrossSection( ) ); // fixme: heated? gridded
-    std::string label( temperatures[0].griddedCrossSection( ) );
+    std::string label( temperatures[0].heatedCrossSection( ) ); // fixme: heated? gridded
+    // std::string label( temperatures[0].griddedCrossSection( ) );
 
     double temperature_K = temperatures[0].temperature( ).value()*Unit::MeV / const_boltzmann; 
 

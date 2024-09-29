@@ -213,9 +213,7 @@ class Hist1D(HistBase):
             center = self.getCentre()
             w = self.getWeight()
             err = self.getSdev()
-            if label is None:
-                label = f'Weight {w.sum()}'
-            plt.errorbar(center, w, yerr=err*sigma, fmt='s', label=label)
+            plt.errorbar(center, w, yerr=err*sigma, fmt='s', label=f'Weight {w.sum()}' if label is None else f'{label} {w.sum()}')
             if log:
                 plt.yscale('log')
                 plt.xscale('log')
