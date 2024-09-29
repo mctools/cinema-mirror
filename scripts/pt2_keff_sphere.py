@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 cdata=GidiSetting()
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(True)
-cdata.setGidiThreshold(5)
+cdata.setGidiThreshold(-5)
 
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
@@ -32,7 +32,7 @@ sim = MySim(seed=1010)
 sim.makeWorld()
 
 gun = IsotropicGun()
-gun.setEnergy(10e6)
+gun.setEnergy(3e6)
 gun.setPosition([0,0,0])
 
 batchsize = 1e4

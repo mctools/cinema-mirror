@@ -85,33 +85,74 @@ Prompt::GIDIModel::~GIDIModel()
 }
 
 
+Prompt::Vector Prompt::GIDIModel::randIsotropicDirection() const
+{
+  //Very fast method (Marsaglia 1972) for generating points uniformly on the
+  //unit sphere, costing approximately ~2.54 calls to rand->generate() and 1
+  //call to sqrt().
+
+  //Reference: Ann. Math. Statist. Volume 43, Number 2 (1972), 645-646.
+  //           doi:10.1214/aoms/1177692644
+  //Available at https://projecteuclid.org/euclid.aoms/1177692644
+
+  double x0,x1,s;
+  do {
+    x0 = 2.0*m_rng.generate()-1.0;
+    x1 = 2.0*m_rng.generate()-1.0;
+    s = x0*x0 + x1*x1;
+  } while (!s||s>=1);
+  double t = 2.0*std::sqrt(1-s);
+  return { x0*t, x1*t, 1.0-2.0*s };
+}
+
+
+Prompt::Vector Prompt::GIDIModel::randDirectionGivenScatterMu( double mu, const Prompt::Vector& indir ) const
+{
+  pt_assert(std::abs(mu)<=1.);
+
+  double m2 = indir.mag2();
+  double invm = ( std::abs(m2-1.0)<1e-12 ? 1.0 : 1.0/std::sqrt(m2) );
+  Vector u = indir * invm;
+
+  //1) Create random unit-vector which is not parallel to indir:
+  Vector tmpdir(0,0,0 );
+
+  while (true) {
+    tmpdir = randIsotropicDirection();
+    double dotp = tmpdir.dot(u);
+    double costh2 = dotp*dotp;//tmpdir is normalised vector
+    //This cut is symmetric in the parallel plane => does not ruin final
+    //phi-angle-flatness:
+    if (costh2<0.99)
+      break;
+  }
+  //2) Find ortogonal vector (the randomness thus tracing a circle on the
+  //unit-sphere, once normalised)
+  double xx = tmpdir.y()*u.z() - tmpdir.z()*u.y();
+  double yy = tmpdir.z()*u.x() - tmpdir.x()*u.z();
+  double zz = tmpdir.x()*u.y() - tmpdir.y()*u.x();
+  double rm2 = xx*xx+yy*yy+zz*zz;
+
+  //3) Use these two vectors to easily find the final direction (the
+  //randomness above provides uniformly distributed azimuthal angle):
+  double k = std::sqrt((1-mu*mu)/rm2);
+  u *= mu;
+  return { u.x()+k*xx, u.y()+k*yy, u.z()+k*zz };
+}
+
+
 double Prompt::GIDIModel::getCrossSection(double ekin) const
 {
-  if(ekin==m_cacheEkin)
-  {
-    return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
-  }
-  else
+  double ekin_MeV = ekin*1e-6;
+  // if(ekin==m_cacheEkin && (ekin_MeV<m_mcprotare->URR_domainMin() || ekin_MeV>m_mcprotare->URR_domainMax()))
+  // {
+  //   return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
+  // }
+  // else
   {    
     m_cacheEkin = ekin;
-    double ekin_MeV = ekin*1e-6;
     m_hashIndex = m_factory.getHashID(ekin_MeV);
-
-    if(m_mcprotare->hasURR_probabilityTables())
-    {
-      if(ekin_MeV>m_mcprotare->URR_domainMin() && ekin_MeV<m_mcprotare->URR_domainMax()) 
-      {
-        m_urr_info->updateProtare(m_mcprotare.get(), ekin_MeV, getRandNumber, nullptr);
-        m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, m_hashIndex,  0, ekin_MeV, true );  
-      }
-      else
-      {
-        m_urr_info->updateProtare(m_mcprotare.get(), ekin_MeV, getZero, nullptr);
-        m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, m_hashIndex, 0, ekin_MeV, true );  
-      }
-    }
-    else
-      m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, m_hashIndex, m_input->m_temperature*1e-3, ekin_MeV, true );
+    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, m_hashIndex, m_input->m_temperature*1e-3, ekin_MeV, true );
     return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
   }
 }
@@ -121,8 +162,7 @@ double Prompt::GIDIModel::getCrossSection(double ekin, const Prompt::Vector &dir
   return getCrossSection(ekin);
 }
 
-
-void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
+void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, double &final_ekin, Prompt::Vector &final_dir) const
 {
   pt_assert_always(ekin==m_cacheEkin);
   const double ekin_MeV = ekin*1e-6;
@@ -164,7 +204,10 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &dir, double 
       // m_launcher.copyCurrentParticle(primary); 
       if(aproduct.m_productIndex==11)
       {
-        Neutron sec(labekin, labdir, primary.getPosition());
+        auto mu = labdir.angleCos(indir);
+        auto outdir = randDirectionGivenScatterMu(mu, labdir);
+
+        Neutron sec(labekin, outdir, primary.getPosition());
         sec.setTime(primary.getTime() + aproduct.m_birthTimeSec);
         secondaries.push_back(sec);
       }
