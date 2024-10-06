@@ -144,11 +144,11 @@ Prompt::Vector Prompt::GIDIModel::randDirectionGivenScatterMu( double mu, const 
 double Prompt::GIDIModel::getCrossSection(double ekin) const
 {
   double ekin_MeV = ekin*1e-6;
-  if(ekin==m_cacheEkin)
-  {
-    return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
-  }
-  else
+  // if(ekin==m_cacheEkin) // this is only efficent for the interactions that do not change neutron energy 
+  // {
+  //   return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
+  // }
+  // else
   {    
     m_cacheEkin = ekin;
     m_hashIndex = m_factory.getHashID(ekin_MeV);
