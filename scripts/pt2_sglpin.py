@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 cdata=GidiSetting()
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(True)
-cdata.setGidiThreshold(5)
+cdata.setGidiThreshold(-5)
 
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
@@ -21,7 +21,7 @@ class MySim(PromptMPI):
     def makeWorld(self):
 
         boxhsize = 25.4 # 1 inch
-        hlength = 10000
+        hlength = 1e6
         reflhthick = 1
 
         problemlist = []
@@ -30,7 +30,7 @@ class MySim(PromptMPI):
         problemlist.append([6.350, 'freegas::U/18.8gcm3/U_is_0.9650_U238_0.0350_U235;temp=293.6'])
         problemlist.append([3.175, 'freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'])
 
-        idx = 0
+        idx = 1
         fradius = problemlist[idx][0]
         fuel = Material(problemlist[idx][1]) 
 

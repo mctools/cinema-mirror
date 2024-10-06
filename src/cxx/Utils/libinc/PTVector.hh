@@ -73,6 +73,9 @@ namespace Prompt {
     bool isOrthogonal(const Vector&, double epsilon = 1e-10) const;
     bool isUnitVector(double tolerance = 1e-10) const;
     bool isStrictNullVector() const { return m_x==0 && m_y==0 && m_z==0; }
+    
+    void findRotationMatrixFrom001(double rotation_matrix[9]) const;
+    Vector applyRotationMatrix(const double rotation_matrix[9]) const;
 
     inline const double& x() const { return m_x; }
     inline const double& y() const { return m_y; }
@@ -110,6 +113,49 @@ namespace Prompt {
 ////////////////////////////
 // Inline implementations //
 ////////////////////////////
+
+void inline Prompt::Vector::findRotationMatrixFrom001(double rotation_matrix[9]) const {
+    Vector vec_rotated_from_001_unit = this->unit();
+
+    if (vec_rotated_from_001_unit == Vector(0, 0, 1)) {
+        // Identity matrix for no rotation
+        for (int i = 0; i < 9; ++i) {
+            rotation_matrix[i] = (i % 4 == 0) ? 1.0 : 0.0;
+        }
+        return;
+    }
+
+    // Simplified cross product for z-axis [0, 0, 1] and vec_rotated_from_001_unit
+    Vector v(-vec_rotated_from_001_unit.y(), vec_rotated_from_001_unit.x(), 0);
+    double s = v.mag();
+    double c = vec_rotated_from_001_unit.z(); // Simplified dot product with z-axis
+
+    // Skew-symmetric matrix in 1D array
+    double k_mat[9] = {
+        0, -v.z(), v.y(),
+        v.z(), 0, -v.x(),
+        -v.y(), v.x(), 0
+    };
+
+    // Rodrigues' rotation formula
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            rotation_matrix[i * 3 + j] = (i == j) + k_mat[i * 3 + j] + 
+                (k_mat[i * 3 + 0] * k_mat[0 * 3 + j] + 
+                 k_mat[i * 3 + 1] * k_mat[1 * 3 + j] + 
+                 k_mat[i * 3 + 2] * k_mat[2 * 3 + j]) * ((1 - c) / (s * s));
+        }
+    }
+}
+
+Prompt::Vector inline Prompt::Vector::applyRotationMatrix(const double rotation_matrix[9]) const {
+    return Vector(
+        rotation_matrix[0] * m_x + rotation_matrix[1] * m_y + rotation_matrix[2] * m_z,
+        rotation_matrix[3] * m_x + rotation_matrix[4] * m_y + rotation_matrix[5] * m_z,
+        rotation_matrix[6] * m_x + rotation_matrix[7] * m_y + rotation_matrix[8] * m_z
+    );
+}
+
 
 inline Prompt::Vector::Vector()
   : m_x(0.), m_y(0.), m_z(0.)

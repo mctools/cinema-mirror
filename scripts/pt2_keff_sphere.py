@@ -13,7 +13,6 @@ cdata=GidiSetting()
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(True)
 cdata.setGidiThreshold(-5)
-
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)   
@@ -21,6 +20,7 @@ class MySim(PromptMPI):
     def makeWorld(self):
         radius = 87.407
         # fuel = Material('freegas::U/18gcm3/U_is_U235')
+        # fuel = 'freegas::U/18.8gcm3/U_is_0.1000_U238_0.9000_U235;temp=293.6'
         fuel = Material('freegas::UH999/1.1gcm3/U_is_U235/H_is_H1;temp=293.6') 
         world = Volume("world", Sphere(0, radius+2))
         godiva = Volume('Godiva', Sphere(0, radius), matCfg=fuel)
@@ -42,7 +42,7 @@ batchsize = 1e4
 
 sim.simulate(gun, batchsize)
 
-totCycle = 250
+totCycle = 500
 settleCycle = 50
 totneutron = 0
 

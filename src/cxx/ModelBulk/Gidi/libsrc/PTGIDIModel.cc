@@ -144,11 +144,11 @@ Prompt::Vector Prompt::GIDIModel::randDirectionGivenScatterMu( double mu, const 
 double Prompt::GIDIModel::getCrossSection(double ekin) const
 {
   double ekin_MeV = ekin*1e-6;
-  // if(ekin==m_cacheEkin && (ekin_MeV<m_mcprotare->URR_domainMin() || ekin_MeV>m_mcprotare->URR_domainMax()))
-  // {
-  //   return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
-  // }
-  // else
+  if(ekin==m_cacheEkin)
+  {
+    return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
+  }
+  else
   {    
     m_cacheEkin = ekin;
     m_hashIndex = m_factory.getHashID(ekin_MeV);
@@ -169,11 +169,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, doubl
 
   std::vector<Particle> secondaries;
 
-
-  // m_hashIndex = m_factory.getHashID(ekin_MeV); //fixme, to remove if   pt_assert_always(ekin==m_cacheEkin)
-
   int reactionIndex =  m_mcprotare->sampleReaction( *m_urr_info, m_hashIndex, m_input->m_temperature*1e-3, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
-  
 
   MCGIDI::Reaction const *reaction = m_mcprotare->reaction( reactionIndex );
   pt_assert_always(m_mcprotare->threshold( reactionIndex ) < ekin_MeV);
@@ -185,7 +181,6 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, doubl
 
 
   double totalekin = 0;
-
   for( std::size_t i = 0; i < m_products->size( ); i++ ) 
   {
     MCGIDI::Sampling::Product &aproduct = (*m_products)[i];
@@ -193,27 +188,25 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, doubl
     if (aproduct.m_productIndex==11 ||  aproduct.m_productIndex==8) //neutron 11 or gamma 8
     {
      
-      double labekin = aproduct.m_kineticEnergy*1e6;
+      double gidi_ekin_ev = aproduct.m_kineticEnergy*1e6;
       double i_speed= 1./sqrt(aproduct.m_px_vx*aproduct.m_px_vx + aproduct.m_py_vy*aproduct.m_py_vy + aproduct.m_pz_vz*aproduct.m_pz_vz);
-      Vector labdir(aproduct.m_px_vx*i_speed, aproduct.m_py_vy*i_speed, aproduct.m_pz_vz*i_speed);
+      Vector gidi_dir(aproduct.m_px_vx*i_speed, aproduct.m_py_vy*i_speed, aproduct.m_pz_vz*i_speed);
+      // gidi_dir.normalise();
 
-      totalekin += labekin; // accumulate the energy that will be carried by a particle in the later simulation. 
+      totalekin += gidi_ekin_ev; // accumulate the energy that will be carried by a particle in the later simulation. 
 
       // make secondary
       const Particle & primary = m_launcher.getCurrentParticle(); 
       // m_launcher.copyCurrentParticle(primary); 
       if(aproduct.m_productIndex==11)
       {
-        auto mu = labdir.angleCos(indir);
-        auto outdir = randDirectionGivenScatterMu(mu, labdir);
-
-        Neutron sec(labekin, outdir, primary.getPosition());
+        Neutron sec(gidi_ekin_ev, gidi_dir, primary.getPosition());
         sec.setTime(primary.getTime() + aproduct.m_birthTimeSec);
         secondaries.push_back(sec);
       }
       else if(aproduct.m_productIndex==8)
       {
-        Photon sec(labekin, labdir, primary.getPosition());
+        Photon sec(gidi_ekin_ev, gidi_dir, primary.getPosition());
         sec.setTime(primary.getTime() + aproduct.m_birthTimeSec);
         if(m_factory.getGidiSetting().getGammaTransport() )
         {
@@ -228,6 +221,24 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, doubl
     // std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", secondaries->size() " <<  secondaries.size() << std::endl;
    
   }
+
+  // correct for the directions
+  if(secondaries.size())
+  {
+    double rotation_matrix[9];
+    indir.findRotationMatrixFrom001(rotation_matrix);
+    for(auto &sec: secondaries)
+    {
+      auto outdir = sec.getDirection().applyRotationMatrix(rotation_matrix);
+      sec.setDirection(outdir);
+      #ifdef DEBUG
+        Vector temp{0,0,1};
+        auto mu = temp.angleCos(sec.getDirection());
+        pt_assert(indir.angleCos(outdir) == mu); 
+      #endif
+    }
+  }
+
   
   // All secondary particles that are not simulated by prompt are contributed to the "energy deposition".
   // So, in the case that neutron is the only transporting particle, the energy deposition is calculated as incident neutorn kinetic energy 
@@ -239,7 +250,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, doubl
   m_launcher.registerDeposition(deposition);
 
   // Kill neutron in an absorption
-  if(secondaries.size()==0)
+  if(secondaries.empty())
   {
     // essentially killing the current active particle in the launcher
     final_ekin=ENERGYTOKEN_ABSORB;

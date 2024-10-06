@@ -127,6 +127,8 @@ double bias, double elasticThreshold, double minEKin, double maxEKin) const
     GIDI::Styles::TemperatureInfos temperatures = gidiprotare->temperatures( );
     for( GIDI::Styles::TemperatureInfos::const_iterator iter = temperatures.begin( ); iter != temperatures.end( ); ++iter ) {
       std::cout << "label = " << iter->heatedCrossSection( ) << "  temperature = " << iter->temperature( ).value( ) << std::endl;
+      // fixme: check temp is supported by the data
+      pt_assert_always(iter->temperature( ).value( ));
     }
 
     
@@ -151,34 +153,34 @@ double bias, double elasticThreshold, double minEKin, double maxEKin) const
     std::cout <<"Isotope " << name << " has " << numberOfReactions << " reactions in total"<< "\n";
 
 
-    // std::set<int> reactionsToExclude;
-    // auto mcprotare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
-    //                                                             *m_particles, *m_domainHash, temperatures, reactionsToExclude );
-    // gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name, mcprotare, temperature_K, bias, frac, minEKin, maxEKin, elasticThreshold));
+    std::set<int> reactionsToExclude;
+    auto mcprotare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+                                                                *m_particles, *m_domainHash, temperatures, reactionsToExclude );
+    gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name, mcprotare, temperature_K, bias, frac, minEKin, maxEKin));
 
       
-    std::set<int> nonElastic, elastic;
-    for( int i = 0; i < numberOfReactions; ++i ) 
-    {
-      // The type of ENDF_MT can be found at https://t2.lanl.gov/nis/endf/mts.html
-      if(gidiprotare->reaction(i)->ENDF_MT()==2)
-      {
-        elastic.emplace(i);
-      }
-      else
-      {
-        nonElastic.emplace(i);
-      }
-    }
+    // std::set<int> nonElastic, elastic;
+    // for( int i = 0; i < numberOfReactions; ++i ) 
+    // {
+    //   // The type of ENDF_MT can be found at https://t2.lanl.gov/nis/endf/mts.html
+    //   if(gidiprotare->reaction(i)->ENDF_MT()==2)
+    //   {
+    //     elastic.emplace(i);
+    //   }
+    //   else
+    //   {
+    //     nonElastic.emplace(i);
+    //   }
+    // }
 
-    auto mcProtare_elastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
-                                                             *m_particles, *m_domainHash, temperatures, nonElastic );
+    // auto mcProtare_elastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+    //                                                          *m_particles, *m_domainHash, temperatures, nonElastic );
 
-    auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
-                                                                *m_particles, *m_domainHash, temperatures, elastic );
+    // auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+    //                                                             *m_particles, *m_domainHash, temperatures, elastic );
 
-    gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_ela", mcProtare_elastic, temperature_K, bias, frac, elasticThreshold, maxEKin));
-    gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_nonela", mcProtare_nonelastic, temperature_K, bias, frac, minEKin, maxEKin));
+    // gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_ela", mcProtare_elastic, temperature_K, bias, frac, elasticThreshold, maxEKin));
+    // gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_nonela", mcProtare_nonelastic, temperature_K, bias, frac, minEKin, maxEKin));
 
     delete gidiprotare;
   }
@@ -217,6 +219,7 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     {
         std::cout << "WARNING: delayed neutron fission data for "<< name<< " are incomplete and are not included." << std::endl;
         delay = GIDI::Transporting::DelayedNeutrons::off;
+        pt_assert_always(false);
     }
     else
       std::cout << "Delayed neutron fission data for "<< name<< " are included." << std::endl;
