@@ -12,7 +12,8 @@ import matplotlib.pyplot as plt
 cdata=GidiSetting()
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(True)
-cdata.setGidiThreshold(-5)
+cdata.setGidiThreshold(5)
+
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)   

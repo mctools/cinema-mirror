@@ -20,14 +20,14 @@ os.environ['OPENMC_CROSS_SECTIONS']='/home/xxcai1/git/openmc/data/endfb-viii.0-h
 plotStyle()
 
 cdata=GidiSetting()
-cdata.setGidiThreshold(-5)
+cdata.setGidiThreshold(5)
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(False)
 
 # energy = [20e3, 149e3]  #U238 URR
 
 # U235, URR_domainMin 0.002251MeV,  URR_domainMax 0.024999MeV.
-energy = [.002251e6, .024999e6]
+# energy = [.002251e6, .024999e6]
 
 # energy = [1e6, 6e6]
 # energy = [1e5, 10e5]
@@ -35,7 +35,7 @@ energy = [.002251e6, .024999e6]
 # energy = [1e3, 10e3]
 # energy = [1e2, 10e2]
 # energy = [1e1, 10e1]
-# energy = [1, 10]
+energy = [1, 10]
 # energy = [1e-1, 10e-1]
 # energy=1e-3
 

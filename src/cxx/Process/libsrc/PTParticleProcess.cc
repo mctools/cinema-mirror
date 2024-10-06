@@ -193,7 +193,7 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
         std::cout << v << std::endl;
 
       auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-      auto models = gidifactory.createNeutronGIDIModel(isotopes, 1., gidithreshold<=0.?0:gidithreshold);
+      auto models = gidifactory.createNeutronGIDIModel(isotopes, 1., gidithreshold<=0.?0.:gidithreshold);
 
       for(const auto &v: models)
         m_discretModels->addPhysicsModel(v);
@@ -209,12 +209,12 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
            m_discretModels->addPhysicsModel(v);
       }
     }
-    else
-    #endif
+    #else
     {
       m_discretModels->addPhysicsModel(std::make_shared<NCrystalAbs>(cfgstr, 1.0, 0));
       m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(cfgstr, 1.0, 0));
     }
+    #endif
 
   }
   else if (type == PhysicsFactory::PhysicsType::NC_SCATTER)
@@ -268,12 +268,12 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
            m_discretModels->addPhysicsModel(v);
       }
     }
-    else
-    #endif
+    #else
     {
       m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0));
       m_discretModels->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias, 0));
     }
+    #endif
 
   }
   else if (type == PhysicsFactory::PhysicsType::NC_IDEALSCAT)
