@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from  Cinema.Prompt.compoundModel import ModelCollection
+from Cinema.Prompt.compoundModel import ModelCollection
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 from Cinema.Interface import plotStyle
-from Cinema.Prompt.GidiSetting import GidiSetting 
+from Cinema.Prompt.GidiSetting import GidiSetting
 from Cinema.Prompt.utils import nccalNumDensity
 
 try:
@@ -15,56 +15,71 @@ except ModuleNotFoundError:
     print('OpenMC is not found')
     openmcfound = False
 
-
+# Add more comments to explain the function's purpose
+def calculate_cross_section(comp, ekin, pdg):
+    """
+    Calculate the cross-section for a given energy and particle type.
+    """
+    xs = np.zeros_like(ekin)
+    for i, energy in enumerate(ekin):
+        xs[i] = comp.xs(energy, pdg)
+    return xs
 
 plotStyle()
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('cfg', metavar='N', type=str, nargs='+', help='Prompt materil config')
+parser.add_argument('cfg', metavar='N', type=str, nargs='+', help='Prompt material config')
 
-parser.add_argument('-c', '--switchingenergy', action='store',  nargs='+', type=float, default=[-5],
+parser.add_argument('-c', '--switchingenergy', action='store', nargs='+', type=float, default=[-5],
                     dest='switchingenergy', help='model switching energy')
 
 parser.add_argument('-x', '--crosscomp', action='store_true', dest='crosscomp', help='cross comparison')
-parser.add_argument('-p', '--pdg', action='store',  nargs='+', type=int, default=[2112],
+parser.add_argument('-p', '--pdg', action='store', nargs='+', type=int, default=[2112],
                     dest='pdg', help='pdg number')
 
-
-cdata=GidiSetting()
+cdata = GidiSetting()
 cdata.setEnableGidi(True)
 
-args=parser.parse_args()
+args = parser.parse_args()
 print(args.switchingenergy)
 
-
-
-ekin = np.logspace(np.log10(20e6), -5, 100000)
+ekin = np.logspace(np.log10(20e6), -5, 300000)
+fig, ax = plt.subplots()
 
 for cfg in args.cfg:
     if openmcfound and args.crosscomp:
         m1 = openmc.Material.from_ncrystal(cfg)
         m1.name = cfg
-        fig = openmc.plot_xs({m1:['total']})
-    
+        openmc.plot_xs({m1: ['total']}, axis=ax)
+        curves = ax.lines
+
+        for curve in curves:
+            clab = curve.get_label()
+            if 'total' in clab:
+                newlable = clab.replace(' total', ', openmc')
+                curve.set_label(newlable)
+            print(f"Curve label: {curve.get_label()}")
+
     numberdensity = nccalNumDensity(cfg)
-    print('number density', )    
+    print('number density', )
 
-    for sen in args.switchingenergy:
+    for switching_energy in args.switchingenergy:
         for pdg in args.pdg:
-            cdata.setGidiThreshold(sen)
+            cdata.setGidiThreshold(switching_energy)
             comp = ModelCollection(cfg)
-            xs = np.zeros_like(ekin)
-            for i in range(ekin.size):
-                xs[i] = comp.xs(ekin[i], pdg)     
+            # Use vectorized operations to calculate cross-section
+            xs = calculate_cross_section(comp, ekin, pdg)
             if args.crosscomp:
-                xs = numberdensity*xs*1e-21
+                xs = numberdensity * xs * 1e-21
             else:
-                plt.xlabel('energy ,eV')
+                plt.xlabel('energy,eV')
                 plt.ylabel('cross section, barn')
-            plt.loglog(ekin, xs, label=cfg+', switching@'+str(sen)+ f' , pdg={pdg}')
+            plt.loglog(ekin, xs, label=cfg + ', switching@' + str(switching_energy) + f', pdg={pdg}')
 
-plt.legend(loc=0)
+plt.legend(loc='upper center', ncol=1)
 plt.tight_layout()
 plt.grid('both')
+ax.set_title("")
+
 plt.show()

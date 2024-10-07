@@ -206,7 +206,7 @@ def run(energy, numPart):
 
     # Add filters and scores to tally3
     tally3.filters = [cell_filter, energy_filter]
-    tally3.scores = ['heating']
+    tally3.scores = ['heating-local']
 
 
     tallies = openmc.Tallies([tally, tally2, tally3])
