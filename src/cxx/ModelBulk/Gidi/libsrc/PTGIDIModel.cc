@@ -143,18 +143,33 @@ Prompt::Vector Prompt::GIDIModel::randDirectionGivenScatterMu( double mu, const 
 
 double Prompt::GIDIModel::getCrossSection(double ekin) const
 {
-  double ekin_MeV = ekin*1e-6;
-  // if(ekin==m_cacheEkin) // this is only efficent for the interactions that do not change neutron energy 
-  // {
-  //   return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
-  // }
-  // else
-  {    
+  if(!m_modelvalid.ekinValid(ekin))
+    return 0.;
+
+  // ekin==m_cacheEkin is the case for thermal neutron elastic scattering 
+  // or neutron crossing geometry to the volume of the same material
+  if(ekin!=m_cacheEkin)
+  {
     m_cacheEkin = ekin;
+    double ekin_MeV = ekin*1e-6;
     m_hashIndex = m_factory.getHashID(ekin_MeV);
-    m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, m_hashIndex, m_input->m_temperature*1e-3, ekin_MeV, true );
-    return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
+    if(m_mcprotare->hasURR_probabilityTables())  {
+      if(ekin_MeV>m_mcprotare->URR_domainMin() && ekin_MeV<m_mcprotare->URR_domainMax()) 
+      {
+        m_urr_info->updateProtare(m_mcprotare.get(), ekin_MeV, getRandNumber, nullptr);
+        m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, m_hashIndex,  0, ekin_MeV );  
+      }
+      else
+      {
+        m_urr_info->updateProtare(m_mcprotare.get(), ekin_MeV, getZero, nullptr);
+        m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, m_hashIndex, m_input->m_temperature*1e-3, ekin_MeV );  
+      }
+    }
+    else
+      m_cacheGidiXS = m_mcprotare->crossSection( *m_urr_info, m_hashIndex, m_input->m_temperature*1e-3, ekin_MeV );  
   }
+  return m_cacheGidiXS*m_bias*Unit::barn*m_frac;
+
 }
 
 double Prompt::GIDIModel::getCrossSection(double ekin, const Prompt::Vector &dir) const
@@ -179,11 +194,11 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, doubl
 
   pt_assert_always(m_input->m_reaction==reaction);
 
-
   double totalekin = 0;
   for( std::size_t i = 0; i < m_products->size( ); i++ ) 
   {
     MCGIDI::Sampling::Product &aproduct = (*m_products)[i];
+    std::cout << reaction->ENDF_MT() << ", id " << i <<  ", aproduct " <<  aproduct.m_productIndex << ", " << aproduct.m_kineticEnergy*1e6 << std::endl;
 
     if (aproduct.m_productIndex==11 ||  aproduct.m_productIndex==8) //neutron 11 or gamma 8
     {
@@ -266,8 +281,6 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, doubl
   {
     // essentially killing the current active particle in the launcher
     final_ekin=ENERGYTOKEN_ABSORB;
-
-
 
     for(const auto &p: secondaries)
     {

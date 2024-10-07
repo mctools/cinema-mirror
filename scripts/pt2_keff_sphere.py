@@ -8,6 +8,8 @@ from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun
 from Cinema.Prompt.GidiSetting import GidiSetting 
 import matplotlib.pyplot as plt
+import numpy as np
+import time
 
 cdata=GidiSetting()
 cdata.setEnableGidi(True)
@@ -20,9 +22,10 @@ class MySim(PromptMPI):
 
     def makeWorld(self):
         radius = 87.407
-        # fuel = Material('freegas::U/18gcm3/U_is_U235')
+        # fuel = Material('freegas::U/18.8gcm3/U_is_U235')
         # fuel = 'freegas::U/18.8gcm3/U_is_0.1000_U238_0.9000_U235;temp=293.6'
-        fuel = Material('freegas::UH999/1.1gcm3/U_is_U235/H_is_H1;temp=293.6') 
+        # fuel = Material('freegas::UH999/1.1gcm3/U_is_U235/H_is_H1;temp=293.6') 
+        fuel = Material('freegas::U7H993/1.1gcm3/U_is_0.8571428571428572_U238_0.14285714285714285_U235/H_is_H1;temp=293.6') 
         world = Volume("world", Sphere(0, radius+2))
         godiva = Volume('Godiva', Sphere(0, radius), matCfg=fuel)
         world.placeChild('frod', godiva)     
@@ -41,19 +44,21 @@ batchsize = 1e4
 
 # sim.show(gun, 1)
 
+tottime = time.time()
 sim.simulate(gun, batchsize)
 
-totCycle = 500
-settleCycle = 50
+totCycle = 15
+settleCycle = 5
 totneutron = 0
 
 for i in range(totCycle):
+    t1 = time.time()
     num = sim.simulateSecondStack(batchsize)
-    print(f'iteration {i}')
+    print(f'iteration {i}', f'completed in {time.time()-t1}s')
     if i>=settleCycle:
         totneutron += num
-        print('keff', totneutron/(i-settleCycle+1)/batchsize)
+        print('keff', totneutron/(i-settleCycle+1)/batchsize, f'+/- {1./np.sqrt(totneutron)}')
 
 
-print('keff', totneutron/(totCycle-settleCycle)/batchsize)
+print('keff', totneutron/(totCycle-settleCycle)/batchsize, f'+/- {1./np.sqrt(totneutron)}', f'completed in {time.time()-tottime}s')
 

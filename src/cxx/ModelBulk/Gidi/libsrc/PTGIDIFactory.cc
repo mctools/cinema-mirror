@@ -94,6 +94,7 @@ double bias, double elasticThreshold, double minEKin, double maxEKin) const
   // the key should be the label (i.e. iter->heatedCrossSection( )) plus the  isotope name
   for(const auto& isotope : vecComp)
   {
+    //factory that can cache the model from isotope info
     const std::string &name = isotope.name;
     double frac = isotope.frac;
 
@@ -132,13 +133,9 @@ double bias, double elasticThreshold, double minEKin, double maxEKin) const
     }
 
     
-
-    std::string label( temperatures[0].heatedCrossSection( ) ); // fixme: heated? gridded
-    // std::string label( temperatures[0].griddedCrossSection( ) );
-
     double temperature_K = temperatures[0].temperature( ).value()*Unit::MeV / const_boltzmann; 
 
-    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), label, delay, 20.0 );
+    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), name, delay, 20.0 );
     // MC.setNuclearPlusCoulombInterferenceOnly( true );
     MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
     MC.set_ignoreENDF_MT5(true);

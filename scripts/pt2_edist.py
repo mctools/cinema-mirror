@@ -35,11 +35,11 @@ cdata.setEnableGidiPowerIteration(False)
 # energy = [1e3, 10e3]
 # energy = [1e2, 10e2]
 # energy = [1e1, 10e1]
-energy = [1, 10]
+# energy = [1, 10]
 # energy = [1e-1, 10e-1]
-# energy=1e-3
+energy=1e-3
 
-partnum = 1e4
+partnum = 1e5
 loweredge=1e-5
 upperedge=70e6
 
@@ -61,13 +61,14 @@ hlen_mm = 1e10
 # cfg='freegas::C/18gcm3/C_is_C13'
 # cfg='freegas::Bi/18gcm3'
 # cfg='freegas::U/1.8gcm3/U_is_U238'
-cfg='freegas::U/1.8gcm3/U_is_U235'
+# cfg='freegas::U/1.8gcm3/U_is_U235'
 # cfg='freegas::U/1.8gcm3/U_is_U233'
 # cfg = 'freegas::U/18.8gcm3/U_is_0.1000_U238_0.9000_U235;temp=293.6'
 # cfg='freegas::Ag/18gcm3'
 
 # cfg='Al_sg225.ncmat'
 # cfg='LiquidWaterH2O_T293.6K.ncmat;density=1gcm3;temp=293.6'
+cfg='freegas::He/1.8e-3gcm3/He_is_He3'
 
 class MySim(Prompt):
     def __init__(self, seed=4096) -> None:
@@ -82,7 +83,7 @@ class MySim(Prompt):
         # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
         ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='EXIT').make(media)
         media.addScorer(f'Scorer=Angular;name=SofAngle;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;ptstate=EXIT;linear=yes;min=-1;max=1;numbin={numbin_mu}')
-        DepositionHelper('dep', pdg=2112, min=loweredge, max=upperedge, numbin=numbin_en, ptstate='PROPAGATE_POST', linear=False).make(media)
+        DepositionHelper('dep', pdg=2112, min=loweredge, max=upperedge, numbin=numbin_en, ptstate='ABSORB', linear=False).make(media)
         self.setWorld(world)
 
 sim = MySim(seed=1010)
@@ -197,26 +198,17 @@ def run(energy, numPart):
     tally2.filters = [surface_filter, mufilter, particle_filter]
     tally2.scores = ['current']
 
-    # Define a cell filter for the cell containing the cylinder
-    cell_filter = openmc.CellFilter(inner_cylinder)  # Replace 'cyl_cell' with the appropriate cell containing the cylinder
-
-    # Create tally3 for energy deposition within the cell
+    # Define tally3 for energy deposition
     tally3 = openmc.Tally(name='tally3')
-    tally3.filters = [cell_filter, energy_filter, particle_filter]
-    tally3.scores = ['heating']  # 'heating' score is used for energy deposition
 
-    # Create tally for neutron track length histogram
-    tally4 = openmc.Tally(name='tally4')
-    tally4.filters = [cell_filter, particle_filter, energy_filter]
-    tally4.scores = ['flux']  # 'flux' score uses track length estimator
+    # Use a cell filter for the cell where we want to measure energy deposition
+    cell_filter = openmc.CellFilter(inner_cylinder)
 
-    tallies = openmc.Tallies([tally, tally2, tally3, tally4])
-
-    # Export to XML
-    tallies.export_to_xml()
+    # Add filters and scores to tally3
+    tally3.filters = [cell_filter, energy_filter]
+    tally3.scores = ['heating']
 
 
-    # Export tallies to XML
     tallies = openmc.Tallies([tally, tally2, tally3])
     tallies.export_to_xml('tallies.xml')
 
@@ -282,11 +274,11 @@ plt.plot(x, y*partnum,'-o', label=f'Openmc {y.sum()*partnum}')
 plt.legend(loc=0)
 
 
-# plt.figure()
-# sim.gatherHistData('dep').plot(show=False, log=True, label='Prompt  ', title='Deposition distribution')
-# x, y, std = read_results(sp, 'tally4', openmc.EnergyFilter) 
-# plt.plot(x, y*partnum,'-o', label=f'Openmc {y.sum()*partnum}')
-# plt.legend(loc=0)
+plt.figure()
+sim.gatherHistData('dep').plot(show=False, log=True, label='Prompt  ', title='Deposition distribution')
+x, y, std = read_results(sp, 'tally3', openmc.EnergyFilter) 
+plt.plot(x, y*partnum,'-o', label=f'Openmc {y.sum()*partnum}')
+plt.legend(loc=0)
 
 
 
