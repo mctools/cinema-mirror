@@ -194,8 +194,8 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, doubl
     {
      
       double labekin = aproduct.m_kineticEnergy*1e6;
-      double i_speed= 1./sqrt(aproduct.m_px_vx*aproduct.m_px_vx + aproduct.m_py_vy*aproduct.m_py_vy + aproduct.m_pz_vz*aproduct.m_pz_vz);
-      Vector labdir(aproduct.m_px_vx*i_speed, aproduct.m_py_vy*i_speed, aproduct.m_pz_vz*i_speed);
+      Vector labdir(aproduct.m_px_vx, aproduct.m_py_vy, aproduct.m_pz_vz);
+      labdir.normalise();
 
       totalekin += labekin; // accumulate the energy that will be carried by a particle in the later simulation. 
 
@@ -224,8 +224,8 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, doubl
         PROMPT_THROW(NotImplemented, "");
       
     }
-    // if(m_input->m_frame == GIDI::Frame::centerOfMass)
-    // std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", secondaries->size() " <<  secondaries.size() << std::endl;
+    // if(m_input->m_frame == GIDI::Frame::centerOfMass && secondaries.size())
+    //  std::cout << "ENDF MT" << reaction->ENDF_MT() <<  ", secondaries.size() " <<  secondaries.size() << ", ekin " << ekin << std::endl;
    
   }
   
