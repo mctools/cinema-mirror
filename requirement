@@ -3,7 +3,7 @@
 
 #required packages for Prompt visualisation
 mpi4py
-pyvista==0.38.1
+pyvista
 matplotlib
 mcpl
 scipy
