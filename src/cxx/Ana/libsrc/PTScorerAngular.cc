@@ -42,12 +42,13 @@ void Prompt::ScorerAngular::score(Prompt::Particle &particle)
   if(!rightScorer(particle))
     return;
 
-  if((m_refDir.angleCos(particle.getDirection()))>1)
+  double angle_cos = m_refDir.angleCos(particle.getDirection());
+  if(std::abs(angle_cos)>1)
   {
-    std::cout << "wrong mu " << m_refDir.angleCos(particle.getDirection()) << std::endl;
+    std::cout << "wrong mu " << angle_cos << std::endl;
 
   }
-  m_hist->fill(m_refDir.angleCos(particle.getDirection()), particle.getWeight());  
+  m_hist->fill(angle_cos, particle.getWeight());  
   
   // fixme:
   // Prompt::Vector vec = {0,0,0};
