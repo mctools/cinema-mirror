@@ -75,9 +75,43 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
   }
 
   // else
-  const auto &res=m_discretModels->pickAndSample(particle.getEKin(), particle.getDirection());
- 
-   // fixme: when a particle exiting a volume, a reaction channel is forced to sampled at the moment
+  double lab_ekin(0), comove_ekin(0);
+  Vector lab_dir;
+
+  if (particle.hasEffEnergy())
+  {
+    double ekineff = particle.getEffEKin();
+    const auto &direff = particle.getEffDirection();
+
+    Vector comove_dir;
+
+    // sample in the comoving frame
+    m_discretModels->pickAndSample(ekineff, direff, comove_ekin, comove_dir);
+    if (comove_ekin != -1) // non-capture fixme: this should not be called when EXITing
+    {
+      Vector v_comoving = comove_dir * std::sqrt(2 * comove_ekin / particle.getMass());
+      // the rotatioal velocity
+      auto v_rot = particle.getDirection() * particle.calcSpeed() - particle.getEffDirection() * particle.calcEffSpeed();
+
+      particle.setEffEKin(comove_ekin);
+      particle.setEffDirection(comove_dir);
+
+      // bring back to the lab
+      auto v_lab = v_comoving + v_rot;
+
+      // set the final value in the lab frame
+      double speed(0);
+      v_lab.magdir(speed, lab_dir);
+      // lab_ekin = particle.getEKin();
+      lab_ekin = 0.5 * particle.getMass() * speed * speed;
+    }
+  }
+  else
+  {
+    m_discretModels->pickAndSample(particle.getEKin(), particle.getDirection(), lab_ekin, lab_dir);
+  }
+
+  // fixme: when a particle exiting a volume, a reaction channel is forced to sampled at the moment
   // lab_ekin could be -1 in those cases, but the transport keeps going, that is very confusing.
   // std::cout << particle.getEventID() << ", is alive? " << particle.isAlive() << ", wall? "<< hitWall<<
   //  ", labEkin " << lab_ekin   << ", effEkin " << particle.getEffEKin() << "\n";
@@ -89,19 +123,19 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
   int secNum = stm.getUnweightedNum();
   for(int i=0; i<secNum; i++)
   {
-    stm.scalceLastSecondary(i, weightCorrection);
+    stm.scalceSecondary(i, weightCorrection);
   }
 
   // if it is an absorption reaction, the state of the particle is set,
   // but the energy and direction are kept for the subsequent capture scorers.
-  if (res.iskill == SampledResult::ReasonOfKill::ABSORB)
+  if (lab_ekin == ENERGYTOKEN_ABSORB || comove_ekin == ENERGYTOKEN_ABSORB)
   {
     particle.kill(Particle::KillType::ABSORB);
   }
   else
   {
-    particle.setEKin(res.final_ekin);
-    particle.setDirection(res.final_dir);
+    particle.setEKin(lab_ekin);
+    particle.setDirection(lab_dir);
     isPropagateInVol = true;
   }
   particle.scaleWeight(weightCorrection);
