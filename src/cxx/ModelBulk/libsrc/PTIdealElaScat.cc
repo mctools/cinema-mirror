@@ -52,18 +52,18 @@ double Prompt::IdealElaScat::getCrossSection(double ekin, const Prompt::Vector &
 }
 
 
-void Prompt::IdealElaScat::sampleReaction(double ekin, const Prompt::Vector &dir, 
-                        double &final_ekin, Prompt::Vector &final_dir) const
+const Prompt::SampledResult& Prompt::IdealElaScat::sampleReaction(double ekin, const Vector &dir) const
 {
   if (ekin<m_ekin_t)
   {
-    final_ekin=ekin;
+    m_res.final_ekin=ekin;
     // std::cout<<"EKIN: " << final_ekin << "<" << m_ekin_t << std::endl;
-    final_dir.set(dir.x(), dir.y(), dir.z());
+    m_res.final_dir=dir;
+    m_res.deposition = 0.;
   }
   else
   {
-    final_ekin=ekin-m_ekin_t;
+    m_res.final_ekin=ekin-m_ekin_t;
     // std::cout<<"EKIN: " << final_ekin << "=" << ekin << "-" << m_ekin_t<< std::endl;
 
     //fixme: repeated code, first appared in the isotropicgun
@@ -75,6 +75,10 @@ void Prompt::IdealElaScat::sampleReaction(double ekin, const Prompt::Vector &dir
     double v = temp*cos(2*M_PI*r2);
     double w = temp*sin(2*M_PI*r2);
 
-    final_dir.set(u, v, w);
+    m_res.final_dir.set(u, v, w);
+    m_res.deposition = m_ekin_t;
+
   }
+
+  return m_res;
 }

@@ -41,6 +41,7 @@ TEST_CASE("ModelCollection")
   //   { -0.423603163886187, -0.904003071387581, 0.0577824062101281 }
   // };
   std::vector<double> expectedXS;
+  #ifdef ENABLE_GIDI
   expectedXS={
     1.6801370629016,
     1.63844743351929,
@@ -49,14 +50,27 @@ TEST_CASE("ModelCollection")
     1.53331373618499,
     1.61278276163805
     };
+  #else
+  expectedXS={
+    1.67754141205923,
+    1.63589383650134,
+    1.5978104364311,
+    1.56291359985623,
+    1.53091995017932,
+    1.61041869533578
+    };
+  #endif
   double inE(0.0253);
   auto inDir = Vector({1.,0.,0.});
+  #ifdef ENABLE_GIDI
   auto &cd = Singleton<GidiSetting>::getInstance();
   cd.setEnableGidi(true);
+  #endif
   auto pp = ParticleProcess("Al_sg225.ncmat");
   auto compModel = pp.getModelCollection();
   double xs(0.);
   std::cout.precision(15);
+  std::cout << "here "<< std::endl;
 
   double finE(0.);
   Vector finDir;
@@ -65,6 +79,8 @@ TEST_CASE("ModelCollection")
     std::cout << "In energy: " << inE << std::endl;
     std::cout << "In dir: " << inDir << std::endl;
     xs = compModel->totalCrossSection(2112, inE, inDir);
+      std::cout << "xs = compModel->totalCrossSection(2112, inE, inDir) "<< std::endl;
+
     std::cout << "Total XS: " << xs/Unit::barn << std::endl;
     CHECK(floateq(xs/Unit::barn, expectedXS[i]));
     // compModel->generate(inE, inDir, finE, finDir);

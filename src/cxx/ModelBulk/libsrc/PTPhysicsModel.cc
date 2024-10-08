@@ -23,11 +23,11 @@
 Prompt::PhysicsBase::PhysicsBase(const std::string &name, int gdp,
              double emin, double emax)
  :m_modelName(name), m_modelvalid{gdp, emin, emax},
-  m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance())  {};
+  m_oriented(false), m_rng(Singleton<SingletonPTRand>::getInstance()) {};
 
 Prompt::PhysicsModel::PhysicsModel(const std::string &name, unsigned gdp,
              double emin, double emax)
-:PhysicsBase(name, gdp, emin, emax) { }
+:PhysicsBase(name, gdp, emin, emax), m_res()  { }
 
 
 bool Prompt::PhysicsBase::isOriented()

@@ -72,16 +72,14 @@ double Prompt::NCrystalScat::getCrossSection(double ekin, const Prompt::Vector &
   return xsect.get()*m_bias*Unit::barn;
 }
 
-
-void Prompt::NCrystalScat::sampleReaction(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
+const Prompt::SampledResult& Prompt::NCrystalScat::sampleReaction(double ekin, const Vector &dir) const
 {
   auto outcome1 = m_scat.sampleScatter( NCrystal::NeutronEnergy(ekin), {dir.x(), dir.y(), dir.z()});
-  final_ekin = outcome1.ekin.get();
+  m_res.final_ekin = outcome1.ekin.get();
   auto &outdir = outcome1.direction;
-  final_dir.x() = outdir[0];
-  final_dir.y() = outdir[1];
-  final_dir.z() = outdir[2];
-
-  Singleton<Launcher>::getInstance().registerDeposition(ekin-final_ekin);
-
+  m_res.final_dir.x() = outdir[0];
+  m_res.final_dir.y() = outdir[1];
+  m_res.final_dir.z() = outdir[2];
+  m_res.deposition = ekin - m_res.final_ekin;
+  return m_res;
 }

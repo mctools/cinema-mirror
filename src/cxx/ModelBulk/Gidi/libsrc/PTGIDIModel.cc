@@ -146,8 +146,6 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
   if(!m_modelvalid.ekinValid(ekin))
     return 0.;
 
-  m_launcher.registerDeposition(0.);
-
   // ekin==m_cacheEkin is the case for thermal neutron elastic scattering 
   // or neutron crossing geometry to the volume of the same material
   if(ekin!=m_cacheEkin)
@@ -179,7 +177,7 @@ double Prompt::GIDIModel::getCrossSection(double ekin, const Prompt::Vector &dir
   return getCrossSection(ekin);
 }
 
-void Prompt::GIDIModel::sampleReaction(double ekin, const Prompt::Vector &indir, double &final_ekin, Prompt::Vector &final_dir) const
+const Prompt::SampledResult& Prompt::GIDIModel::sampleReaction(double ekin, const Vector &indir) const
 {
   pt_assert_always(ekin==m_cacheEkin);
   const double ekin_MeV = ekin*1e-6;
@@ -262,26 +260,25 @@ void Prompt::GIDIModel::sampleReaction(double ekin, const Prompt::Vector &indir,
 
   // printf("MT%d, deposition %e\n\n", reaction->ENDF_MT(), ekin+reaction->finalQ(ekin_MeV)*1e6-totalekin);
 
-  double deposition = ekin + reaction->finalQ(ekin_MeV)*1e6-totalekin;
-  m_launcher.registerDeposition(deposition);
+  m_res.deposition = ekin + reaction->finalQ(ekin_MeV)*1e6-totalekin;
 
   // Kill neutron in an absorption
   if(secondaries.empty())
   {
     // essentially killing the current active particle in the launcher
-    final_ekin=ENERGYTOKEN_ABSORB;
+    m_res.final_ekin=ENERGYTOKEN_ABSORB;
   }
   else if(secondaries.size()==1 && secondaries[0].getPDG()==2112) /*If is neutron, treated as like the incoming neutron states changes*/
   {
     // essentially modifying the current active particle in the launcher
     //fixme: how about a reaction produce only one delayed particle? there is no way to treat the time in this function
-    final_ekin = secondaries[0].getEKin();
-    final_dir = secondaries[0].getDirection();
+    m_res.final_ekin = secondaries[0].getEKin();
+    m_res.final_dir = secondaries[0].getDirection();
   }
   else
   {
     // essentially killing the current active particle in the launcher
-    final_ekin=ENERGYTOKEN_ABSORB;
+    m_res.final_ekin=ENERGYTOKEN_ABSORB;
 
     for(const auto &p: secondaries)
     {
@@ -300,5 +297,6 @@ void Prompt::GIDIModel::sampleReaction(double ekin, const Prompt::Vector &indir,
       
     }
   }
+  return m_res;
 }
 

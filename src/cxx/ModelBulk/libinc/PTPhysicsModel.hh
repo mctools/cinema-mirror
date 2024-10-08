@@ -71,16 +71,26 @@ namespace Prompt {
     SingletonPTRand &m_rng;
   };
 
+  struct SampledResult {
+    // final_ekin -1., propose kill because of an absorb event
+    // final_ekin -2., propose kill because of a biasing event
+    double final_ekin;
+    double deposition;
+    Vector final_dir;
+    //fixme: add a flag for killing
+    SampledResult() : final_ekin(0), deposition(0.0), final_dir{0.0, 0.0, 0.0} {}
+  };
+
   class PhysicsModel : public PhysicsBase {
   public:
     PhysicsModel(const std::string &name);
     PhysicsModel(const std::string &name, unsigned gdp, double emin, double emax);
     virtual ~PhysicsModel() = default;
 
-    // final_ekin -1., propose kill because of an absorb event
-    // final_ekin -2., propose kill because of a biasing event
-    virtual void sampleReaction(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const = 0;
-
+    virtual const SampledResult& sampleReaction(double ekin, const Vector &dir) const = 0;
+  
+  protected:
+    mutable SampledResult m_res;
   };
 
 }

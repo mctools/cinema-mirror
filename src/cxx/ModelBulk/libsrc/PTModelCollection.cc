@@ -132,12 +132,15 @@ void Prompt::ModelCollection::generate(double ekin, const Vector &dir, double &f
   if(m_models[i]->isOriented())
   {
     auto &activeVolume = Singleton<ActiveVolume>::getInstance();
-    m_models[i]->sampleReaction(ekin, m_localdir, final_ekin, final_dir);
-    final_dir =  activeVolume.getGeoTranslator().local2Global_direction(final_dir);
+    auto res = m_models[i]->sampleReaction(ekin, m_localdir);
+    final_dir =  activeVolume.getGeoTranslator().local2Global_direction(res.final_dir);
+    final_ekin = res.final_ekin;
   }
-  else
-    m_models[i]->sampleReaction(ekin, dir, final_ekin, final_dir);
-    
+  else {
+    auto res = m_models[i]->sampleReaction(ekin, dir);
+    final_dir =  res.final_dir;
+    final_ekin = res.final_ekin;
+  }
   m_cache.selectedBias = m_models[i]->getBias();
   // std::cout << "selected model " << m_models[i]->getName() 
   // << ", biasing " << m_cache.selectedBias
