@@ -53,7 +53,7 @@ double Prompt::NCrystalAbs::getCrossSection(double ekin, const Prompt::Vector &d
 }
 
 
-void Prompt::NCrystalAbs::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
+void Prompt::NCrystalAbs::sampleReaction(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
 {
   // fixme: this model does not include the Q valude
   Singleton<Launcher>::getInstance().registerDeposition(ekin);

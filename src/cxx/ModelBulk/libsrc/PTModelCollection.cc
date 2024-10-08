@@ -70,13 +70,17 @@ double Prompt::ModelCollection::totalCrossSection(int pdg, double ekin, const Ve
         }
         else  {
           channelxs = m_models[i]->getCrossSection(ekin);
-          // std::cout << "model name: " << m_models[i]->getName()
-          // << ", ekin=" << ekin
-          // << ", biasing=" << m_models[i]->getBias() << ", channelxs=" << channelxs << "\n\n";
+          std::cout << "model name: " << m_models[i]->getName()
+          << ", ekin=" << ekin
+          << ", biasing=" << m_models[i]->getBias() << ", channelxs=" << channelxs << "\n\n";
         }
+        std::cout << "aaaaaaaaaa\n";
         m_cache.cache_xs[i] = channelxs;
+        std::cout << "aaaaaaaaaa\n";
         m_cache.bias[i] = m_models[i]->getBias();
         xs += channelxs;
+        std::cout << "aaaaaaaaaa\n";
+
       }  
       else
       {
@@ -85,10 +89,13 @@ double Prompt::ModelCollection::totalCrossSection(int pdg, double ekin, const Ve
       }
     }
     // std::cout << "total xs " << xs << "\n\n";
+        std::cout << "aaaaaaaaaa\n";
 
     m_cache.tot = xs;
     m_cache.ekin = ekin;
     m_cache.dir = dir;
+            std::cout << "aaaaaaaaaa\n";
+
     return xs;
   }
 }
@@ -125,11 +132,11 @@ void Prompt::ModelCollection::generate(double ekin, const Vector &dir, double &f
   if(m_models[i]->isOriented())
   {
     auto &activeVolume = Singleton<ActiveVolume>::getInstance();
-    m_models[i]->generate(ekin, m_localdir, final_ekin, final_dir);
+    m_models[i]->sampleReaction(ekin, m_localdir, final_ekin, final_dir);
     final_dir =  activeVolume.getGeoTranslator().local2Global_direction(final_dir);
   }
   else
-    m_models[i]->generate(ekin, dir, final_ekin, final_dir);
+    m_models[i]->sampleReaction(ekin, dir, final_ekin, final_dir);
     
   m_cache.selectedBias = m_models[i]->getBias();
   // std::cout << "selected model " << m_models[i]->getName() 

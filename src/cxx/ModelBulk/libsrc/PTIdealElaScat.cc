@@ -52,7 +52,7 @@ double Prompt::IdealElaScat::getCrossSection(double ekin, const Prompt::Vector &
 }
 
 
-void Prompt::IdealElaScat::generate(double ekin, const Prompt::Vector &dir, 
+void Prompt::IdealElaScat::sampleReaction(double ekin, const Prompt::Vector &dir, 
                         double &final_ekin, Prompt::Vector &final_dir) const
 {
   if (ekin<m_ekin_t)

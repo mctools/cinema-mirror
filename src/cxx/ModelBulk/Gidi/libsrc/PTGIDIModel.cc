@@ -179,7 +179,7 @@ double Prompt::GIDIModel::getCrossSection(double ekin, const Prompt::Vector &dir
   return getCrossSection(ekin);
 }
 
-void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, double &final_ekin, Prompt::Vector &final_dir) const
+void Prompt::GIDIModel::sampleReaction(double ekin, const Prompt::Vector &indir, double &final_ekin, Prompt::Vector &final_dir) const
 {
   pt_assert_always(ekin==m_cacheEkin);
   const double ekin_MeV = ekin*1e-6;

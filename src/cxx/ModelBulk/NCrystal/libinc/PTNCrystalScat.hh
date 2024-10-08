@@ -41,7 +41,7 @@ namespace Prompt {
 
     virtual double getCrossSection(double ekin) const override;
     virtual double getCrossSection(double ekin, const Vector &dir) const override;
-    virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
+    virtual void sampleReaction(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const override;
 
   private:
     mutable  NCrystal::Scatter m_scat;

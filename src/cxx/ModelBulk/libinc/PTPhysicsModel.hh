@@ -79,7 +79,7 @@ namespace Prompt {
 
     // final_ekin -1., propose kill because of an absorb event
     // final_ekin -2., propose kill because of a biasing event
-    virtual void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const = 0;
+    virtual void sampleReaction(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const = 0;
 
   };
 

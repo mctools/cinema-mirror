@@ -73,7 +73,7 @@ double Prompt::NCrystalScat::getCrossSection(double ekin, const Prompt::Vector &
 }
 
 
-void Prompt::NCrystalScat::generate(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
+void Prompt::NCrystalScat::sampleReaction(double ekin, const Prompt::Vector &dir, double &final_ekin, Prompt::Vector &final_dir) const
 {
   auto outcome1 = m_scat.sampleScatter( NCrystal::NeutronEnergy(ekin), {dir.x(), dir.y(), dir.z()});
   final_ekin = outcome1.ekin.get();
