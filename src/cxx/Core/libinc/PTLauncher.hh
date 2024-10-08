@@ -46,7 +46,6 @@ namespace Prompt {
     const std::vector<Vector> &getTrajectory() { return m_trajectory; }
     size_t getTrajSize() { return m_trajectory.size(); }
     const Particle &getCurrentParticle() const {return *m_curParicle.get(); }
-    void registerDeposition (double edp) {m_curParicle->setDeposition(edp); }
 
   private:
     friend class Singleton<Launcher>;

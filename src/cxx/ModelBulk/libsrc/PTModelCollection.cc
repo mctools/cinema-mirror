@@ -100,7 +100,7 @@ double Prompt::ModelCollection::totalCrossSection(int pdg, double ekin, const Ve
   }
 }
 
-void Prompt::ModelCollection::generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const
+void Prompt::ModelCollection::pickAndSample(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const
 {
   if(!sameInquiryAsLastTime(ekin, dir))
   {
