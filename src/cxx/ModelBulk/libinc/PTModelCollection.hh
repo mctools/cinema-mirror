@@ -58,7 +58,7 @@ namespace Prompt {
 
     double totalCrossSection(int pdg, double ekin, const Vector &dir) const;
     double calculateWeight(double lengthRho, bool hitWall);
-    void generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const;
+    const SampledResult&  pickAndSample(double ekin, const Vector &dir) const;
     int getSupportedGPD() const { return m_forgpd; }
     bool containOriented() const { return m_containsOriented; }
 
@@ -70,6 +70,7 @@ namespace Prompt {
     bool m_containsOriented;
     int m_forgpd;
     mutable Vector m_localdir;
+    mutable SampledResult m_res;
 
     SingletonPTRand &m_rng;
   };

@@ -30,6 +30,7 @@ std::ostream& Prompt::operator << (std::ostream &o, const Prompt::Particle& p)
 {
   return o<<"Particle: { " << p.getEventID() <<", ekin " << p.getEKin() 
           <<", time " << p.getTime() 
+          <<", deposition " << p.getDeposition()
           <<", weight " << p.getWeight() << ", position "
           << p.getPosition() << ", direction " << p.getDirection() << " }";
 }

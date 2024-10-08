@@ -3,7 +3,7 @@ import numpy as np
 import prompt_suite as ps
 import matplotlib.pyplot as plt
 
-expected = [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 1568.0, 1856.0, 8503.0, 86150.0, 203.0, 128.0, 5.0, 0.0, 0.0]
+expected = [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 3.0, 1682.0, 1916.0, 8474.0, 85992.0, 207.0, 115.0, 4.0, 0.0, 0.0]
 cfg ='freegas::U92/18gcm3/U_is_U238'
 incidentEnergy = 1e6
 energyBinNum = 20

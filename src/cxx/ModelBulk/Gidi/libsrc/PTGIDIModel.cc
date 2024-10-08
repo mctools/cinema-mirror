@@ -182,6 +182,8 @@ const Prompt::SampledResult& Prompt::GIDIModel::sampleReaction(double ekin, cons
   pt_assert_always(ekin==m_cacheEkin);
   const double ekin_MeV = ekin*1e-6;
 
+  m_res.dispeared = false;
+
   std::vector<Particle> secondaries;
 
   int reactionIndex =  m_mcprotare->sampleReaction( *m_urr_info, m_hashIndex, m_input->m_temperature*1e-3, ekin_MeV, m_cacheGidiXS, getRandNumber, nullptr );
@@ -266,7 +268,7 @@ const Prompt::SampledResult& Prompt::GIDIModel::sampleReaction(double ekin, cons
   if(secondaries.empty())
   {
     // essentially killing the current active particle in the launcher
-    m_res.final_ekin=ENERGYTOKEN_ABSORB;
+    m_res.dispeared = true;
   }
   else if(secondaries.size()==1 && secondaries[0].getPDG()==2112) /*If is neutron, treated as like the incoming neutron states changes*/
   {
@@ -278,7 +280,7 @@ const Prompt::SampledResult& Prompt::GIDIModel::sampleReaction(double ekin, cons
   else
   {
     // essentially killing the current active particle in the launcher
-    m_res.final_ekin=ENERGYTOKEN_ABSORB;
+    m_res.dispeared = true;
 
     for(const auto &p: secondaries)
     {

@@ -136,8 +136,8 @@ inline void Prompt::Particle::moveForward(double length)
 {
   m_pos += m_dir*length;
   m_step = length;
-  if(m_ekin)
-    m_time += length/calcSpeed();
+  m_deposition = 0.;
+  m_time += length/calcSpeed();
 }
 
 inline void Prompt::Particle::setEKin(double ekin)

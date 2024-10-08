@@ -72,13 +72,11 @@ namespace Prompt {
   };
 
   struct SampledResult {
-    // final_ekin -1., propose kill because of an absorb event
-    // final_ekin -2., propose kill because of a biasing event
     double final_ekin;
     double deposition;
     Vector final_dir;
-    //fixme: add a flag for killing
-    SampledResult() : final_ekin(0), deposition(0.0), final_dir{0.0, 0.0, 0.0} {}
+    bool dispeared;
+    SampledResult() : final_ekin(0), deposition(0.0), final_dir{0.0, 0.0, 1.0}, dispeared(false) {}
   };
 
   class PhysicsModel : public PhysicsBase {

@@ -34,6 +34,7 @@ Prompt::NCrystalAbs::NCrystalAbs(const std::string &cfgstring, double bias,
   if( m_abs.isOriented() ) {
     PROMPT_THROW(CalcError, "Absorption process is not oriented");
   }
+  m_res.dispeared = true;
 }
 
 Prompt::NCrystalAbs::~NCrystalAbs()
@@ -56,7 +57,6 @@ double Prompt::NCrystalAbs::getCrossSection(double ekin, const Prompt::Vector &d
 const Prompt::SampledResult& Prompt::NCrystalAbs::sampleReaction(double ekin, const Vector &dir) const
 {
   // fixme: this model does not include the Q valude
-  m_res.final_ekin=ENERGYTOKEN_ABSORB;
   m_res.deposition = ekin;
   return m_res;
 }
