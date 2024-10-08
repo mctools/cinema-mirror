@@ -146,6 +146,8 @@ double Prompt::GIDIModel::getCrossSection(double ekin) const
   if(!m_modelvalid.ekinValid(ekin))
     return 0.;
 
+  m_launcher.registerDeposition(0.);
+
   // ekin==m_cacheEkin is the case for thermal neutron elastic scattering 
   // or neutron crossing geometry to the volume of the same material
   if(ekin!=m_cacheEkin)
@@ -198,7 +200,7 @@ void Prompt::GIDIModel::generate(double ekin, const Prompt::Vector &indir, doubl
   for( std::size_t i = 0; i < m_products->size( ); i++ ) 
   {
     MCGIDI::Sampling::Product &aproduct = (*m_products)[i];
-    std::cout << reaction->ENDF_MT() << ", id " << i <<  ", aproduct " <<  aproduct.m_productIndex << ", " << aproduct.m_kineticEnergy*1e6 << std::endl;
+    // std::cout << reaction->ENDF_MT() << ", id " << i <<  ", aproduct " <<  aproduct.m_productIndex << ", " << aproduct.m_kineticEnergy*1e6 << std::endl;
 
     if (aproduct.m_productIndex==11 ||  aproduct.m_productIndex==8) //neutron 11 or gamma 8
     {

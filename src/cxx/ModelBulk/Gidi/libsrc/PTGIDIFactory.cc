@@ -94,7 +94,7 @@ double bias, double elasticThreshold, double minEKin, double maxEKin) const
   // the key should be the label (i.e. iter->heatedCrossSection( )) plus the  isotope name
   for(const auto& isotope : vecComp)
   {
-    //factory that can cache the model from isotope info
+    //fixme:: factory that can cache the model from isotope info
     const std::string &name = isotope.name;
     double frac = isotope.frac;
 
@@ -141,6 +141,8 @@ double bias, double elasticThreshold, double minEKin, double maxEKin) const
     MC.set_ignoreENDF_MT5(true);
     MC.want_URR_probabilityTables(true);
     MC.setThrowOnError( false );
+    // MC.setZeroDepositionIfAllProductsTracked
+    // MC.setWantTerrellPromptNeutronDistribution(true);
    
 
     if( gidiprotare->protareType( ) != GIDI::ProtareType::single ) {

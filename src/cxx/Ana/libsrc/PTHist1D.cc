@@ -31,14 +31,16 @@ Prompt::Hist1D::Hist1D(const std::string &name, double xmin, double xmax, unsign
   m_xmin=xmin, m_xmax=xmax, m_nbins=nbins;
   if(nbins==0)
     PROMPT_THROW(BadInput, "bin size is zero");
+
+  if(xmin>=xmax)
+    PROMPT_THROW2(BadInput, name << ": xmin should be smaller than xmax");
+
   if(linear) {
-    if(xmin==xmax)
-      PROMPT_THROW(BadInput, "xmin and xmax can not be equal");
     m_binfactor=nbins/(xmax-xmin);
   }
   else {
     if(xmin<=0 || xmax<=0)
-      PROMPT_THROW(BadInput, "xmin and xmax must be positive");
+      PROMPT_THROW2(BadInput, name << ": xmin and xmax must be positive");
     m_binfactor=nbins/(log10(xmax)-log10(xmin));
     m_logxmin=log10(m_xmin);
   }
