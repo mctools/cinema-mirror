@@ -37,16 +37,16 @@ cdata.setEnableGidiPowerIteration(False)
 # energy = [1e1, 10e1]
 # energy = [1, 10]
 # energy = [1e-1, 10e-1]
-energy=1e-3
+energy=1e6
 
-partnum = 1e5
+partnum = 1e4
 loweredge=1e-5
 upperedge=70e6
 
 numbin_en=300
 numbin_mu=30
 radius_mm = 1e-4
-hlen_mm = 1e10
+hlen_mm = 1e20
 # #########################################################
 
 # cfg='freegas::Th/18gcm3'
@@ -55,7 +55,7 @@ hlen_mm = 1e10
 
 # cfg='freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'
 # cfg='freegas::H2O/1gcm3/H_is_H1/O_is_O16;temp=293.6'
-# cfg='freegas::H/1gcm3/H_is_H1;temp=293.6'
+cfg='freegas::H/1gcm3/H_is_H1;temp=293.6'
 # cfg='freegas::O/1gcm3/O_is_O16'
 
 # cfg='freegas::C/18gcm3/C_is_C13'
@@ -68,7 +68,7 @@ hlen_mm = 1e10
 
 # cfg='Al_sg225.ncmat'
 # cfg='LiquidWaterH2O_T293.6K.ncmat;density=1gcm3;temp=293.6'
-cfg='freegas::He/1.8e-3gcm3/He_is_He3'
+# cfg='freegas::He/1.8e-3gcm3/He_is_He3'
 
 class MySim(Prompt):
     def __init__(self, seed=4096) -> None:
@@ -83,7 +83,7 @@ class MySim(Prompt):
         # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
         ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='EXIT').make(media)
         media.addScorer(f'Scorer=Angular;name=SofAngle;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;ptstate=EXIT;linear=yes;min=-1;max=1;numbin={numbin_mu}')
-        DepositionHelper('dep', pdg=2112, min=loweredge, max=upperedge, numbin=numbin_en, ptstate='ABSORB', linear=False).make(media)
+        DepositionHelper('dep', pdg=2112, min=loweredge, max=upperedge, numbin=numbin_en, ptstate='PEA_PRE', linear=False).make(media)
         self.setWorld(world)
 
 sim = MySim(seed=1010)
@@ -177,7 +177,7 @@ def run(energy, numPart):
     settings.run_mode = 'fixed source'
     settings.batches = 1
     settings.photon_transport = False
-    cutoff = 0.05
+    cutoff = 200
     settings.cutoff = {'energy_photon': cutoff}
     settings.export_to_xml('settings.xml')
     settings.max_tracks = settings.particles
