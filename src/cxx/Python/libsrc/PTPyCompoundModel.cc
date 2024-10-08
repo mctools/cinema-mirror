@@ -48,6 +48,6 @@ double pt_ModelCollection_generate(void* obj, double ekin)
   Prompt::Vector final_dir;
 
   static_cast<Prompt::ParticleProcess *>(obj)
-      ->getModelCollection()->pickAndSample(ekin, dir, final_ekin, final_dir);
+      ->getModelCollection()->generate(ekin, dir, final_ekin, final_dir);
   return 0;
 }
