@@ -74,20 +74,21 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
     return isPropagateInVol;
   }
 
-  // else
-  double lab_ekin(0), comove_ekin(0);
+  double lab_ekin(0);
   Vector lab_dir;
+
+
+  const auto &res = particle.hasEffEnergy()?
+                    m_discretModels->pickAndSample(particle.getEffEKin(), particle.getEffDirection()):
+                    m_discretModels->pickAndSample(particle.getEKin(), particle.getDirection());
 
   if (particle.hasEffEnergy())
   {
-    double ekineff = particle.getEffEKin();
-    const auto &direff = particle.getEffDirection();
-
-    Vector comove_dir;
+    double comove_ekin = res.final_ekin;
+    Vector comove_dir = res.final_dir;
 
     // sample in the comoving frame
-    m_discretModels->generate(ekineff, direff, comove_ekin, comove_dir);
-    if (comove_ekin != -1) // non-capture fixme: this should not be called when EXITing
+    if (!res.dispeared) // non-capture fixme: this should not be called when EXITing
     {
       Vector v_comoving = comove_dir * std::sqrt(2 * comove_ekin / particle.getMass());
       // the rotatioal velocity
@@ -106,10 +107,7 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
       lab_ekin = 0.5 * particle.getMass() * speed * speed;
     }
   }
-  else
-  {
-    m_discretModels->generate(particle.getEKin(), particle.getDirection(), lab_ekin, lab_dir);
-  }
+ 
 
   // fixme: when a particle exiting a volume, a reaction channel is forced to sampled at the moment
   // lab_ekin could be -1 in those cases, but the transport keeps going, that is very confusing.
@@ -128,14 +126,23 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
 
   // if it is an absorption reaction, the state of the particle is set,
   // but the energy and direction are kept for the subsequent capture scorers.
-  if (lab_ekin == -1. || comove_ekin == -1.)
+  // if (lab_ekin == -1. )
+  if(res.dispeared)
   {
     particle.kill(Particle::KillType::ABSORB);
   }
   else
   {
-    particle.setEKin(lab_ekin);
-    particle.setDirection(lab_dir);
+    if(particle.hasEffEnergy())
+    {
+      particle.setEKin(lab_ekin);
+      particle.setDirection(lab_dir);
+    }
+    else
+    {
+      particle.setEKin(res.final_ekin);
+      particle.setDirection(res.final_dir);
+    }
     isPropagateInVol = true;
   }
   particle.scaleWeight(weightCorrection);

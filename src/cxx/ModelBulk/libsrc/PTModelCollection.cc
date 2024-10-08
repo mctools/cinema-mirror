@@ -26,7 +26,7 @@
 
 Prompt::ModelCollection::ModelCollection(int gpd)
 :m_cache({}), m_containsOriented(false), m_rng( Singleton<SingletonPTRand>::getInstance() ),
- m_forgpd(gpd)
+ m_forgpd(gpd), m_res()
 {}
 
 Prompt::ModelCollection::~ModelCollection() {}
@@ -95,23 +95,23 @@ double Prompt::ModelCollection::totalCrossSection(int pdg, double ekin, const Ve
   }
 }
 
-void Prompt::ModelCollection::generate(double ekin, const Vector &dir, double &final_ekin, Vector &final_dir) const
+const Prompt::SampledResult& Prompt::ModelCollection::pickAndSample(double ekin, const Vector &dir) const
 {
   if(!sameInquiryAsLastTime(ekin, dir))
   {
     //fixme:!!
     printf("WARNING, sampling event with different incident energy and/or direction\n");
-    final_ekin = ekin;
-    final_dir = dir;
-    return;
+    m_res.final_ekin = ekin;
+    m_res.final_dir = dir;
+    return m_res;
   }
 
   //if xs is zero, do nothing
   if(!m_cache.tot)
   {
-    final_ekin = ekin;
-    final_dir = dir;
-    return;
+    m_res.final_ekin = ekin;
+    m_res.final_dir = dir;
+    return m_res;
   }
 
   double r1 =  m_rng.generate();
@@ -124,23 +124,17 @@ void Prompt::ModelCollection::generate(double ekin, const Vector &dir, double &f
       break;
   }
 
+  m_res = m_models[i]->sampleReaction(ekin, dir);
+
   if(m_models[i]->isOriented())
   {
     auto &activeVolume = Singleton<ActiveVolume>::getInstance();
-    auto res = m_models[i]->sampleReaction(ekin, m_localdir);
-    final_dir =  activeVolume.getGeoTranslator().local2Global_direction(res.final_dir);
-    final_ekin = res.final_ekin;
+    m_res.final_dir =  activeVolume.getGeoTranslator().local2Global_direction(m_res.final_dir);
   }
-  else {
-    auto res = m_models[i]->sampleReaction(ekin, dir);
-    final_dir =  res.final_dir;
-    final_ekin = res.final_ekin;
-  }
-  m_cache.selectedBias = m_models[i]->getBias();
-  // std::cout << "selected model " << m_models[i]->getName() 
-  // << ", biasing " << m_cache.selectedBias
-  // << ", total model num " << m_models.size() << std::endl;
 
+  m_cache.selectedBias = m_models[i]->getBias();
+
+  return m_res;
 }
 
 //this shoule be called right after cross section is updated
