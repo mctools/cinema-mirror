@@ -23,6 +23,7 @@ cdata=GidiSetting()
 cdata.setGidiThreshold(5)
 cdata.setEnableGidi(True)
 cdata.setEnableGidiPowerIteration(False)
+cdata.setGammaTransport(True)
 
 # energy = [20e3, 149e3]  #U238 URR
 
@@ -37,7 +38,7 @@ cdata.setEnableGidiPowerIteration(False)
 # energy = [1e1, 10e1]
 # energy = [1, 10]
 # energy = [1e-1, 10e-1]
-energy=1e6
+energy=10e6
 
 partnum = 1e4
 loweredge=1e-5
@@ -51,11 +52,11 @@ hlen_mm = 1e20
 
 # cfg='freegas::Th/18gcm3'
 
-# cfg='freegas::Si/18gcm3'
+cfg='freegas::Si/18gcm3'
 
 # cfg='freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'
 # cfg='freegas::H2O/1gcm3/H_is_H1/O_is_O16;temp=293.6'
-cfg='freegas::H/1gcm3/H_is_H1;temp=293.6'
+# cfg='freegas::H/1gcm3/H_is_H1;temp=293.6'
 # cfg='freegas::O/1gcm3/O_is_O16'
 
 # cfg='freegas::C/18gcm3/C_is_C13'
@@ -82,7 +83,10 @@ class MySim(Prompt):
 
         # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
         ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='EXIT').make(media)
+        ESpectrumHelper('ESpec_photon', pdg=22, min=loweredge, max=upperedge, numbin=numbin_en, ptstate='EXIT').make(media)
+
         media.addScorer(f'Scorer=Angular;name=SofAngle;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;ptstate=EXIT;linear=yes;min=-1;max=1;numbin={numbin_mu}')
+        media.addScorer(f'Scorer=Angular;name=SofAngle_photon;sample_pos=0,0,1;beam_dir=0,0,1;dist=-100;ptstate=EXIT;linear=yes;min=-1;max=1;numbin={numbin_mu}')
         DepositionHelper('dep', pdg=2112, min=loweredge, max=upperedge, numbin=numbin_en, ptstate='PEA_POST', linear=False).make(media)
         self.setWorld(world)
 
@@ -176,11 +180,13 @@ def run(energy, numPart):
     settings.particles = numPart
     settings.run_mode = 'fixed source'
     settings.batches = 1
-    settings.photon_transport = False
-    cutoff = 200
-    settings.cutoff = {'energy_photon': cutoff}
+    settings.photon_transport = True
+    # {'led' or 'ttb'}
+    #     Whether to deposit electron energy locally ('led') or create secondary
+    #     bremsstrahlung photons ('ttb').
+    settings.electron_treatment = 'led'
+    settings.cutoff = {'energy_photon' : 100.}
     settings.export_to_xml('settings.xml')
-    settings.max_tracks = settings.particles
 
     # Define filters
     surface_filter = openmc.SurfaceFilter(cyl)
@@ -208,8 +214,20 @@ def run(energy, numPart):
     tally3.filters = [cell_filter, energy_filter]
     tally3.scores = ['heating-local']
 
+    
+    # photon filter
+    photon_filter = openmc.ParticleFilter('photon')
+    # Create tallies and export to XML
+    photon_tally = openmc.Tally(name='photon_tally')
+    photon_tally.filters = [surface_filter, energy_filter, photon_filter]
+    photon_tally.scores = ['current']
 
-    tallies = openmc.Tallies([tally, tally2, tally3])
+    photon_tally2 = openmc.Tally(name='photon_tally2')
+    photon_tally2.filters = [surface_filter, mufilter, photon_filter]
+    photon_tally2.scores = ['current']
+
+
+    tallies = openmc.Tallies([tally, tally2, tally3, photon_tally, photon_tally2])
     tallies.export_to_xml('tallies.xml')
 
     # Run OpenMC
@@ -258,20 +276,36 @@ run(energy, int(partnum))
 
 sp = 'statepoint.1.h5' 
 # mu
-sim.gatherHistData('SofAngle').plot(show=False, log=False, label='Prompt  ', title='Angular distribution')
+sim.gatherHistData('SofAngle').plot(show=False, log=False, label='Prompt  ', title='Neutron angular distribution')
 
 x, y, std = read_results(sp, 'tally2', openmc.MuFilter) 
 plt.plot(x, y*partnum,'-o', label=f'Openmc {y.sum()*partnum}')
 plt.legend(loc=0)
 
 
+plt.figure()
+sim.gatherHistData('SofAngle_photon').plot(show=False, log=False, label='Prompt  ', title='Secondary photon angular distribution')
+
+x, y, std = read_results(sp, 'photon_tally2', openmc.MuFilter) 
+plt.plot(x, y*partnum,'-o', label=f'Openmc {y.sum()*partnum}')
+plt.legend(loc=0)
+
+
+
 ##########################################################
 # energy
 plt.figure()
-sim.gatherHistData('ESpec').plot(show=False, log=True, label='Prompt  ', title='Energy distribution')
+sim.gatherHistData('ESpec').plot(show=False, log=True, label='Prompt  ', title='Neutron energy distribution')
 x, y, std = read_results(sp, 'tally', openmc.EnergyFilter) 
 plt.plot(x, y*partnum,'-o', label=f'Openmc {y.sum()*partnum}')
 plt.legend(loc=0)
+
+plt.figure()
+sim.gatherHistData('ESpec_photon').plot(show=False, log=True, label='Prompt  ', title='Secondary photon energy distribution')
+x, y, std = read_results(sp, 'photon_tally', openmc.EnergyFilter) 
+plt.plot(x, y*partnum,'-o', label=f'Openmc {y.sum()*partnum}')
+plt.legend(loc=0)
+
 
 
 plt.figure()
