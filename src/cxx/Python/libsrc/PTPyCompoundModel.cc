@@ -44,10 +44,7 @@ double pt_ModelCollection_getxs(void* obj, int pdg, double ekin)
 double pt_ModelCollection_generate(void* obj, double ekin)
 {
   Prompt::Vector dir;
-  double final_ekin(0); 
-  Prompt::Vector final_dir;
-
   static_cast<Prompt::ParticleProcess *>(obj)
-      ->getModelCollection()->pickAndSample(ekin, dir, final_ekin, final_dir);
+      ->getModelCollection()->pickAndSample(ekin, dir);
   return 0;
 }
