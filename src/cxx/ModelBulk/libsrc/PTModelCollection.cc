@@ -70,16 +70,13 @@ double Prompt::ModelCollection::totalCrossSection(int pdg, double ekin, const Ve
         }
         else  {
           channelxs = m_models[i]->getCrossSection(ekin);
-          std::cout << "model name: " << m_models[i]->getName()
-          << ", ekin=" << ekin
-          << ", biasing=" << m_models[i]->getBias() << ", channelxs=" << channelxs << "\n\n";
+          // std::cout << "model name: " << m_models[i]->getName()
+          // << ", ekin=" << ekin
+          // << ", biasing=" << m_models[i]->getBias() << ", channelxs=" << channelxs << "\n\n";
         }
-        std::cout << "aaaaaaaaaa\n";
         m_cache.cache_xs[i] = channelxs;
-        std::cout << "aaaaaaaaaa\n";
         m_cache.bias[i] = m_models[i]->getBias();
         xs += channelxs;
-        std::cout << "aaaaaaaaaa\n";
 
       }  
       else
@@ -89,12 +86,10 @@ double Prompt::ModelCollection::totalCrossSection(int pdg, double ekin, const Ve
       }
     }
     // std::cout << "total xs " << xs << "\n\n";
-        std::cout << "aaaaaaaaaa\n";
 
     m_cache.tot = xs;
     m_cache.ekin = ekin;
     m_cache.dir = dir;
-            std::cout << "aaaaaaaaaa\n";
 
     return xs;
   }
