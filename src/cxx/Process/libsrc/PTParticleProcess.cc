@@ -145,6 +145,7 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
     }
     isPropagateInVol = true;
   }
+  particle.setDeposition(res.deposition);
   particle.scaleWeight(weightCorrection);
   return isPropagateInVol;
 }
