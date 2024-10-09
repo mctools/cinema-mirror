@@ -82,13 +82,18 @@ bool Prompt::GIDIFactory::available() const
   return true;
 }
 
+// todo: fixme: factory should pass the shared pointer of ncrystal sca to the gidi model, alone with the elastic the hold. below the threslhold replace the xs of mt2, but cache the  total xs calculate by mt2 for sampling reaction. if mt2 is leaked at the end, use the mcstas for secondary.
+// after that manager should cache all shared pointed gidi models. the isotope should be re used by a key name, the ncsca should be updated.
+
 std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createNeutronGIDIModel(const std::vector<Prompt::IsotopeComposition> &vecComp, 
 double bias, double elasticThreshold, double minEKin, double maxEKin) const
 {
   std::vector<std::shared_ptr<GIDIModel>> gidimodels;
   MCGIDI::Vector<MCGIDI::Protare *> protares(vecComp.size());
   std::vector<std::tuple<std::shared_ptr<MCGIDI::ProtareSingle>, std::string, double, double>> singleProtares;
-
+  
+  // auto gdcomp = new GIDI::ProtareComposite( *m_construction);
+  // auto mcpro_comp = new MCGIDI::ProtareComposite();
 
   // fixme: make shared pointer map to cache MCGIDI::ProtareSingle for repeated isotopes
   // the key should be the label (i.e. iter->heatedCrossSection( )) plus the  isotope name
@@ -103,6 +108,8 @@ double bias, double elasticThreshold, double minEKin, double maxEKin) const
       PROMPT_THROW2(DataLoadError, "GIDIFactory createNeutronGIDIModel failed to load data for " << name << ". ");
     }
     auto *gidiprotare =  (GIDI::Protare *) m_map->protare( *m_construction, *m_pops, "n", name, "", "", true, true ) ;
+    // gdcomp->append(gidiprotare);
+
     std::cout << "Using data file " << gidiprotare->realFileName( ) << std::endl;
 
     auto delay = GIDI::Transporting::DelayedNeutrons::on;
@@ -132,10 +139,12 @@ double bias, double elasticThreshold, double minEKin, double maxEKin) const
       pt_assert_always(iter->temperature( ).value( ));
     }
 
-    
-    double temperature_K = temperatures[0].temperature( ).value()*Unit::MeV / const_boltzmann; 
+    //FIXME: remove other temperatures
+    temperatures.clear();
+    temperatures.push_back(gidiprotare->temperatures( )[1]);
+    double temperature_K = temperatures[1].temperature( ).value()*Unit::MeV / const_boltzmann; 
 
-    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), name, delay, 20.0 );
+    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile( ).ID( ), &gidiprotare->styles( ), name, delay, 30.0 );
     // MC.setNuclearPlusCoulombInterferenceOnly( true );
     MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
     MC.set_ignoreENDF_MT5(true);
@@ -165,14 +174,11 @@ double bias, double elasticThreshold, double minEKin, double maxEKin) const
         if(gidiprotare->reaction(i)->ENDF_MT()==2)
         {
           elastic.emplace(i);
-        }
-        else
-        {
-          nonElastic.emplace(i);
+          break;
         }
       }
 
-  
+      
       auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
                                                                   *m_particles, *m_domainHash, temperatures, elastic );
       gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_nonela", mcProtare_nonelastic, temperature_K, bias, frac, 0, elasticThreshold));
