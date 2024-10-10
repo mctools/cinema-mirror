@@ -46,12 +46,14 @@ _pt_ResourceManager_addSurface = importFunc('pt_ResourceManager_addSurface', Non
 _pt_ResourceManager_cfgVolPhysics = importFunc('pt_ResourceManager_cfgVolPhysics', None, [type_uint, type_cstr])
 
 class Transformation3D:
+    # fixme: rot_new_x=0., rot_new_z=0. rot_new_z are not effective at all when vis, why?
     def __init__(self, x=0., y=0., z=0., rot_z=0., rot_new_x=0., rot_new_z=0., degrees = True):
-        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, 0, 0, 0, 1.,1.,1.)
+        self.cobj = _pt_Transformation3D_newfromdata(x, y, z, rot_z, rot_new_x, rot_new_z, 1.,1.,1.)
         self.sciRot = scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees)
         self.translation = np.array([x, y, z])
-        self.sciRotMatrix = self.sciRot.as_matrix()
-    
+        # self.sciRotMatrix = self.sciRot.as_matrix()
+        self.py2cppConv()
+
     @property
     def euler(self):
         return self.sciRot.as_euler('xyz', True)
@@ -173,9 +175,10 @@ class Transformation3D:
         self.sciRot = scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees)
         self.py2cppConv()
 
-    def transformInplace(self, input):
-        _pt_Transformation3D_transform(self.cobj, input.shape[0], input, input)
-        return input
+    def transform(self, input):
+        output = np.zeros_like(input)
+        _pt_Transformation3D_transform(self.cobj, input.shape[0], input, output)
+        return output
         
 class Volume:
     scorerDict = {}

@@ -121,7 +121,7 @@ class Tessellated(Solid): #this one is not working
         points = polydata.points
         faces = polydata.faces
         if tranMat is not None:
-            tranMat.transformInplace(points)
+            points=tranMat.transform(points)
         if polydata.n_faces_strict > 100:
             print(f'Warning: Tessellated solid is initiallised by {polydata.n_faces_strict} faces.')
         self.cobj = _pt_Tessellated_new(faces.shape[0], faces, points)
