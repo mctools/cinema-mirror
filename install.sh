@@ -98,7 +98,7 @@ if [ -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
 fi
 
 #MCPL
-if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libmcpl.so ]; then
+if [ ! -f $CINEMAPATH/external/mcpl/install/lib/libmcpl.so ]; then
   # read -r -p "Do you want to install MCPL into $CINEMAPATH/external? [y/N] " response
   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
       if [ ! -d $CINEMAPATH/external ]; then
@@ -111,11 +111,11 @@ if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libmcpl.so ]; then
       git clone ${PREFIX}/mcpl.git
       cd -
       # MCPL is not built as it will be built in the KDSource
-      # mkdir $CINEMAPATH/external/mcpl/build && cd $CINEMAPATH/external/mcpl/build
-      # cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/mcpl/install ..
-      # make -j ${NUMCPU} && make install
-      # cd -
-      echo "Cloned MCPL, not built"
+      mkdir $CINEMAPATH/external/mcpl/build && cd $CINEMAPATH/external/mcpl/build
+      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/mcpl/install ..
+      make -j ${NUMCPU} && make install
+      cd -
+      # echo "Cloned MCPL, not built"
   fi
   else
     echo "Found MCPL"
@@ -182,11 +182,24 @@ if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libkdsource.so ]; then
       fi
       git clone ${PREFIX}/KDSource.git
       cd -
-      mkdir $CINEMAPATH/external/KDSource/build $CINEMAPATH/external/KDSource/install && cd $CINEMAPATH/external/KDSource/build
-      rm -rf $CINEMAPATH/external/KDSource/mcpl
-      ln -s $CINEMAPATH/external/mcpl $CINEMAPATH/external/KDSource/
+
+      # should in fact use git clone --recurse-submodules ${PREFIX}/KDSource.git
+      # but we don't have access to github 90% of the time
+      cp -rf $CINEMAPATH/external/mcpl $CINEMAPATH/external/KDSource
+
+      # # git clone --recurse-submodules ${PREFIX}/KDSource.git
+      # cd $CINEMAPATH/external/KDSource
+      # git clone ${PREFIX}/mcpl.git
+      # cd -
+      
+      mkdir  $CINEMAPATH/external/KDSource/build $CINEMAPATH/external/KDSource/install && cd $CINEMAPATH/external/KDSource/build
+      # rm -rf $CINEMAPATH/external/KDSource/mcpl
+      # ln -s $CINEMAPATH/external/mcpl $CINEMAPATH/external/KDSource/
       cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/KDSource/install -DCMAKE_PREFIX_PATH=$PROMPT_LIBXML2_LIB -DCMAKE_BUILD_TYPE=RELEASE ..
       make -j ${NUMCPU} && make install
+      cd -
+      cd $CINEMAPATH/external/KDSource/python
+      pip install .
       cd -
       echo "installed  KDSource"
   fi
