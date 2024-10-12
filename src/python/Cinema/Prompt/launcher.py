@@ -61,10 +61,11 @@ class Launcher():
         _pt_setWorld(logicalvol.cobj)
         self.worldExist = True
     
-    def showWorld(self, gun, particles=None, mergeMesh=False):
+    def showWorld(self, gun, particles=None, mergeMesh=False, xscale=1.0, yscale=1.0, zscale=1.0):
         if not self.worldExist:
             raise RuntimeError('World is not set')
         v = Visualiser([], printWorld=False, mergeMesh=mergeMesh) 
+        v.plotter.set_scale(xscale, yscale, zscale )
         if particles is None:
             v.show()
         else:
