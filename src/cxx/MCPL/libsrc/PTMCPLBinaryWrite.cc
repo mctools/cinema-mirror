@@ -26,7 +26,7 @@
 
 
 Prompt::MCPLBinaryWrite::MCPLBinaryWrite(const std::string &fn, bool enable_double,  bool enable_extra3double, bool enable_extraUnsigned)
-:MCPLBinary(fn), m_fileNotCreated(true), m_headerClosed(false) 
+:MCPLBinary(fn), m_fileCreated(true), m_headerClosed(false) 
 { 
    m_using_double = enable_double;
    m_with_extra3double = enable_extra3double;
@@ -36,7 +36,7 @@ Prompt::MCPLBinaryWrite::MCPLBinaryWrite(const std::string &fn, bool enable_doub
 
 void Prompt::MCPLBinaryWrite::init()
 {
-  m_fileNotCreated = false;
+  m_fileCreated = false;
   mcpl_hdr_set_srcname(m_file,"Prompt");
   if(m_using_double) mcpl_enable_doubleprec(m_file);
   if(m_with_extra3double)   mcpl_enable_polarisation(m_file);  // double[3]
@@ -48,13 +48,13 @@ void Prompt::MCPLBinaryWrite::init()
 
 Prompt::MCPLBinaryWrite::~MCPLBinaryWrite()
 {
-    if(!m_fileNotCreated)
-    mcpl_closeandgzip_outfile(m_file);
+    if(!m_fileCreated)
+      mcpl_close_outfile(m_file);
 }
 
 void Prompt::MCPLBinaryWrite::addHeaderComment(const std::string &comment)
 {
-  if(m_fileNotCreated) init();
+  if(m_fileCreated) init();
   if(m_headerClosed)
       PROMPT_THROW(LogicError, "addHeaderComment can not operate on a file when the file header is closed ");
 
@@ -63,7 +63,7 @@ void Prompt::MCPLBinaryWrite::addHeaderComment(const std::string &comment)
 
 void Prompt::MCPLBinaryWrite::write(const PromptRecord &p)
 {
-  if(m_fileNotCreated) init();
+  if(m_fileCreated) init();
   m_headerClosed=true;
 
   //size 12 double, a 32-bit int and a 32-bit unsigned
@@ -74,7 +74,7 @@ void Prompt::MCPLBinaryWrite::write(const PromptRecord &p)
 
 void Prompt::MCPLBinaryWrite::write(const mcpl_particle_t &p)
 {
-  if(m_fileNotCreated) init();
+  if(m_fileCreated) init();
   m_headerClosed=true;
   
   memcpy (m_particleInFile, &p, sizeof(mcpl_particle_t));
@@ -84,7 +84,7 @@ void Prompt::MCPLBinaryWrite::write(const mcpl_particle_t &p)
 
 void Prompt::MCPLBinaryWrite::write(const Particle &p)
 {
-  if(m_fileNotCreated) init();
+  if(m_fileCreated) init();
 
   m_headerClosed=true;
   m_particleInFile->pdgcode = p.getPDG();

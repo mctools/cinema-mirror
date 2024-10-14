@@ -93,9 +93,14 @@ namespace Prompt {
     void write(const PromptRecord &p);
     void write(const mcpl_particle_t &p);
 
+    void close() {
+      m_fileCreated = true; 
+      mcpl_close_outfile(m_file); };
+
+
 
   protected:
-    bool m_fileNotCreated, m_headerClosed;
+    bool m_fileCreated, m_headerClosed;
 
   private:
     void init();

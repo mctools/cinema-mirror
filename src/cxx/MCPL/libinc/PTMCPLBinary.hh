@@ -41,7 +41,6 @@ namespace Prompt {
       const std::string& getFileName() { return m_filename; }
       mcpl_particle_t *getParticle() { return m_particleInFile;}
 
-
     protected:
       std::string m_filename;
       mcpl_outfile_t m_file;

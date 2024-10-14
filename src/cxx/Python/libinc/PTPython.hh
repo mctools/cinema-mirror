@@ -108,6 +108,7 @@ void* pt_MCPLBinaryWrite_new(const char *fn, bool enable_double=false, bool enab
                 bool enable_extraUnsigned=false);
 void pt_MCPLBinaryWrite_delete(void* obj);
 void pt_MCPLBinaryWrite_write(void* obj, mcpl_particle_t par);
+void pt_MCPLBinaryWrite_close(void* obj);
 
 // XS python interface
 void* pt_makeModelCollection(const char * cfg);

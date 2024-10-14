@@ -24,6 +24,7 @@ from ctypes import Structure, c_int32, c_uint64
 
 _pt_MCPLBinaryWrite_new = importFunc('pt_MCPLBinaryWrite_new', type_voidp, [type_cstr, type_bool, type_bool, type_bool] )
 _pt_MCPLBinaryWrite_delete = importFunc('pt_MCPLBinaryWrite_delete', type_voidp, [type_voidp] )
+_pt_MCPLBinaryWrite_close = importFunc('pt_MCPLBinaryWrite_close', None, [type_voidp] )
 
 # mcpl definition of mcpl_particle_t
 #   typedef struct {
@@ -67,3 +68,6 @@ class MCPLBinaryWrite:
     
     def write(self, par : MCPLParticle):
         _pt_MCPLBinaryWrite_write(self.cobj, par)
+
+    def close(self):
+        _pt_MCPLBinaryWrite_close(self.cobj)

@@ -36,3 +36,9 @@ void pt_MCPLBinaryWrite_write(void* obj, mcpl_particle_t par)
 {
   static_cast<Prompt::MCPLBinaryWrite *>(obj)->write(par);
 }
+
+void pt_MCPLBinaryWrite_close(void* obj)
+{
+  static_cast<Prompt::MCPLBinaryWrite *>(obj)->close();
+}
+
