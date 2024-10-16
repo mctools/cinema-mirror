@@ -227,7 +227,7 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
 {
   if(!particle.isAlive())
     return false;
-
+  
   const auto *p = reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&particle.getPosition());
   const auto *dir = reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&particle.getDirection());
   double stepLength = m_matphysscor->bulkMaterialProcess->sampleStepLength(particle);
@@ -238,19 +238,8 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   //!   - if step limit > step: m_nextState == in_state
   //!   ComputeStep is essentialy equal to ComputeStepAndPropagatedState without the relaction part
   
-  double safety (0.);
-
-  double step =  m_currState->Top()->GetLogicalVolume()->GetNavigator()->ComputeStepAndSafetyAndPropagatedState(*p, *dir, stepLength, *m_currState, *m_nextState, true, safety);
-
-  if(safety==-1.)
-  {
-    std::cout << "in proprogateInAVolume bulkMaterialProcess->getName() " 
-    << m_matphysscor->bulkMaterialProcess->getName() << " steplength " << stepLength << ", step to  boundary "  << step 
-    << ", safety is "  << safety << "\n" ;
-    std::cout << "pos " << *p << ", dir " << *dir << "\n";
-    PROMPT_THROW2(CalcError, "Vecgeom is unable to computer the distance to the next boundary for logical volume id " << getVolumeID());
-  }
-
+  double step =  m_currState->Top()->GetLogicalVolume()
+  ->GetNavigator()->ComputeStepAndPropagatedState(*p, *dir, stepLength, *m_currState, *m_nextState);
 
   bool sameVolume (m_currState->Top() == m_nextState->Top());
     

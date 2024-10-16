@@ -70,6 +70,8 @@ class MCPLProcessor4KdSrc:
             all_dir = pb.direction
 
         cal_nor, angles = self.find_plane_normal_and_angles(all_pos[:3])
+        print('normal and angles', cal_nor, angles)
+        print('position mean', all_pos.mean(axis=0))
 
         if np.linalg.norm(self.initial_norm - cal_nor) > self.sensitivity and np.linalg.norm(self.initial_norm + cal_nor) > self.sensitivity:
             print(np.linalg.norm(self.initial_norm - cal_nor), np.linalg.norm(self.initial_norm + cal_nor))
@@ -108,8 +110,10 @@ class MCPLProcessor4KdSrc:
             rot_dir = rot.apply(par.direction)
             if rot_dir.dot(self.norm_in_new_frame) < mu_cut:
                 continue
-
-            rot_position = rot.apply(par.position) - rot.apply(self.initial_center)
+            
+            rot_cen = rot.apply(self.initial_center) 
+            rot_position = rot.apply(par.position) - rot_cen
+            rot_position[2] += np.linalg.norm(rot_cen)
             ptpar = MCPLParticle(par.ekin, par.polx, par.poly, par.polz,
                                  rot_position[0], rot_position[1], rot_position[2],
                                  rot_dir[0], rot_dir[1], rot_dir[2], par.time, par.weight, par.pdgcode)
@@ -127,9 +131,9 @@ def main():
     parser.add_argument('-o', '--outputfile', type=str, default='bl6_cut', help='Output file prefix (default: %(default)s)')
     parser.add_argument('-ce', '--cutoff_eV', type=float, default=10, help='Energy cutoff in eV (default: %(default)s)')
     parser.add_argument('-ca', '--cutoff_deg', type=float, default=5, help='Angle cutoff in degrees (default: %(default)s)')
-    parser.add_argument('--initial_center', nargs=3, type=float, default=[32.59, 13.5, 227.22],
+    parser.add_argument('--initial_center', nargs=3, type=float, default=[32.59,  13.5, 227.22],
                         help='Initial center coordinates (default: %(default)s)')
-    parser.add_argument('--initial_norm', nargs=3, type=float, default=[79, 90, 11],
+    parser.add_argument('--initial_norm', nargs=3, type=float, default=[41, 90, 49],
                         help='Initial normal angles. If they are given in degree, the plane normal is calculated using numpy.cos (default: %(default)s)')
     parser.add_argument('--norm_in_deg', type=bool, default=True,
                         help='Specify if the initial normal is given in degrees (default: %(default)s)')

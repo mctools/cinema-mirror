@@ -338,7 +338,7 @@ class TOFHelper(ScorerHelper, MultiScatMixin2D):
         vol.addScorer(self, cobj)
         self.cobj = cobj
 class DirectSqwHelper(ScorerHelper2D, MultiScatMixin2D):
-    def __init__(self, name, mod_smp_dist, mean_ekin, mean_incident_dir, sample_position,
+    def __init__(self, name, mod_smp_dist, mean_ekin, mean_incident_dir=np.array([0,0,1]), sample_position=np.array([0,0,0]),
                  qmin = 1e-1, qmax = 10, num_qbin = 50, 
                  ekinmin=-0.1 , ekinmax=0.1,  num_ebin = 30,
                  pdg = 2112, groupID  = 0, ptstate = 'ENTRY') -> None:

@@ -122,7 +122,7 @@ class MaxwellianGun(SurfaceSource):
         self.cfg_temperature = temp
 
 class UniModeratorGun(SurfaceSource):
-    def __init__(self, src_whz=None, slit_whz=None, wl_mean=1, wl_range=0.0001) -> None:
+    def __init__(self, src_whz=None, slit_whz=None, wl_mean=1., wl_range=0.0001) -> None:
         super().__init__(src_whz, slit_whz)
         self.setWlMean(wl_mean)
         self.setWlRange(wl_range)

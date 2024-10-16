@@ -49,7 +49,7 @@ void Prompt::MCPLBinaryWrite::init()
 Prompt::MCPLBinaryWrite::~MCPLBinaryWrite()
 {
     if(!m_fileCreated)
-      mcpl_close_outfile(m_file);
+      mcpl_closeandgzip_outfile(m_file);
 }
 
 void Prompt::MCPLBinaryWrite::addHeaderComment(const std::string &comment)
