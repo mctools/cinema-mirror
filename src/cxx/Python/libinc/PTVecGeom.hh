@@ -30,7 +30,7 @@ void* pt_GenTrapezoid_new(double dz, double theta, double phi, double dy1, doubl
                     double dx2, double Alpha1, double dy2, double dx3, double dx4, double Alpha2);
 
 // Tessellated
-void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, float *point);
+void *pt_Tessellated_new(size_t faceVecSize, size_t* faces, double *point);
 
 // Polyhedron
 void *pt_Polyhedron_new(double phiStart, double phiDelta, const int sideCount, const int zPlaneCount,

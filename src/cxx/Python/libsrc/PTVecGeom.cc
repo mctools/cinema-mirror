@@ -124,7 +124,7 @@ void *pt_Polyhedron_new(double phiStart, double phiDelta, const int sideCount, c
                           zPlaneCount, zPlanes, rMin, rMax));
 }
 
-void *pt_Tessellated_new(size_t faces_length, size_t* faces, float *points)
+void *pt_Tessellated_new(size_t faces_length, size_t* faces, double *points)
 {
     vg::UnplacedTessellated *tsl = new vg::UnplacedTessellated ();
 
@@ -138,9 +138,9 @@ void *pt_Tessellated_new(size_t faces_length, size_t* faces, float *points)
             size_t idx2 = faces[i + 2];
             size_t idx3 = faces[i + 3];
 
-            const vg::Vector3D<float>* p1 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx1 * 3]);
-            const vg::Vector3D<float>* p2 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx2 * 3]);
-            const vg::Vector3D<float>* p3 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx3 * 3]);
+            const vg::Vector3D<double>* p1 = reinterpret_cast<const vg::Vector3D<double>*>(&points[idx1 * 3]);
+            const vg::Vector3D<double>* p2 = reinterpret_cast<const vg::Vector3D<double>*>(&points[idx2 * 3]);
+            const vg::Vector3D<double>* p3 = reinterpret_cast<const vg::Vector3D<double>*>(&points[idx3 * 3]);
 
             tsl->AddTriangularFacet(*p1, *p2, *p3);
         } else if (n_points == 4) {
@@ -149,10 +149,10 @@ void *pt_Tessellated_new(size_t faces_length, size_t* faces, float *points)
             size_t idx3 = faces[i + 3];
             size_t idx4 = faces[i + 4];
 
-            const vg::Vector3D<float>* p1 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx1 * 3]);
-            const vg::Vector3D<float>* p2 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx2 * 3]);
-            const vg::Vector3D<float>* p3 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx3 * 3]);
-            const vg::Vector3D<float>* p4 = reinterpret_cast<const vg::Vector3D<float>*>(&points[idx4 * 3]);
+            const vg::Vector3D<double>* p1 = reinterpret_cast<const vg::Vector3D<double>*>(&points[idx1 * 3]);
+            const vg::Vector3D<double>* p2 = reinterpret_cast<const vg::Vector3D<double>*>(&points[idx2 * 3]);
+            const vg::Vector3D<double>* p3 = reinterpret_cast<const vg::Vector3D<double>*>(&points[idx3 * 3]);
+            const vg::Vector3D<double>* p4 = reinterpret_cast<const vg::Vector3D<double>*>(&points[idx4 * 3]);
 
             tsl->AddQuadrilateralFacet(*p1, *p2, *p3, *p4);
         }

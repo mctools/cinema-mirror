@@ -42,7 +42,7 @@ _pt_Ellipsoid_new = importFunc('pt_Ellipsoid_new', type_voidp, [type_dbl, type_d
 
 
 #Tessellated
-_pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npsbl2d] )
+_pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npdbl2d] )
 
 
 
@@ -118,7 +118,7 @@ class Tessellated(Solid): #this one is not working
         super().__init__()
         if not isinstance(polydata, pyvista.core.pointset.PolyData):
             raise RuntimeError('Tessellated solid only supports pyvista.core.pointset.PolyData')
-        points = polydata.points
+        points = polydata.points.astype(float)
         faces = polydata.faces
         if tranMat is not None:
             points=tranMat.transform(points)
