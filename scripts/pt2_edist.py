@@ -4,7 +4,7 @@ from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.geo import Volume, Transformation3D
 from Cinema.Prompt.component import DiskChopper
 from Cinema.Prompt.solid import Box, Sphere, Tube
-from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper, DepositionHelper
+from Cinema.Prompt.scorer import VolFluenceHelper, ESpectrumHelper, DepositionHelper, KillMCPLHelper
 from Cinema.Prompt.physics import Material
 from Cinema.Prompt.gun import IsotropicGun, SimpleThermalGun, PythonGun
 from Cinema.Prompt.GidiSetting import GidiSetting 
@@ -40,13 +40,13 @@ energy = [1e6, 6e6]
 # energy = [1e-1, 10e-1]
 # energy=10e6
 
-partnum = 1e4
+partnum = 1e6
 loweredge=1e-5
 upperedge=70e6
 
 numbin_en=300
 numbin_mu=30
-radius_mm = 100
+radius_mm = 1e-4
 hlen_mm = 1e20
 # #########################################################
 
@@ -71,7 +71,7 @@ cfg='freegas::C/18gcm3/C_is_C13'
 # cfg='LiquidWaterH2O_T293.6K.ncmat;density=1gcm3;temp=293.6'
 # cfg='freegas::He/1.8e-3gcm3/He_is_He3'
 
-class MySim(Prompt):
+class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
         super().__init__(seed)   
 
@@ -81,6 +81,8 @@ class MySim(Prompt):
         media = Volume("media", Tube(0, radius_mm, hlen_mm), matCfg= lw)
         world.placeChild('media', media)
 
+        kill = KillMCPLHelper('part_gen', 2112)
+        kill.make(media)
         # VolFluenceHelper('volFlux', max=20e6, numbin=300).make(media)
         ESpectrumHelper('ESpec', min=loweredge, max=upperedge, numbin=numbin_en, ptstate='EXIT').make(media)
         ESpectrumHelper('ESpec_photon', pdg=22, min=loweredge, max=upperedge, numbin=numbin_en, ptstate='EXIT').make(media)
@@ -115,7 +117,9 @@ gun = MyGun(int(2112), energy)
 # gun.setEnergy(energy)
 # gun.setPosition([0,0,-1e5])
 
-# sim.show(gun, 1)
+# sim.show(gun, 100, zscale=radius_mm/hlen_mm*10)
+# raise RuntimeError()
+
 # vis or production
 sim.simulate(gun, partnum)
 

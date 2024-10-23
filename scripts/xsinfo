@@ -44,7 +44,7 @@ cdata.setEnableGidi(True)
 args = parser.parse_args()
 print(args.switchingenergy)
 
-ekin = np.logspace(np.log10(20e6), -5, 300000)
+ekin = np.geomspace(1e-5, 200e6, 300000)
 fig, ax = plt.subplots()
 
 for cfg in args.cfg:

@@ -210,7 +210,7 @@ class MySim(PromptMPI):
             loc = Transformation3D(0., - pos_det, zloc)
             loc = Transformation3D().applyRotZ(45 * i_scor) * loc
             loc_world = Transformation3D().applyRotZ(-135) * loc
-            location = [f'{x: .2f}' for x in loc_world.translation]
+            location = [f'{x: .2f}' for x in loc_world._translation]
             name = f'BankNo.{i_scor + 1}@{location}'
             element = self.makeDetBank(name)
             # # self.scorer[name], vol = makeFlatPSD(name, 120, 200, 100, 100)

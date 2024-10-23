@@ -65,7 +65,7 @@ class Anchor:
             _type_: _description_
         """
         transf = Anchor()
-        transl = (other.refFrame.translation - self.refFrame.translation).dot(self.refFrame.sciRotMatrix)
+        transl = (other.refFrame.translation - self.refFrame._translation).dot(self.refFrame.sciRotMatrix)
         transl_ins = Transformation3D(transl[0], transl[1], transl[2])
         # transl_ins.sciRot =self.refFrame.sciRot.inv() *  other.refFrame.sciRot
         refMatrix = np.linalg.inv(self.refFrame.sciRotMatrix).dot(other.refFrame.sciRotMatrix)
@@ -169,7 +169,7 @@ class EntityArray(Array):
             else:
                 raise ValueError(f'plane should be XY, YZ or XZ, but got {plane}.')
             new_anc = Anchor()
-            new_anc.refFrame.translation = transl
+            new_anc.refFrame._translation = transl
             new_anc.refFrame.applyTrans(refMatrix.dot(absTrans.sciRotMatrix))
             # new_anc.setRefFrame(absTrans * new_anc.refFrame)
             relAnc = self.getRelTransf(new_anc)

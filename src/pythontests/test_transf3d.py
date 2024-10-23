@@ -29,7 +29,20 @@ for i in np.arange(10):
     angles=np.random.random(3)*np.pi
     mat1 = Transformation3D(rot_z=angles[0], rot_new_x=angles[1], rot_new_z=angles[2])
     mat2 = Transformation3D()
-    mat2.setRot(rot_z=angles[0], rot_new_x=angles[1], rot_new_z=angles[2])
+    mat2.set_euler_ZXZ(rot_z=angles[0], rot_new_x=angles[1], rot_new_z=angles[2])
+
+    data = np.random.random([100,3])
+
+    dataout = mat1.transform(data)
+    dataout2 = mat2.transform_py(data)
+    np.testing.assert_allclose(dataout, dataout2, rtol=1e-15, atol=1e-15)
+
+
+for i in np.arange(10):
+    angles=np.random.random(3)*np.pi
+    mat1 = Transformation3D(rot_z=angles[0], rot_new_x=angles[1], rot_new_z=angles[2])
+    mat2 = Transformation3D()
+    mat2.set_euler_ZXZ(rot_z=angles[0], rot_new_x=angles[1], rot_new_z=angles[2])
     np.testing.assert_allclose(mat1.getRotMatrix(), mat2.getRotMatrix(), rtol=1e-15, atol=1e-15)
 
     data = np.random.random([1000,3])
