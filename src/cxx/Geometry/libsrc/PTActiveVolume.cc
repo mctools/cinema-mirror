@@ -255,7 +255,7 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   if(isPropagateInVol)
   {
     #ifdef DEBUG_PTS
-      std::cout << "Propagating in volume " << getVolumeID() << std::endl;
+      std::cout << "Propagating in volume " << getVolumeName() << std::endl;
     #endif
     scorePropagatePre(particlePrePropagate);
     scorePropagatePost(particle);
@@ -263,7 +263,7 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   if(!sameVolume)
   {
     #ifdef DEBUG_PTS
-      std::cout << "Exiting volume " << getVolumeID() << std::endl;
+      std::cout << "Exiting volume " << getVolumeName() << std::endl;
     #endif
     scoreExit(particle);  //score exit before activeVolume changes, otherwise physical volume id and scorer id may be inconsistent.
     std::swap(m_currState, m_nextState);

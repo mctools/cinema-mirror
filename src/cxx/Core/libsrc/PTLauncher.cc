@@ -99,7 +99,7 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
       auto *particle = m_curParicle.get();
 
       #ifdef DEBUG_PTS
-        std::cout << "------ Starting event " << particle->getEventID() << " ------" << std::endl;
+        std::cout << "------ Start of event " << particle->getEventID() << " ------" << std::endl;
       #endif
 
       bool isFirstStep(true);
@@ -138,7 +138,7 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
             // std::cout << "reflection weight " << particle->getWeight() << "\n";
           }
           #ifdef DEBUG_PTS
-            std::cout << "Entering volume " << m_activeVolume.getVolumeID() << std::endl;
+            std::cout << "Entering volume " << m_activeVolume.getVolumeName() << std::endl;
           #endif
           m_activeVolume.scoreEntry(*particle);
         }
@@ -148,12 +148,12 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
         //! within the next while loop, the particle is moving in the same volume
         while(m_activeVolume.proprogateInAVolume(*particle) )
         {
-          // std::cout << "Tracing Volume ID " << m_activeVolume.getVolumeID() << std::endl;
+          // std::cout << "Tracing Volume ID " << m_activeVolume.getVolumeName() << std::endl;
           // score if any scorer is available
           // if(particle->isAlive() && m_activeVolume.hasPropagateScorer())
           // {
           //   #ifdef DEBUG_PTS
-          //     std::cout << "Propagating in volume " << m_activeVolume.getVolumeID() << std::endl;
+          //     std::cout << "Propagating in volume " << m_activeVolume.getVolumeName() << std::endl;
           //   #endif
           //   m_activeVolume.scorePropagate(*particle);
           // }
@@ -172,7 +172,7 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
         if(particle->getKillType()==Particle::KillType::ABSORB)
         {
           #ifdef DEBUG_PTS
-            std::cout << "Absorb in volume " << m_activeVolume.getVolumeID() << std::endl;
+            std::cout << "Absorb in volume " << m_activeVolume.getVolumeName() << std::endl;
           #endif
           m_activeVolume.scoreAbsorb(*particle);
         }
