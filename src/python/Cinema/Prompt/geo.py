@@ -38,6 +38,8 @@ _pt_Volume_capacity = importFunc('pt_Volume_capacity', type_dbl, [type_voidp])
 _pt_Transformation3D_newfromdata = importFunc('pt_Transformation3D_newfromdata', type_voidp, [type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl])
 _pt_Transformation3D_delete = importFunc('pt_Transformation3D_delete', None, [type_voidp] )
 _pt_Transformlation3D_setRotation  = importFunc('pt_Transformlation3D_setRotation', None, [type_voidp, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl, type_dbl] )
+_pt_Transformlation3D_setTranslation  = importFunc('pt_Transformlation3D_setTranslation', None, [type_voidp, type_dbl, type_dbl, type_dbl] )
+
 
 #resource manager 
 _pt_ResourceManager_addNewVolume = importFunc('pt_ResourceManager_addNewVolume', None, [type_uint])
@@ -49,8 +51,8 @@ class Transformation3D:
     def __init__(self, x=0., y=0., z=0., rot_z=0., rot_new_x=0., rot_new_z=0., degrees = True):
         # rotate is in ZXZ in the vecgeom 
         self.cobj = _pt_Transformation3D_newfromdata(x, y, z, rot_z, rot_new_x, rot_new_z, 1, 1, 1)
-        self._sciRot = scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees)
-        self._translation = np.array([x, y, z])
+        self.__sciRot = scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees)
+        self.__translation = np.array([x, y, z])
         # self.update_cpp_rot()
 
 
@@ -71,17 +73,17 @@ class Transformation3D:
 
     @property
     def euler_xyz(self):
-        return self._sciRot.as_euler('xyz', True)
+        return self.__sciRot.as_euler('xyz', True)
 
     def __deepcopy__(self, memo):
         copy = type(self)()
         memo[id(self)] = copy
-        copy.cobj = _pt_Transformation3D_newfromdata(self._translation[0], self._translation[1], self._translation[2], 
+        copy.cobj = _pt_Transformation3D_newfromdata(self.__translation[0], self.__translation[1], self.__translation[2], 
                                                      0, 0, 0, 1.,1.,1.)
-        copy._sciRot = scipyRot.from_matrix(self._sciRot.as_matrix())
+        copy._Transformation3D__sciRot = scipyRot.from_matrix(self.__sciRot.as_matrix())
         copy.update_cpp_rot()
-        copy._translation = self._translation
-        copy.sciRotMatrix = self._sciRot.as_matrix()
+        copy._translation = self.__translation
+        copy.sciRotMatrix = self.__sciRot.as_matrix()
         return copy
 
     def __del__(self):
@@ -101,25 +103,20 @@ class Transformation3D:
 
     def __mul__(self, other):
         rot = self.getRotMatrix().dot(other.getRotMatrix())
-        transl = self._translation + self.getRotMatrix().dot(other.getTranslation())
+        transl = self.__translation + self.getRotMatrix().dot(other.getTranslation())
         transf = Transformation3D(transl[0], transl[1], transl[2])
-        transf._sciRot = self._sciRot * other.sciRot
+        transf._Transformation3D__sciRot = self.__sciRot * other.sciRot
         transf.applyTrans(rot)
         return transf
 
     def inv(self):
-        inversion = type(self)()
-        inversion._translation = - self._translation
-        inversion.cobj = _pt_Transformation3D_newfromdata(inversion._translation[0], 
-                                                          inversion._translation[1], 
-                                                          inversion._translation[2], 
-                                                          0, 0, 0, 1.,1.,1.)
-        inversion._sciRot = self._sciRot.inv()
+        inversion = type(self)(-self.__translation[0], -self.__translation[1], -self.__translation[2])
+        inversion._Transformation3D__sciRot = self.__sciRot.inv()
         inversion.update_cpp_rot()
         return inversion
 
     def update_cpp_rot(self):
-        mat = self._sciRot.as_matrix()
+        mat = self.__sciRot.as_matrix()
         # print(mat)
         _pt_Transformlation3D_setRotation(self.cobj, mat[0,0], mat[0,1], mat[0,2],
                                           mat[1,0], mat[1,1], mat[1,2],
@@ -128,37 +125,37 @@ class Transformation3D:
     def applyRotAxis(self, angle, axis, degrees=True):
         axis = np.array(axis)
         rot = scipyRot.from_rotvec(angle * axis/np.linalg.norm(axis), degrees=degrees)
-        self._sciRot *= rot
+        self.__sciRot *= rot
         self.update_cpp_rot()
         return self
     
     def applyRotX(self, angle, degrees=True):
         rot = scipyRot.from_rotvec(angle * np.array([1,0,0.]), degrees=degrees)
-        self._sciRot *= rot
+        self.__sciRot *= rot
         self.update_cpp_rot()
         return self
     
     def applyRotY(self, angle, degrees=True):
         rot = scipyRot.from_rotvec(angle * np.array([0,1,0.]), degrees=degrees)
-        self._sciRot *= rot
+        self.__sciRot *= rot
         self.update_cpp_rot()
         return self
     
     def applyRotZ(self, angle, degrees=True):
         rot = scipyRot.from_rotvec(angle * np.array([0,0,1.]), degrees=degrees)
-        self._sciRot *= rot
+        self.__sciRot *= rot
         self.update_cpp_rot()
         return self
     
     def applyRotxyz(self, rotx, roty, rotz, degrees=True):
         rot = scipyRot.from_euler('xyz', [rotx, roty, rotz], degrees=degrees)
-        self._sciRot *= rot
+        self.__sciRot *= rot
         self.update_cpp_rot()
         return self
 
     def applyTrans(self, refMatrix):
-        mat = self._sciRot.as_matrix().dot(refMatrix)
-        self._sciRot = scipyRot.from_matrix(self._sciRot.as_matrix())
+        mat = self.__sciRot.as_matrix().dot(refMatrix)
+        self.__sciRot = scipyRot.from_matrix(self.__sciRot.as_matrix())
         _pt_Transformlation3D_setRotation(self.cobj, mat[0,0], mat[0,1], mat[0,2],
                                           mat[1,0], mat[1,1], mat[1,2],
                                           mat[2,0], mat[2,1], mat[2,2])
@@ -166,27 +163,27 @@ class Transformation3D:
     def setRotByAlignement(self, rotated, original) :  # rotated, original are with shape (N, 3)
         if len(original)!= len(rotated) or len(original)!=2:
             raise RuntimeError('rotated and original should be contain 2 vectors')
-        self._sciRot, rssd = scipyRot.align_vectors(original, rotated)
+        self.__sciRot, rssd = scipyRot.align_vectors(original, rotated)
         self.update_cpp_rot()
         return self
 
     def setSciRot(self, sciRot):
-        self._sciRot = deepcopy(sciRot)
+        self.__sciRot = deepcopy(sciRot)
         self.update_cpp_rot()
         return self
     
     def getRotMatrix(self):
-        return self._sciRot.as_matrix()
+        return self.__sciRot.as_matrix()
         
     def getTranslation(self):
-        return self._translation
+        return self.__translation
 
     def getTransformationTo(self, other):
         return self.inv() * other
 
     #  a wrapper of scipy.spatial.transform.Rotation    
     def set_euler_ZXZ(self, rot_z=0., rot_new_x=0., rot_new_z=0., degrees = True):
-        self._sciRot = scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees)
+        self.__sciRot = scipyRot.from_euler('ZXZ', [rot_z, rot_new_x, rot_new_z], degrees)
         self.update_cpp_rot()
 
     def transform(self, input):
@@ -195,7 +192,7 @@ class Transformation3D:
         return output
     
     def transform_py(self, input):
-        return self._sciRot.inv().apply(input)+ self._sciRot.inv().apply(self._translation)
+        return self.__sciRot.inv().apply(input)+ self.__sciRot.inv().apply(self.__translation)
         
 class Volume:
     scorerDict = {}

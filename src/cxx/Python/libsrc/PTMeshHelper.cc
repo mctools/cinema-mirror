@@ -67,6 +67,14 @@ void pt_Transformlation3D_setRotation(void *obj, double r0, double r1, double r2
   static_cast<vecgeom::Transformation3D *>(obj)->SetProperties(); // update the internal flags 
 }
 
+void pt_Transformlation3D_setTranslation(void *obj, double x, double y, double z)
+{
+  
+  static_cast<vecgeom::Transformation3D *>(obj)->SetTranslation(x,y,z);
+  static_cast<vecgeom::Transformation3D *>(obj)->SetProperties(); // update the internal flags 
+}
+
+
 void pt_Transformation3D_delete(void *trfm3Dobj)
 {
   delete static_cast<vecgeom::Transformation3D *>(trfm3Dobj);

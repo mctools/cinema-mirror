@@ -40,6 +40,7 @@ const char* pt_Transformation3D_print(void *trfm3Dobj);
 
 void pt_Transformlation3D_setRotation(void *trfm3Dobj1, double r0, double r1, double r2, double r3,
                                       double r4, double r5, double r6, double r7, double r8);
+void pt_Transformlation3D_setTranslation(void *obj, double x, double y, double z);
 
 size_t pt_countFullTreeNode();
 
