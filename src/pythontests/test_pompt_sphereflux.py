@@ -50,6 +50,6 @@ print(spct.getHit().sum())
 # spct.plot(show=True, log=True)
 
 import numpy.testing as npt
-npt.assert_array_almost_equal(spct.getWeight().sum(), 0.000405540709924, decimal =  15)
+npt.assert_array_almost_equal(spct.getWeight().sum(), 0.0004503254359124584, decimal =  15)
 
 

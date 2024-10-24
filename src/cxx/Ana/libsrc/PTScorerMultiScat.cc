@@ -51,7 +51,7 @@ void Prompt::ScorerMultiScat::score(Particle &particle)
     }
     else
     {
-      m_hist->fill(m_p_counter, m_p_weight);
+      m_hist->fill(m_p_counter-1, m_p_weight);
       m_lasteventid=particle.getEventID();
       m_p_counter=1;
       m_p_weight=particle.getWeight();

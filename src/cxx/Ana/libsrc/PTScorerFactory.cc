@@ -433,7 +433,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
       // "Scorer=MultiScat; name=D2O; min=1; max=5; linear=yes"
       // the default value for linear is yes
 
-      int parCount = 4;
+      int parCount = 5;
 
       // The mandatory parameters
       bool force = true;
