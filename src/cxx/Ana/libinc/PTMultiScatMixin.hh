@@ -29,10 +29,10 @@ namespace Prompt {
   class MultiScatMixin {
   public:
     // Constructor to initialize the log level
-    MultiScatMixin(const ScorerMultiScat* scatterCounter, int scatNumReq=-1) : 
+    MultiScatMixin(const ScorerMultiScat* scatterCounter, int scatNumReq=-2) : 
       m_scatterNumberRequired(scatNumReq), m_scatterCounter(scatterCounter) {}
 
-    void addMultiScatter(const Prompt::ScorerMultiScat* scatterCounter, int scatNumReq=-1 ) 
+    void addMultiScatter(const Prompt::ScorerMultiScat* scatterCounter, int scatNumReq=-2 ) 
     {
       m_scatterCounter=scatterCounter;
       m_scatterNumberRequired = scatNumReq;
@@ -40,7 +40,7 @@ namespace Prompt {
     }
 
     bool rightScatterNumber() const {
-      return (m_scatterNumberRequired!=-1 && m_scatterCounter!=nullptr) ? 
+      return (m_scatterNumberRequired!=-2 && m_scatterCounter!=nullptr) ? 
       m_scatterCounter->getScatNumber()==m_scatterNumberRequired : true;
     }
 

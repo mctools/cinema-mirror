@@ -142,7 +142,7 @@ _pt_ScorerESpectrum_new = importFunc('pt_ScorerESpectrum_new', type_voidp, [type
 _pt_ScorerTOF_new = importFunc('pt_ScorerTOF_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerWlSpectrum_new = importFunc('pt_ScorerWlSpectrum_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int ])
 _pt_ScorerVolFluence_new = importFunc('pt_ScorerVolFluence_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_dbl, type_uint, type_int, type_bool, type_int])
-_pt_ScorerMultiScat_new = importFunc('pt_ScorerMultiScat_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int, type_int])
+_pt_ScorerMultiScat_new = importFunc('pt_ScorerMultiScat_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, type_uint, type_int])
 _pt_ScorerDirectSqw_new = importFunc('pt_ScorerDirectSqw_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint, 
                                                                             type_dbl, type_dbl, type_uint,
                                                                             type_uint, type_int, type_dbl, type_dbl,
@@ -222,7 +222,7 @@ class MultiScatMixin2D():
 # Counter 
 class MultiScatCounter(ScorerHelper):
     def __init__(self) -> None:
-        super().__init__(name="ScatterCounter", min=0., max=1., numbin=1, pdg=2112, ptstate='PROPAGATE_POST', groupID=0)
+        super().__init__(name="ScatterCounter", min=0., max=1., numbin=1, pdg=2112, groupID=0)
 
     def make(self, vol):
         cobj = _pt_ScorerMultiScat_new(self.name.encode('utf-8'), 
@@ -230,7 +230,6 @@ class MultiScatCounter(ScorerHelper):
                                         self.max,
                                         self.numbin,
                                         self.pdg,
-                                        self.ptsNum,
                                         self.groupID)
         vol.addScorer(self, cobj)
         self.cobj = cobj

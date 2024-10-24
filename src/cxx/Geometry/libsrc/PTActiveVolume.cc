@@ -285,46 +285,46 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
 
   const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
 
-  // Test if there is intersections
-  if(particle.getWeight()<1e-6)
-  {
-    double targW = 1e-3;
-    if(getRandNumber(nullptr)<targW)
-    {
-      particle.setWeight(targW);
-    }
-    else
-    {
-      particle.kill(Particle::KillType::BIAS);
-      return false;
-    }
+  // // Test if there is intersections
+  // if(particle.getWeight()<1e-6)
+  // {
+  //   double targW = 1e-3;
+  //   if(getRandNumber(nullptr)<targW)
+  //   {
+  //     particle.setWeight(targW);
+  //   }
+  //   else
+  //   {
+  //     particle.kill(Particle::KillType::BIAS);
+  //     return false;
+  //   }
 
-  }
+  // }
 
-  if(particle.getDeposition() != -1. && particle.getPosition().mag()<70  && true && intersec(particle.getPosition(), particle.getDirection()))
-  {
-    double distOut = distanceToOut(particle.getPosition(), particle.getDirection());
+  // if(particle.getDeposition() != -1. && particle.getPosition().mag()<70  && true && intersec(particle.getPosition(), particle.getDirection()))
+  // {
+  //   double distOut = distanceToOut(particle.getPosition(), particle.getDirection());
 
-    // move neutron towards target by thr time of fmp, or to the boundary
-    double thr = 3.;
-    double moved_dist(0);
-    if(distOut > thr*fmp)
-    {
-      // std::cout << "split " << particle << ", fmp " << fmp <<std::endl;
-      double moved_dist = thr*fmp;
-      auto ghost = Neutron(particle.getEKin(), particle.getDirection(), particle.getPosition());
-      ghost.scaleWeight(particle.getWeight());
-      if(fmp)
-      {
-        double scale = exp(-moved_dist/fmp);
-        ghost.scaleWeight(scale);
-        particle.scaleWeight(1-scale);
-      }      
-      ghost.moveForward(moved_dist);
-      ghost.setDeposition(-1.); // hack for indicating this is just biased
-      Singleton<StackManager>::getInstance().add(ghost, 2);
-    }
-  }
+  //   // move neutron towards target by thr time of fmp, or to the boundary
+  //   double thr = 3.;
+  //   double moved_dist(0);
+  //   if(distOut > thr*fmp)
+  //   {
+  //     // std::cout << "split " << particle << ", fmp " << fmp <<std::endl;
+  //     double moved_dist = thr*fmp;
+  //     auto ghost = Neutron(particle.getEKin(), particle.getDirection(), particle.getPosition());
+  //     ghost.scaleWeight(particle.getWeight());
+  //     if(fmp)
+  //     {
+  //       double scale = exp(-moved_dist/fmp);
+  //       ghost.scaleWeight(scale);
+  //       particle.scaleWeight(1-scale);
+  //     }      
+  //     ghost.moveForward(moved_dist);
+  //     ghost.setDeposition(-1.); // hack for indicating this is just biased
+  //     Singleton<StackManager>::getInstance().add(ghost, 2);
+  //   }
+  // }
 
   //Move next step
   particle.moveForward(sameVolume ? step : (step + resolution) );
@@ -336,8 +336,9 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   #ifdef DEBUG_PTS
     std::cout << "Propagating in volume " << getVolumeName() << std::endl;
   #endif
-  
+
   scorePropagatePost(particle);
+  
   
   if(!sameVolume)
   {
@@ -345,8 +346,10 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
       std::cout << "Exiting volume " << getVolumeName() << std::endl;
     #endif
     scoreExit(particle);  //score exit before activeVolume changes, otherwise physical volume id and scorer id may be inconsistent.
+    particle.moveForward(0); // clear step length in the particle, so that the next entry event with zero length
     std::swap(m_currState, m_nextState);
   }
+
   //sample the interaction at the location
   return sameVolume;
 
