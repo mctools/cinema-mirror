@@ -85,12 +85,13 @@ double sample_position_x, double sample_position_y, double sample_position_z, in
 }
 
 void* pt_ScorerPSD_new(const char* name, double xmin, double xmax, unsigned nxbins, 
-                    double ymin, double ymax, unsigned nybins, unsigned pdg, int ptstype, int psdtype, bool isGlobal)
+                    double ymin, double ymax, unsigned nybins, unsigned pdg, 
+                    int ptstype, int psdtype, int groupid, bool isGlobal)
 {
   pt::ScorerPSD::ScorerType pts = static_cast<pt::ScorerPSD::ScorerType>(ptstype); 
   pt::ScorerPSD::PSDType psd = static_cast<pt::ScorerPSD::PSDType> (psdtype);
   return static_cast<void *>(new pt::ScorerPSD(name, xmin, xmax, nxbins, 
-                          ymin, ymax, nybins, pdg, pts, psd, isGlobal));
+                          ymin, ymax, nybins, pdg, pts, psd, groupid, isGlobal));
 }
 
 

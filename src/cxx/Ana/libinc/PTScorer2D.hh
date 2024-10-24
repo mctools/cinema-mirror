@@ -30,7 +30,7 @@ namespace Prompt {
   class Scorer2D : public Scorer, public MultiScatMixin<Scorer2D> {
   public:
     Scorer2D(const std::string& name, ScorerType type, std::unique_ptr<Hist2D> hist, unsigned int pdg=0, int groupid=0)
-    : Scorer(name, type, groupid), MultiScatMixin(nullptr, -1), m_hist(std::move(hist)) {};
+    : Scorer(name, type, pdg, groupid), MultiScatMixin(nullptr, -1), m_hist(std::move(hist)) {};
     virtual ~Scorer2D() {  }
     void save_mcpl() override { m_hist->save(m_name); }
     const HistBase* getHist() const override  { return dynamic_cast<const HistBase*>(m_hist.get()); }

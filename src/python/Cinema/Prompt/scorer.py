@@ -151,7 +151,7 @@ _pt_ScorerDirectSqw_new = importFunc('pt_ScorerDirectSqw_new', type_voidp, [type
 
 _pt_ScorerPSD_new = importFunc('pt_ScorerPSD_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint,
                                                                 type_dbl, type_dbl, type_uint,
-                                                                type_uint, type_int, type_int, type_bool])
+                                                                type_uint, type_int, type_int, type_int, type_bool])
 
 _pt_addMultiScatter1D = importFunc('pt_addMultiScatter1D', None, [type_voidp, type_voidp, type_int])
 _pt_addMultiScatter2D = importFunc('pt_addMultiScatter2D', None, [type_voidp, type_voidp, type_int])
@@ -376,6 +376,7 @@ class PSDHelper(ScorerHelper2D, MultiScatMixin2D):
                                  self.pdg,
                                  self.ptsNum,
                                  self.psdTypeNum,
+                                 self.groupID,
                                  self.isGlobal)
         vol.addScorer(self, cobj)
         self.cobj = cobj
