@@ -44,11 +44,11 @@ namespace Prompt {
     }
 
     bool rightScatterNumber() const {
-      if(m_scatterCounter==nullptr)
-      {
-        PROMPT_THROW(MissingInfo, "ScorerMultiScat is not provided");
 
-      }
+      // ScorerMultiScat is not provided, so accepts all particles
+      if(m_scatterCounter==nullptr)
+        return true;
+
       return (m_scatterNumberRequired!=-2 ) ? 
       m_scatterCounter->getScatNumber()==m_scatterNumberRequired : true;
     }
