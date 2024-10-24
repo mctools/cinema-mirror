@@ -31,11 +31,12 @@ namespace Prompt {
     enum class PSDType {XY, XZ, YZ};
   public:
     ScorerPSD(const std::string &name, double xmin, double xmax, unsigned nxbins,
-      double ymin, double ymax, unsigned nybins, unsigned int pdg, ScorerType stype=Scorer::ScorerType::ENTRY, PSDType type=PSDType::XY);
+      double ymin, double ymax, unsigned nybins, unsigned int pdg, ScorerType stype=Scorer::ScorerType::ENTRY, PSDType type=PSDType::XY, bool isGlobal=false);
     virtual ~ScorerPSD();
     virtual void score(Particle &particle) override;
   private:
     PSDType m_type;
+    bool m_isGlobal;
   };
 }
 #endif

@@ -148,6 +148,11 @@ _pt_ScorerDirectSqw_new = importFunc('pt_ScorerDirectSqw_new', type_voidp, [type
                                                                             type_uint, type_int, type_dbl, type_dbl,
                                                                             type_dbl, type_dbl, type_dbl,
                                                                             type_dbl, type_dbl, type_dbl, type_int])
+
+_pt_ScorerPSD_new = importFunc('pt_ScorerPSD_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint,
+                                                                type_dbl, type_dbl, type_uint,
+                                                                type_uint, type_int, type_int, type_bool])
+
 _pt_addMultiScatter1D = importFunc('pt_addMultiScatter1D', None, [type_voidp, type_voidp, type_int])
 _pt_addMultiScatter2D = importFunc('pt_addMultiScatter2D', None, [type_voidp, type_voidp, type_int])
 
@@ -320,7 +325,7 @@ class DepositionHelper(ScorerHelper, MultiScatMixin1D):
     #   double mod_smp_dist, double mean_ekin, const Vector& mean_incident_dir, const Vector& sample_position, 
     #   ScorerType stype=Scorer::ScorerType::ENTRY);
 
-# 2D Scorer
+
 class TOFHelper(ScorerHelper, MultiScatMixin2D):
     def __init__(self, name : str, min : float = 0., max : float = 40e-3, numbin : int = 100, 
                  pdg : int = 2112, ptstate : str = 'ENTRY', groupID : int = 0) -> None:
@@ -336,6 +341,44 @@ class TOFHelper(ScorerHelper, MultiScatMixin2D):
                                  self.groupID)
         vol.addScorer(self, cobj)
         self.cobj = cobj
+
+
+# 2D Scorer
+class PSDHelper(ScorerHelper2D, MultiScatMixin2D):
+    def __init__(self, name, xmin=-10., xmax=10., xnumbin=100, 
+                 ymin=-10, ymax=10, ynumbin=100, pdg=2112, 
+                 ptstate='ENTRY', psdtype='XY', groupID=0, isGlobal = False) -> None:
+        super().__init__(name, xmin, xmax, xnumbin, 
+                         ymin, ymax, ynumbin, pdg, ptstate, groupID)
+        self.psdtype = psdtype
+        self.isGlobal = isGlobal
+
+    @property
+    def psdTypeNum(self):
+        if self.psdtype=='XY':
+            return 0
+        elif self.psdtype=='XZ':
+            return 1
+        elif self.psdtype=='YZ':
+            return 2
+        else:
+            raise RuntimeError(f'PSD type {self.psdtype} is undefined.') 
+
+    def make(self, vol):
+        cobj = _pt_ScorerPSD_new(self.name.encode('utf-8'),
+                                 self.min,
+                                 self.max,
+                                 self.numbin,
+                                 self.ymin,
+                                 self.ymax,
+                                 self.ynumbin,
+                                 self.pdg,
+                                 self.ptsNum,
+                                 self.psdTypeNum,
+                                 self.isGlobal)
+        vol.addScorer(self, cobj)
+        self.cobj = cobj
+
 class DirectSqwHelper(ScorerHelper2D, MultiScatMixin2D):
     def __init__(self, name, mod_smp_dist, mean_ekin, mean_incident_dir=np.array([0,0,1]), sample_position=np.array([0,0,0]),
                  qmin = 1e-1, qmax = 10, num_qbin = 50, 

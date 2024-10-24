@@ -22,10 +22,11 @@
 #include "PTActiveVolume.hh"
 
 Prompt::ScorerPSD::ScorerPSD(const std::string &name, double xmin, double xmax,
-   unsigned nxbins, double ymin, double ymax, unsigned nybins, unsigned int pdg, ScorerType stype, PSDType type)
+   unsigned nxbins, double ymin, double ymax, unsigned nybins, unsigned int pdg, ScorerType stype, PSDType type, bool isGlobal)
 :Scorer2D("ScorerPSD_"+name, stype,
   std::make_unique<Hist2D>("ScorerPSD_"+name, xmin, xmax, nxbins, ymin, ymax, nybins), pdg),
- m_type(type)
+ m_type(type),
+ m_isGlobal(isGlobal)
 {}
 
 Prompt::ScorerPSD::~ScorerPSD() {}
@@ -35,7 +36,11 @@ void Prompt::ScorerPSD::score(Prompt::Particle &particle)
   if(!rightScorer(particle))
     return;
 
-  Vector vec = m_activeVolume.getGeoTranslator().global2Local(particle.getPosition());
+  Vector vec;
+  if(m_isGlobal)
+    vec = particle.getPosition();
+  else
+    vec = m_activeVolume.getGeoTranslator().global2Local(particle.getPosition());
 
   if (m_type==PSDType::XY)
     m_hist->fill(vec.x(), vec.y(), particle.getWeight() );

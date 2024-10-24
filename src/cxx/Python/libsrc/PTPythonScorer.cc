@@ -27,6 +27,7 @@
 #include "PTScorerMultiScat.hh"
 #include "PTScorerDirectSqw.hh"
 #include "PTScorer2D.hh"
+#include "PTScorerPSD.hh"
 #include "PTKillerMCPL.hh"
 namespace pt = Prompt;
 
@@ -81,6 +82,16 @@ double sample_position_x, double sample_position_y, double sample_position_z, in
                                         ekinmax, nybins, pdg, group_id, mod_smp_dist, mean_ekin, 
                                         mean_incident_dir, sample_position, t));
 }
+
+void* pt_ScorerPSD_new(const char* name, double xmin, double xmax, unsigned nxbins, 
+                    double ymin, double ymax, unsigned nybins, unsigned pdg, int ptstype, int psdtype, bool isGlobal)
+{
+  pt::ScorerPSD::ScorerType pts = static_cast<pt::ScorerPSD::ScorerType>(ptstype); 
+  pt::ScorerPSD::PSDType psd = static_cast<pt::ScorerPSD::PSDType> (psdtype);
+  return static_cast<void *>(new pt::ScorerPSD(name, xmin, xmax, nxbins, 
+                          ymin, ymax, nybins, pdg, pts, psd, isGlobal));
+}
+
 
 void pt_addMultiScatter1D(void* scatter, void* scorer, int scatNumReq=-1)
 {
