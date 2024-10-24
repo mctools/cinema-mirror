@@ -61,7 +61,7 @@ gun.setEnergy(3e6)
 
 # sim.show(gun, 1)
 
-partnum = 1e8
+partnum = 1e5
 # vis or production
 if False:
     sim.show(gun, 10)
@@ -77,9 +77,9 @@ psd2 = sim.gatherHistData('psd2', dst=destination)
 if sim.rank==destination:
     # print('total flux', spct.getWeight().sum())
     spct.plot(show=False, log=True, title='biased')
-    plt.figure()
-    spct2.plot(show=False, log=True, title='analog')
+    # plt.figure()
+    # spct2.plot(show=False, log=True, title='analog')
     # print('total count', spct.getHit().sum(), spct.
     print('det count', psd.getHit().sum(), psd.getSdev().sum())
-    psd.plot(show=False, title=f'biased {psd.getHit().sum():.0f}, w {psd.getWeight().sum():.4e}, std {psd.getSdev().sum():.4e}')
-    psd2.plot(show=True, title=f'analog {psd2.getHit().sum():.0f}, w {psd2.getWeight().sum():.4e}, std {psd2.getSdev().sum():.4e}')
+    psd.plot(show=True, title=f'biased {psd.getHit().sum():.0f}, w {psd.getWeight().sum():.4e}, std {psd.getSdev().sum():.4e}')
+    # psd2.plot(show=True, title=f'analog {psd2.getHit().sum():.0f}, w {psd2.getWeight().sum():.4e}, std {psd2.getSdev().sum():.4e}')

@@ -286,14 +286,32 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
 
   // Test if there is intersections
+  if(particle.getWeight()<1e-6)
+  {
+    double targW = 1e-3;
+    if(getRandNumber(nullptr)<targW)
+    {
+      particle.setWeight(targW);
+    }
+    else
+    {
+      particle.kill(Particle::KillType::BIAS);
+      return false;
+    }
+
+  }
+
   if(particle.getDeposition() != -1. && particle.getPosition().mag()<70  && true && intersec(particle.getPosition(), particle.getDirection()))
   {
     double distOut = distanceToOut(particle.getPosition(), particle.getDirection());
-    double cut = 2;
-    if(distOut < 5*fmp && distOut > cut*fmp)
+
+    // move neutron towards target by thr time of fmp, or to the boundary
+    double thr = 3.;
+    double moved_dist(0);
+    if(distOut > thr*fmp)
     {
       // std::cout << "split " << particle << ", fmp " << fmp <<std::endl;
-      double moved_dist = distOut-cut*fmp;
+      double moved_dist = thr*fmp;
       auto ghost = Neutron(particle.getEKin(), particle.getDirection(), particle.getPosition());
       ghost.scaleWeight(particle.getWeight());
       if(fmp)
@@ -304,22 +322,7 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
       }      
       ghost.moveForward(moved_dist);
       ghost.setDeposition(-1.); // hack for indicating this is just biased
-      Singleton<StackManager>::getInstance().add(ghost, 10);
-    }
-    else if(distOut > 5*fmp && distOut < 10*fmp)
-    {
-      double moved_dist = 4*fmp;
-      auto ghost = Neutron(particle.getEKin(), particle.getDirection(), particle.getPosition());
-      ghost.scaleWeight(particle.getWeight());
-      if(fmp)
-      {
-        double scale = exp(-moved_dist/fmp);
-        ghost.scaleWeight(scale);
-        particle.scaleWeight(1-scale);
-      }      
-      ghost.moveForward(moved_dist);
-      ghost.setDeposition(-1.); // hack for indicating this is just biased
-      Singleton<StackManager>::getInstance().add(ghost, 10);
+      Singleton<StackManager>::getInstance().add(ghost, 2);
     }
   }
 
@@ -327,16 +330,15 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   particle.moveForward(sameVolume ? step : (step + resolution) );
 
   // Here is the state just before interaction
-  Particle particlePrePropagate(particle);
-  bool isPropagateInVol = m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
-  if(isPropagateInVol)
-  {
-    #ifdef DEBUG_PTS
-      std::cout << "Propagating in volume " << getVolumeName() << std::endl;
-    #endif
-    scorePropagatePre(particlePrePropagate);
-    scorePropagatePost(particle);
-  }
+  scorePropagatePre(particle);
+
+  m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
+  #ifdef DEBUG_PTS
+    std::cout << "Propagating in volume " << getVolumeName() << std::endl;
+  #endif
+  
+  scorePropagatePost(particle);
+  
   if(!sameVolume)
   {
     #ifdef DEBUG_PTS

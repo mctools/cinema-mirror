@@ -59,6 +59,8 @@ namespace Prompt {
     double getTime() const { return m_time; }
     void setTime(double time) { m_time =time; }
 
+    void setWeight(double w) { m_weight=w; }
+
 
     double getStep() const { return m_step; }
     double getEnergyChange() const { return m_deltaEn; }
