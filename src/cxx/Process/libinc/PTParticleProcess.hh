@@ -35,7 +35,7 @@ namespace Prompt {
     ModelCollection* getModelCollection() {return m_discretModels.get(); }
     double getNumDensity() {return m_numdensity; }
 
-    double sampleStepLength(const Prompt::Particle &particle) const;
+    double sampleStepLength(const Prompt::Particle &particle, double &macxs) const;
     bool sampleFinalState(Prompt::Particle &particle, double stepLength=0., bool hitWall=false) const;
     void cfgPhysicsModel(const std::string &cfg);
     bool containOrentied() const { return m_discretModels->containOriented(); }
