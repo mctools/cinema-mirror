@@ -249,6 +249,7 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
   //Move next step
   particle.moveForward(sameVolume ? step : (step + resolution) );
+
   // Here is the state just before interaction
   Particle particlePrePropagate(particle);
   bool isPropagateInVol = m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
