@@ -325,6 +325,7 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
 
   //Move next step
   particle.moveForward(sameVolume ? step : (step + resolution) );
+
   // Here is the state just before interaction
   Particle particlePrePropagate(particle);
   bool isPropagateInVol = m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
