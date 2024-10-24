@@ -150,12 +150,12 @@ bool Prompt::ParticleProcess::sampleFinalState(Prompt::Particle &particle, doubl
   return isPropagateInVol;
 }
 
-double Prompt::ParticleProcess::sampleStepLength(const Prompt::Particle &particle) const
+double Prompt::ParticleProcess::sampleStepLength(const Prompt::Particle &particle, double &mxs) const
 {
   // if (m_discretModels->getSupportedGPD() != particle.getPDG())
   //   PROMPT_THROW2(CalcError, "ParticleProcess::sampleStepLength " << m_name << " does not support particle " << particle.getPDG() << ", " << m_discretModels->getSupportedGPD());
 
-  double mxs = macroCrossSection(particle);
+  mxs = macroCrossSection(particle);
   if (mxs)
   {
     return -log(m_rng.generate()) / mxs;

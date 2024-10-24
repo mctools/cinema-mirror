@@ -22,6 +22,8 @@
 #include <VecGeom/navigation/BVHNavigator.h>
 #include <VecGeom/navigation/NewSimpleNavigator.h>
 #include "PTMirror.hh"
+#include "PTStackManager.hh"
+#include "PTNeutron.hh"
 
 Prompt::ActiveVolume::ActiveVolume()
 :m_geo(vecgeom::GeoManager::Instance()), 
@@ -223,6 +225,40 @@ bool Prompt::ActiveVolume::hasBoundaryPhyiscs() const
   return m_matphysscor->surfaceProcess.use_count();
 }
 
+// Function to test if the ray intersects with the circular surface
+bool intersec(const Prompt::Vector& pos, const Prompt::Vector& dir)
+{
+  const Prompt::Vector center{0,0,2200.}, nor{0,0,1}; 
+  double m_r= 500;
+  // Step 1: Calculate the dot product of the direction vector and the normal
+  double dot = dir.dot(nor);
+
+  // If the dot product is zero, the ray is parallel to the plane
+  if (fabs(dot) < 1e-10) {
+      return false; // No intersection since ray is parallel to the plane
+  }
+
+  // Step 2: Find the intersection point with the plane
+  // The formula for t is (center - pos) dot nor / dir dot nor
+  double t = (center - pos).dot(nor) / dot;
+
+  // If t < 0, the intersection point is behind the ray's origin
+  if (t < 0) {
+      return false;
+  }
+    // Calculate the intersection point
+  auto intersectionPoint = pos + dir * t;
+
+  // Step 3: Check if the intersection point is within the circle radius
+  // We project the intersection point onto the plane's circular area
+  auto OC = intersectionPoint - center; // Vector from circle center to intersection point
+
+  // Check if the distance from the center to the intersection point is within the radius
+  return (OC.dot(OC) <= m_r * m_r);
+
+}
+
+
 bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
 {
   if(!particle.isAlive())
@@ -230,7 +266,8 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   
   const auto *p = reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&particle.getPosition());
   const auto *dir = reinterpret_cast<const vecgeom::Vector3D<vecgeom::Precision>*>(&particle.getDirection());
-  double stepLength = m_matphysscor->bulkMaterialProcess->sampleStepLength(particle);
+  double fmp(0.);
+  double stepLength = m_matphysscor->bulkMaterialProcess->sampleStepLength(particle, fmp);
 
   //! updates m_nextState to contain information about the next hitting boundary:
   //!   - if a daugher is hit: m_nextState.Top() will be daughter
@@ -247,27 +284,72 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
     PROMPT_THROW2(CalcError, "stepLength < step " << stepLength << " " << step << "\n");
 
   const double resolution = 10*vecgeom::kTolerance; //this value should be in sync with the geometry tolerance
+
+  // // Test if there is intersections
+  // if(particle.getWeight()<1e-6)
+  // {
+  //   double targW = 1e-3;
+  //   if(getRandNumber(nullptr)<targW)
+  //   {
+  //     particle.setWeight(targW);
+  //   }
+  //   else
+  //   {
+  //     particle.kill(Particle::KillType::BIAS);
+  //     return false;
+  //   }
+
+  // }
+
+  // if(particle.getDeposition() != -1. && particle.getPosition().mag()<70  && true && intersec(particle.getPosition(), particle.getDirection()))
+  // {
+  //   double distOut = distanceToOut(particle.getPosition(), particle.getDirection());
+
+  //   // move neutron towards target by thr time of fmp, or to the boundary
+  //   double thr = 3.;
+  //   double moved_dist(0);
+  //   if(distOut > thr*fmp)
+  //   {
+  //     // std::cout << "split " << particle << ", fmp " << fmp <<std::endl;
+  //     double moved_dist = thr*fmp;
+  //     auto ghost = Neutron(particle.getEKin(), particle.getDirection(), particle.getPosition());
+  //     ghost.scaleWeight(particle.getWeight());
+  //     if(fmp)
+  //     {
+  //       double scale = exp(-moved_dist/fmp);
+  //       ghost.scaleWeight(scale);
+  //       particle.scaleWeight(1-scale);
+  //     }      
+  //     ghost.moveForward(moved_dist);
+  //     ghost.setDeposition(-1.); // hack for indicating this is just biased
+  //     Singleton<StackManager>::getInstance().add(ghost, 2);
+  //   }
+  // }
+
   //Move next step
   particle.moveForward(sameVolume ? step : (step + resolution) );
+
   // Here is the state just before interaction
-  Particle particlePrePropagate(particle);
-  bool isPropagateInVol = m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
-  if(isPropagateInVol)
-  {
-    #ifdef DEBUG_PTS
-      std::cout << "Propagating in volume " << getVolumeName() << std::endl;
-    #endif
-    scorePropagatePre(particlePrePropagate);
-    scorePropagatePost(particle);
-  }
+  scorePropagatePre(particle);
+
+  m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
+  #ifdef DEBUG_PTS
+    std::cout << "Propagating in volume " << getVolumeName() << std::endl;
+  #endif
+
+  scorePropagatePost(particle);
+  
+  
   if(!sameVolume)
   {
     #ifdef DEBUG_PTS
       std::cout << "Exiting volume " << getVolumeName() << std::endl;
     #endif
     scoreExit(particle);  //score exit before activeVolume changes, otherwise physical volume id and scorer id may be inconsistent.
+    particle.moveForward(0); // clear step length in the particle, so that the next entry event with zero length
     std::swap(m_currState, m_nextState);
   }
+
   //sample the interaction at the location
   return sameVolume;
 

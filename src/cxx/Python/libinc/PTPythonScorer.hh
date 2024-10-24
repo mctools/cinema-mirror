@@ -37,7 +37,7 @@ void* pt_ScorerWlSpectrum_new(const char* name, double xmin, double xmax, unsign
 
 void* pt_ScorerVolFluence_new(const char* name, double xmin, double xmax, unsigned nbins, double volme, unsigned pdg, int type, bool linear, int groupid);
 
-void* pt_ScorerMultiScat_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int type, int groupid);
+void* pt_ScorerMultiScat_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int groupid);
 
 void* pt_ScorerDirectSqw_new(const char* name, double qmin, double qmax, unsigned xbin, 
                             double ekinmin, double ekinmax, unsigned nybins, unsigned int pdg, int group_id,

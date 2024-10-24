@@ -71,7 +71,7 @@ namespace Prompt {
     // return the number of subvolumes in the current physical volume
     size_t numSubVolume() const;
 
-    // return the the safety 
+    // return the the distanceToOut 
     double distanceToOut(const Vector& loc_pos, const Vector &loc_dir) const;
 
   private:

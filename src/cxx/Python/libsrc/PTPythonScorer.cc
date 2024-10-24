@@ -63,10 +63,9 @@ void* pt_ScorerVolFluence_new(const char* name, double xmin, double xmax, unsign
   return static_cast<void *>(new pt::ScorerVolFluence(name, xmin, xmax, nbins, volme, pdg, t, linear, groupid));
 }
 
-void* pt_ScorerMultiScat_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int type, int groupid)
+void* pt_ScorerMultiScat_new(const char* name, double xmin, double xmax, unsigned nbins, unsigned pdg, int groupid)
 {
-  pt::ScorerMultiScat::ScorerType t = static_cast<pt::ScorerMultiScat::ScorerType>(type); 
-  return static_cast<void *>(new pt::ScorerMultiScat(name, xmin, xmax, nbins, pdg, t, true, groupid));
+  return static_cast<void *>(new pt::ScorerMultiScat(name, xmin, xmax, nbins, pdg, true, groupid));
 }
 
 void* pt_ScorerDirectSqw_new(const char* name, double qmin, double qmax, unsigned xbin, 

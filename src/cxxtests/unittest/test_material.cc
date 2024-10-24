@@ -32,9 +32,10 @@ TEST_CASE("ParticleProcess")
 
   double totlength(0.);
   unsigned loop(100000);
+  double fmp(0.);
   for(unsigned i=0;i<loop;i++)
   {
-    totlength += mat.sampleStepLength(n);
+    totlength += mat.sampleStepLength(n, fmp);
   }
   printf("%.16f \n", totlength/loop);
   CHECK(Prompt::floateq(totlength/loop, 2.7599510379162586));
