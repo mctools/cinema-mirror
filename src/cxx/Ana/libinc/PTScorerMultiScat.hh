@@ -28,11 +28,14 @@ namespace Prompt {
   class ScorerMultiScat : public ScorerWithoutMixin {
   public:
     ScorerMultiScat(const std::string &name, double xmin, double xmax, unsigned nxbins, 
-                    unsigned int pdg, ScorerType stype=Scorer::ScorerType::PROPAGATE_POST, bool linear=true,
+                    unsigned int pdg, bool linear=true,
                     int groupid=0);
     virtual ~ScorerMultiScat();
     virtual void score(Particle &particle) override;
-    int getScatNumber() const {return m_p_counter;} 
+
+    // remove the one counted by EXIT particle state that also count as PROPAGATE_POST
+    // meaning the particle not entering the volume of interest returns -1
+    int getScatNumber() const {return m_p_counter-1;} 
   private:
     unsigned long long m_lasteventid;
     int m_p_counter;

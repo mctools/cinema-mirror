@@ -29,10 +29,14 @@ namespace Prompt {
   class MultiScatMixin {
   public:
     // Constructor to initialize the log level
-    MultiScatMixin(const ScorerMultiScat* scatterCounter, int scatNumReq=-1) : 
+    // m_scatterNumberRequired==-2, rightScatterNumber() always returns true for every particle.
+    // m_scatterNumberRequired==-1, rightScatterNumber() returns true for particle not entering the region of interest.
+    // m_scatterNumberRequired== 0, rightScatterNumber() returns true for particle entered but not interacted with the region of interest.
+    // m_scatterNumberRequired== n, rightScatterNumber() returns true for particle scattered n times in the region.
+    MultiScatMixin(const ScorerMultiScat* scatterCounter, int scatNumReq=-2) : 
       m_scatterNumberRequired(scatNumReq), m_scatterCounter(scatterCounter) {}
 
-    void addMultiScatter(const Prompt::ScorerMultiScat* scatterCounter, int scatNumReq=-1 ) 
+    void addMultiScatter(const Prompt::ScorerMultiScat* scatterCounter, int scatNumReq=-2 ) 
     {
       m_scatterCounter=scatterCounter;
       m_scatterNumberRequired = scatNumReq;
@@ -40,7 +44,12 @@ namespace Prompt {
     }
 
     bool rightScatterNumber() const {
-      return (m_scatterNumberRequired!=-1 && m_scatterCounter!=nullptr) ? 
+
+      // ScorerMultiScat is not provided, so accepts all particles
+      if(m_scatterCounter==nullptr)
+        return true;
+
+      return (m_scatterNumberRequired!=-2 ) ? 
       m_scatterCounter->getScatNumber()==m_scatterNumberRequired : true;
     }
 

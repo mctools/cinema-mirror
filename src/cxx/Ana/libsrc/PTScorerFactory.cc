@@ -438,7 +438,6 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      Scorer::ScorerType ptstate = Scorer::ScorerType::PROPAGATE_POST;
       
       // the optional parameters
       int minNumber = 0;
@@ -494,7 +493,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         PROMPT_THROW2(BadInput, "Scorer type MultiScat is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return new ScorerMultiScat(name, minNumber-0.5, maxNumber+0.5, numBin, 2112, ptstate, linear);
+      return new ScorerMultiScat(name, minNumber-0.5, maxNumber+0.5, numBin, 2112, linear);
     }
     else if(ScorDef == "VolFluence")
     {

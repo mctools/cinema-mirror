@@ -59,6 +59,8 @@ namespace Prompt {
     double getTime() const { return m_time; }
     void setTime(double time) { m_time =time; }
 
+    void setWeight(double w) { m_weight=w; }
+
 
     double getStep() const { return m_step; }
     double getEnergyChange() const { return m_deltaEn; }
@@ -134,10 +136,12 @@ inline Prompt::Particle::Particle(const Particle& p)
 
 inline void Prompt::Particle::moveForward(double length)
 {
-  m_pos += m_dir*length;
   m_step = length;
   m_deposition = 0.;
-  m_time += length/calcSpeed();
+  if (length) {
+    m_pos += m_dir*length;
+    m_time += length/calcSpeed();
+  }
 }
 
 inline void Prompt::Particle::setEKin(double ekin)
