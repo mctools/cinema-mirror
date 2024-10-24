@@ -14,7 +14,6 @@ import numpy as np
 from Cinema.Prompt import Prompt
 from Cinema.Prompt.geo import Volume
 
-import scipy
 import json
 import pyvista as pv
 import os
@@ -125,16 +124,20 @@ class McstasGuideData():
         exit_width = exit_opening['halfwidth']
         exit_height = exit_opening['halfheight']
         return cls(entry_width, entry_height, exit_width, exit_height, section_length, zlocation)
+    
+    @property
+    def volume_capacity(self):
+        pass
+
 
 class PhysicalVolume(ABC):
     def __init__(self, material, surface_physics = None):
         self.material = material
         self.surface_physics = surface_physics
-        self.name = 'physicalVolume'
+        self.logicalVolume = self.makeLogicalVolume()
 
-    @property
     @abstractmethod
-    def volume(self):
+    def makeLogicalVolume(self) -> Volume :
         pass
 
     @property
@@ -152,21 +155,28 @@ class PhysicalVolume(ABC):
     def rotation(self):
         pass
 
+    def add_scorer(self, scorer):
+        self.logicalVolume.addScorer(scorer)
+
     def placeInto(self, volumeTo : Volume):
         tr = self.translation
         rot = self.rotation
         transformation = Transformation3D(tr[0], tr[1], tr[2]).applyRotxyz(rot[0], rot[1], rot[2])
-        volumeTo.placeChild(f'pv_{self.name}', self.volume, transformation)
+        volumeTo.placeChild(f'{self.pname}', self.logicalVolume, transformation)
 
 
 class PhysicalVolumeCollection():
     def __init__(self, pvc):
         self.pvc = pvc
-        self.name = 'collection'
+
+    @property
+    @abstractmethod
+    def pname(self):
+        pass
 
     def placeInto(self, volume: Volume, wrap = False):
         for pv in self.pvc:
-            pv.name = f'{self.name}_{pv.name}'
+            pv.pname = f'{self.pname}_{pv.pname}'
             pv.placeInto(volume)
 
 class TrapezoidGuideWall(PhysicalVolume):
@@ -183,12 +193,11 @@ class TrapezoidGuideWall(PhysicalVolume):
                  dist_exit_demi,
                  z_demi, 
                  zlocation,
-                 thickness_demi=1,
+                 thickness_demi=0.1,
                  m_value = 2
                  ) -> None:
         self.m_value = m_value
         surface_physics = f'physics=Mirror;m={self.m_value}'
-        super().__init__('solid::Cd/8.65gcm3', surface_physics)
         self.lrtb = lrtb
         self.edge_entry = demi_entry
         self.edge_exit = demi_exit
@@ -197,16 +206,17 @@ class TrapezoidGuideWall(PhysicalVolume):
         self.z = z_demi
         self.thickness = thickness_demi
         self.zloc = zlocation
-        self.name = f'wall_{self.lrtb}'
+        self.lvname = f'wall_{self.lrtb}'
+        self.pname = f'pv{self.lvname}'
+        super().__init__('solid::Cd/8.65gcm3', surface_physics)
 
-    @property
-    def volume(self):
+    def makeLogicalVolume(self):
         dm = self.dimension
-        vol = Volume(self.name, Trapezoid(dm[0], dm[1], dm[2], dm[3], dm[4]), self.material, self.surface_physics)
+        vol = Volume(self.lvname, Trapezoid(dm[0], dm[1], dm[2], dm[3], dm[4]), self.material, self.surface_physics)
         return vol
 
     @classmethod
-    def from_McstasGuideData(cls, mc_gdata : McstasGuideData, lrtb):
+    def from_McstasGuideData(cls, mc_gdata : McstasGuideData, lrtb, thickness=1):
         if lrtb in 'lr':
             return cls(lrtb, 
                        mc_gdata.entry_height, 
@@ -214,7 +224,8 @@ class TrapezoidGuideWall(PhysicalVolume):
                        mc_gdata.entry_width,
                        mc_gdata.exit_width,
                        0.5*mc_gdata.length,
-                       mc_gdata.zlocation
+                       mc_gdata.zlocation,
+                       thickness
                        )
         elif lrtb in 'tb':
             return cls(lrtb, 
@@ -224,6 +235,7 @@ class TrapezoidGuideWall(PhysicalVolume):
                        mc_gdata.exit_height, 
                        0.5*mc_gdata.length,
                        mc_gdata.zlocation,
+                       thickness
                        )
         
     @property
@@ -298,17 +310,20 @@ class GuideSection(PhysicalVolumeCollection):
     def __init__(self, walls, wrap=False, material=None) -> None:
         GuideSection.section_id += 1
         super().__init__(walls)
-        self.name = f'section{GuideSection.section_id}'
         self.demi_thickness = 1
         self.translation = [0,0,0]
         self.rotation = [0,0,0]
         self.material = material
 
+    @property
+    def pname(self):
+        return f'section{GuideSection.section_id}'
+
     @classmethod
-    def from_McstasGuideData(cls, mc_gdata : McstasGuideData):
+    def from_McstasGuideData(cls, mc_gdata : McstasGuideData, thickness=1):
         walls = []
         for wallside in 'ltrb':
-            wall = TrapezoidGuideWall.from_McstasGuideData(mc_gdata, wallside)
+            wall = TrapezoidGuideWall.from_McstasGuideData(mc_gdata, wallside, thickness)
             walls.append(wall)
         return cls(walls)
 
@@ -325,7 +340,10 @@ class GuideSectionCollection(PhysicalVolumeCollection):
             gs = GuideSection.from_McstasGuideData(mcgd)
             gsc.append(gs)
         return cls(gsc)
-
+    
+    @property
+    def pname(self):
+        return f'Collection'
 class JsonParser():
     def __init__(self, fname='section.json'):
         self.fname = fname
@@ -421,17 +439,18 @@ if __name__ == "__main__":
     sim.makeWorld()
     guideinfo = JsonParser()
     zmin,zmax,zmid = guideinfo.bound_zinfo()
-    sec1_entry = [15.1 * 2, 47.7 *2]
-    gunCfg = f"gun=MaxwellianGun;src_w={sec1_entry[0]};src_h={sec1_entry[1]};src_z={zmin-5000};slit_w={sec1_entry[0]};slit_h={sec1_entry[1]};slit_z={zmin};temperature=293;"
+    # sec1_entry = [15.1 * 2, 47.7 *2]
+    # gunCfg = f"gun=MaxwellianGun;src_w={sec1_entry[0]};src_h={sec1_entry[1]};src_z={zmin-5000};slit_w={sec1_entry[0]};slit_h={sec1_entry[1]};slit_z={zmin};temperature=293;"
     gunfile = 'bl9_cut.mcpl'
-    # gun = MCPLGun(gunfile)
-    if False:
-        sim.show(gunCfg, 10, zscale=0.01)
+    gun = MCPLGun(gunfile)
+    if True:
+        sim.show(gun, 100, zscale=0.01)
     else:
-        sim.simulate(gunCfg, 1e6)
+        sim.simulate(gun, 1e6)
         mon = sim.gatherHistData('guide_out')
         if sim.rank == 0:
             plt = mon.plot(show=False,log=True)
+            print(mon.getAccWeight())
             plt.savefig('test.svg')
 
     # >>>> print cad info
