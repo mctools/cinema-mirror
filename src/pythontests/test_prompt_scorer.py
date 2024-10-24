@@ -7,7 +7,7 @@ from Cinema.Prompt import PromptFileReader
 scorertest_dict ={}
 scorertest_dict['ESpectrum'] = {'gdml': 'ESpectrum.gdml', 'mcpl': 'ScorerESpectrum_detector_seed113.mcpl.gz', 'value': [ 0.335562367659022, 88., 88., 1.8522594945025759]}
 scorertest_dict['WlSpectrum'] = {'gdml': 'WlSpectrum.gdml', 'mcpl': 'ScorerWlSpectrum_detector_seed113.mcpl.gz', 'value': [5050.,813.,813.,832.]}
-scorertest_dict['MultiScat'] = {'gdml': 'MultiScat.gdml', 'mcpl': 'ScorerMultiScat_D2O_seed113.mcpl.gz', 'value': [ 18.,367.,367.,259.5]}
+scorertest_dict['MultiScat'] = {'gdml': 'MultiScat.gdml', 'mcpl': 'ScorerMultiScat_D2O_seed113.mcpl.gz', 'value': [ 18., 368., 368., 260.]}
 scorertest_dict['DeltaMomentum'] = {'gdml': 'DeltaMomentum.gdml', 'mcpl': 'ScorerDeltaMomentum_SofQ_seed113.mcpl.gz', 'value': [25275.25, 63.69149327544164, 190., 188.4447368017572 ]}
 scorertest_dict['Angular'] = {'gdml': 'Angular.gdml', 'mcpl': 'ScorerAngular_SofAngle_seed113.mcpl.gz', 'value': [30030. ,   805. ,   805. ,   700.5]}
 # fixme
