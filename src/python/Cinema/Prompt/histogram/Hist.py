@@ -280,6 +280,13 @@ class Hist2D(HistBase):
 
     def getEdge(self):
         return self.xedge, self.yedge
+    
+    def getCentre(self):
+        xedge = self.getEdge()[0]
+        yedge = self.getEdge()[1]
+        xcenter = xedge[:-1]+np.diff(xedge)*0.5
+        ycenter = yedge[:-1]+np.diff(yedge)*0.5
+        return xcenter, ycenter
 
     def getWeight(self):
         w = np.zeros([self.xNumBin, self.yNumBin])
