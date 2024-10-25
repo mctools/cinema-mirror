@@ -79,6 +79,15 @@ void Prompt::HistBase::setHit(double *data, size_t n)
   memcpy(m_hit.data(), data, sizeof(double)*n);
 }
 
+
+void Prompt::HistBase::setWW(double *data, size_t n)
+{
+  if(n != m_ww.size())
+    PROMPT_THROW(CalcError, "wrong vector size");
+  memcpy(m_ww.data(), data, sizeof(double)*n);
+}
+
+
 void Prompt::HistBase::scale(double scalefact)
 {
 

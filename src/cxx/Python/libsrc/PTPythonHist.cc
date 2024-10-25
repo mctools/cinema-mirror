@@ -51,6 +51,13 @@ void pt_HistBase_setHit(void *obj, double *data, size_t n)
   hist->setHit(data, n);
 }
 
+void pt_HistBase_setWW(void *obj, double *data, size_t n)
+{
+  auto hist = static_cast<pt::HistBase*>(obj);
+  hist->setWW(data, n);
+}
+
+
 double pt_HistBase_getXMin(void* obj)
 {
   return static_cast<pt::HistBase*>(obj)->getXMin();
@@ -116,8 +123,13 @@ void pt_HistBase_getww(void *obj, double *data)
   {
     data[i] = cdata[i];
   }
-
 }
+
+void pt_HistBase_getww_2dalias(void *obj, double *data)
+{
+  pt_HistBase_getww(obj, data);
+}
+
 
 void pt_HistBase_getHit(void* obj, double* data)
 {

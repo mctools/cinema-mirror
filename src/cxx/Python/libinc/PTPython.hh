@@ -54,6 +54,7 @@ size_t pt_Launcher_goWithSecondStack(void *obj, uint64_t numParticle);
 void pt_HistBase_merge(void* obj, void* obj2);
 void pt_HistBase_setWeight(void *obj, double *data, size_t n);
 void pt_HistBase_setHit(void *obj, double *data, size_t n);
+void pt_HistBase_setWW(void *obj, double *data, size_t n);
 double pt_HistBase_getXMin(void* obj);
 double pt_HistBase_getXMax(void* obj);
 double pt_HistBase_getTotalWeight(void* obj);
@@ -67,6 +68,8 @@ void pt_HistBase_reset(void* obj);
 void pt_HistBase_getRaw(void* obj, double* data);
 void pt_HistBase_getHit(void* obj, double* data);
 void pt_HistBase_getww(void *obj, double *data);
+void pt_HistBase_getww_2dalias(void *obj, double *data);
+
 unsigned pt_HistBase_dimension(void* obj);
 const char* pt_HistBase_getName(void* obj);
 

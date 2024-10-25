@@ -289,18 +289,23 @@ class PromptMPI(Prompt):
         hist = super().gatherHistData(cfg, raw)
         weight = hist.getWeight()
         hit = hist.getHit()
+        ww = hist.getWW()
         print(f'rank {self.rank} hist info: weight {hist.getWeight().sum()}, hit {hist.getHit().sum()}')
 
         recvw = None
         recvh = None
+        recww = None
 
         if self.rank == dst: # only create the buffer for rank0
             recvw = np.empty(weight.size, dtype='float')
             recvh = np.empty(hit.size, dtype='float')
+            recww = np.empty(ww.size, dtype='float')
         self.comm.Reduce(weight, recvw, op = MPI.SUM, root=dst)
         self.comm.Reduce(hit, recvh, op = MPI.SUM, root=dst)
+        self.comm.Reduce(ww, recww, op = MPI.SUM, root=dst)
 
         if self.rank == dst:
             hist.setHit(recvh)
             hist.setWeight(recvw)
+            hist.setWW(recww)
         return hist

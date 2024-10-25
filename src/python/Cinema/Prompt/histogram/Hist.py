@@ -66,10 +66,14 @@ _pt_HistBase_reset = importFunc('pt_HistBase_reset', None, [type_voidp])
 _pt_HistBase_getRaw = importFunc('pt_HistBase_getRaw', None, [type_voidp, type_npdbl1d])
 _pt_HistBase_getHit = importFunc('pt_HistBase_getHit', None, [type_voidp, type_npdbl1d])
 _pt_HistBase_getww = importFunc('pt_HistBase_getww', None, [type_voidp, type_npdbl1d])
+_pt_HistBase_getww2d = importFunc('pt_HistBase_getww_2dalias', None, [type_voidp, type_npdbl2d])
+
 _pt_HistBase_dimension = importFunc('pt_HistBase_dimension', type_uint, [type_voidp])
 _pt_HistBase_getName = importFunc('pt_HistBase_getName', type_cstr, [type_voidp])
 _pt_HistBase_setWeight = importFunc('pt_HistBase_setWeight', None, [type_voidp, type_npdbl1d, type_sizet])
 _pt_HistBase_setHit = importFunc('pt_HistBase_setHit', None, [type_voidp, type_npdbl1d, type_sizet])
+_pt_HistBase_setWW  = importFunc('pt_HistBase_setWW', None, [type_voidp, type_npdbl1d, type_sizet])
+
 class HistBase():
     def __init__(self, cobj) -> None:
         self.cobj = cobj
@@ -86,6 +90,12 @@ class HistBase():
         if h.size != self.getDataSize():
             raise RuntimeError('')
         _pt_HistBase_setHit(self.cobj, h.flatten(), h.size)
+
+    def setWW(self, h: np.ndarray):
+        if h.size != self.getDataSize():
+            raise RuntimeError('')
+        _pt_HistBase_setWW(self.cobj, h.flatten(), h.size)
+    
 
     def getXMin(self):
         return _pt_HistBase_getXMin(self.cobj)
@@ -118,9 +128,12 @@ class HistBase():
         _pt_HistBase_reset(self.cobj)
 
     def getSdev(self):
+        return np.sqrt(self.getWW())
+    
+    def getWW(self):
         d = np.zeros(self.getDataSize())
         _pt_HistBase_getww(self.cobj, d)
-        return np.sqrt(d)
+        return d
     
     def getWeight(self):
         d = np.zeros(self.getDataSize())
@@ -273,6 +286,11 @@ class Hist2D(HistBase):
     def getWeight(self):
         w = np.zeros([self.xNumBin, self.yNumBin])
         _pt_Hist2D_getWeight(self.cobj, w)
+        return w
+    
+    def getWW(self):
+        w = np.zeros([self.xNumBin, self.yNumBin])
+        _pt_HistBase_getww2d(self.cobj, w)
         return w
 
     def getHit(self):
