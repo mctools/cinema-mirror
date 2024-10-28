@@ -66,6 +66,7 @@ class Launcher():
             raise RuntimeError('World is not set')
         v = Visualiser([], printWorld=False, mergeMesh=mergeMesh) 
         v.plotter.set_scale(xscale, yscale, zscale )
+        v.plotter.add_axes_at_origin(labels_off=True)
         if particles is None:
             v.show()
         else:
