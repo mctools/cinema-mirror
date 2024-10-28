@@ -45,3 +45,6 @@ bigdata
 
 #vscode
 *.json
+
+# CAD or others geometry datas
+*.step
