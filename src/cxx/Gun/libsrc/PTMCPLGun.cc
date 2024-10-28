@@ -33,6 +33,7 @@ extern "C" {
 
 
 #include <filesystem>
+#include <chrono> // fixme: workaround for  srand(time(NULL));
 
 Prompt::MCPLGun::MCPLGun(const Particle &aParticle, const std::string &fn)
 : PrimaryGun(aParticle), m_mode(std::filesystem::path(fn).extension()==".xml" ? true : false),
@@ -40,6 +41,7 @@ m_particle((mcpl_particle_t*)malloc(sizeof(mcpl_particle_t))), m_w_crit(0.)//, m
 { 
   if(m_mode)
   {
+    srand(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count())); //  fixme: work around for now, should use the random number stream of prompt
     kdsource = KDS_open(fn.c_str());
     m_w_crit = KDS_w_mean(kdsource, 1000, NULL);
   }
@@ -73,6 +75,9 @@ std::unique_ptr<Prompt::Particle> Prompt::MCPLGun::generate()
       PROMPT_THROW(CalcError, "failed to read particle from the mcpl file");
     m_particle = m_mcplread->getParticle();      
   }
+
+  if(getPDG() != m_particle->pdgcode)
+    PROMPT_THROW2(CalcError, "sampled particle is not the same as type of the gun");
 
   //reading and converting unit 
   m_ekin = m_particle->ekin*Unit::MeV;
