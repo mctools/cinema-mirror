@@ -4,7 +4,7 @@ __pycache__
 *virenv
 cinemabin
 external
-rundir
+*rundir
 docs
 
 # Prerequisites

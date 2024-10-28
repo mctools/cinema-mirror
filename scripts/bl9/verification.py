@@ -24,23 +24,29 @@ import pyvista as pv
 import os
 import scipy
 
-from guide_bl9 import McstasGuideData, GuideSection, GuideSectionCollection
+from mcgd import McstasGuideData, GuideSection, GuideSectionCollection
+
+entryx = 120
+entryy = 250
+exitx = 10
+exity = 80
+length = 1000
 
 class MySim(PromptMPI):
     def __init__(self, seed) -> None:
         super().__init__(seed)
 
     def makeWorld(self):
-        world = Volume('world', Box(30, 30, 50))
-        gbox = Volume('gbox', Box(20, 20, 30))
-        sec1_data = McstasGuideData(2, 3, 0.5, 1, 5, -2.5)
+        world = Volume('world', Box(2*entryx, 2*entryy, length))
+        gbox = Volume('gbox', Box(1.5*entryx, 1.5*entryy, 0.8*length))
+        sec1_data = McstasGuideData(entryx, entryy, exitx, exity, length, -0.5*length)
 
         # check if thickness impacts
         thickness = 1e-4
         section1 = GuideSection.from_McstasGuideData(sec1_data, thickness)
 
-        psdxy = PSDHelper('PSDXY',-4,4,200,-4,4,200,isGlobal=True)
-        psdxz = PSDHelper('PSDXZ',-4,4,200,-4,4,200,psdtype='XZ',isGlobal=True)
+        psdxy = PSDHelper('PSDXY',-1.2*entryx,1.2*entryx,200,-1.2*entryy,1.2*entryy,200,isGlobal=True)
+        psdxz = PSDHelper('PSDXZ',-1.2*entryx,1.2*entryx,200,-0.6*length,0.6*length,200,psdtype='XZ',isGlobal=True)
 
         for wall in section1.pvc:
             psdxy.make(wall.logicalVolume)
@@ -54,14 +60,14 @@ class MySim(PromptMPI):
 if __name__ == "__main__":
     class PositionTestGun(PythonGun):
         def samplePosition(self):
-            x = np.random.uniform(-4, 4)
-            y = np.random.uniform(-4, 4)
-            return np.array([x, y, -25])
+            x = np.random.uniform(-entryx, entryx)
+            y = np.random.uniform(-entryy, entryy)
+            return np.array([x, y, -0.75*length])
     gun = PositionTestGun()
     sim = MySim(seed=102)
     sim.makeWorld()
     # sim.show(gun, 100, zscale=1)
-    sim.simulate(gun, 1e7)
+    sim.simulate(gun, 1e6)
     xy = sim.gatherHistData('PSDXY')
     xz = sim.gatherHistData('PSDXZ')
     if sim.rank == 0:
@@ -69,12 +75,12 @@ if __name__ == "__main__":
             plt = scorer.plot(show=False,log=False)
             plt.figure()
             plt.title(f'{section_type} Height profile')
-            plt.xticks(np.arange(-4,4,1))
+            plt.xticks(np.linspace(-entryy,entryy,10))
             plt.grid(True)
             plt.plot(scorer.getCentre()[0], scorer.getWeight().sum(0),)
             plt.figure()
             plt.title(f'{section_type} Width profile')
-            plt.xticks(np.arange(-4,4,1))
+            plt.xticks(np.linspace(-entryx,entryx,10))
             plt.grid(True)
             plt.plot(scorer.getCentre()[1], scorer.getWeight().sum(1))
             plt.show()
