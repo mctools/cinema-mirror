@@ -357,6 +357,7 @@ if [ $OPENMCIN -eq 1 ]; then
     . $CINEMAPATH/tools/scripts/linux/prompt_openmcInstall
     pip install NCrystal
     echo "OPENMC INSTALLED"
+    export PATH=$CINEMAPATH/external/openmc/local/bin/:$PATH
   else
     echo "Found OPENMC"
     export PATH=$CINEMAPATH/external/openmc/local/bin/:$PATH
