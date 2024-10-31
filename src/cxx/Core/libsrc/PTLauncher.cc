@@ -138,7 +138,8 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
             // std::cout << "reflection weight " << particle->getWeight() << "\n";
           }
           #ifdef DEBUG_PTS
-            std::cout << "Entering volume " << m_activeVolume.getVolumeName() << std::endl;
+            std::cout << "Entering volume " << m_activeVolume.getVolume()->GetName() 
+            << " at " << particle->getPosition() << std::endl;
           #endif
           m_activeVolume.scoreEntry(*particle);
         }
@@ -172,7 +173,9 @@ void Prompt::Launcher::simOneEvent(bool recordTrj)
         if(particle->getKillType()==Particle::KillType::ABSORB)
         {
           #ifdef DEBUG_PTS
-            std::cout << "Absorb in volume " << m_activeVolume.getVolumeName() << std::endl;
+            std::cout << "Absorb in volume " << m_activeVolume.getVolume()->GetName() 
+            << " at " << particle->getPosition() << std::endl;
+            std::cout << " " << std::endl;
           #endif
           m_activeVolume.scoreAbsorb(*particle);
         }
