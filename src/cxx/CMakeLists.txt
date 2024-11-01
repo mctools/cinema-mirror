@@ -29,6 +29,8 @@ option(ENABLE_GIDI "Enable the GIDI module" ON)
 # Add an option to enable/disable  Catima
 option(ENABLE_CATIMA "Enable the  Catima module" ON)
 
+option(DEBUG_PTS "Enable the GIDI module" ON)
+
 option(BUILD_WITH_OPENMP "Build OpenMP" ON)
 find_package(OpenMP REQUIRED)
 
