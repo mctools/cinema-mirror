@@ -33,14 +33,14 @@ class MySim(PromptMPI):
         mat_moderator = Material('LiquidWaterH2O_T293.6K.ncmat;density=1gcm3;temp=293.6')
         sol_moderator = Tube(0, 90, 80)
         vol_moderator = Volume(f"vol_{name_moderator}", sol_moderator, universe)
-        simbox.placeChild(f"pv_{name_moderator}", vol_moderator, Transformation3D().applyRotX(90))
+        # simbox.placeChild(f"pv_{name_moderator}", vol_moderator, Transformation3D().applyRotX(90))
 
         fe = Material(universe_cfg)
         fe.setBiasScat(1.)
         fe.setBiasAbsp(1.)
-        fe_layer = Volume("fe_layer", Tube(100, 300, 80, 0, 120), matCfg=universe)
+        fe_layer = Volume("fe_layer", Tube(100, 300, 80, 0, 180), matCfg=universe)
         simbox.placeChild('pv_fe_layer_b1', fe_layer, Transformation3D().applyRotX(90))
-        simbox.placeChild('pv_fe_layer_b2', fe_layer, Transformation3D().applyRotxyz(90, -180 ,0))
+        # simbox.placeChild('pv_fe_layer_b2', fe_layer, Transformation3D().applyRotxyz(90, 180 ,0))
         
         detector2 = Volume("det2", Box(35, 35, 0.0001))
         ESpectrumHelper('espec').make(detector2)
@@ -59,7 +59,7 @@ class MySim(PromptMPI):
 class PositionTestGun(PythonGun):
     def samplePosition(self):
         x = np.random.uniform(-310,310)
-        return np.array([x, 0, -610])
+        return np.array([0, 0, -610])
 
     def sampleDirection(self):
         x = np.random.uniform(-1,1)
@@ -73,9 +73,9 @@ sim.makeWorld()
 
 # vis or production
 if True:
-    sim.show(gun, 1)
+    sim.show(gun, 100)
 else:
-    sim.simulate(gun, 1)
+    sim.simulate(gun, 1e4)
     draw_xz = sim.gatherHistData('PSDXZ')
     destination = 0
     if sim.rank==destination:
