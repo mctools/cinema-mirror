@@ -36,10 +36,6 @@ def main():
         run_command('make clean')
 
     cmake_args = []
-    if args.buildtype:
-        cmake_args.extend([f'-DCMAKE_BUILD_TYPE={args.buildtype}', '-DCMAKE_CXX_FLAGS_DEBUG="-g -O0"', '-DCMAKE_C_FLAGS_DEBUG="-g -O0"'])
-    else:
-        cmake_args.append('..')
     if args.enablegidi:
         cmake_args.append('-DENABLE_GIDI=ON')
     else:
@@ -52,6 +48,11 @@ def main():
         cmake_args.append('-DDEBUG_PTS=ON')
     else:
         cmake_args.append('-DDEBUG_PTS=OFF')
+
+    if args.buildtype:
+        cmake_args.extend([f'-DCMAKE_BUILD_TYPE={args.buildtype}', '-DCMAKE_CXX_FLAGS_DEBUG="-g -O0"', '-DCMAKE_C_FLAGS_DEBUG="-g -O0"'])
+
+    cmake_args.append('..')
 
     run_command(f'cmake {" ".join(cmake_args)}')
 
