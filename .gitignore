@@ -4,7 +4,7 @@ __pycache__
 *virenv
 cinemabin
 external
-rundir
+*rundir
 docs
 
 # Prerequisites
@@ -45,3 +45,6 @@ bigdata
 
 #vscode
 *.json
+
+# CAD or others geometry datas
+*.step

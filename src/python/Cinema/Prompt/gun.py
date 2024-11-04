@@ -38,7 +38,11 @@ class PythonGun():
         pdata[1] = self.sampleWeight()
         pdata[2] = self.sampleTime()
         pdata[3:6] = self.samplePosition()
-        pdata[6:]  = self.sampleDirection()        
+        sampledDir = self.sampleDirection()   
+        norm = np.linalg.norm(sampledDir)     
+        if norm == 0:
+            raise RuntimeError('Sampled direction is zero')
+        pdata[6:]  = sampledDir/norm
         _pt_PythonGun_pushToStack(self.cobj, pdata)      
     
     def sampleEnergy(self):

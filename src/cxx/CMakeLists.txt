@@ -29,6 +29,8 @@ option(ENABLE_GIDI "Enable the GIDI module" ON)
 # Add an option to enable/disable  Catima
 option(ENABLE_CATIMA "Enable the  Catima module" ON)
 
+option(DEBUG_PTS "Enable the GIDI module" ON)
+
 option(BUILD_WITH_OPENMP "Build OpenMP" ON)
 find_package(OpenMP REQUIRED)
 
@@ -64,6 +66,10 @@ endif()
 
 if(ENABLE_GIDI)
     target_compile_definitions(${PROJECT_NAME} PUBLIC ENABLE_GIDI)
+endif()
+
+if(DEBUG_PTS)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC DEBUG_PTS)
 endif()
 
 find_package(Python REQUIRED COMPONENTS Interpreter)

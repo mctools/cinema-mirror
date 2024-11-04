@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 
 from Cinema.Prompt.geo import Volume, Transformation3D
 from Cinema.Prompt.solid import Trapezoid
-
+from jsonReader import JsonParser
 import json, os
 import numpy as np
 
@@ -102,10 +102,10 @@ class TrapezoidGuideWall(PhysicalVolume):
                  z_demi, 
                  zlocation,
                  thickness_demi=0.1,
-                 m_value = 2
+                 m_value = 3
                  ) -> None:
         self.m_value = m_value
-        surface_physics = f'physics=Mirror;m={self.m_value}'
+        surface_physics = f'physics=Mirror;m={self.m_value};threshold=1e-3'
         self.lrtb = lrtb
         self.edge_entry = demi_entry
         self.edge_exit = demi_exit
@@ -215,7 +215,7 @@ class TrapezoidGuideWall(PhysicalVolume):
 class GuideSection(PhysicalVolumeCollection):
     section_id = 0
 
-    def __init__(self, walls, wrap=False, material=None) -> None:
+    def __init__(self, walls, wrap=False, material='void.ncmat') -> None:
         GuideSection.section_id += 1
         super().__init__(walls)
         self.demi_thickness = 1
@@ -249,32 +249,7 @@ class GuideSectionCollection(PhysicalVolumeCollection):
     @property
     def pname(self):
         return f'Collection'
-class JsonParser():
-    def __init__(self, fname='section.json'):
-        self.fname = fname
-        self.ginfo = self.readIn()
-
-    def readIn(self, ifprint=False):
-        fname = os.path.join(os.path.dirname(__file__), self.fname)
-        with open(fname, 'r') as f:
-            eell = json.load(f)
-        if ifprint:
-            print(eell)
-        return eell.values()
-
-    def get_bounds(self, var_list):
-        zinit = False
-        for zz in var_list:
-            if zinit == False:
-                zmin = zmax = zz
-                zinit = True
-                continue
-            if zz > zmax:
-                zmax = zz
-            if zz < zmin:
-                zmin = zz
-        zmidpoint = 0.5 * (zmin + zmax)
-        return zmin, zmax, zmidpoint
+        
         
     def bound_zinfo(self):
         var_list = []
@@ -287,9 +262,16 @@ class JsonParser():
         for var in self.ginfo:
             var_list.append(var['entryOpening']['halfwidth'])
         return self.get_bounds(var_list)
-
-    def bound_yinfo(self):
+    
+    def bound_zinfo(self):
         var_list = []
         for var in self.ginfo:
-            var_list.append(var['entryOpening']['halfheight'])
+            var_list.append(var['zlocation'] + var['length'])
         return self.get_bounds(var_list)
+
+    def bound_xinfo(self):
+        var_list = []
+        for var in self.ginfo:
+            var_list.append(var['entryOpening']['halfwidth'])
+        return self.get_bounds(var_list)
+

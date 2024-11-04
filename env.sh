@@ -34,7 +34,7 @@ fi
 #    echo "pw.x is required to continue the installation of Cinema"
 #    return
 #fi
-
+shift $(( $OPTIND-1 ))
 . "$( dirname "${BASH_SOURCE[0]}" )"/install.sh
 
 alias pull='git pull --recurse-submodules'

@@ -1,0 +1,2124 @@
+DEFINE INSTRUMENT bl9_guide()
+
+TRACE
+
+COMPONENT eng_entry_Monitor = Monitor_nD(
+options = "log energy, limits=[-1 5], bins=100",
+xwidth = 0.04,
+yheight = 0.08
+)
+AT (0, 0, 8.0165) RELATIVE  origin
+
+COMPONENT x_mon_entry = Monitor_nD(
+options = "x bins=101",
+xwidth = 0.04,
+yheight = 0.08
+)
+AT (0, 0, 8.0165) RELATIVE  origin
+
+COMPONENT y_mon_entry = Monitor_nD(
+options = "y bins=100",
+xwidth = 0.04,
+yheight = 0.08
+)
+AT (0, 0, 8.0165) RELATIVE  origin
+
+COMPONENT Guide_section1 = Guide_gravity (
+w1=0.0302,
+h1=0.0942,
+w2=0.0308,
+h2=0.096,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 8.2165) RELATIVE  origin
+
+COMPONENT Guide_section2 = Guide_gravity (
+w1=0.0308,
+h1=0.096,
+w2=0.0314,
+h2=0.0978,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 8.7165) RELATIVE  origin
+
+COMPONENT Guide_section3 = Guide_gravity (
+w1=0.0314,
+h1=0.0978,
+w2=0.032,
+h2=0.0996,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 9.2165) RELATIVE  origin
+
+COMPONENT Guide_section4 = Guide_gravity (
+w1=0.032,
+h1=0.0996,
+w2=0.0324,
+h2=0.1014,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 9.7165) RELATIVE  origin
+
+COMPONENT Guide_section5 = Guide_gravity (
+w1=0.0324,
+h1=0.1014,
+w2=0.033,
+h2=0.10300000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 10.2175) RELATIVE  origin
+
+COMPONENT Guide_section6 = Guide_gravity (
+w1=0.033,
+h1=0.10300000000000001,
+w2=0.033600000000000005,
+h2=0.1048,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 10.7175) RELATIVE  origin
+
+COMPONENT Guide_section7 = Guide_gravity (
+w1=0.033600000000000005,
+h1=0.1048,
+w2=0.034,
+h2=0.1062,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 11.2175) RELATIVE  origin
+
+COMPONENT Guide_section8 = Guide_gravity (
+w1=0.034,
+h1=0.1062,
+w2=0.0344,
+h2=0.10779999999999999,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 11.7185) RELATIVE  origin
+
+COMPONENT Guide_section9 = Guide_gravity (
+w1=0.0344,
+h1=0.10779999999999999,
+w2=0.035,
+h2=0.1092,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 12.2185) RELATIVE  origin
+
+COMPONENT Guide_section10 = Guide_gravity (
+w1=0.035,
+h1=0.1092,
+w2=0.0354,
+h2=0.11040000000000001,
+l=0.4195,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 12.7185) RELATIVE  origin
+
+COMPONENT Guide_section11 = Guide_gravity (
+w1=0.0354,
+h1=0.1108,
+w2=0.0358,
+h2=0.11220000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 13.262) RELATIVE  origin
+
+COMPONENT Guide_section12 = Guide_gravity (
+w1=0.0358,
+h1=0.11220000000000001,
+w2=0.0364,
+h2=0.11340000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 13.762) RELATIVE  origin
+
+COMPONENT Guide_section13 = Guide_gravity (
+w1=0.0364,
+h1=0.11340000000000001,
+w2=0.0368,
+h2=0.1148,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 14.262) RELATIVE  origin
+
+COMPONENT Guide_section14 = Guide_gravity (
+w1=0.0368,
+h1=0.1148,
+w2=0.037200000000000004,
+h2=0.116,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 14.762) RELATIVE  origin
+
+COMPONENT Guide_section15 = Guide_gravity (
+w1=0.037200000000000004,
+h1=0.116,
+w2=0.0376,
+h2=0.1172,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 15.263) RELATIVE  origin
+
+COMPONENT Guide_section16 = Guide_gravity (
+w1=0.0376,
+h1=0.1172,
+w2=0.0378,
+h2=0.1184,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 15.763) RELATIVE  origin
+
+COMPONENT Guide_section17 = Guide_gravity (
+w1=0.0378,
+h1=0.1184,
+w2=0.038200000000000005,
+h2=0.1194,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 16.263) RELATIVE  origin
+
+COMPONENT Guide_section18 = Guide_gravity (
+w1=0.038200000000000005,
+h1=0.1194,
+w2=0.0386,
+h2=0.1206,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 16.763) RELATIVE  origin
+
+COMPONENT Guide_section19 = Guide_gravity (
+w1=0.0386,
+h1=0.1206,
+w2=0.039,
+h2=0.1216,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 17.264) RELATIVE  origin
+
+COMPONENT Guide_section20 = Guide_gravity (
+w1=0.039,
+h1=0.1216,
+w2=0.039200000000000006,
+h2=0.1226,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 17.764) RELATIVE  origin
+
+COMPONENT Guide_section21 = Guide_gravity (
+w1=0.039200000000000006,
+h1=0.1226,
+w2=0.0396,
+h2=0.1236,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 18.264) RELATIVE  origin
+
+COMPONENT Guide_section22 = Guide_gravity (
+w1=0.0396,
+h1=0.1236,
+w2=0.039799999999999995,
+h2=0.1246,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 18.764) RELATIVE  origin
+
+COMPONENT Guide_section23 = Guide_gravity (
+w1=0.039799999999999995,
+h1=0.1246,
+w2=0.04020000000000001,
+h2=0.1254,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 19.265) RELATIVE  origin
+
+COMPONENT Guide_section24 = Guide_gravity (
+w1=0.04020000000000001,
+h1=0.1254,
+w2=0.0404,
+h2=0.1264,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 19.765) RELATIVE  origin
+
+COMPONENT Guide_section25 = Guide_gravity (
+w1=0.0404,
+h1=0.1264,
+w2=0.040799999999999996,
+h2=0.1272,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 20.265) RELATIVE  origin
+
+COMPONENT Guide_section26 = Guide_gravity (
+w1=0.040799999999999996,
+h1=0.1272,
+w2=0.041,
+h2=0.128,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 20.765) RELATIVE  origin
+
+COMPONENT Guide_section27 = Guide_gravity (
+w1=0.041,
+h1=0.128,
+w2=0.0412,
+h2=0.12880000000000003,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 21.266000000000002) RELATIVE  origin
+
+COMPONENT Guide_section28 = Guide_gravity (
+w1=0.0412,
+h1=0.12880000000000003,
+w2=0.0414,
+h2=0.1296,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 21.766000000000002) RELATIVE  origin
+
+COMPONENT Guide_section29 = Guide_gravity (
+w1=0.0414,
+h1=0.1296,
+w2=0.0418,
+h2=0.13040000000000002,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 22.266000000000002) RELATIVE  origin
+
+COMPONENT Guide_section30 = Guide_gravity (
+w1=0.0418,
+h1=0.13040000000000002,
+w2=0.042,
+h2=0.131,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 22.766000000000002) RELATIVE  origin
+
+COMPONENT Guide_section31 = Guide_gravity (
+w1=0.042,
+h1=0.131,
+w2=0.0422,
+h2=0.1318,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 23.267) RELATIVE  origin
+
+COMPONENT Guide_section32 = Guide_gravity (
+w1=0.0422,
+h1=0.1318,
+w2=0.0424,
+h2=0.13240000000000002,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 23.767) RELATIVE  origin
+
+COMPONENT Guide_section33 = Guide_gravity (
+w1=0.0424,
+h1=0.13240000000000002,
+w2=0.0426,
+h2=0.133,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 24.267) RELATIVE  origin
+
+COMPONENT Guide_section34 = Guide_gravity (
+w1=0.0426,
+h1=0.133,
+w2=0.0428,
+h2=0.1336,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 24.767) RELATIVE  origin
+
+COMPONENT Guide_section35 = Guide_gravity (
+w1=0.0428,
+h1=0.1336,
+w2=0.043000000000000003,
+h2=0.13419999999999999,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 25.268) RELATIVE  origin
+
+COMPONENT Guide_section36 = Guide_gravity (
+w1=0.043000000000000003,
+h1=0.13419999999999999,
+w2=0.0432,
+h2=0.1348,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 25.768) RELATIVE  origin
+
+COMPONENT Guide_section37 = Guide_gravity (
+w1=0.0432,
+h1=0.1348,
+w2=0.0432,
+h2=0.13540000000000002,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 26.268) RELATIVE  origin
+
+COMPONENT Guide_section38 = Guide_gravity (
+w1=0.0432,
+h1=0.13540000000000002,
+w2=0.0434,
+h2=0.1358,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 26.768) RELATIVE  origin
+
+COMPONENT Guide_section39 = Guide_gravity (
+w1=0.0434,
+h1=0.1358,
+w2=0.0436,
+h2=0.1362,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 27.269000000000002) RELATIVE  origin
+
+COMPONENT Guide_section40 = Guide_gravity (
+w1=0.0436,
+h1=0.1362,
+w2=0.0438,
+h2=0.1368,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 27.769000000000002) RELATIVE  origin
+
+COMPONENT Guide_section41 = Guide_gravity (
+w1=0.0438,
+h1=0.1368,
+w2=0.0438,
+h2=0.1372,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 28.269000000000002) RELATIVE  origin
+
+COMPONENT Guide_section42 = Guide_gravity (
+w1=0.0438,
+h1=0.1372,
+w2=0.044,
+h2=0.1376,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 28.769000000000002) RELATIVE  origin
+
+COMPONENT Guide_section43 = Guide_gravity (
+w1=0.044,
+h1=0.1376,
+w2=0.0442,
+h2=0.138,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 29.27) RELATIVE  origin
+
+COMPONENT Guide_section44 = Guide_gravity (
+w1=0.0442,
+h1=0.138,
+w2=0.0442,
+h2=0.1384,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 29.77) RELATIVE  origin
+
+COMPONENT Guide_section45 = Guide_gravity (
+w1=0.0442,
+h1=0.1384,
+w2=0.0444,
+h2=0.1386,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 30.27) RELATIVE  origin
+
+COMPONENT Guide_section46 = Guide_gravity (
+w1=0.0444,
+h1=0.1386,
+w2=0.0444,
+h2=0.139,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 30.77) RELATIVE  origin
+
+COMPONENT Guide_section47 = Guide_gravity (
+w1=0.0444,
+h1=0.139,
+w2=0.0446,
+h2=0.1392,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 31.271) RELATIVE  origin
+
+COMPONENT Guide_section48 = Guide_gravity (
+w1=0.0446,
+h1=0.1392,
+w2=0.0446,
+h2=0.1396,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 31.771) RELATIVE  origin
+
+COMPONENT Guide_section49 = Guide_gravity (
+w1=0.0446,
+h1=0.1396,
+w2=0.0448,
+h2=0.1398,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 32.271) RELATIVE  origin
+
+COMPONENT Guide_section50 = Guide_gravity (
+w1=0.0448,
+h1=0.1398,
+w2=0.0448,
+h2=0.14,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 32.771) RELATIVE  origin
+
+COMPONENT Guide_section51 = Guide_gravity (
+w1=0.0448,
+h1=0.14,
+w2=0.0448,
+h2=0.1402,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 33.272) RELATIVE  origin
+
+COMPONENT Guide_section52 = Guide_gravity (
+w1=0.0448,
+h1=0.1402,
+w2=0.045,
+h2=0.1404,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 33.772) RELATIVE  origin
+
+COMPONENT Guide_section53 = Guide_gravity (
+w1=0.045,
+h1=0.1404,
+w2=0.045,
+h2=0.1406,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 34.272) RELATIVE  origin
+
+COMPONENT Guide_section54 = Guide_gravity (
+w1=0.045,
+h1=0.1406,
+w2=0.045,
+h2=0.1406,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 34.772) RELATIVE  origin
+
+COMPONENT Guide_section55 = Guide_gravity (
+w1=0.045,
+h1=0.1406,
+w2=0.045,
+h2=0.1408,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 35.273) RELATIVE  origin
+
+COMPONENT Guide_section56 = Guide_gravity (
+w1=0.045,
+h1=0.1408,
+w2=0.045,
+h2=0.1408,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 35.773) RELATIVE  origin
+
+COMPONENT Guide_section57 = Guide_gravity (
+w1=0.045,
+h1=0.1408,
+w2=0.045,
+h2=0.14100000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 36.273) RELATIVE  origin
+
+COMPONENT Guide_section58 = Guide_gravity (
+w1=0.045,
+h1=0.14100000000000001,
+w2=0.045200000000000004,
+h2=0.14100000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 36.773) RELATIVE  origin
+
+COMPONENT Guide_section59 = Guide_gravity (
+w1=0.045200000000000004,
+h1=0.14100000000000001,
+w2=0.045200000000000004,
+h2=0.14100000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 37.274) RELATIVE  origin
+
+COMPONENT Guide_section60 = Guide_gravity (
+w1=0.045200000000000004,
+h1=0.14100000000000001,
+w2=0.045200000000000004,
+h2=0.14100000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 37.774) RELATIVE  origin
+
+COMPONENT Guide_section61 = Guide_gravity (
+w1=0.045200000000000004,
+h1=0.14100000000000001,
+w2=0.045200000000000004,
+h2=0.14100000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 38.274) RELATIVE  origin
+
+COMPONENT Guide_section62 = Guide_gravity (
+w1=0.045200000000000004,
+h1=0.14100000000000001,
+w2=0.045,
+h2=0.14100000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 38.774) RELATIVE  origin
+
+COMPONENT Guide_section63 = Guide_gravity (
+w1=0.045,
+h1=0.14100000000000001,
+w2=0.045,
+h2=0.1408,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 39.275) RELATIVE  origin
+
+COMPONENT Guide_section64 = Guide_gravity (
+w1=0.045,
+h1=0.1408,
+w2=0.045,
+h2=0.1408,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 39.775) RELATIVE  origin
+
+COMPONENT Guide_section65 = Guide_gravity (
+w1=0.045,
+h1=0.1408,
+w2=0.045,
+h2=0.1406,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 40.275) RELATIVE  origin
+
+COMPONENT Guide_section66 = Guide_gravity (
+w1=0.045,
+h1=0.1406,
+w2=0.045,
+h2=0.1406,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 40.775) RELATIVE  origin
+
+COMPONENT Guide_section67 = Guide_gravity (
+w1=0.045,
+h1=0.1406,
+w2=0.045,
+h2=0.1404,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 41.276) RELATIVE  origin
+
+COMPONENT Guide_section68 = Guide_gravity (
+w1=0.045,
+h1=0.1404,
+w2=0.0448,
+h2=0.1402,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 41.776) RELATIVE  origin
+
+COMPONENT Guide_section69 = Guide_gravity (
+w1=0.0448,
+h1=0.1402,
+w2=0.0448,
+h2=0.14,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 42.276) RELATIVE  origin
+
+COMPONENT Guide_section70 = Guide_gravity (
+w1=0.0448,
+h1=0.14,
+w2=0.0448,
+h2=0.1398,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 42.776) RELATIVE  origin
+
+COMPONENT Guide_section71 = Guide_gravity (
+w1=0.0448,
+h1=0.1398,
+w2=0.0446,
+h2=0.1396,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 43.277) RELATIVE  origin
+
+COMPONENT Guide_section72 = Guide_gravity (
+w1=0.0446,
+h1=0.1396,
+w2=0.0446,
+h2=0.1392,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 43.777) RELATIVE  origin
+
+COMPONENT Guide_section73 = Guide_gravity (
+w1=0.0446,
+h1=0.1392,
+w2=0.0444,
+h2=0.139,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 44.277) RELATIVE  origin
+
+COMPONENT Guide_section74 = Guide_gravity (
+w1=0.0444,
+h1=0.139,
+w2=0.0444,
+h2=0.1386,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 44.777) RELATIVE  origin
+
+COMPONENT Guide_section75 = Guide_gravity (
+w1=0.0444,
+h1=0.1386,
+w2=0.0442,
+h2=0.1382,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 45.278) RELATIVE  origin
+
+COMPONENT Guide_section76 = Guide_gravity (
+w1=0.0442,
+h1=0.1382,
+w2=0.0442,
+h2=0.138,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 45.778) RELATIVE  origin
+
+COMPONENT Guide_section77 = Guide_gravity (
+w1=0.0442,
+h1=0.138,
+w2=0.044,
+h2=0.1376,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 46.278) RELATIVE  origin
+
+COMPONENT Guide_section78 = Guide_gravity (
+w1=0.044,
+h1=0.1376,
+w2=0.0438,
+h2=0.1372,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 46.778) RELATIVE  origin
+
+COMPONENT Guide_section79 = Guide_gravity (
+w1=0.0438,
+h1=0.1372,
+w2=0.0438,
+h2=0.1368,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 47.279) RELATIVE  origin
+
+COMPONENT Guide_section80 = Guide_gravity (
+w1=0.0438,
+h1=0.1368,
+w2=0.0436,
+h2=0.1362,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 47.779) RELATIVE  origin
+
+COMPONENT Guide_section81 = Guide_gravity (
+w1=0.0436,
+h1=0.1362,
+w2=0.0434,
+h2=0.1358,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 48.279) RELATIVE  origin
+
+COMPONENT Guide_section82 = Guide_gravity (
+w1=0.0434,
+h1=0.1358,
+w2=0.0432,
+h2=0.1352,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 48.779) RELATIVE  origin
+
+COMPONENT Guide_section83 = Guide_gravity (
+w1=0.0432,
+h1=0.1352,
+w2=0.0432,
+h2=0.1348,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 49.28) RELATIVE  origin
+
+COMPONENT Guide_section84 = Guide_gravity (
+w1=0.0432,
+h1=0.1348,
+w2=0.043000000000000003,
+h2=0.13419999999999999,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 49.78) RELATIVE  origin
+
+COMPONENT Guide_section85 = Guide_gravity (
+w1=0.043000000000000003,
+h1=0.13419999999999999,
+w2=0.0428,
+h2=0.1336,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 50.28) RELATIVE  origin
+
+COMPONENT Guide_section86 = Guide_gravity (
+w1=0.0428,
+h1=0.1336,
+w2=0.0426,
+h2=0.133,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 50.78) RELATIVE  origin
+
+COMPONENT Guide_section87 = Guide_gravity (
+w1=0.0426,
+h1=0.133,
+w2=0.0424,
+h2=0.13240000000000002,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 51.281) RELATIVE  origin
+
+COMPONENT Guide_section88 = Guide_gravity (
+w1=0.0424,
+h1=0.13240000000000002,
+w2=0.0422,
+h2=0.1316,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 51.781) RELATIVE  origin
+
+COMPONENT Guide_section89 = Guide_gravity (
+w1=0.0422,
+h1=0.1316,
+w2=0.042,
+h2=0.131,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 52.281) RELATIVE  origin
+
+COMPONENT Guide_section90 = Guide_gravity (
+w1=0.042,
+h1=0.131,
+w2=0.041600000000000005,
+h2=0.13019999999999998,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 52.781) RELATIVE  origin
+
+COMPONENT Guide_section91 = Guide_gravity (
+w1=0.041600000000000005,
+h1=0.13019999999999998,
+w2=0.0414,
+h2=0.1296,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 53.282000000000004) RELATIVE  origin
+
+COMPONENT Guide_section92 = Guide_gravity (
+w1=0.0414,
+h1=0.1296,
+w2=0.0412,
+h2=0.12880000000000003,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 53.782000000000004) RELATIVE  origin
+
+COMPONENT Guide_section93 = Guide_gravity (
+w1=0.0412,
+h1=0.12880000000000003,
+w2=0.041,
+h2=0.128,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 54.282000000000004) RELATIVE  origin
+
+COMPONENT Guide_section94 = Guide_gravity (
+w1=0.041,
+h1=0.128,
+w2=0.040600000000000004,
+h2=0.1272,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 54.782000000000004) RELATIVE  origin
+
+COMPONENT Guide_section95 = Guide_gravity (
+w1=0.040600000000000004,
+h1=0.1272,
+w2=0.0404,
+h2=0.1262,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 55.283) RELATIVE  origin
+
+COMPONENT Guide_section96 = Guide_gravity (
+w1=0.0404,
+h1=0.1262,
+w2=0.04020000000000001,
+h2=0.1254,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 55.783) RELATIVE  origin
+
+COMPONENT Guide_section97 = Guide_gravity (
+w1=0.04020000000000001,
+h1=0.1254,
+w2=0.039799999999999995,
+h2=0.12440000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 56.283) RELATIVE  origin
+
+COMPONENT Guide_section98 = Guide_gravity (
+w1=0.039799999999999995,
+h1=0.12440000000000001,
+w2=0.0396,
+h2=0.1236,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 56.783) RELATIVE  origin
+
+COMPONENT Guide_section99 = Guide_gravity (
+w1=0.0396,
+h1=0.1236,
+w2=0.039200000000000006,
+h2=0.1226,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 57.284) RELATIVE  origin
+
+COMPONENT Guide_section100 = Guide_gravity (
+w1=0.039200000000000006,
+h1=0.1226,
+w2=0.0388,
+h2=0.1216,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 57.784) RELATIVE  origin
+
+COMPONENT Guide_section101 = Guide_gravity (
+w1=0.0388,
+h1=0.1216,
+w2=0.0386,
+h2=0.12040000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 58.284) RELATIVE  origin
+
+COMPONENT Guide_section102 = Guide_gravity (
+w1=0.0386,
+h1=0.12040000000000001,
+w2=0.038200000000000005,
+h2=0.1194,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 58.784) RELATIVE  origin
+
+COMPONENT Guide_section103 = Guide_gravity (
+w1=0.038200000000000005,
+h1=0.1194,
+w2=0.0378,
+h2=0.1182,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 59.285000000000004) RELATIVE  origin
+
+COMPONENT Guide_section104 = Guide_gravity (
+w1=0.0378,
+h1=0.1182,
+w2=0.0374,
+h2=0.117,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 59.785000000000004) RELATIVE  origin
+
+COMPONENT Guide_section105 = Guide_gravity (
+w1=0.0374,
+h1=0.117,
+w2=0.037,
+h2=0.1158,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 60.285000000000004) RELATIVE  origin
+
+COMPONENT Guide_section106 = Guide_gravity (
+w1=0.037,
+h1=0.1158,
+w2=0.0366,
+h2=0.1146,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 60.785000000000004) RELATIVE  origin
+
+COMPONENT Guide_section107 = Guide_gravity (
+w1=0.0366,
+h1=0.1146,
+w2=0.0362,
+h2=0.11340000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 61.286) RELATIVE  origin
+
+COMPONENT Guide_section108 = Guide_gravity (
+w1=0.0362,
+h1=0.11340000000000001,
+w2=0.0358,
+h2=0.112,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 61.786) RELATIVE  origin
+
+COMPONENT Guide_section109 = Guide_gravity (
+w1=0.0358,
+h1=0.112,
+w2=0.0354,
+h2=0.11059999999999999,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 62.286) RELATIVE  origin
+
+COMPONENT Guide_section110 = Guide_gravity (
+w1=0.0354,
+h1=0.11059999999999999,
+w2=0.035,
+h2=0.1092,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 62.786) RELATIVE  origin
+
+COMPONENT Guide_section111 = Guide_gravity (
+w1=0.035,
+h1=0.1092,
+w2=0.0344,
+h2=0.10779999999999999,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 63.287) RELATIVE  origin
+
+COMPONENT Guide_section112 = Guide_gravity (
+w1=0.0344,
+h1=0.10779999999999999,
+w2=0.034,
+h2=0.1062,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 63.787) RELATIVE  origin
+
+COMPONENT Guide_section113 = Guide_gravity (
+w1=0.034,
+h1=0.1062,
+w2=0.033600000000000005,
+h2=0.1048,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 64.287) RELATIVE  origin
+
+COMPONENT Guide_section114 = Guide_gravity (
+w1=0.033600000000000005,
+h1=0.1048,
+w2=0.033,
+h2=0.10300000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 64.787) RELATIVE  origin
+
+COMPONENT Guide_section115 = Guide_gravity (
+w1=0.033,
+h1=0.10300000000000001,
+w2=0.0324,
+h2=0.1014,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 65.288) RELATIVE  origin
+
+COMPONENT Guide_section116 = Guide_gravity (
+w1=0.0324,
+h1=0.1014,
+w2=0.0318,
+h2=0.0996,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 65.788) RELATIVE  origin
+
+COMPONENT Guide_section117 = Guide_gravity (
+w1=0.0318,
+h1=0.0996,
+w2=0.0314,
+h2=0.0978,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 66.288) RELATIVE  origin
+
+COMPONENT Guide_section118 = Guide_gravity (
+w1=0.0314,
+h1=0.0978,
+w2=0.031,
+h2=0.097,
+l=0.226,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 66.788) RELATIVE  origin
+
+COMPONENT Guide_section119 = Guide_gravity (
+w1=0.031,
+h1=0.097,
+w2=0.0304,
+h2=0.0952,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 67.016) RELATIVE  origin
+
+COMPONENT Guide_section120 = Guide_gravity (
+w1=0.0304,
+h1=0.0952,
+w2=0.0298,
+h2=0.0932,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 67.516) RELATIVE  origin
+
+COMPONENT Guide_section121 = Guide_gravity (
+w1=0.0298,
+h1=0.0932,
+w2=0.0292,
+h2=0.0912,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 68.016) RELATIVE  origin
+
+COMPONENT Guide_section122 = Guide_gravity (
+w1=0.0292,
+h1=0.0912,
+w2=0.028399999999999998,
+h2=0.089,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 68.516) RELATIVE  origin
+
+COMPONENT Guide_section123 = Guide_gravity (
+w1=0.028399999999999998,
+h1=0.089,
+w2=0.027800000000000002,
+h2=0.0868,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 69.017) RELATIVE  origin
+
+COMPONENT Guide_section124 = Guide_gravity (
+w1=0.027800000000000002,
+h1=0.0868,
+w2=0.027,
+h2=0.0846,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 69.517) RELATIVE  origin
+
+COMPONENT Guide_section125 = Guide_gravity (
+w1=0.027,
+h1=0.0846,
+w2=0.0262,
+h2=0.08220000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 70.017) RELATIVE  origin
+
+COMPONENT Guide_section126 = Guide_gravity (
+w1=0.0262,
+h1=0.08220000000000001,
+w2=0.0254,
+h2=0.07959999999999999,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 70.517) RELATIVE  origin
+
+COMPONENT Guide_section127 = Guide_gravity (
+w1=0.0254,
+h1=0.07959999999999999,
+w2=0.0246,
+h2=0.077,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 71.018) RELATIVE  origin
+
+COMPONENT Guide_section128 = Guide_gravity (
+w1=0.0246,
+h1=0.077,
+w2=0.0238,
+h2=0.0742,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 71.518) RELATIVE  origin
+
+COMPONENT Guide_section129 = Guide_gravity (
+w1=0.0238,
+h1=0.0742,
+w2=0.0228,
+h2=0.0712,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 72.018) RELATIVE  origin
+
+COMPONENT Guide_section130 = Guide_gravity (
+w1=0.0228,
+h1=0.0712,
+w2=0.0218,
+h2=0.06820000000000001,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 72.518) RELATIVE  origin
+
+COMPONENT Guide_section131 = Guide_gravity (
+w1=0.0218,
+h1=0.06820000000000001,
+w2=0.020800000000000003,
+h2=0.0648,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 73.019) RELATIVE  origin
+
+COMPONENT Guide_section132 = Guide_gravity (
+w1=0.020800000000000003,
+h1=0.0648,
+w2=0.019600000000000003,
+h2=0.0614,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 73.519) RELATIVE  origin
+
+COMPONENT Guide_section133 = Guide_gravity (
+w1=0.019600000000000003,
+h1=0.0614,
+w2=0.0184,
+h2=0.057600000000000005,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 74.019) RELATIVE  origin
+
+COMPONENT Guide_section134 = Guide_gravity (
+w1=0.0184,
+h1=0.057600000000000005,
+w2=0.017,
+h2=0.0534,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 74.519) RELATIVE  origin
+
+COMPONENT Guide_section135 = Guide_gravity (
+w1=0.017,
+h1=0.0534,
+w2=0.016,
+h2=0.05,
+l=0.381,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 75.019) RELATIVE  origin
+
+COMPONENT Guide_section136 = Guide_gravity (
+w1=0.018000000000000002,
+h1=0.052000000000000005,
+w2=0.018000000000000002,
+h2=0.052000000000000005,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 75.55) RELATIVE  origin
+
+COMPONENT Guide_section137 = Guide_gravity (
+w1=0.018000000000000002,
+h1=0.052000000000000005,
+w2=0.018000000000000002,
+h2=0.052000000000000005,
+l=0.5,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 76.05) RELATIVE  origin
+
+COMPONENT Guide_section138 = Guide_gravity (
+w1=0.018000000000000002,
+h1=0.052000000000000005,
+w2=0.018000000000000002,
+h2=0.052000000000000005,
+l=0.45,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, 76.55) RELATIVE  origin
+
+COMPONENT 2dmon = Monitor_nD(
+options = "x bins=100 y bins=100",
+xwidth = 0.04,
+yheight = 0.08
+)
+AT (0, 0, 77.2) RELATIVE  origin
+
+COMPONENT x_mon_exit = Monitor_nD(
+options = "x bins=101",
+xwidth = 0.04,
+yheight = 0.08
+)
+AT (0, 0, 77.2) RELATIVE  origin
+
+COMPONENT y_mon_exit = Monitor_nD(
+options = "y bins=100",
+xwidth = 0.04,
+yheight = 0.08
+)
+AT (0, 0, 77.2) RELATIVE  origin
+
+COMPONENT eng_exit_Monitor = Monitor_nD(
+options = "log energy, limits=[-1 5], bins=100",
+xwidth = 0.04,
+yheight = 0.08
+)
+AT (0, 0, 77.2) RELATIVE  origin
+
+END

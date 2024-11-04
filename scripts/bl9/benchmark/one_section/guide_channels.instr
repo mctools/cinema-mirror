@@ -1,0 +1,87 @@
+DEFINE INSTRUMENT bl9_guide()
+
+DECLARE 
+%{
+double xmin = 10 * 0.001 * 2;
+double xmax = 120 * 0.001 * 2;
+double ymin = 60* 0.001 * 2;
+double ymax = 180* 0.001 * 2;
+double zmin = 8000* 0.001;
+double zmax = 77000* 0.001 ;
+%}
+
+INITIALIZE 
+%{
+// Start of initialize for generated kds_instrument_example
+%}
+
+TRACE
+
+
+COMPONENT eng_entry_Monitor = Monitor_nD(
+options = "log energy, limits=[-1 5], bins=100",
+xwidth = xmax + 0.01,
+yheight = ymax + 0.01
+)
+AT (0, 0, 2.26) RELATIVE  origin
+
+
+COMPONENT x_mon_entry = Monitor_nD(
+options = "x bins=200",
+xwidth = xmax + 0.01,
+yheight = ymax + 0.01
+)
+AT (0, 0, 2.26+0.001) RELATIVE  origin
+
+COMPONENT y_mon_entry = Monitor_nD(
+options = "y bins=100",
+xwidth = xmax + 0.01,
+yheight = ymax + 0.01
+)
+AT (0, 0, zmin - 0.7) RELATIVE  origin
+
+COMPONENT Guide_section1 = Guide_gravity (
+w1=xmax,
+h1=ymax,
+w2=xmin,
+h2=ymin,
+l=zmax-zmin,
+R0=0.99,
+Qc=0.0219,
+alpha=6.07,
+d=0,
+m=2,
+G=0
+)
+AT (0, 0, zmin) RELATIVE  origin
+
+
+COMPONENT 2dmon = Monitor_nD(
+options = "x bins=100 y bins=100",
+xwidth = xmin + 0.01,
+yheight = ymin + 0.01
+)
+AT (0, 0, zmax + 0.2) RELATIVE  origin
+
+COMPONENT x_mon_exit = Monitor_nD(
+options = "x bins=100",
+xwidth = xmin + 0.01,
+yheight = ymin + 0.01
+)
+AT (0, 0, zmax + 0.2) RELATIVE  origin
+
+COMPONENT y_mon_exit = Monitor_nD(
+options = "y bins=100",
+xwidth = xmin + 0.01,
+yheight = ymin + 0.01
+)
+AT (0, 0, zmax + 0.2) RELATIVE  origin
+
+COMPONENT eng_exit_Monitor = Monitor_nD(
+options = "log energy, limits=[-1 5], bins=100",
+xwidth = xmin + 0.01,
+yheight = ymin + 0.01
+)
+AT (0, 0, zmax + 0.2) RELATIVE  origin
+
+END

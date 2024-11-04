@@ -333,9 +333,9 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   scorePropagatePre(particle);
 
   m_matphysscor->bulkMaterialProcess->sampleFinalState(particle, step, !sameVolume);
-  #ifdef DEBUG_PTS
-    std::cout << "Propagating in volume " << getVolumeName() << std::endl;
-  #endif
+  // #ifdef DEBUG_PTS
+  //   std::cout << "Propagating in volume " << getVolumeName() << std::endl;
+  // #endif
 
   scorePropagatePost(particle);
   
@@ -343,7 +343,9 @@ bool Prompt::ActiveVolume::proprogateInAVolume(Particle &particle)
   if(!sameVolume)
   {
     #ifdef DEBUG_PTS
-      std::cout << "Exiting volume " << getVolumeName() << std::endl;
+      std::cout << "Exiting volume " << getVolume()->GetName() 
+      << " at " << particle.getPosition() << std::endl;
+      std::cout << " " << std::endl;
     #endif
     scoreExit(particle);  //score exit before activeVolume changes, otherwise physical volume id and scorer id may be inconsistent.
     particle.moveForward(0); // clear step length in the particle, so that the next entry event with zero length

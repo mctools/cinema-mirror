@@ -17,8 +17,10 @@ def main():
     build_group.add_argument('-d', action='store_const', const='Debug', dest='buildtype', help='Build in debug mode.')
     build_group.add_argument('-r', action='store_const', const='Release', dest='buildtype', help='Build in release mode.')
     parser.add_argument('-c', action='store_const', const='clean', dest='cleanflag', help='Clean the build.')
-    parser.add_argument('--withgidi', action='store_true', help='Enable GIDI in CMake. (Default: False)')
-    parser.add_argument('--withcatima', action='store_true', help='Enable CATIMA in CMake. (Default: False)')
+    parser.add_argument('--enablegidi', action='store_true', help='Enable GIDI in CMake. (Default: False)')
+    parser.add_argument('--enablecatima', action='store_true', help='Enable CATIMA in CMake. (Default: False)')
+    parser.add_argument('--debugpts', action='store_true', help='Enable DEBUG_PTS in CMake. (Default: False)')
+
     args = parser.parse_args()
 
     cinema_path = os.environ.get('CINEMAPATH')
@@ -34,18 +36,24 @@ def main():
         run_command('make clean')
 
     cmake_args = []
-    if args.buildtype:
-        cmake_args.extend([f'-DCMAKE_BUILD_TYPE={args.buildtype}', '-DCMAKE_CXX_FLAGS_DEBUG="-g -O0"', '-DCMAKE_C_FLAGS_DEBUG="-g -O0"'])
-    else:
-        cmake_args.append('..')
-    if args.withgidi:
+    if args.enablegidi:
         cmake_args.append('-DENABLE_GIDI=ON')
     else:
         cmake_args.append('-DENABLE_GIDI=OFF')
-    if args.withcatima:
+    if args.enablecatima:
         cmake_args.append('-DENABLE_CATIMA=ON')
     else:
         cmake_args.append('-DENABLE_CATIMA=OFF')
+    if args.debugpts:
+        cmake_args.append('-DDEBUG_PTS=ON')
+    else:
+        cmake_args.append('-DDEBUG_PTS=OFF')
+
+    if args.buildtype:
+        cmake_args.extend([f'-DCMAKE_BUILD_TYPE={args.buildtype}', '-DCMAKE_CXX_FLAGS_DEBUG="-g -O0"', '-DCMAKE_C_FLAGS_DEBUG="-g -O0"'])
+
+    cmake_args.append('..')
+
     run_command(f'cmake {" ".join(cmake_args)}')
 
     run_command('make -j')
