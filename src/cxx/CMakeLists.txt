@@ -68,6 +68,10 @@ if(ENABLE_GIDI)
     target_compile_definitions(${PROJECT_NAME} PUBLIC ENABLE_GIDI)
 endif()
 
+if(DEBUG_PTS)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC DEBUG_PTS)
+endif()
+
 find_package(Python REQUIRED COMPONENTS Interpreter)
 
 FIND_LIBRARY(mcpl mcpl ${KDS_LIB})
