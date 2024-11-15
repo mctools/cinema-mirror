@@ -56,8 +56,6 @@ class Pseudo():
                 electron_maxstep=1000
                 conv_thr = 1.0d-12
                 mixing_beta = 0.3
-                mixing_mode = 'plain'
-                diagonalization= 'david'
             /
             &IONS
             ion_dynamics= 'bfgs'
@@ -74,6 +72,7 @@ class Pseudo():
                 calculation = 'scf'
                 restart_mode='from_scratch'
                 tprnfor = .true.
+                tstress = .true.
                 ! max_seconds = 36000.0
                 pseudo_dir = {ppath}
                 disk_io = 'nowf'
@@ -87,15 +86,11 @@ class Pseudo():
                 smearing='gauss'
                 degauss=0.02
                 ecutwfc = {ecutwfc}, ecutrho={ecutrho}
-                !input_dft  = 'vdw-df2'
                 {vdwOrmag}
              /
              &electrons
-                electron_maxstep=1000
                 conv_thr = 1.0d-12
                 mixing_beta = 0.3
-                mixing_mode = 'plain'
-                diagonalization= 'david'
              /
             K_POINTS automatic
             {kp0} {kp1} {kp2} 0 0 0\n"""
@@ -110,7 +105,7 @@ class Pseudo():
         atom_spec ="ATOMIC_SPECIES\n{}"
         vdwOrmag=None
         if vdW:
-            vdwOrmag = """input_dft  = 'vdw-df2'"""
+            vdwOrmag = """input_dft  = 'vrr10'"""
             self.linkvdWTable()
         else:
             vdwOrmag = """nspin = 2, starting_magnetization=1.0"""
