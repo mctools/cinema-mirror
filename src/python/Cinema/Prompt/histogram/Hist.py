@@ -313,7 +313,7 @@ class Hist2D(HistBase):
             raise RunTimeError('fillnamy different size')
         _pt_Hist2D_fill_many(self.cobj, x.size, x, y, weight )
 
-    def plot(self, show=False, title='Histogram', log=True):
+    def plot(self, show=False, title='Histogram', log=True, dynrange=1e-3):
         try:
             import matplotlib.pyplot as plt
             import matplotlib.colors as colors
@@ -325,7 +325,7 @@ class Hist2D(HistBase):
 
             X, Y = np.meshgrid(self.xcenter, self.ycenter)
             if log:
-                pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*1e-3, vmax=H.max()), shading='auto')
+                pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, norm=colors.LogNorm(vmin=H.max()*dynrange, vmax=H.max()), shading='auto')
             else:
                 pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
 
