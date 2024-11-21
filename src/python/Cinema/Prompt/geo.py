@@ -47,6 +47,7 @@ _pt_ResourceManager_addScorer = importFunc('pt_ResourceManager_addScorer', None,
 _pt_ResourceManager_addSurface = importFunc('pt_ResourceManager_addSurface', None, [type_uint, type_cstr])
 _pt_ResourceManager_cfgVolPhysics = importFunc('pt_ResourceManager_cfgVolPhysics', None, [type_uint, type_cstr])
 
+
 class Transformation3D:
     def __init__(self, x=0., y=0., z=0., rot_z=0., rot_new_x=0., rot_new_z=0., degrees = True):
         # rotate is in ZXZ in the vecgeom 
@@ -196,11 +197,12 @@ class Transformation3D:
         
 class Volume:
     scorerDict = {}
-
     def __init__(self, volname, solid, matCfg=None, surfaceCfg=None):
         self.volname = volname
+        # the type of self.solid is vecgeom::VUnplacedVolume 
         self.solid = solid
         self.child = []
+        # the type of self.cobj is vecgeom::LogicalVolume
         self.cobj = _pt_Volume_new(volname.encode('utf-8'), solid.cobj)
         self.volid = self.getLogicalID(self.cobj)
         self.matCfg = matCfg

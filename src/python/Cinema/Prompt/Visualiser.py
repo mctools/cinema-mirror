@@ -114,13 +114,9 @@ class Visualiser():
                 if any(srchstr in name for srchstr in self.blacklist):
                     continue
 
-            name, points, faces = am.getMesh(nSegments)
+            name, mesh = am.getMesh(nSegments)
             # print(name, points, faces)
             name=f'{count}_{name}'
-            if points.size==0:
-                continue
-            
-            mesh = pv.PolyData(points, faces)
             if combineMesh:
                 allmesh.append(mesh)
             else:

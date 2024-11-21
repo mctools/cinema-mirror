@@ -117,6 +117,26 @@ size_t pt_countFullTreeNode()
   return tree.getNumNodes(Prompt::GeoTree::FULL);
 }
 
+void pt_generatePointCloud(size_t pvolID, size_t nPoint, double *points)
+{
+  auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
+  const auto node = tree.m_fullTreeNode[pvolID];
+  const auto &tMatrix = tree.m_fllTreeMatrix[pvolID];
+
+  auto &geoManager = vecgeom::GeoManager::Instance();
+  // const vgdml::VPlacedVolume
+  auto *vol = geoManager.Convert(node->physical);
+
+  for(size_t i=0;i<nPoint;i++)
+  {
+    auto ap = tMatrix.Transform(vol->GetUnplacedVolume()->SamplePointOnSurface());
+    *(points++) = ap.x();
+    *(points++) = ap.y();
+    *(points++) = ap.z();
+  }
+}
+
+
 void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlolygen, size_t &faceSize)
 {
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
