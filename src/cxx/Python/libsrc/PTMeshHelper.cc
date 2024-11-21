@@ -117,7 +117,7 @@ size_t pt_countFullTreeNode()
   return tree.getNumNodes(Prompt::GeoTree::FULL);
 }
 
-void pt_generatePointCloud(size_t pvolID, size_t nPoint, double *points)
+void pt_generatePointCloud(size_t pvolID, size_t nPoint, double *points, double *normals)
 {
   auto tree = Prompt::Singleton<Prompt::GeoTree>::getInstance();
   const auto node = tree.m_fullTreeNode[pvolID];
@@ -129,10 +129,18 @@ void pt_generatePointCloud(size_t pvolID, size_t nPoint, double *points)
 
   for(size_t i=0;i<nPoint;i++)
   {
-    auto ap = tMatrix.Transform(vol->GetUnplacedVolume()->SamplePointOnSurface());
+    auto p = vol->GetUnplacedVolume()->SamplePointOnSurface();
+    auto ap = tMatrix.Transform(p);
     *(points++) = ap.x();
     *(points++) = ap.y();
     *(points++) = ap.z();
+
+    vecgeom::Vector3D<Precision> norm;
+    vol->GetUnplacedVolume()->Normal(p, norm);
+    auto an = tMatrix.TransformDirection(norm);
+    *(normals++) = an.x();
+    *(normals++) = an.y();
+    *(normals++) = an.z();
   }
 }
 

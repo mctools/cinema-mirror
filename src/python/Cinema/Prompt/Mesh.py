@@ -55,7 +55,7 @@ _pt_meshInfo = importFunc("pt_meshInfo", None,  [type_sizet, type_sizet, type_si
 _pt_getMesh = importFunc("pt_getMesh", None,  [type_sizet, type_sizet, type_npsbl2d, type_npszt1d, type_npszt1d])
 _pt_getMeshName = importFunc("pt_getMeshName", type_cstr,  [type_sizet])
 _pt_getLogVolumeInfo = importFunc("pt_getLogVolumeInfo", None, [type_sizet, type_cstr])
-_pt_generatePointCloud = importFunc("pt_generatePointCloud", None,  [type_sizet, type_sizet, type_npdbl2d])
+_pt_generatePointCloud = importFunc("pt_generatePointCloud", None,  [type_sizet, type_sizet, type_npdbl2d, type_npdbl2d])
 
 
 class Mesh():
@@ -93,10 +93,15 @@ class Mesh():
         name, npoints, nPlolygen, faceSize = self.meshInfo(nSegments)
         # The point cloud mode
         if npoints==0: 
-            npoints = nSegments*1000
+            npoints = nSegments*100
             points = np.zeros([npoints, 3])
-            _pt_generatePointCloud(self.n, npoints, points)
+            norm = np.zeros_like(points)
+            _pt_generatePointCloud(self.n, npoints, points, norm)
             point_cloud = pv.PolyData(points)
+            # Add normals to the point cloud
+            point_cloud.point_data['Normals'] = norm
+            # Use reconstruct_surface with normals
+            # Note: You can specify additional parameters such as `tolerance`, or `clean` as required.
             mesh = point_cloud.reconstruct_surface()
             return name, mesh
         # The mesh mode
