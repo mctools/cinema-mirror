@@ -3,46 +3,42 @@
 from Cinema.Prompt import Prompt, PromptMPI
 from Cinema.Prompt.geo import Volume, Transformation3D
 from Cinema.Prompt.solid import Box,Tube
-from Cinema.Prompt.scorer import makePSD, ESpectrumHelper, WlSpectrumHelper, TOFHelper, VolFluenceHelper
+from Cinema.Prompt.scorer import makePSD, ESpectrumHelper, WlSpectrumHelper, TOFHelper, VolFluenceHelper, PSDHelper, DirectSqwHelper
 from Cinema.Prompt.gun import PythonGun, SimpleThermalGun, MaxwellianGun
 from Cinema.Prompt.histogram import wl2ekin
 from Cinema.Prompt.physics import Material, Mirror
 
+import matplotlib.pyplot as plt
 import numpy as np
+
+wl = 8
+mod_sam_dist = 12000
+gun_pos = np.array([0,0,-mod_sam_dist])
+sam_pos = np.array([0,0,0])
+det_radius_mm = 400.
 
 class MySim(PromptMPI):
     def __init__(self, seed=4096) -> None:
-        super().__init__(seed)
-        self.scorer['multi'] ='Scorer=MultiScat; name=D2O; min=1; max=10; linear=yes'
-      
+        super().__init__(seed)    
 
     def makeWorld(self):
         matCfg_sample = Material('LiquidWaterH2O_T293.6K.ncmat')
-
-        air = Material('freegas::N78O22/1.225kgm3')
-        air.setBiasScat(10)
-        air.setBiasAbsp(0)
-
-        enriched = Material('solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11')
-        cd = Material('solid::Cd/8.65gcm3')
-
-
-
+        matCfg_sample.setBiasScat(5)
+        # matCfg_sample = Material('nanodiamond.ncmat;density=0.7x')      
+       
         world = Volume("world", Box(10000, 10000, 25000))
-        # water = Volume('sample', Box(10,10,1.5), matCfg = matCfg_sample.cfg)
-        # water.addScorer(self.scorer['multi'])
-        # world.placeChild("sample", water, Transformation3D(0., 0., 0), 1234)
+        sample = Volume('sample', Box(10,10,1), matCfg = matCfg_sample)
+        detector = Volume("det", Tube(30, det_radius_mm, 0.0001))
 
-        # makePSD('psd', water, 10, 10 )
+        world.placeChild("sample", sample, Transformation3D(0., 0., 0))
+        world.placeChild("det", detector, Transformation3D(0., 0., 9000))
 
-        detector = Volume("det", Tube(0, 410, 0.0001))
-
+        PSDHelper('psd', -det_radius_mm, det_radius_mm, 100,  -det_radius_mm, det_radius_mm, 100).make(detector)
         ESpectrumHelper('espec').make(detector)
         WlSpectrumHelper('wlspec').make(detector)
-        TOFHelper('tof').make(detector)
-        VolFluenceHelper('volf').make(detector)
-
-        world.placeChild("det", detector, Transformation3D(0., 0., 9000), 1234)
+        TOFHelper('tof', max=50e-3).make(detector)
+        DirectSqwHelper('sqw', mod_sam_dist, wl2ekin(wl), sample_position=sam_pos, qmin=1e-3, 
+                        qmax=.1, num_qbin=100, ekinmin=-1, ekinmax=1, num_ebin=101 ).make(detector)
 
         self.setWorld(world)
 
@@ -54,40 +50,51 @@ class MyGun(PythonGun):
         super().__init__(pdg)
 
     def sampleEnergy(self):
-        return wl2ekin(8)
+        return wl2ekin(wl)
 
     def samplePosition(self):
-        return np.array([0, 0, -12000])
+        return np.array(gun_pos)
     
     def sampleDirection(self):
         return np.array([0, 0, 1])
 
-usePythonGun=True
+usePythonGun=False
 
 if usePythonGun:
-    gun = MyGun(22)
+    gun = MyGun(2112)
 else:
     gun = SimpleThermalGun()
-    gun.setPosition([0,0,-12000])
+    gun.setPosition(gun_pos) 
     gun.setDirection([0, 0, 1])
-    gun.setWavelength(8)
+    gun.setWavelength(wl)
 
 # vis or production
-if True:
+if False:
     sim.show(gun, 100)
 else:
-    sim.simulate(gun, 1e6)
+    sim.simulate(gun, 1e8)
+
+sqw = sim.gatherHistData('sqw')
 
 psd = sim.gatherHistData('psd')
 espec = sim.gatherHistData('espec')
 wlspec = sim.gatherHistData('wlspec')
 tof = sim.gatherHistData('tof')
-volf = sim.gatherHistData('volf')
 
-# if sim.rank==0:
-#     psd.plot(show=True)
-#     espec.plot(show=True, log=True)
-#     wlspec.plot(show=True)
-#     tof.plot(show=True)
-#     volf.plot(show=True)
+if sim.rank==0:
+    psd.save('psd.h5')
+    espec.save('espec.h5')
+    wlspec.save('wlspec.h5')
+    tof.save('tof.h5')
+    sqw.save('sqw.h5')
+
+    psd.plot(show=False)
+    sqw.plot(show=False)
+    plt.figure()
+    espec.plot(show=False, log=True)
+    plt.figure()
+    wlspec.plot(show=False,  log=[False, True])
+    plt.figure()
+    tof.plot(show=True)
+
 
