@@ -200,7 +200,7 @@ class Hist1D(HistBase):
         
         _pt_Hist1D_fill_many(self.cobj, x.size, np.ascontiguousarray(x), np.ascontiguousarray(weight) )
 
-    def plot(self, show=False, label=None, title='Histogram', log=False, sigma=2):
+    def plot(self, show=False, label=None, title=None, log=False, sigma=2):
         try:
             import matplotlib.pyplot as plt
             from Cinema.Interface import plotStyle
@@ -209,13 +209,18 @@ class Hist1D(HistBase):
             w = self.getWeight()
             err = self.getSdev()
             plt.errorbar(center, w, yerr=err*sigma, fmt='s', label=f'Weight {w.sum()}' if label is None else f'{label} {w.sum()}')
-            if log:
+            if isinstance(log, list):
+                if list[0]:
+                    plt.xscale('log')
+                if list[1]:
+                    plt.yscale('log')
+            elif log:
                 plt.yscale('log')
                 plt.xscale('log')
-            plt.title(title)
+            plt.title(_pt_HistBase_getName(self.cobj).decode('utf-8') if title is None else title)
 
-            if show:
-                plt.legend(loc=0)
+            plt.legend(loc=0)
+            if show:                
                 plt.show()
             else: 
                 return plt
@@ -313,7 +318,7 @@ class Hist2D(HistBase):
             raise RunTimeError('fillnamy different size')
         _pt_Hist2D_fill_many(self.cobj, x.size, x, y, weight )
 
-    def plot(self, show=False, title='Histogram', log=True, dynrange=1e-3):
+    def plot(self, show=False, title=None, log=True, dynrange=1e-3):
         try:
             import matplotlib.pyplot as plt
             import matplotlib.colors as colors
@@ -331,8 +336,8 @@ class Hist2D(HistBase):
 
             fig.colorbar(pcm, ax=ax)
             plt.grid()
-            plt.title(title)
-            # plt.title(f'{title}) \nWeight {H.sum()}')
+            plt.title((_pt_HistBase_getName(self.cobj).decode('utf-8') if title is None else title) + f', Weight {H.sum()}')
+
             if show:
                 plt.show()
             else:

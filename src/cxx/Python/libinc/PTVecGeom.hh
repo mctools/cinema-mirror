@@ -71,6 +71,11 @@ unsigned pt_Volume_id(void* obj);
 double pt_Volume_capacity(void *obj);
 // unsigned pt_Volume_copyid(void *obj):
 
+//
+void* pt_solid_intersection(void* obj_left, void* obj_right, void* obj_right_transf);
+void* pt_solid_union(void* obj_left, void* obj_right, void* obj_right_transf);
+void* pt_solid_subtraction(void* obj_left, void* obj_right, void* obj_right_transf);
+
 #ifdef __cplusplus
 }
 #endif

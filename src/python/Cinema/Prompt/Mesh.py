@@ -19,6 +19,7 @@
 ################################################################################
 
 from ..Interface import *
+import pyvista as pv
 
 _pt_Transformation3D_new = importFunc('pt_Transformation3D_new', type_voidp, [type_voidp])
 _pt_Transformation3D_newfromID = importFunc('pt_Transformation3D_newfromID', type_voidp, [type_uint])
@@ -54,6 +55,8 @@ _pt_meshInfo = importFunc("pt_meshInfo", None,  [type_sizet, type_sizet, type_si
 _pt_getMesh = importFunc("pt_getMesh", None,  [type_sizet, type_sizet, type_npsbl2d, type_npszt1d, type_npszt1d])
 _pt_getMeshName = importFunc("pt_getMeshName", type_cstr,  [type_sizet])
 _pt_getLogVolumeInfo = importFunc("pt_getLogVolumeInfo", None, [type_sizet, type_cstr])
+_pt_generatePointCloud = importFunc("pt_generatePointCloud", None,  [type_sizet, type_sizet, type_npdbl2d, type_npdbl2d])
+
 
 class Mesh():
     def __init__(self):
@@ -88,13 +91,26 @@ class Mesh():
 
     def getMesh(self, nSegments=10):
         name, npoints, nPlolygen, faceSize = self.meshInfo(nSegments)
-        if npoints==0:
-            return name, np.array([]), np.array([])
-        vert = np.zeros([npoints, 3], dtype=np.float32)
-        NumPolygonPoints = np.zeros(nPlolygen, dtype=type_sizet)
-        facesVec = np.zeros(faceSize+nPlolygen, dtype=type_sizet)
-        _pt_getMesh(self.n, nSegments, vert, NumPolygonPoints, facesVec)
-        return name, vert, facesVec
+        # The point cloud mode
+        if npoints==0: 
+            npoints = nSegments*100
+            points = np.zeros([npoints, 3])
+            norm = np.zeros_like(points)
+            _pt_generatePointCloud(self.n, npoints, points, norm)
+            point_cloud = pv.PolyData(points)
+            # Add normals to the point cloud
+            point_cloud.point_data['Normals'] = norm
+            # Use reconstruct_surface with normals
+            # Note: You can specify additional parameters such as `tolerance`, or `clean` as required.
+            mesh = point_cloud.reconstruct_surface()
+            return name, mesh
+        # The mesh mode
+        else:
+            vert = np.zeros([npoints, 3], dtype=np.float32)
+            NumPolygonPoints = np.zeros(nPlolygen, dtype=type_sizet)
+            facesVec = np.zeros(faceSize+nPlolygen, dtype=type_sizet)
+            _pt_getMesh(self.n, nSegments, vert, NumPolygonPoints, facesVec)
+            return name, pv.PolyData(vert, facesVec)
 
     def __iter__(self):
         self.n = -1
