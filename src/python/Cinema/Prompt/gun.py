@@ -94,7 +94,7 @@ class SimpleThermalGun(IsotropicGun):
         self.cfg_direction = '0,0,1.'
 
     def setDirection(self, dir):
-        self.cfg_position = f'{dir[0]}, {dir[1]}, {dir[2]}'
+        self.cfg_direction = f'{dir[0]}, {dir[1]}, {dir[2]}'
 
 
 class SurfaceSource(ConfigString):
