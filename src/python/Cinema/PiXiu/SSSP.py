@@ -64,7 +64,7 @@ class Pseudo():
            cell_dynamics = 'bfgs'
              /
             K_POINTS automatic
-            {kp0} {kp1} {kp2} 0 0 0\n"""
+            {kp0} {kp1} {kp2} 1 1 1\n"""
             return qe_control
 
         elif qeType==QEType.Scf:
@@ -93,7 +93,7 @@ class Pseudo():
                 mixing_beta = 0.3
              /
             K_POINTS automatic
-            {kp0} {kp1} {kp2} 0 0 0\n"""
+            {kp0} {kp1} {kp2} 1 1 1\n"""
             return qe_control
 
 
