@@ -229,7 +229,7 @@ class Hist1D(HistBase):
     
     def savefig(self, fname, title="Histogram", log = False):
         plt = self.plot(False, title=title, log = log)
-        plt.savefig(fname=fname)
+        plt.savefig(fname=fname, dpi=300)
         plt.close()
 
     def save(self, fn):
@@ -318,7 +318,7 @@ class Hist2D(HistBase):
             raise RunTimeError('fillnamy different size')
         _pt_Hist2D_fill_many(self.cobj, x.size, x, y, weight )
 
-    def plot(self, show=False, title=None, log=True, dynrange=1e-3):
+    def plot(self, show=False, title=None, log=True, logx=False, dynrange=1e-3):
         try:
             import matplotlib.pyplot as plt
             import matplotlib.colors as colors
@@ -335,6 +335,9 @@ class Hist2D(HistBase):
                 pcm = ax.pcolormesh(X, Y, H, cmap=plt.cm.jet, shading='auto')
 
             fig.colorbar(pcm, ax=ax)
+            if logx:
+                plt.xscale('log')
+
             plt.grid()
             plt.title((_pt_HistBase_getName(self.cobj).decode('utf-8') if title is None else title) + f', Weight {H.sum()}')
 
@@ -347,9 +350,9 @@ class Hist2D(HistBase):
         except Exception as e:
             print(e)
 
-    def savefig(self, fname, title="Histogram", log=False):
+    def savefig(self, fname, title="Histogram", log=True):
         plt = self.plot(False, title=title, log=log)
-        plt.savefig(fname=fname)
+        plt.savefig(fname=fname, dpi=300)
         plt.close()
 
 
