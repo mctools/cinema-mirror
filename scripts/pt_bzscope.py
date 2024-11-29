@@ -22,7 +22,7 @@ class MySim(PromptMPI):
         # mat = 'physics=idealElaScat;xs_barn=1;density_per_aa3=5;energy_transfer_eV=0.03'
         mat = "physics=ncrystal;nccfg='bzscope_ni_20K_c1c2.ncmat';scatter_bias=10.0;abs_bias=1.0;"
         # mat = 'bzscope_c1_vol_77K.ncmat;bragg=0'
-        sample = Volume("sample", Sphere(0, 10), matCfg=mat)
+        sample = Volume("sample", Sphere(0, 1), matCfg=mat)
         ms = MultiScatCounter()
         ms.make(sample)
         world.placeChild('samplePV', sample)
@@ -32,7 +32,7 @@ class MySim(PromptMPI):
         monitor = Volume("mon", Sphere(1499.99, 1500, starttheta=1.*deg, deltatheta=178*deg ))
         helper = DirectSqwHelper('sqw', self.mod_smp_dist, self.mean_ekin, [0,0,1.], [0,0,0],
                  qmin = 1e-1, qmax = 12, num_qbin = 200, 
-                 ekinmin=-0.01, ekinmax=0.07,  num_ebin = 200,
+                 ekinmin=-0.01, ekinmax=0.06,  num_ebin = 200,
                  pdg = 2112, groupID  = 0, ptstate = 'ENTRY')
         helper.make(monitor)
         helper.addScatterCounter(ms, 1)
@@ -71,7 +71,7 @@ sim.makeWorld()
 
 # sim.show(gun, 100)
 
-sim.simulate(gun, 1e7)
+sim.simulate(gun, 1e6)
 res = sim.gatherHistData('sqw')
 destination = 0
 if sim.rank==0:
