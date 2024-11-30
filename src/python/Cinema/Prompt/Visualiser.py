@@ -274,8 +274,7 @@ class PtPlotter(pv.Plotter):
 
             plane_clipped_mesh = _get_output(clipper)
             self.plane_clipped_meshes.append(plane_clipped_mesh)
-            if not isWorld:
-                self.clippers.append(clipper)
+            self.clippers.append(clipper)
 
         def callback(normal, loc):  # numpydoc ignore=GL08
             for clipper in self.clippers:
