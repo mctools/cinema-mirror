@@ -54,6 +54,7 @@ _pt_meshInfo = importFunc("pt_meshInfo", None,  [type_sizet, type_sizet, type_si
 _pt_getMesh = importFunc("pt_getMesh", None,  [type_sizet, type_sizet, type_npsbl2d, type_npszt1d, type_npszt1d])
 _pt_getMeshName = importFunc("pt_getMeshName", type_cstr,  [type_sizet])
 _pt_getLogVolumeInfo = importFunc("pt_getLogVolumeInfo", None, [type_sizet, type_cstr])
+_pt_getLogicalVolumeMaterialName = importFunc("pt_getLogicalVolumeMaterialName", type_cstr, [type_sizet])
 
 class Mesh():
     def __init__(self):
@@ -70,6 +71,10 @@ class Mesh():
 
     def getMeshName(self):
         return _pt_getMeshName(self.n).decode('utf-8')
+
+    def getMaterialName(self):
+        # print(_pt_getLogicalVolumeMaterialName(self.n).decode('utf-8'))
+        return _pt_getLogicalVolumeMaterialName(self.n).decode('utf-8')
 
     def getLogVolumeInfo(self):
         info = ctypes.create_string_buffer(2000) #fixme
