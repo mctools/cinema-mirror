@@ -16,6 +16,7 @@
 #include "VecGeom/volumes/UnplacedPolycone.h"
 #include "VecGeom/volumes/UnplacedTet.h"
 #include "VecGeom/volumes/UnplacedEllipsoid.h"
+#include "VecGeom/volumes/UnplacedBooleanVolume.h"
 
 #include "VecGeom/volumes/UnplacedVolume.h"
 #include "VecGeom/volumes/SpecializedTessellated.h"
@@ -281,6 +282,52 @@ unsigned pt_Volume_id(void* obj)
 double pt_Volume_capacity(void *obj)
 {
   return static_cast<vg::LogicalVolume *>(obj)->GetUnplacedVolume()->Capacity();
+}
+
+// obj_left and obj_right are unplaced
+// return an unplaced as well
+void* pt_solid_intersection(void* obj_left, void* obj_right, void* obj_right_transf)
+{
+  auto solid1 = static_cast<vg::VUnplacedVolume *>(obj_left);
+  auto lbox1 = new vg::LogicalVolume("solid_left", solid1);
+  auto pbox1 = lbox1->Place();
+
+  auto solid2 = static_cast<vg::VUnplacedVolume *>(obj_right);
+  auto lbox2 = new vg::LogicalVolume("solid_right", solid2);
+  auto transf = static_cast<const vg::Transformation3D *>(obj_right_transf);
+  auto pbox2 = lbox2->Place(transf);
+
+  return static_cast<void *> (new vg::UnplacedBooleanVolume<vg::kIntersection> (vg::kIntersection, pbox1, pbox2));
+}
+
+void* pt_solid_union(void* obj_left, void* obj_right, void* obj_right_transf)
+{
+  auto solid1 = static_cast<vg::VUnplacedVolume *>(obj_left);
+  auto lbox1 = new vg::LogicalVolume("solid_left", solid1);
+  auto pbox1 = lbox1->Place();
+
+  auto solid2 = static_cast<vg::VUnplacedVolume *>(obj_right);
+  auto lbox2 = new vg::LogicalVolume("solid_right", solid2);
+  auto transf = static_cast<const vg::Transformation3D *>(obj_right_transf);
+  auto pbox2 = lbox2->Place(transf);
+
+// enum BooleanOperation { kUnion, kIntersection, kSubtraction };
+  return static_cast<void *> (new vg::UnplacedBooleanVolume<vg::kUnion> (vg::kUnion, pbox1, pbox2));
+}
+
+void* pt_solid_subtraction(void* obj_left, void* obj_right, void* obj_right_transf)
+{
+  auto solid1 = static_cast<vg::VUnplacedVolume *>(obj_left);
+  auto lbox1 = new vg::LogicalVolume("solid_left", solid1);
+  auto pbox1 = lbox1->Place();
+
+  auto solid2 = static_cast<vg::VUnplacedVolume *>(obj_right);
+  auto lbox2 = new vg::LogicalVolume("solid_right", solid2);
+  auto transf = static_cast<const vg::Transformation3D *>(obj_right_transf);
+  auto pbox2 = lbox2->Place(transf);
+
+// enum BooleanOperation { kUnion, kIntersection, kSubtraction };
+  return static_cast<void *> (new vg::UnplacedBooleanVolume<vg::kSubtraction> (vg::kSubtraction, pbox1, pbox2));
 }
 
 

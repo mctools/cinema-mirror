@@ -16,7 +16,7 @@ class CellBase():
             self.abc = None
 
 
-    def estSupercellDim(self, size=10.):
+    def estSupercellDim(self, size=15.):
         res = (size//self.abc).astype(int)
         res[np.where(res==0)]=1
         return res

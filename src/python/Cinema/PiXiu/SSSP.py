@@ -30,6 +30,7 @@ class Pseudo():
     def linkvdWTable(self):
         if not os.path.isfile ('./vdW_kernel_table'):
             os.link(self.libpath+'/../vdW_kernel_table', './vdW_kernel_table')
+            os.link(self.libpath+'/../rVV10_kernel_table', './rVV10_kernel_table')
 
     def qe_input(self, qeType):
         if qeType==QEType.Relax:
@@ -41,6 +42,8 @@ class Pseudo():
                 pseudo_dir = {ppath}
                 disk_io = 'nowf'
                 prefix='out'
+                etot_conv_thr = 1.0D-5
+                forc_conv_thr = 1.0D-4
              /
              &system
                 ibrav = 0
@@ -53,11 +56,8 @@ class Pseudo():
                 {vdwOrmag}
              /
              &electrons
-                electron_maxstep=1000
                 conv_thr = 1.0d-12
                 mixing_beta = 0.3
-                mixing_mode = 'plain'
-                diagonalization= 'david'
             /
             &IONS
             ion_dynamics= 'bfgs'
@@ -66,7 +66,7 @@ class Pseudo():
            cell_dynamics = 'bfgs'
              /
             K_POINTS automatic
-            {kp0} {kp1} {kp2} 0 0 0\n"""
+            {kp0} {kp1} {kp2} 1 1 1\n"""
             return qe_control
 
         elif qeType==QEType.Scf:
@@ -74,6 +74,7 @@ class Pseudo():
                 calculation = 'scf'
                 restart_mode='from_scratch'
                 tprnfor = .true.
+                tstress = .true.
                 ! max_seconds = 36000.0
                 pseudo_dir = {ppath}
                 disk_io = 'nowf'
@@ -87,18 +88,14 @@ class Pseudo():
                 smearing='gauss'
                 degauss=0.02
                 ecutwfc = {ecutwfc}, ecutrho={ecutrho}
-                !input_dft  = 'vdw-df2'
                 {vdwOrmag}
              /
              &electrons
-                electron_maxstep=1000
                 conv_thr = 1.0d-12
                 mixing_beta = 0.3
-                mixing_mode = 'plain'
-                diagonalization= 'david'
              /
             K_POINTS automatic
-            {kp0} {kp1} {kp2} 0 0 0\n"""
+            {kp0} {kp1} {kp2} 1 1 1\n"""
             return qe_control
 
 
@@ -110,11 +107,13 @@ class Pseudo():
         atom_spec ="ATOMIC_SPECIES\n{}"
         vdwOrmag=None
         if vdW:
-            vdwOrmag = """input_dft  = 'vdw-df2'"""
+            vdwOrmag = """input_dft  = 'rvv10'"""
+            # vdwOrmag = """input_dft  = 'vdw-DF2'"""
+            # vdwOrmag = """vdw_corr  = 'MBD'"""
+
             self.linkvdWTable()
         else:
             vdwOrmag = """nspin = 2, starting_magnetization=1.0"""
-
 
 
         if qeType ==  QEType.Relax:

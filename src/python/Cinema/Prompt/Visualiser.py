@@ -214,10 +214,7 @@ class Visualiser():
         if self.blacklist is not None:
             if any(srchstr in name for srchstr in self.blacklist):
                 return None
-        name, points, faces = mesh.getMesh(nSegments)
-        if points.size==0:
-            return None
-        mesh = pv.PolyData(points, faces)
+        name, mesh = mesh.getMesh(nSegments)
         return mesh
 
     def callback(self, mesh):

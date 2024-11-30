@@ -44,6 +44,11 @@ _pt_Ellipsoid_new = importFunc('pt_Ellipsoid_new', type_voidp, [type_dbl, type_d
 #Tessellated
 _pt_Tessellated_new = importFunc('pt_Tessellated_new', type_voidp, [type_sizet, type_npint641d, type_npdbl2d] )
 
+#boolean operation
+_pt_solid_intersection = importFunc('pt_solid_intersection', type_voidp, [type_voidp, type_voidp, type_voidp])
+_pt_solid_union = importFunc('pt_solid_union', type_voidp, [type_voidp, type_voidp, type_voidp])
+_pt_solid_subtraction = importFunc('pt_solid_subtraction', type_voidp, [type_voidp, type_voidp, type_voidp])
+
 
 
 class Solid:
@@ -72,6 +77,23 @@ class Solid:
             p = np.array(p)
         p_c = p.astype(np.double)
         return p_c
+
+class SolidIntersection(Solid):
+    def __init__(self, left : Solid, right: Solid, right_transf3d):
+       self.cobj =  _pt_solid_intersection(left.cobj, right.cobj, right_transf3d.cobj)
+
+class SolidUnion(Solid):
+    def __init__(self, left : Solid, right: Solid, right_transf3d):
+       self.cobj =  _pt_solid_union(left.cobj, right.cobj, right_transf3d.cobj)
+
+class SolidSubtraction(Solid):
+    def __init__(self, left : Solid, right: Solid, right_transf3d):
+       self.cobj =  _pt_solid_subtraction(left.cobj, right.cobj, right_transf3d.cobj)
+
+
+# _pt_solid_union = importFunc('pt_solid_union', type_voidp, [type_voidp, type_voidp, type_voidp])
+# _pt_solid_subtraction = importFunc('pt_solid_subtraction', type_voidp, [type_voidp, type_voidp, type_voidp])
+
 
 class Box(Solid):
     def __init__(self, hx, hy, hz):
