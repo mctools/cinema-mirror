@@ -72,6 +72,11 @@ m_hashIndex(0)
     // The type of ENDF_MT can be found at https://t2.lanl.gov/nis/endf/mts.html
     std::cout << "Reaction " << i << ", ENDF_MT=" << reaction->ENDF_MT()  << std::endl;
   }
+
+  size_t totalBytes = m_mcprotare->memorySize();
+  double sizeInMB = static_cast<double>(totalBytes)/(1024.0*1024.0);
+  std::cout << "Estimated memory size of " << name << " instance: " << std::fixed << std::setprecision(5) << sizeInMB << " MB" << std::endl;
+
 }
 
 Prompt::GIDIModel::~GIDIModel()

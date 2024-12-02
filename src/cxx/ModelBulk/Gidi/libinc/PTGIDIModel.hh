@@ -57,8 +57,6 @@ namespace Prompt {
     virtual const SampledResult& sampleReaction(double ekin, const Vector &dir) const override;
 
   protected:
-    Vector randIsotropicDirection() const;
-    Vector randDirectionGivenScatterMu( double mu, const Vector& indir ) const;
 
     const GIDIFactory &m_factory;
     Launcher &m_launcher; 

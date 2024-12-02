@@ -39,7 +39,7 @@ m_map (new GIDI::Map::Map( m_ctrdata.getGidiMap(), *m_pops )),
 m_particles(new GIDI::Transporting::Particles()),
 m_construction(new GIDI::Construction::Settings ( GIDI::Construction::ParseMode::all, 
                                               GIDI::Construction::PhotoMode::nuclearAndAtomic )),
-m_domainHash(new MCGIDI::DomainHash ( 4000, 1e-8, 20 ) ),
+m_domainHash(new MCGIDI::DomainHash ( 4000, 1e-8, 200 ) ),
 m_smr1()
 { 
  
