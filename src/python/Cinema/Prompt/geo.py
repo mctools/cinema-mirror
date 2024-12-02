@@ -197,6 +197,8 @@ class Transformation3D:
         
 class Volume:
     scorerDict = {}
+    volume_list = []
+
     def __init__(self, volname, solid, matCfg=None, surfaceCfg=None):
         self.volname = volname
         # the type of self.solid is vecgeom::VUnplacedVolume 
@@ -220,6 +222,7 @@ class Volume:
 
         if surfaceCfg is not None:
             self.setSurface(surfaceCfg) 
+        self.__class__.volume_list.append(self)
 
     def __del__(self):
         # the memory should be managed by the Volume. 

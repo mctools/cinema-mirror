@@ -142,7 +142,7 @@ void pt_GidiSetting_setGammaTransport(void* obj, bool t);
 
 double pt_nccalNumDensity(const char *s);  
 
-
+void pt_merge_mcpl(const char* file_output, unsigned nfiles, const char ** files);
 #ifdef __cplusplus
 }
 #endif

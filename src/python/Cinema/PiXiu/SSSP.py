@@ -30,6 +30,7 @@ class Pseudo():
     def linkvdWTable(self):
         if not os.path.isfile ('./vdW_kernel_table'):
             os.link(self.libpath+'/../vdW_kernel_table', './vdW_kernel_table')
+            os.link(self.libpath+'/../rVV10_kernel_table', './rVV10_kernel_table')
 
     def qe_input(self, qeType):
         if qeType==QEType.Relax:
@@ -41,6 +42,8 @@ class Pseudo():
                 pseudo_dir = {ppath}
                 disk_io = 'nowf'
                 prefix='out'
+                etot_conv_thr = 1.0D-5
+                forc_conv_thr = 1.0D-4
              /
              &system
                 ibrav = 0
@@ -53,7 +56,6 @@ class Pseudo():
                 {vdwOrmag}
              /
              &electrons
-                electron_maxstep=1000
                 conv_thr = 1.0d-12
                 mixing_beta = 0.3
             /
@@ -105,11 +107,13 @@ class Pseudo():
         atom_spec ="ATOMIC_SPECIES\n{}"
         vdwOrmag=None
         if vdW:
-            vdwOrmag = """input_dft  = 'vrr10'"""
+            vdwOrmag = """input_dft  = 'rvv10'"""
+            # vdwOrmag = """input_dft  = 'vdw-DF2'"""
+            # vdwOrmag = """vdw_corr  = 'MBD'"""
+
             self.linkvdWTable()
         else:
             vdwOrmag = """nspin = 2, starting_magnetization=1.0"""
-
 
 
         if qeType ==  QEType.Relax:

@@ -278,9 +278,9 @@ class PromptMPI(Prompt):
         else:
           super().simulate(gun, num-batchSize*(self.size-1))
 
-    def show(self, gun, num : int = 0, mergeMesh=False, xscale=1.0, yscale=1.0, zscale=1.0):
+    def show(self, gun, num : int = 0, mergeMesh=False, xscale=1.0, yscale=1.0, zscale=1.0, byMat=False, addLegend=False, geoClip=False):
         if self.rank==0:
-            self.l.showWorld(gun, num, mergeMesh, xscale, yscale, zscale)
+            self.l.showWorld(gun, num, mergeMesh, xscale, yscale, zscale, byMat, addLegend=addLegend, geoClip=geoClip)
             self.comm.Barrier()
         else:
             self.comm.Barrier()

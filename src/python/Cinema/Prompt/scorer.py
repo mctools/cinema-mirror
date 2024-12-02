@@ -147,7 +147,7 @@ _pt_ScorerDirectSqw_new = importFunc('pt_ScorerDirectSqw_new', type_voidp, [type
                                                                             type_dbl, type_dbl, type_uint,
                                                                             type_uint, type_int, type_dbl, type_dbl,
                                                                             type_dbl, type_dbl, type_dbl,
-                                                                            type_dbl, type_dbl, type_dbl, type_int])
+                                                                            type_dbl, type_dbl, type_dbl, type_int, type_bool])
 
 _pt_ScorerPSD_new = importFunc('pt_ScorerPSD_new', type_voidp, [type_cstr, type_dbl, type_dbl, type_uint,
                                                                 type_dbl, type_dbl, type_uint,
@@ -157,8 +157,6 @@ _pt_addMultiScatter1D = importFunc('pt_addMultiScatter1D', None, [type_voidp, ty
 _pt_addMultiScatter2D = importFunc('pt_addMultiScatter2D', None, [type_voidp, type_voidp, type_int])
 
 _pt_KillerMCPL_new = importFunc('pt_KillerMCPL_new', type_voidp, [type_cstr, type_uint, type_int])
-
-
 class ScorerHelper:
     def __init__(self, name, min, max, numbin, pdg = 2112, ptstate = 'ENTRY', groupID=0) -> None:
         self.name = name
@@ -384,12 +382,13 @@ class DirectSqwHelper(ScorerHelper2D, MultiScatMixin2D):
     def __init__(self, name, mod_smp_dist, mean_ekin, mean_incident_dir=np.array([0,0,1]), sample_position=np.array([0,0,0]),
                  qmin = 1e-1, qmax = 10, num_qbin = 50, 
                  ekinmin=-0.1 , ekinmax=0.1,  num_ebin = 30,
-                 pdg = 2112, groupID  = 0, ptstate = 'ENTRY') -> None:
+                 pdg = 2112, groupID  = 0, logx=False, ptstate = 'ENTRY') -> None:
         super().__init__(name, qmin, qmax, num_qbin, ekinmin, ekinmax, num_ebin, pdg, ptstate, groupID)
         self.mod_smp_dist = mod_smp_dist
         self.mean_ekin = mean_ekin
         self.mean_incident_dir = mean_incident_dir
         self.sample_position = sample_position
+        self.logx = logx
 
     def make(self, vol):
         cobj = _pt_ScorerDirectSqw_new(
@@ -400,7 +399,7 @@ class DirectSqwHelper(ScorerHelper2D, MultiScatMixin2D):
             self.mod_smp_dist, self.mean_ekin,
             self.mean_incident_dir[0], self.mean_incident_dir[1], self.mean_incident_dir[2],
             self.sample_position[0], self.sample_position[1], self.sample_position[2],
-            self.ptsNum
+            self.ptsNum, self.logx
         )
         vol.addScorer(self, cobj)
         self.cobj = cobj
@@ -448,14 +447,21 @@ class KillMCPLHelper(MultiScatMixin1D):
         
         process_id = get_rank_id()
 
-        self.name = name+f'_pro{process_id}' if process_id else name
+        if process_id is None:
+            self.use_mpi=False
+        else:
+            self.use_mpi=True
+            self.name_mpi = name+f'_pro{process_id}' 
+
+        self.name = name
         self.pdg = pdg 
         self.groupID = groupID
 
     def make(self, vol):
-        cobj = _pt_KillerMCPL_new(self.name.encode('utf-8'), 
+        cobj = _pt_KillerMCPL_new(self.name_mpi.encode('utf-8') if self.use_mpi else self.name.encode('utf-8'), 
                                         self.pdg,
                                         self.groupID
                                         )
         vol.addScorer(self, cobj)
         self.cobj = cobj
+

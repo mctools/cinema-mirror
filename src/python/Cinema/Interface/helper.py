@@ -12,10 +12,10 @@ try:
     from pyfftw.interfaces import numpy_fft as fft
     import pyfftw
     pyfftw.interfaces.cache.enable()
-    print('using pyfftw for fft')
+    # print('using pyfftw for fft')
 except ImportError:
     from numpy import fft
-    print('using numpy for fft')
+    # print('using numpy for fft')
 
 #default units:
 #energy eV
