@@ -64,6 +64,9 @@ namespace Prompt {
     virtual double getCrossSection(double ekin) const ;
     virtual double getCrossSection(double ekin, const Vector &dir) const;
 
+    Vector randIsotropicDirection() const;
+    Vector randDirectionGivenScatterMu( double mu, const Vector& indir ) const;
+  
   protected:
     std::string m_modelName;
     ModelValidity m_modelvalid;
@@ -86,7 +89,6 @@ namespace Prompt {
     virtual ~PhysicsModel() = default;
 
     virtual const SampledResult& sampleReaction(double ekin, const Vector &dir) const = 0;
-  
   protected:
     mutable SampledResult m_res;
   };
