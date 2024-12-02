@@ -16,7 +16,7 @@ import numpy as np
 import os
 
 # plotStyle()
-def promptRun(cfg, energy, gidiThreshold = -5, 
+def promptRun(cfg, energy, gidiThreshold = -5, popsPath = None,
               numbin_en=100, loweredge=1e-5, upperedge=30e6,
               isGammaTransport=False, partnum = 1e5, setGidi= True,
               plot=False):
@@ -26,6 +26,8 @@ def promptRun(cfg, energy, gidiThreshold = -5,
     cdata.setGidiThreshold(gidiThreshold)
     cdata.setEnableGidiPowerIteration(False)
     cdata.setGammaTransport(isGammaTransport)
+    if not popsPath:
+        cdata.setGidiPops(popsPath)
 
     numbin_mu=10
 
