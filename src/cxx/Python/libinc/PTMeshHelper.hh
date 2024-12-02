@@ -46,6 +46,7 @@ size_t pt_countFullTreeNode();
 
 const char* pt_getMeshName(size_t pvolID);
 void pt_getLogVolumeInfo(size_t pvolID, char* cp);
+const char* pt_getLogicalVolumeMaterialName(size_t pvolID);
 void pt_meshInfo(size_t pvolID, size_t nSegments, size_t &npoints, size_t &nPlolygen, size_t &faceSize);
 void pt_generatePointCloud(size_t pvolID, size_t nPoint, double *points, double *normals);
 void pt_getMesh(size_t pvolID, size_t nSegments, float *points, size_t *NumPolygonPoints, size_t *faces);

@@ -48,7 +48,7 @@ TEST_CASE("H1")
     std::cout << v << std::endl;
   auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
 
-  auto model = gidifactory.createNeutronGIDIModel(isotopes, 1., 0. );
+  auto model = gidifactory.createNeutronGIDIModel(isotopes, 1., 1 );
   std::cout << "Info: model number " << model.size() << std::endl;
   CHECK(model.size()==2);
   int i = 0;
@@ -75,7 +75,7 @@ TEST_CASE("U235")
     std::cout << v << std::endl;
   auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
 
-  auto model = gidifactory.createNeutronGIDIModel(isotopes, 1., 0. );
+  auto model = gidifactory.createNeutronGIDIModel(isotopes, 1., 1. );
   std::cout << "Info: model number " << model.size() << std::endl;
   CHECK(model.size()==2);
   int i = 0;
