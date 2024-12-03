@@ -85,7 +85,8 @@ Prompt::GIDIModel::~GIDIModel()
   delete m_urr_info;
   delete m_input;
   
-  std::cout<<"Destructing GIDIModel " << m_modelName << ", energy between [" << m_modelvalid.minEkin << ", " << m_modelvalid.maxEkin << "]";
+  std::cout << std::scientific;  
+  std::cout<<"Destructing GIDIModel " << m_modelName << ", energy between [" << m_modelvalid.minEkin << ", " << m_modelvalid.maxEkin << "] eV";
   std::cout<< ", containing " << m_mcprotare->numberOfReactions() << " reactions" <<std::endl;
 }
 
