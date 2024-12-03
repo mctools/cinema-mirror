@@ -39,7 +39,7 @@ m_map (new GIDI::Map::Map( m_ctrdata.getGidiMap(), *m_pops )),
 m_particles(new GIDI::Transporting::Particles()),
 m_construction(new GIDI::Construction::Settings ( GIDI::Construction::ParseMode::all, 
                                               GIDI::Construction::PhotoMode::nuclearAndAtomic )),
-m_domainHash(new MCGIDI::DomainHash ( 4000, 1e-8, 200 ) ),
+m_domainHash(new MCGIDI::DomainHash ( 4000, 1e-8, 20 ) ),
 m_smr1()
 { 
  
@@ -108,6 +108,7 @@ double temperature, double bias, double elasticThreshold, double minEKin, double
     auto *gidiprotare =  (GIDI::Protare *) m_map->protare( *m_construction, *m_pops, "n", name, "", "", true, true ) ;
     // gdcomp->append(gidiprotare);
 
+    // making sure the gidiprotare is single, so that projectileEnergyMax can be called
     pt_assert_always(gidiprotare->numberOfProtares()==1);
 
     std::cout << "Using data file " << gidiprotare->realFileName() << std::endl;
@@ -129,13 +130,6 @@ double temperature, double bias, double elasticThreshold, double minEKin, double
         std::cout << " " << *iter;
     }
     std::cout << std::endl;
-
-
-        // std::string const &heatedCrossSection() const { return( m_heatedCrossSection ); }          /**< Returns the value of the *m_heatedCrossSection*. */
-        // std::string const &griddedCrossSection() const { return( m_griddedCrossSection ); }        /**< Returns the value of the *m_griddedCrossSection*. */
-        // std::string const &URR_probabilityTables() const { return( m_URR_probabilityTables ); }    /**< Returns the value of the *m_URR_probabilityTables*. */
-        // std::string const &heatedMultiGroup() const { return( m_heatedMultiGroup ); }              /**< Returns the value of the *m_heatedMultiGroup*. */
-        // std::string const &SnElasticUpScatter() const { return( m_SnElasticUpScatter ); }          /**< Returns the value of the *m_SnElasticUpScatter*. */
 
     GIDI::Styles::TemperatureInfos tempinfos = gidiprotare->temperatures();
     std::vector<double> availableTemp;
@@ -169,8 +163,10 @@ double temperature, double bias, double elasticThreshold, double minEKin, double
     double selectedTemp_K = selectedTempinfo.back().temperature().value()*Unit::MeV / const_boltzmann; 
     std::cout <<"The specified temperature is  " << temperature << " Kelvin, the selected data is at " << availableTemp[nearestIndex]  << " Kelvin\n";
 
-
-    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile().ID(), &gidiprotare->styles(), name, delay, 200.0 );
+   
+    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile().ID(), 
+                                  &gidiprotare->styles(), name, delay, 
+                                  static_cast<GIDI::ProtareSingle const &>( *gidiprotare).projectileEnergyMax());
     // MC.setNuclearPlusCoulombInterferenceOnly( true );
     MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
     // MC.set_ignoreENDF_MT5(true);
@@ -186,11 +182,6 @@ double temperature, double bias, double elasticThreshold, double minEKin, double
     int numberOfReactions = gidiprotare->numberOfReactions();
     std::cout <<"Isotope " << name << " has " << numberOfReactions << " reactions in total"<< "\n";
 
-
-    std::set<int> reactionsToExclude;
-    auto mcprotare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
-                                                                *m_particles, *m_domainHash, selectedTempinfo, reactionsToExclude );
-    gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_all", mcprotare, selectedTemp_K, bias, frac, elasticThreshold>0. ? elasticThreshold: minEKin, maxEKin));
     
     if(elasticThreshold>0.) {      
       std::set<int> nonElastic, elastic;
@@ -200,14 +191,29 @@ double temperature, double bias, double elasticThreshold, double minEKin, double
         if(gidiprotare->reaction(i)->ENDF_MT()==2)
         {
           elastic.emplace(i);
-          break;
+          // break;
+        }
+        else
+        {
+          nonElastic.emplace(i);
         }
       }
+
+      auto mcprotare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+                                                                  *m_particles, *m_domainHash, selectedTempinfo, nonElastic );
+      gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_elas", mcprotare, selectedTemp_K, bias, frac, elasticThreshold, maxEKin));
 
       
       auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
                                                                   *m_particles, *m_domainHash, selectedTempinfo, elastic );
-      gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_nonela", mcProtare_nonelastic, selectedTemp_K, bias, frac, 0, elasticThreshold));
+      gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_nonelas", mcProtare_nonelastic, selectedTemp_K, bias, frac, 0, maxEKin));
+    }
+    else {
+      std::set<int> excludeNone;
+      auto mcprotare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
+                                                                  *m_particles, *m_domainHash, selectedTempinfo, excludeNone );
+      gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_all", mcprotare, selectedTemp_K, bias, frac, elasticThreshold>0. ? elasticThreshold: minEKin, maxEKin));
+
     }
     delete gidiprotare;
   }
