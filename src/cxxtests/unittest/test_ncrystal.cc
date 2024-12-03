@@ -101,7 +101,8 @@ TEST_CASE("NCrystal scattering physics")
   nm.getComposition(10);
   // auto res = nm.decompose("Ge_sg227.ncmat");
   // auto res = nm.decompose("solid::B4C/2500gcm3/B_is_1.00_B10");
-  auto res = nm.decompose("solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11");
+  double temp=0.;
+  auto res = nm.decompose("solid::B4C/2500gcm3/B_is_0.95_B10_0.05_B11", temp);
 
   for(auto it=res.begin();it!=res.end();++it)
     std::cout << *it << std::endl;

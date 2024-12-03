@@ -196,12 +196,13 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
       
       // GIDI models 
       auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
-      auto isotopes = nm.decompose(cfgstr);
+      double temperature(0.);
+      auto isotopes = nm.decompose(cfgstr, temperature);
       for(const auto &v: isotopes)
         std::cout << v << std::endl;
 
       auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-      auto models = gidifactory.createNeutronGIDIModel(isotopes, 1., gidithreshold<=0.?0.:gidithreshold);
+      auto models = gidifactory.createNeutronGIDIModel(isotopes, temperature, 1., gidithreshold<=0.?0.:gidithreshold);
 
       for(const auto &v: models)
         m_discretModels->addPhysicsModel(v);
@@ -247,13 +248,14 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
 
       // GIDI models
       auto &nm = Prompt::Singleton<Prompt::MaterialDecomposer>::getInstance();
-      auto isotopes = nm.decompose(nccfg);
+      double temperature (0);
+      auto isotopes = nm.decompose(nccfg, temperature);
       for(const auto &v: isotopes)
         std::cout << v << std::endl;
 
 
       auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
-      auto models = gidifactory.createNeutronGIDIModel(isotopes, abs_bias, gidithreshold<=0.?0:gidithreshold);
+      auto models = gidifactory.createNeutronGIDIModel(isotopes, temperature, abs_bias, gidithreshold<=0.?0:gidithreshold);
 
       for(const auto &v: models)
         m_discretModels->addPhysicsModel(v);

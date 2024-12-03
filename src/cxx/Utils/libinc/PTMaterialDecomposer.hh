@@ -35,13 +35,12 @@ namespace Prompt {
     struct IsotopeComposition {
     unsigned Z;
     unsigned A;
-    double frac;
-    double temperature;
+    double frac;;
     std::string name;
 
     friend std::ostream& operator<<(std::ostream& os, const IsotopeComposition& self)
     {
-      os << self.Z << " " << self.A << " " << self.frac << " " << self.name << " " << self.temperature;
+      os << self.Z << " " << self.A << " " << self.frac << " " << self.name;
       return os;
     }
   };
@@ -51,7 +50,7 @@ namespace Prompt {
   class MaterialDecomposer {
   public:
     std::vector<IsotopeComposition> getComposition(int Z);
-    std::vector<IsotopeComposition> decompose(const std::string & str);
+    std::vector<IsotopeComposition> decompose(const std::string & str, double &temperature);
 
   private:
   

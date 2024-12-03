@@ -79,7 +79,8 @@ namespace Prompt {
 
   class GIDIFactory {
   public:
-    std::vector<std::shared_ptr<GIDIModel>> createNeutronGIDIModel(const std::vector<IsotopeComposition>& iso,  double bias=1. , 
+    std::vector<std::shared_ptr<GIDIModel>> createNeutronGIDIModel(const std::vector<IsotopeComposition>& iso,  double temperature,
+                            double bias=1. , 
                             double elasticThreshold=0,
                             double minEKin=0, double maxEKin=std::numeric_limits<double>::max()) const;
 
