@@ -145,13 +145,6 @@ Prompt::MaterialDecomposer::~MaterialDecomposer()
 std::vector<Prompt::IsotopeComposition> Prompt::MaterialDecomposer::decompose(const std::string & str)
 {
 
-  //   struct IsotopeComposition {
-  //   int Z;
-  //   int A;
-  //   double frac;
-  //   std::string name;
-  // };
-
   std::vector<IsotopeComposition> isocomp;
 
   // name 
@@ -159,6 +152,7 @@ std::vector<Prompt::IsotopeComposition> Prompt::MaterialDecomposer::decompose(co
 
   auto info = NCrystal::createInfo(matcfg);
   const NCrystal::Info::Composition & comp = info->getComposition();
+  double temperature = info->getTemperature().dbl();
 
   for(const NCrystal::Info::CompositionEntry &v : comp)
   {
@@ -177,7 +171,7 @@ std::vector<Prompt::IsotopeComposition> Prompt::MaterialDecomposer::decompose(co
         std::cout << ". A: " <<  com.data->A()
         << ", Z: " <<  com.data->Z()
         << ", number density: " << info->getNumberDensity().get()*com.fraction*v.fraction / Unit::Aa3  << std::endl;
-        isocomp.emplace_back(IsotopeComposition{ com.data->Z(), com.data->A(), com.fraction*v.fraction, atomdata.elementName()+std::to_string(com.data->A())  });
+        isocomp.emplace_back(IsotopeComposition{ com.data->Z(), com.data->A(), com.fraction*v.fraction, temperature, atomdata.elementName()+std::to_string(com.data->A())  });
       }      
     }
     else if(atomdata.isNaturalElement())

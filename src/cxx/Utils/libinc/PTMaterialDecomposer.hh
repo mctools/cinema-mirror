@@ -36,11 +36,12 @@ namespace Prompt {
     unsigned Z;
     unsigned A;
     double frac;
+    double temperature;
     std::string name;
 
     friend std::ostream& operator<<(std::ostream& os, const IsotopeComposition& self)
     {
-      os << self.Z << " " << self.A << " " << self.frac << " " << self.name ;
+      os << self.Z << " " << self.A << " " << self.frac << " " << self.name << " " << self.temperature;
       return os;
     }
   };
