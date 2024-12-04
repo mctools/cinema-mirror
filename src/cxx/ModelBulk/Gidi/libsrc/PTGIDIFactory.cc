@@ -201,18 +201,18 @@ double temperature, double bias, double elasticThreshold, double minEKin, double
 
       auto mcprotare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
                                                                   *m_particles, *m_domainHash, selectedTempinfo, nonElastic );
-      gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_elas", mcprotare, selectedTemp_K, bias, frac, elasticThreshold, maxEKin));
+      gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, "n_"+name+"_elas", mcprotare, selectedTemp_K, bias, frac, elasticThreshold, maxEKin));
 
       
       auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
                                                                   *m_particles, *m_domainHash, selectedTempinfo, elastic );
-      gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_nonelas", mcProtare_nonelastic, selectedTemp_K, bias, frac, 0, maxEKin));
+      gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, "n_"+name+"_nonelas", mcProtare_nonelastic, selectedTemp_K, bias, frac, 0, maxEKin));
     }
     else {
       std::set<int> excludeNone;
       auto mcprotare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
                                                                   *m_particles, *m_domainHash, selectedTempinfo, excludeNone );
-      gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_all", mcprotare, selectedTemp_K, bias, frac, elasticThreshold>0. ? elasticThreshold: minEKin, maxEKin));
+      gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, "n_"+name+"_all", mcprotare, selectedTemp_K, bias, frac, elasticThreshold>0. ? elasticThreshold: minEKin, maxEKin));
 
     }
     delete gidiprotare;
@@ -227,9 +227,6 @@ std::vector<std::shared_ptr<Prompt::GIDIModel>> Prompt::GIDIFactory::createPhoto
 double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelastic, double maxEKinNonelastic) const
 {
   std::vector<std::shared_ptr<GIDIModel>> gidimodels;
-  MCGIDI::Vector<MCGIDI::Protare *> protares(vecComp.size());
-  std::vector<std::tuple<std::shared_ptr<MCGIDI::ProtareSingle>, std::string, double, double>> singleProtares;
-
 
   // fixme: make shared pointer map to cache MCGIDI::ProtareSingle for repeated isotopes
   // the key should be the label (i.e. iter->heatedCrossSection()) plus the  isotope name
@@ -277,12 +274,13 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
 
     double selectedTemp_K = temperatures[0].temperature().value()*Unit::MeV / const_boltzmann; 
 
-    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile().ID(), &gidiprotare->styles(), label, delay, 20.0 );
+    MCGIDI::Transporting::MC MC ( *m_pops, gidiprotare->projectile().ID(), &gidiprotare->styles(), label, delay, 150.0 );
     // MC.setNuclearPlusCoulombInterferenceOnly( true );
     MC.sampleNonTransportingParticles( m_ctrdata.getGidiSampleNTP() );
     // MC.set_ignoreENDF_MT5(true);
     MC.want_URR_probabilityTables(false);
     MC.setThrowOnError( false );
+
    
     // if( gidiprotare->protareType() != GIDI::ProtareType::single ) {
     //     PROMPT_THROW(CalcError, "ProtareType must be single");
@@ -292,16 +290,10 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     int numberOfReactions = gidiprotare->numberOfReactions();
     std::cout <<"Isotope " << name << " has " << numberOfReactions << " reactions in total"<< "\n";
 
-
-    // if( gidiprotare.protareType() == GIDI::ProtareType::single ) 
-    // auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
-    //                                                             *m_particles, *m_domainHash, temperatures, elastic );
-
-    // else if( gidiprotare.protareType() == GIDI::ProtareType::composite ) {
-    auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareComposite> ( *m_smr1, static_cast<GIDI::ProtareComposite const &>( *gidiprotare ), *m_pops, MC, 
+    auto g_mcProtare = std::make_shared<MCGIDI::ProtareComposite> ( *m_smr1, static_cast<GIDI::ProtareComposite const &>( *gidiprotare ), *m_pops, MC, 
                                                                 *m_particles, *m_domainHash, temperatures, exc );
 
-    gidimodels.emplace_back(std::make_shared<GIDIModel>(const_photon_pgd, name, mcProtare_nonelastic, selectedTemp_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
+    gidimodels.emplace_back(std::make_shared<GIDIModel>(const_photon_pgd, "g_"+name, g_mcProtare, selectedTemp_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
 
     delete gidiprotare;
   }

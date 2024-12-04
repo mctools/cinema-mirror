@@ -30,7 +30,7 @@ cdata.setGammaTransport(True)
 # U235, URR_domainMin 0.002251MeV,  URR_domainMax 0.024999MeV.
 # energy = [.002251e6, .024999e6]
 
-energy = [1e6, 6e6]
+# energy = [1e6, 6e6]
 # energy = [1e5, 10e5]
 # energy = [1e4, 10e4]
 # energy = [1e3, 10e3]
@@ -38,7 +38,7 @@ energy = [1e6, 6e6]
 # energy = [1e1, 10e1]
 # energy = [1, 10]
 # energy = [1e-1, 10e-1]
-# energy=10e6
+energy=6e6
 
 partnum = 1e6
 loweredge=1e-5
@@ -46,7 +46,7 @@ upperedge=70e6
 
 numbin_en=300
 numbin_mu=30
-radius_mm = 1e-4
+radius_mm = 1e-3
 hlen_mm = 1e20
 # #########################################################
 
@@ -54,12 +54,12 @@ hlen_mm = 1e20
 
 # cfg='freegas::Si/18gcm3'
 
-# cfg='freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'
+cfg='freegas::U/18.8gcm3/U_is_0.3000_U238_0.7000_U235;temp=293.6'
 # cfg='freegas::H2O/1gcm3/H_is_H1/O_is_O16;temp=293.6'
 # cfg='freegas::H/1gcm3/H_is_H1;temp=293.6'
 # cfg='freegas::O/1gcm3/O_is_O16'
 
-cfg='freegas::C/18gcm3/C_is_C13'
+# cfg='freegas::C/18gcm3/C_is_C13'
 # cfg='freegas::Bi/18gcm3'
 # cfg='freegas::U/1.8gcm3/U_is_U238'
 # cfg='freegas::U/1.8gcm3/U_is_U235'
