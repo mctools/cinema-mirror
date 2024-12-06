@@ -33,6 +33,53 @@
 
 namespace pt = Prompt;
 
+void configTestData()
+{
+  auto &cdata = Prompt::Singleton<Prompt::GidiSetting>::getInstance();
+
+  cdata.setEnableGidi(true);
+  const char* envVar = std::getenv("CINEMAPATH");
+  std::cout << envVar << std::endl;
+  const std::string cpath(envVar);
+  const std::string fmap = cpath + "/testdata/all.map";
+  cdata.setGidiMap(fmap);
+  const std::string fpop = cpath + "/testdata/pops.xml";
+  cdata.setGidiPops(fpop);
+}
+
+void configTestData();
+
+TEST_CASE("GIDIfactory")
+{
+  auto &cdata = Prompt::Singleton<Prompt::GidiSetting>::getInstance();
+  
+  std::cout << "GidiSetting info: " << std::endl;
+  std::cout << "  " << cdata.getGidiMap() << std::endl;
+  std::cout << "  " << cdata.getGidiPops() << std::endl;
+  auto isotope = Prompt::IsotopeComposition{4, 7, 1., "Be7"};
+  auto isotopes = {isotope};
+  for(const auto& v : isotopes)
+    std::cout << v << std::endl;
+  auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
+
+  auto model = gidifactory.createNeutronGIDIModel(isotopes, 300, 1., 0.);
+  std::cout << "Info: model number " << model.size() << std::endl;
+  CHECK(model.size()==1);
+
+  pt::Vector in(1,0,0);
+  int i = 0;
+  for(auto v: model)
+  {
+    std::cout.precision(15);
+    std::cout << "Info: xs " << v->getCrossSection(1e6) * 1e24 << std::endl; // in cm^2
+    CHECK(Prompt::floateq(v->getCrossSection(1e6) * 1e24, 296.096663564745484));
+    auto res = v->sampleReaction(1e6, in);
+    std::cout << "Sampled result: " << int(res.dispeared) << std::endl; // in MeV
+    CHECK(Prompt::floateq(float(res.dispeared), 1.));
+  }
+}
+
+
 TEST_CASE("H1")
 {
   std::vector<double> expectedXS;
@@ -40,8 +87,8 @@ TEST_CASE("H1")
   std::cout.precision(15);
   auto &cdata = Prompt::Singleton<Prompt::GidiSetting>::getInstance();
   std::cout << "GidiSetting info: " << std::endl;
-  std::cout << cdata.getGidiMap() << std::endl;
-  std::cout << cdata.getGidiPops() << std::endl;
+  std::cout << "  " << cdata.getGidiMap() << std::endl;
+  std::cout << "  " << cdata.getGidiPops() << std::endl;
   auto isotope = Prompt::IsotopeComposition{1, 1, 1., "H1"};
   auto isotopes = {isotope};
   for(const auto& v : isotopes)
@@ -60,32 +107,34 @@ TEST_CASE("H1")
   }
 }
 
+// // Too heavy test data for U235
+// TEST_CASE("U235")
+// {
+//   std::vector<double> expectedXS;
+//   expectedXS = {1.26423125537086e-21, 7.99475113325076e-21};
+//   auto &cdata = Prompt::Singleton<Prompt::GidiSetting>::getInstance();
+//   std::cout << "GidiSetting info: " << std::endl;
+//   std::cout << cdata.getGidiMap() << std::endl;
+//   std::cout << cdata.getGidiPops() << std::endl;
+//   auto isotope = Prompt::IsotopeComposition{235, 92, 1., "U235"};
+//   auto isotopes = {isotope};
+//   for(const auto& v : isotopes)
+//     std::cout << v << std::endl;
+//   auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
 
-TEST_CASE("U235")
-{
-  std::vector<double> expectedXS;
-  expectedXS = {1.26423125537086e-21, 7.99475113325076e-21};
-  auto &cdata = Prompt::Singleton<Prompt::GidiSetting>::getInstance();
-  std::cout << "GidiSetting info: " << std::endl;
-  std::cout << cdata.getGidiMap() << std::endl;
-  std::cout << cdata.getGidiPops() << std::endl;
-  auto isotope = Prompt::IsotopeComposition{235, 92, 1., "U235"};
-  auto isotopes = {isotope};
-  for(const auto& v : isotopes)
-    std::cout << v << std::endl;
-  auto &gidifactory = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
+//   auto model = gidifactory.createNeutronGIDIModel(isotopes, 300, 1., 1. );
+//   std::cout << "Info: model number " << model.size() << std::endl;
+//   CHECK(model.size()==2);
+//   int i = 0;
+//   for(auto v: model)
+//   {
+//     std::cout << "Info: xs " << v->getCrossSection(1.) << std::endl;
+//     CHECK(Prompt::floateq(v->getCrossSection(1.), expectedXS[i]));
+//     i++;
+//   }
+// }
 
-  auto model = gidifactory.createNeutronGIDIModel(isotopes, 300, 1., 1. );
-  std::cout << "Info: model number " << model.size() << std::endl;
-  CHECK(model.size()==2);
-  int i = 0;
-  for(auto v: model)
-  {
-    std::cout << "Info: xs " << v->getCrossSection(1.) << std::endl;
-    CHECK(Prompt::floateq(v->getCrossSection(1.), expectedXS[i]));
-    i++;
-  }
-}
+
   // auto &fac = Prompt::Singleton<Prompt::GIDIFactory>::getInstance();  
   // std::shared_ptr<Prompt::GIDIModel> gidimodel = fac.createNeutronGIDIModel("u235");
   // double ekin(1e6);
