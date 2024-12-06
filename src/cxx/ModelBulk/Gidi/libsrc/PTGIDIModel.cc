@@ -144,16 +144,16 @@ const Prompt::SampledResult& Prompt::GIDIModel::sampleReaction(double ekin, cons
 
   m_products->clear();
   reaction->sampleProducts( m_mcprotare.get(), ekin_MeV, *m_input, getRandNumber, nullptr, *m_products );
-
   pt_assert_always(m_input->m_reaction==reaction);
 
   double totalekin = 0;
+  //   std::cout << "Reaction label: " << reaction->label().c_str() << " " << reaction->ENDF_MT()<<std::endl;
   for( std::size_t i = 0; i < m_products->size( ); i++ ) 
   {
     MCGIDI::Sampling::Product &aproduct = (*m_products)[i];
-    // std::cout << reaction->ENDF_MT() << ", id " << i <<  ", aproduct " <<  aproduct.m_productIndex << ", " << aproduct.m_kineticEnergy*1e6 << std::endl;
-
-    if (aproduct.m_productIndex==11 ||  aproduct.m_productIndex==8) //neutron 11 or gamma 8
+    // std::cout << reaction->ENDF_MT() << ", id " << i <<  ", aproduct " <<  aproduct.m_productIndex << ", " << aproduct.m_kineticEnergy*1e6;
+    // std::cout << ", user product index: " << aproduct.m_userProductIndex << std::endl;
+    if (aproduct.m_userProductIndex==const_neutron_pgd || aproduct.m_userProductIndex==const_photon_pgd) //neutron 11 or gamma 8
     {
      
       double gidi_ekin_ev = aproduct.m_kineticEnergy*1e6;
@@ -165,14 +165,20 @@ const Prompt::SampledResult& Prompt::GIDIModel::sampleReaction(double ekin, cons
       // make secondary
       const Particle & primary = m_launcher.getCurrentParticle(); 
       // m_launcher.copyCurrentParticle(primary); 
-      if(aproduct.m_productIndex==11)
+      if(aproduct.m_userProductIndex==const_neutron_pgd)
       {
+        #ifdef DEBUG
+          pt_assert_always(aproduct.m_productIndex==m_factory.getPoPs()["n"]);
+        #endif
         Neutron sec(gidi_ekin_ev, gidi_dir, primary.getPosition());
         sec.setTime(primary.getTime() + aproduct.m_birthTimeSec);
         secondaries.push_back(sec);
       }
-      else if(aproduct.m_productIndex==8)
+      else if(aproduct.m_userProductIndex==const_photon_pgd)
       {
+        #ifdef DEBUG
+          pt_assert_always(aproduct.m_productIndex==m_factory.getPoPs()["photon"]);
+        #endif
         Photon sec(gidi_ekin_ev, gidi_dir, primary.getPosition());
         sec.setTime(primary.getTime() + aproduct.m_birthTimeSec);
         if(m_factory.getGidiSetting().getGammaTransport() )

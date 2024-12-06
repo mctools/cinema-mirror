@@ -92,7 +92,7 @@ namespace Prompt {
     int getHashID(double energy) const;
     bool available() const;
     GidiSetting &getGidiSetting() const {return m_ctrdata;};
-
+    const PoPI::Database &getPoPs() const {return *m_pops;};
     inline bool NCrystal4Elastic(double ekin) const 
     {
       return ekin < m_ctrdata.getGidiThreshold();

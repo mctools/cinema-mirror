@@ -45,8 +45,6 @@ m_smr1()
  
   GIDI::Transporting::Particle neutron(PoPI::IDs::neutron, GIDI::Transporting::Mode::MonteCarloContinuousEnergy);
   m_particles->add(neutron);
-  pt_assert_always((*m_pops)["n"] == 11);
- 
   if(m_ctrdata.getGammaTransport())
   {
     GIDI::Transporting::Particle photon( PoPI::IDs::photon, GIDI::Transporting::Mode::MonteCarloContinuousEnergy );
@@ -190,6 +188,12 @@ double temperature, double bias, double elasticThreshold, double minEKin, double
     std::set<int> reactionsToExclude;
     auto mcprotare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
                                                                 *m_particles, *m_domainHash, selectedTempinfo, reactionsToExclude );
+
+    // customize neutron index to consistent with pdg, neutron_pdg = 2112
+    mcprotare->setUserParticleIndex(mcprotare->neutronIndex(), const_neutron_pgd);
+    if(m_ctrdata.getGammaTransport())
+      mcprotare->setUserParticleIndex(mcprotare->photonIndex(), const_photon_pgd);
+
     gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, name+"_all", mcprotare, selectedTemp_K, bias, frac, elasticThreshold>0. ? elasticThreshold: minEKin, maxEKin));
     
     if(elasticThreshold>0.) {      
@@ -294,6 +298,9 @@ double bias, double minEKinElastic, double maxEKinElastic, double minEKinNonelas
     // else if( gidiprotare.protareType() == GIDI::ProtareType::composite ) {
     auto mcProtare_nonelastic = std::make_shared<MCGIDI::ProtareComposite> ( *m_smr1, static_cast<GIDI::ProtareComposite const &>( *gidiprotare ), *m_pops, MC, 
                                                                 *m_particles, *m_domainHash, temperatures, exc );
+
+    // customize photon index to consistent with pdg, photon_pdg = 22
+    mcProtare_nonelastic->setUserParticleIndex(mcProtare_nonelastic->photonIndex(), const_photon_pgd);
 
     gidimodels.emplace_back(std::make_shared<GIDIModel>(const_photon_pgd, name, mcProtare_nonelastic, selectedTemp_K, bias, frac, minEKinNonelastic, maxEKinNonelastic));
 
