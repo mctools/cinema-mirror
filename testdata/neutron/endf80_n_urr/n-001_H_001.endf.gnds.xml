@@ -1,0 +1,1212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reactionSuite projectile="n" target="H1" evaluation="ENDF/B-8.0" format="2.0" projectileFrame="lab" interaction="nuclear">
+  <externalFiles>
+    <externalFile label="HDF" path="HDF5/n-001_H_001.endf.gnds.h5" checksum="08c0c3f6212315b21943efbcf08212ffd5231cc5" algorithm="sha1"/></externalFiles>
+  <styles>
+    <evaluated label="eval" date="2016-07-01" library="ENDF/B" version="8.0.5">
+      <documentation>
+        <authors>
+          <author name="G.M.Hale"></author></authors>
+        <dates>
+          <date value="2016-07-01" dateType="created"/></dates>
+        <title><![CDATA[ENDF-6 file from ENDF/B version 8.0.5 translated to GNDS by FUDGE.]]></title>
+        <body><![CDATA[See the endfCompatible section.]]></body>
+        <endfCompatible><![CDATA[  1-H -  1 LANL       EVAL-JUL16 G.M.Hale
+ NDS 148, 1 (2018)    DIST-FEB18                       20170124
+----ENDF/B-VIII.0     MATERIAL  125
+-----INCIDENT NEUTRON DATA
+------ENDF-6 FORMAT
+
+ ****************************************************************
+The new R-matrix analysis of the N-N system on which the ENDF/B-
+VII evaluation for 1H is based differs from the previous one use
+for ENDF/B-VI in several respects. Firstly, the n-p capture
+reaction (MT=102), and its inverse, deuteron photo-
+disintegration, were a part of the analysis, rather than added
+later as before. The analysis used a new method for including
+photon channels in R-matrix theory [1], which gave a better
+description of the E1 transitions, in particular.  The data for
+these reactions are mostly integrated and differential cross
+sections, but some information about polarizations was also
+included.  The thermal capture cross section was taken to be
+332.0 mb, as was the recommendation from preliminary data
+testing. Good agreement was obtained with recent cross-section
+measurements [2,3] by astrophysical groups in the 20-550 keV
+range, as well as with earlier measurements that had been done
+mostly as photo-disintegration experiments at energies below 14
+MeV.
+The new analysis includes several additional measurements of the
+total cross section (MT=1).  The evaluated cross section
+deviates at most by about -0.5% around 10 MeV from that of
+ENDF/B-VI.  The estimated uncertainty of the MT=1 cross section
+is given at 2 MeV steps in the following table:
+           En             Uncert. (%)
+            0                0.20
+            2                0.22
+            4                0.30
+            6                0.36
+            8                0.44
+           10                0.50
+           12                0.49
+           14                0.46
+           16                0.40
+           18                0.35
+           20                0.30
+
+For n-p scattering (MT=2), new information was included about the
+low-energy cross sections (MF=3) and about the angular
+distributions (MF=4).  A new measurement of the angular
+distribution at 10 MeV [4], plus corrections to earlier data at
+14 MeV, moved the back-angle asymmetry in the 10-14 MeV range to
+values that lie between those obtained for ENDF/B-V and ENDF/B-
+VI.  The addition of the latest value of the thermal coherent
+scattering length [5] had the interesting effect of reducing the
+"zero-energy" scattering cross section somewhat to agree
+perfectly with an earlier measurement by Houk [6], and disagree
+with the later, more precise, value of Dilg [7].  The
+covariances for MT=2 will be added later, but the uncertainties
+on the integrated cross section should be similar to those
+listed above for the total cross section.
+
+REFERENCES
+
+[1] G. M. Hale and A. S. Johnson, Proc. 17th Int. IUPAP Conf. on
+    Few-Body Problems in Physics, 5-10 June 2003, Durham NC, W.
+    Gloeckle and W. Tornow,  eds., Elsevier B.V., pp. S120-S122
+   (2004).
+[2] T. S. Suzuki et al., Astrophys. Lett. 449, L59 (1995).
+[3] Y. Nagai et al., Phys. Rev. C 56, 3173 (1997).
+[4] N. Boukharouba et al., Phys. Rev. C 65, 014004 (2002).
+[5] K. Schoen et al., Phys. Rev. C 67, 044005 (2003).
+[6] T. L. Houk, Phys. Rev. C 3, 1886 (1971).
+[7] W. Dilg, Phys. Rev. C 11, 103 (1975).
+ ****************************************************************
+
+Covariances were adopted from COMMARA-2.0 library in July 2011.
+These covariances were obtained at LANL by full scale R-matrix
+analysis of more than 5000 experimental data (chi-square/degree
+of freedom of 0.83). [1] The major channel in this case is elastic
+scattering, often labeled also as ''n-p'' scattering. Elastic
+scattering serves as neutron cross section standard from 1 keV to
+20 MeV, with cross sections well determined. Uncertainties for
+elastic scattering rise from values well below 1%, reach maximum
+at about 8 MeV, then gradually decrease with increasing energy.
+In addition to elastic scattering, covariances are supplied for
+radiative capture.
+
+REFERENCES
+[1] G. M. Hale, "Covariances from light-element R-matrix
+analyses," Nuclear Data Sheets, 109, 2812 (2008).
+ ****************************************************************]]></endfCompatible></documentation>
+      <temperature value="0" unit="K"/>
+      <projectileEnergyDomain min="1e-11" max="20" unit="MeV"/></evaluated>
+    <averageProductData label="apd" derivedFrom="eval" date="2024-10-06"></averageProductData>
+    <MonteCarlo_cdf label="MonteCarlo_cdf" derivedFrom="apd" date="2024-10-06"></MonteCarlo_cdf>
+    <heated label="heated_000" derivedFrom="MonteCarlo_cdf" date="2024-10-06">
+      <documentation>
+        <dates>
+          <date value="2024-10-06" dateType="created"/></dates>
+        <computerCodes>
+          <computerCode label="processProtare.py" name="processProtare.py" version="6.7">
+            <executionArguments><![CDATA[--pid n --noLazyParse --exit 9999 --tag proc -o SRC --writeConvertedUnits --energyUnit MeV --CoulombPlusNuclearMuCutOff 0.94 --doNotAddNuclearPlusInterference -t 2.154332575e-08 -t 2.5300481760800003e-08 -t 5.17039818e-08 -t 7.755597269999999e-08 -t 1.034079636e-07 -t 2.154332575e-07 --temperatureUnit MeV/k --legendreMax 9 -mg -up --skipMultiGroupSums -mc --hybrid --formatVersion 2.0 --cullProcessedData --threads 1 --reconAccuracy 0.001 --restart --prefixRecon recon --prefixMuCutoff muCutoff --prefixAEP apd --prefixHeated heated --prefixMultiGroup MultiGroup --prefixMonteCarlo MonteCarlo --prefixUpScatter UpScatter ./gdns/n-001_H_001.endf.xml]]></executionArguments>
+            <note><![CDATA[Code processProtare.py executed by caixx on platform da-node01.]]></note></computerCode></computerCodes></documentation>
+      <temperature value="2.154332575e-8" unit="MeV/k"/></heated>
+    <griddedCrossSection label="MonteCarlo_000" derivedFrom="heated_000" date="2024-10-06">
+      <grid index="1" label="energy_in" unit="MeV" style="points">
+        <values href="HDF#/dData" startIndex="0" count="641"/></grid></griddedCrossSection>
+    <heated label="heated_001" derivedFrom="MonteCarlo_cdf" date="2024-10-06">
+      <temperature value="2.53004817608e-8" unit="MeV/k"/></heated>
+    <griddedCrossSection label="MonteCarlo_001" derivedFrom="heated_001" date="2024-10-06">
+      <grid index="1" label="energy_in" unit="MeV" style="points">
+        <values href="HDF#/dData" startIndex="641" count="642"/></grid></griddedCrossSection>
+    <heated label="heated_002" derivedFrom="MonteCarlo_cdf" date="2024-10-06">
+      <temperature value="5.17039818e-8" unit="MeV/k"/></heated>
+    <griddedCrossSection label="MonteCarlo_002" derivedFrom="heated_002" date="2024-10-06">
+      <grid index="1" label="energy_in" unit="MeV" style="points">
+        <values href="HDF#/dData" startIndex="1283" count="648"/></grid></griddedCrossSection>
+    <heated label="heated_003" derivedFrom="MonteCarlo_cdf" date="2024-10-06">
+      <temperature value="7.75559727e-8" unit="MeV/k"/></heated>
+    <griddedCrossSection label="MonteCarlo_003" derivedFrom="heated_003" date="2024-10-06">
+      <grid index="1" label="energy_in" unit="MeV" style="points">
+        <values href="HDF#/dData" startIndex="1931" count="648"/></grid></griddedCrossSection>
+    <heated label="heated_004" derivedFrom="MonteCarlo_cdf" date="2024-10-06">
+      <temperature value="1.034079636e-7" unit="MeV/k"/></heated>
+    <griddedCrossSection label="MonteCarlo_004" derivedFrom="heated_004" date="2024-10-06">
+      <grid index="1" label="energy_in" unit="MeV" style="points">
+        <values href="HDF#/dData" startIndex="2579" count="647"/></grid></griddedCrossSection>
+    <heated label="heated_005" derivedFrom="MonteCarlo_cdf" date="2024-10-06">
+      <temperature value="2.154332575e-7" unit="MeV/k"/></heated>
+    <griddedCrossSection label="MonteCarlo_005" derivedFrom="heated_005" date="2024-10-06">
+      <grid index="1" label="energy_in" unit="MeV" style="points">
+        <values href="HDF#/dData" startIndex="3226" count="657"/></grid></griddedCrossSection></styles>
+  <PoPs name="protare_internal" version="1.0" format="2.0">
+    <aliases>
+      <alias id="d" pid="h2"/></aliases>
+    <gaugeBosons>
+      <gaugeBoson id="photon">
+        <mass>
+          <double label="eval" value="0." unit="amu"/></mass>
+        <spin>
+          <fraction label="eval" value="1" unit="hbar"/></spin>
+        <parity>
+          <integer label="eval" value="1"/></parity>
+        <charge>
+          <integer label="eval" value="0" unit="e"/></charge>
+        <halflife>
+          <string label="eval" value="stable" unit="s"/></halflife></gaugeBoson></gaugeBosons>
+    <baryons>
+      <baryon id="n">
+        <mass>
+          <double label="eval" value="1.00866491574" unit="amu"/></mass>
+        <spin>
+          <fraction label="eval" value="1/2" unit="hbar"/></spin>
+        <parity>
+          <integer label="eval" value="1"/></parity>
+        <charge>
+          <integer label="eval" value="0" unit="e"/></charge>
+        <halflife>
+          <double label="eval" value="881.5" unit="s"/></halflife></baryon>
+      <baryon id="p">
+        <mass>
+          <double label="eval" value="1.00727646662" unit="amu"/></mass>
+        <spin>
+          <fraction label="eval" value="1/2" unit="hbar"/></spin>
+        <parity>
+          <integer label="eval" value="1"/></parity>
+        <charge>
+          <integer label="eval" value="1" unit="e"/></charge>
+        <halflife>
+          <string label="eval" value="stable" unit="s"/></halflife></baryon></baryons>
+    <chemicalElements>
+      <chemicalElement symbol="H" Z="1" name="Hydrogen">
+        <isotopes>
+          <isotope symbol="H1" A="1">
+            <nuclides>
+              <nuclide id="H1">
+                <mass>
+                  <double label="eval" value="1.00782500046" unit="amu"/></mass>
+                <charge>
+                  <integer label="eval" value="0" unit="e"/></charge>
+                <nucleus id="h1" index="0">
+                  <mass>
+                    <double label="eval" value="1.00727646662" unit="amu"/></mass>
+                  <spin>
+                    <fraction label="eval" value="1/2" unit="hbar"/></spin>
+                  <parity>
+                    <integer label="eval" value="1"/></parity>
+                  <charge>
+                    <integer label="eval" value="1" unit="e"/></charge>
+                  <halflife>
+                    <string label="eval" value="stable" unit="s"/></halflife>
+                  <energy>
+                    <double label="eval" value="0." unit="MeV"/></energy></nucleus></nuclide></nuclides></isotope>
+          <isotope symbol="H2" A="2">
+            <nuclides>
+              <nuclide id="H2">
+                <mass>
+                  <double label="eval" value="2.01410195518" unit="amu"/></mass>
+                <charge>
+                  <integer label="eval" value="0" unit="e"/></charge>
+                <nucleus id="h2" index="0">
+                  <mass>
+                    <double label="eval" value="2.01355321275" unit="amu"/></mass>
+                  <spin>
+                    <fraction label="eval" value="1" unit="hbar"/></spin>
+                  <parity>
+                    <integer label="eval" value="1"/></parity>
+                  <charge>
+                    <integer label="eval" value="1" unit="e"/></charge>
+                  <halflife>
+                    <string label="eval" value="stable" unit="s"/></halflife>
+                  <energy>
+                    <double label="eval" value="0." unit="MeV"/></energy></nucleus></nuclide></nuclides></isotope></isotopes></chemicalElement></chemicalElements></PoPs>
+  <resonances>
+    <scatteringRadius>
+      <constant1d label="eval" value="12.75246" domainMin="1e-11" domainMax="0.1">
+        <axes>
+          <axis index="1" label="energy_in" unit="MeV"/>
+          <axis index="0" label="radius" unit="fm"/></axes></constant1d></scatteringRadius></resonances>
+  <reactions>
+    <reaction label="n + H1" ENDF_MT="2">
+      <crossSection>
+        <XYs1d label="eval">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="3883" count="306"/></XYs1d>
+        <XYs1d label="heated_000">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="4189" count="660"/></XYs1d>
+        <Ys1d label="MonteCarlo_000">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_000']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="4849" count="641"/></Ys1d>
+        <XYs1d label="heated_001">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="5490" count="668"/></XYs1d>
+        <Ys1d label="MonteCarlo_001">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_001']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="6158" count="642"/></Ys1d>
+        <XYs1d label="heated_002">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="6800" count="704"/></XYs1d>
+        <Ys1d label="MonteCarlo_002">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_002']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="7504" count="648"/></Ys1d>
+        <XYs1d label="heated_003">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="8152" count="726"/></XYs1d>
+        <Ys1d label="MonteCarlo_003">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_003']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="8878" count="648"/></Ys1d>
+        <XYs1d label="heated_004">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="9526" count="738"/></XYs1d>
+        <Ys1d label="MonteCarlo_004">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_004']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="10264" count="647"/></Ys1d>
+        <XYs1d label="heated_005">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="10911" count="782"/></XYs1d>
+        <Ys1d label="MonteCarlo_005">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_005']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="11693" count="657"/></Ys1d></crossSection>
+      <outputChannel genre="twoBody">
+        <Q>
+          <constant1d label="eval" value="0" domainMin="1e-11" domainMax="20">
+            <axes>
+              <axis index="1" label="energy_in" unit="MeV"/>
+              <axis index="0" label="Q" unit="MeV"/></axes></constant1d></Q>
+        <products>
+          <product pid="n" label="n">
+            <multiplicity>
+              <constant1d label="eval" value="1" domainMin="1e-11" domainMax="20">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="multiplicity" unit=""/></axes></constant1d></multiplicity>
+            <distribution>
+              <angularTwoBody label="eval" productFrame="centerOfMass">
+                <XYs2d>
+                  <axes>
+                    <axis index="2" label="energy_in" unit="MeV"/>
+                    <axis index="1" label="mu" unit=""/>
+                    <axis index="0" label="P(mu|energy_in)" unit=""/></axes>
+                  <function1ds>
+                    <Legendre outerDomainValue="1e-11"><values href="HDF#/dData" startIndex="12350" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2e-11"><values href="HDF#/dData" startIndex="12357" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5e-11"><values href="HDF#/dData" startIndex="12364" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1e-10"><values href="HDF#/dData" startIndex="12371" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2e-10"><values href="HDF#/dData" startIndex="12378" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5e-10"><values href="HDF#/dData" startIndex="12385" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1e-9"><values href="HDF#/dData" startIndex="12392" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2e-9"><values href="HDF#/dData" startIndex="12399" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5e-9"><values href="HDF#/dData" startIndex="12406" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1e-8"><values href="HDF#/dData" startIndex="12413" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2.53e-8"><values href="HDF#/dData" startIndex="12420" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1e-7"><values href="HDF#/dData" startIndex="12427" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2e-7"><values href="HDF#/dData" startIndex="12434" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5e-7"><values href="HDF#/dData" startIndex="12441" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1e-6"><values href="HDF#/dData" startIndex="12448" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2e-6"><values href="HDF#/dData" startIndex="12455" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5e-6"><values href="HDF#/dData" startIndex="12462" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1e-5"><values href="HDF#/dData" startIndex="12469" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2e-5"><values href="HDF#/dData" startIndex="12476" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5e-5"><values href="HDF#/dData" startIndex="12483" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1e-4"><values href="HDF#/dData" startIndex="12490" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2e-4"><values href="HDF#/dData" startIndex="12497" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5e-4"><values href="HDF#/dData" startIndex="12504" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1e-3"><values href="HDF#/dData" startIndex="12511" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2e-3"><values href="HDF#/dData" startIndex="12518" count="7"/></Legendre>
+                    <Legendre outerDomainValue="3e-3"><values href="HDF#/dData" startIndex="12525" count="7"/></Legendre>
+                    <Legendre outerDomainValue="4e-3"><values href="HDF#/dData" startIndex="12532" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5e-3"><values href="HDF#/dData" startIndex="12539" count="7"/></Legendre>
+                    <Legendre outerDomainValue="6e-3"><values href="HDF#/dData" startIndex="12546" count="7"/></Legendre>
+                    <Legendre outerDomainValue="7e-3"><values href="HDF#/dData" startIndex="12553" count="7"/></Legendre>
+                    <Legendre outerDomainValue="8e-3"><values href="HDF#/dData" startIndex="12560" count="7"/></Legendre>
+                    <Legendre outerDomainValue="9e-3"><values href="HDF#/dData" startIndex="12567" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1e-2"><values href="HDF#/dData" startIndex="12574" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.012"><values href="HDF#/dData" startIndex="12581" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.014"><values href="HDF#/dData" startIndex="12588" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.016"><values href="HDF#/dData" startIndex="12595" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.018"><values href="HDF#/dData" startIndex="12602" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2e-2"><values href="HDF#/dData" startIndex="12609" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.022"><values href="HDF#/dData" startIndex="12616" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.024"><values href="HDF#/dData" startIndex="12623" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.026"><values href="HDF#/dData" startIndex="12630" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.028"><values href="HDF#/dData" startIndex="12637" count="7"/></Legendre>
+                    <Legendre outerDomainValue="3e-2"><values href="HDF#/dData" startIndex="12644" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.035"><values href="HDF#/dData" startIndex="12651" count="7"/></Legendre>
+                    <Legendre outerDomainValue="4e-2"><values href="HDF#/dData" startIndex="12658" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.045"><values href="HDF#/dData" startIndex="12665" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5e-2"><values href="HDF#/dData" startIndex="12672" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.055"><values href="HDF#/dData" startIndex="12679" count="7"/></Legendre>
+                    <Legendre outerDomainValue="6e-2"><values href="HDF#/dData" startIndex="12686" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.065"><values href="HDF#/dData" startIndex="12693" count="7"/></Legendre>
+                    <Legendre outerDomainValue="7e-2"><values href="HDF#/dData" startIndex="12700" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.075"><values href="HDF#/dData" startIndex="12707" count="7"/></Legendre>
+                    <Legendre outerDomainValue="8e-2"><values href="HDF#/dData" startIndex="12714" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.085"><values href="HDF#/dData" startIndex="12721" count="7"/></Legendre>
+                    <Legendre outerDomainValue="9e-2"><values href="HDF#/dData" startIndex="12728" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.095"><values href="HDF#/dData" startIndex="12735" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.1"><values href="HDF#/dData" startIndex="12742" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.11"><values href="HDF#/dData" startIndex="12749" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.12"><values href="HDF#/dData" startIndex="12756" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.13"><values href="HDF#/dData" startIndex="12763" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.14"><values href="HDF#/dData" startIndex="12770" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.15"><values href="HDF#/dData" startIndex="12777" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.16"><values href="HDF#/dData" startIndex="12784" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.17"><values href="HDF#/dData" startIndex="12791" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.18"><values href="HDF#/dData" startIndex="12798" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.19"><values href="HDF#/dData" startIndex="12805" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.2"><values href="HDF#/dData" startIndex="12812" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.22"><values href="HDF#/dData" startIndex="12819" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.24"><values href="HDF#/dData" startIndex="12826" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.26"><values href="HDF#/dData" startIndex="12833" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.28"><values href="HDF#/dData" startIndex="12840" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.3"><values href="HDF#/dData" startIndex="12847" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.32"><values href="HDF#/dData" startIndex="12854" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.34"><values href="HDF#/dData" startIndex="12861" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.36"><values href="HDF#/dData" startIndex="12868" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.38"><values href="HDF#/dData" startIndex="12875" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.4"><values href="HDF#/dData" startIndex="12882" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.42"><values href="HDF#/dData" startIndex="12889" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.44"><values href="HDF#/dData" startIndex="12896" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.46"><values href="HDF#/dData" startIndex="12903" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.48"><values href="HDF#/dData" startIndex="12910" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.5"><values href="HDF#/dData" startIndex="12917" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.55"><values href="HDF#/dData" startIndex="12924" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.6"><values href="HDF#/dData" startIndex="12931" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.65"><values href="HDF#/dData" startIndex="12938" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.7"><values href="HDF#/dData" startIndex="12945" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.75"><values href="HDF#/dData" startIndex="12952" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.8"><values href="HDF#/dData" startIndex="12959" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.85"><values href="HDF#/dData" startIndex="12966" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.9"><values href="HDF#/dData" startIndex="12973" count="7"/></Legendre>
+                    <Legendre outerDomainValue="0.95"><values href="HDF#/dData" startIndex="12980" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1"><values href="HDF#/dData" startIndex="12987" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1.1"><values href="HDF#/dData" startIndex="12994" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1.2"><values href="HDF#/dData" startIndex="13001" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1.3"><values href="HDF#/dData" startIndex="13008" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1.4"><values href="HDF#/dData" startIndex="13015" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1.5"><values href="HDF#/dData" startIndex="13022" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1.6"><values href="HDF#/dData" startIndex="13029" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1.7"><values href="HDF#/dData" startIndex="13036" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1.8"><values href="HDF#/dData" startIndex="13043" count="7"/></Legendre>
+                    <Legendre outerDomainValue="1.9"><values href="HDF#/dData" startIndex="13050" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2"><values href="HDF#/dData" startIndex="13057" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2.2"><values href="HDF#/dData" startIndex="13064" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2.4"><values href="HDF#/dData" startIndex="13071" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2.6"><values href="HDF#/dData" startIndex="13078" count="7"/></Legendre>
+                    <Legendre outerDomainValue="2.8"><values href="HDF#/dData" startIndex="13085" count="7"/></Legendre>
+                    <Legendre outerDomainValue="3"><values href="HDF#/dData" startIndex="13092" count="7"/></Legendre>
+                    <Legendre outerDomainValue="3.2"><values href="HDF#/dData" startIndex="13099" count="7"/></Legendre>
+                    <Legendre outerDomainValue="3.4"><values href="HDF#/dData" startIndex="13106" count="7"/></Legendre>
+                    <Legendre outerDomainValue="3.6"><values href="HDF#/dData" startIndex="13113" count="7"/></Legendre>
+                    <Legendre outerDomainValue="3.8"><values href="HDF#/dData" startIndex="13120" count="7"/></Legendre>
+                    <Legendre outerDomainValue="4"><values href="HDF#/dData" startIndex="13127" count="7"/></Legendre>
+                    <Legendre outerDomainValue="4.2"><values href="HDF#/dData" startIndex="13134" count="7"/></Legendre>
+                    <Legendre outerDomainValue="4.4"><values href="HDF#/dData" startIndex="13141" count="7"/></Legendre>
+                    <Legendre outerDomainValue="4.6"><values href="HDF#/dData" startIndex="13148" count="7"/></Legendre>
+                    <Legendre outerDomainValue="4.8"><values href="HDF#/dData" startIndex="13155" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5"><values href="HDF#/dData" startIndex="13162" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5.2"><values href="HDF#/dData" startIndex="13169" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5.4"><values href="HDF#/dData" startIndex="13176" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5.6"><values href="HDF#/dData" startIndex="13183" count="7"/></Legendre>
+                    <Legendre outerDomainValue="5.8"><values href="HDF#/dData" startIndex="13190" count="7"/></Legendre>
+                    <Legendre outerDomainValue="6"><values href="HDF#/dData" startIndex="13197" count="7"/></Legendre>
+                    <Legendre outerDomainValue="6.2"><values href="HDF#/dData" startIndex="13204" count="7"/></Legendre>
+                    <Legendre outerDomainValue="6.4"><values href="HDF#/dData" startIndex="13211" count="7"/></Legendre>
+                    <Legendre outerDomainValue="6.6"><values href="HDF#/dData" startIndex="13218" count="7"/></Legendre>
+                    <Legendre outerDomainValue="6.8"><values href="HDF#/dData" startIndex="13225" count="7"/></Legendre>
+                    <Legendre outerDomainValue="7"><values href="HDF#/dData" startIndex="13232" count="7"/></Legendre>
+                    <Legendre outerDomainValue="7.5"><values href="HDF#/dData" startIndex="13239" count="7"/></Legendre>
+                    <Legendre outerDomainValue="8"><values href="HDF#/dData" startIndex="13246" count="7"/></Legendre>
+                    <Legendre outerDomainValue="8.5"><values href="HDF#/dData" startIndex="13253" count="7"/></Legendre>
+                    <Legendre outerDomainValue="9"><values href="HDF#/dData" startIndex="13260" count="7"/></Legendre>
+                    <Legendre outerDomainValue="9.5"><values href="HDF#/dData" startIndex="13267" count="7"/></Legendre>
+                    <Legendre outerDomainValue="10"><values href="HDF#/dData" startIndex="13274" count="7"/></Legendre>
+                    <Legendre outerDomainValue="10.5"><values href="HDF#/dData" startIndex="13281" count="7"/></Legendre>
+                    <Legendre outerDomainValue="11"><values href="HDF#/dData" startIndex="13288" count="7"/></Legendre>
+                    <Legendre outerDomainValue="11.5"><values href="HDF#/dData" startIndex="13295" count="7"/></Legendre>
+                    <Legendre outerDomainValue="12"><values href="HDF#/dData" startIndex="13302" count="7"/></Legendre>
+                    <Legendre outerDomainValue="12.5"><values href="HDF#/dData" startIndex="13309" count="7"/></Legendre>
+                    <Legendre outerDomainValue="13"><values href="HDF#/dData" startIndex="13316" count="7"/></Legendre>
+                    <Legendre outerDomainValue="13.5"><values href="HDF#/dData" startIndex="13323" count="7"/></Legendre>
+                    <Legendre outerDomainValue="14"><values href="HDF#/dData" startIndex="13330" count="7"/></Legendre>
+                    <Legendre outerDomainValue="14.5"><values href="HDF#/dData" startIndex="13337" count="7"/></Legendre>
+                    <Legendre outerDomainValue="15"><values href="HDF#/dData" startIndex="13344" count="7"/></Legendre>
+                    <Legendre outerDomainValue="15.5"><values href="HDF#/dData" startIndex="13351" count="7"/></Legendre>
+                    <Legendre outerDomainValue="16"><values href="HDF#/dData" startIndex="13358" count="7"/></Legendre>
+                    <Legendre outerDomainValue="16.5"><values href="HDF#/dData" startIndex="13365" count="7"/></Legendre>
+                    <Legendre outerDomainValue="17"><values href="HDF#/dData" startIndex="13372" count="7"/></Legendre>
+                    <Legendre outerDomainValue="17.5"><values href="HDF#/dData" startIndex="13379" count="7"/></Legendre>
+                    <Legendre outerDomainValue="18"><values href="HDF#/dData" startIndex="13386" count="7"/></Legendre>
+                    <Legendre outerDomainValue="18.5"><values href="HDF#/dData" startIndex="13393" count="7"/></Legendre>
+                    <Legendre outerDomainValue="19"><values href="HDF#/dData" startIndex="13400" count="7"/></Legendre>
+                    <Legendre outerDomainValue="19.5"><values href="HDF#/dData" startIndex="13407" count="7"/></Legendre>
+                    <Legendre outerDomainValue="20"><values href="HDF#/dData" startIndex="13414" count="7"/></Legendre></function1ds></XYs2d></angularTwoBody>
+              <angularTwoBody label="MonteCarlo_cdf" productFrame="centerOfMass">
+                <XYs2d>
+                  <axes>
+                    <axis index="2" label="energy_in" unit="MeV"/>
+                    <axis index="1" label="mu" unit=""/>
+                    <axis index="0" label="P(mu|energy_in)" unit=""/></axes>
+                  <function1ds>
+                    <xs_pdf_cdf1d outerDomainValue="1e-11"><xs><values>-1 1</values></xs><pdf><values>0.500000000000018 0.499999999999982</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-11"><xs><values>-1 1</values></xs><pdf><values>0.500000000000035 0.499999999999965</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-11"><xs><values>-1 1</values></xs><pdf><values>0.500000000000087 0.499999999999913</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-10"><xs><values>-1 1</values></xs><pdf><values>0.500000000000175 0.499999999999825</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-10"><xs><values>-1 1</values></xs><pdf><values>0.500000000000349 0.499999999999651</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-10"><xs><values>-1 1</values></xs><pdf><values>0.500000000000873 0.499999999999127</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-9"><xs><values>-1 1</values></xs><pdf><values>0.500000000001745 0.499999999998255</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-9"><xs><values>-1 1</values></xs><pdf><values>0.500000000003491 0.499999999996509</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-9"><xs><values>-1 1</values></xs><pdf><values>0.500000000008727 0.499999999991273</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-8"><xs><values>-1 1</values></xs><pdf><values>0.500000000017455 0.499999999982545</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2.53e-8"><xs><values>-1 1</values></xs><pdf><values>0.500000000044161 0.499999999955839</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-7"><xs><values>-1 1</values></xs><pdf><values>0.500000000174547 0.499999999825452</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-7"><xs><values>-1 1</values></xs><pdf><values>0.500000000349095 0.499999999650905</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-7"><xs><values>-1 1</values></xs><pdf><values>0.500000000872736 0.499999999127264</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-6"><xs><values>-1 1</values></xs><pdf><values>0.500000001745472 0.499999998254528</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-6"><xs><values>-1 1</values></xs><pdf><values>0.500000003490938 0.499999996509062</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-6"><xs><values>-1 1</values></xs><pdf><values>0.500000008727306 0.499999991272694</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-5"><xs><values>-1 1</values></xs><pdf><values>0.50000001745448 0.49999998254552</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-5"><xs><values>-1 1</values></xs><pdf><values>0.50000003490848 0.49999996509152</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-5"><xs><values>-1 1</values></xs><pdf><values>0.50000008726748 0.49999991273252</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-4"><xs><values>-1 1</values></xs><pdf><values>0.500000174522749 0.499999825477251</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-4"><xs><values>-1 1</values></xs><pdf><values>0.500000348996299 0.499999651003701</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-4"><xs><values>-1 1</values></xs><pdf><values>0.500000872124297 0.499999127875703</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-3"><xs><values>-1 1</values></xs><pdf><values>0.500001743029993 0.499998256970007</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-3"><xs><values>-1 1</values></xs><pdf><values>0.500003481202988 0.499996518797012</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3e-3"><xs><values>-1 1</values></xs><pdf><values>0.500005214541486 0.499994785458514</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4e-3"><xs><values>-1 1</values></xs><pdf><values>0.500006943070989 0.499993056929011</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-3"><xs><values>-1 1</values></xs><pdf><values>0.500008666812499 0.499991333187501</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6e-3"><xs><values>-1 1</values></xs><pdf><values>0.500010385785516 0.499989614214484</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="7e-3"><xs><values>-1 1</values></xs><pdf><values>0.500012100014044 0.499987899985956</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="8e-3"><xs><values>-1 1</values></xs><pdf><values>0.500013809517583 0.499986190482417</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="9e-3"><xs><values>-1 1</values></xs><pdf><values>0.500015514320136 0.499984485679864</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-2"><xs><values>-1 1</values></xs><pdf><values>0.500017214435204 0.499982785564796</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.012"><xs><values>-1 1</values></xs><pdf><values>0.500020600700393 0.499979399299607</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.014"><xs><values>-1 1</values></xs><pdf><values>0.500023968485665 0.499976031514335</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.016"><xs><values>-1 1</values></xs><pdf><values>0.500027317941036 0.499972682058964</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.018"><xs><values>-1 1</values></xs><pdf><values>0.50003064924652 0.49996935075348</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-2"><xs><values>-1 1</values></xs><pdf><values>0.500033962537135 0.499966037462865</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.022"><xs><values>-1 1</values></xs><pdf><values>0.500037257977896 0.499962742022104</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.024"><xs><values>-1 1</values></xs><pdf><values>0.500040535733821 0.499959464266179</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.026"><xs><values>-1 1</values></xs><pdf><values>0.500043795954926 0.499956204045074</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.028"><xs><values>-1 1</values></xs><pdf><values>0.500047038776229 0.499952961223771</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3e-2"><xs><values>-1 1</values></xs><pdf><values>0.500050264377747 0.499949735622253</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.035"><xs><values>-1 1</values></xs><pdf><values>0.500058253952608 0.499941746047393</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4e-2"><xs><values>-1 1</values></xs><pdf><values>0.500066139024224 0.499933860975776</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.045"><xs><values>-1 1</values></xs><pdf><values>0.500073921857903 0.499926078142097</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-2"><xs><values>-1 1</values></xs><pdf><values>0.500081604628962 0.499918395371038</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.055"><xs><values>-1 1</values></xs><pdf><values>0.500089189497732 0.499910810502268</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6e-2"><xs><values>-1 1</values></xs><pdf><values>0.500096678519555 0.499903321480445</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.065"><xs><values>-1 1</values></xs><pdf><values>0.50010407374978 0.49989592625022</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="7e-2"><xs><values>-1 1</values></xs><pdf><values>0.500111377198773 0.499888622801227</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.075"><xs><values>-1 1</values></xs><pdf><values>0.500118590786906 0.499881409213094</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="8e-2"><xs><values>-1 1</values></xs><pdf><values>0.50012571643456 0.49987428356544</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.085"><xs><values>-1 1</values></xs><pdf><values>0.500132755987127 0.499867244012873</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="9e-2"><xs><values>-1 1</values></xs><pdf><values>0.500139711275007 0.499860288724993</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.095"><xs><values>-1 1</values></xs><pdf><values>0.50014658408361 0.49985341591639</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.1"><xs><values>-1 1</values></xs><pdf><values>0.500153376108353 0.499846623891647</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.11"><xs><values>-1 1</values></xs><pdf><values>0.500166724737966 0.499833275262034</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.12"><xs><values>-1 1</values></xs><pdf><values>0.500179770247334 0.499820229752666</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.13"><xs><values>-1 1</values></xs><pdf><values>0.500192525240066 0.499807474759934</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.14"><xs><values>-1 1</values></xs><pdf><values>0.500205001869871 0.499794998130129</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.15"><xs><values>-1 1</values></xs><pdf><values>0.500217211390551 0.499782788609449</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.16"><xs><values>-1 1</values></xs><pdf><values>0.50022916505601 0.49977083494399</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.17"><xs><values>-1 1</values></xs><pdf><values>0.500240873520225 0.499759126479775</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.18"><xs><values>-1 1</values></xs><pdf><values>0.500252346837257 0.499747653162742</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.19"><xs><values>-1 1</values></xs><pdf><values>0.50026359461124 0.49973640538876</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.2"><xs><values>-1 1</values></xs><pdf><values>0.500274626446372 0.499725373553628</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.22"><xs><values>-1 1</values></xs><pdf><values>0.500296077117205 0.499703922882795</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.24"><xs><values>-1 1</values></xs><pdf><values>0.500316766534548 0.499683233465452</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.26"><xs><values>-1 1</values></xs><pdf><values>0.500336756684023 0.499663243315977</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.28"><xs><values>-1 1</values></xs><pdf><values>0.500356105351968 0.499643894648032</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.3"><xs><values>-1 1</values></xs><pdf><values>0.500374865525338 0.499625134474662</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.32"><xs><values>-1 1</values></xs><pdf><values>0.500393086591653 0.499606913408347</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.34"><xs><values>-1 1</values></xs><pdf><values>0.500410814338905 0.499589185661095</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.36"><xs><values>-1 1</values></xs><pdf><values>0.50042809095551 0.49957190904449</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.38"><xs><values>-1 1</values></xs><pdf><values>0.500444956080265 0.499555043919735</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.4"><xs><values>-1 1</values></xs><pdf><values>0.500461446052277 0.499538553947723</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.42"><xs><values>-1 1</values></xs><pdf><values>0.500477595110954 0.499522404889046</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.44"><xs><values>-1 1</values></xs><pdf><values>0.500493435095956 0.499506564904044</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.46"><xs><values>-1 1</values></xs><pdf><values>0.500508995597171 0.499491004402829</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.48"><xs><values>-1 1</values></xs><pdf><values>0.500524304104656 0.499475695895344</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.5"><xs><values>-1 1</values></xs><pdf><values>0.500539386608638 0.499460613391362</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.55"><xs><values>-1 1</values></xs><pdf><values>0.500576257893836 0.499423742106164</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.6"><xs><values>-1 1</values></xs><pdf><values>0.500612198594457 0.499387801405542</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.65"><xs><values>-1 1</values></xs><pdf><values>0.500647494048425 0.499352505951575</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.7"><xs><values>-1 1</values></xs><pdf><values>0.500682386995978 0.499317613004022</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.75"><xs><values>-1 1</values></xs><pdf><values>0.500717084928475 0.499282915071525</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.8"><xs><values>-1 1</values></xs><pdf><values>0.500751765487855 0.499248234512145</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.85"><xs><values>-1 1</values></xs><pdf><values>0.500786580965756 0.499213419034244</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.9"><xs><values>-1 1</values></xs><pdf><values>0.500821662202491 0.499178337797509</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.95"><xs><values>-1 1</values></xs><pdf><values>0.500857121737645 0.499142878262355</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1"><xs><values>-1 1</values></xs><pdf><values>0.500893056358395 0.499106943641605</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.1"><xs><values>-1 1</values></xs><pdf><values>0.500966672892644 0.499033327107356</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.2"><xs><values>-1 1</values></xs><pdf><values>0.501043047548345 0.498956952451655</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.3"><xs><values>-1 1</values></xs><pdf><values>0.501122574711101 0.498877425288899</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.4"><xs><values>-1 1</values></xs><pdf><values>0.501205540849229 0.498794459150771</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.5"><xs><values>-1 1</values></xs><pdf><values>0.501292149704043 0.498707850295956</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.6"><xs><values>-1 1</values></xs><pdf><values>0.501382541330481 0.498617458669519</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.7"><xs><values>-1 1</values></xs><pdf><values>0.501476805739228 0.498523194260773</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.8"><xs><values>-1 1</values></xs><pdf><values>0.501574993239734 0.498425006760266</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.9"><xs><values>-1 1</values></xs><pdf><values>0.501677125531762 0.498322874468238</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2"><xs><values>-1 1</values></xs><pdf><values>0.501783197351113 0.498216802648887</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2.2"><xs><values>-1 1</values></xs><pdf><values>0.502007050309318 0.497992949690682</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2.4"><xs><values>-1 1</values></xs><pdf><values>0.502246201786993 0.497753798213007</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2.6"><xs><values>-1 1</values></xs><pdf><values>0.502500137297398 0.497499862702602</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2.8"><xs><values>-1 1</values></xs><pdf><values>0.502768250078265 0.497231749921735</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3"><xs><values>-1 1</values></xs><pdf><values>0.503049869469403 0.496950130530597</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3.2"><xs><values href="HDF#/dData" startIndex="13421" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13424" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13427" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3.4"><xs><values href="HDF#/dData" startIndex="13430" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13433" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13436" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3.6"><xs><values href="HDF#/dData" startIndex="13439" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13442" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13445" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3.8"><xs><values href="HDF#/dData" startIndex="13448" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13451" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13454" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4"><xs><values href="HDF#/dData" startIndex="13457" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13460" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13463" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4.2"><xs><values href="HDF#/dData" startIndex="13466" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13469" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13472" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4.4"><xs><values href="HDF#/dData" startIndex="13475" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13478" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13481" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4.6"><xs><values href="HDF#/dData" startIndex="13484" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13487" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13490" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4.8"><xs><values href="HDF#/dData" startIndex="13493" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13496" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13499" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5"><xs><values href="HDF#/dData" startIndex="13502" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13505" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13508" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5.2"><xs><values href="HDF#/dData" startIndex="13511" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13514" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13517" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5.4"><xs><values href="HDF#/dData" startIndex="13520" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13523" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13526" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5.6"><xs><values href="HDF#/dData" startIndex="13529" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13532" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13535" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5.8"><xs><values href="HDF#/dData" startIndex="13538" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13541" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13544" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6"><xs><values href="HDF#/dData" startIndex="13547" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13550" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13553" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6.2"><xs><values href="HDF#/dData" startIndex="13556" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13559" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13562" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6.4"><xs><values href="HDF#/dData" startIndex="13565" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13568" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13571" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6.6"><xs><values href="HDF#/dData" startIndex="13574" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13577" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13580" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6.8"><xs><values href="HDF#/dData" startIndex="13583" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13586" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13589" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="7"><xs><values href="HDF#/dData" startIndex="13592" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13595" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13598" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="7.5"><xs><values href="HDF#/dData" startIndex="13601" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13604" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13607" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="8"><xs><values href="HDF#/dData" startIndex="13610" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13613" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13616" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="8.5"><xs><values href="HDF#/dData" startIndex="13619" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13622" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13625" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="9"><xs><values>-1 1</values></xs><pdf><values>0.514529710901551 0.485470289098449</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="9.5"><xs><values href="HDF#/dData" startIndex="13628" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13631" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13634" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="10"><xs><values href="HDF#/dData" startIndex="13637" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13640" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13643" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="10.5"><xs><values href="HDF#/dData" startIndex="13646" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="13649" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="13652" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="11"><xs><values href="HDF#/dData" startIndex="13655" count="4"/></xs><pdf><values href="HDF#/dData" startIndex="13659" count="4"/></pdf><cdf><values href="HDF#/dData" startIndex="13663" count="4"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="11.5"><xs><values href="HDF#/dData" startIndex="13667" count="4"/></xs><pdf><values href="HDF#/dData" startIndex="13671" count="4"/></pdf><cdf><values href="HDF#/dData" startIndex="13675" count="4"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="12"><xs><values href="HDF#/dData" startIndex="13679" count="5"/></xs><pdf><values href="HDF#/dData" startIndex="13684" count="5"/></pdf><cdf><values href="HDF#/dData" startIndex="13689" count="5"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="12.5"><xs><values href="HDF#/dData" startIndex="13694" count="5"/></xs><pdf><values href="HDF#/dData" startIndex="13699" count="5"/></pdf><cdf><values href="HDF#/dData" startIndex="13704" count="5"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="13"><xs><values href="HDF#/dData" startIndex="13709" count="6"/></xs><pdf><values href="HDF#/dData" startIndex="13715" count="6"/></pdf><cdf><values href="HDF#/dData" startIndex="13721" count="6"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="13.5"><xs><values href="HDF#/dData" startIndex="13727" count="6"/></xs><pdf><values href="HDF#/dData" startIndex="13733" count="6"/></pdf><cdf><values href="HDF#/dData" startIndex="13739" count="6"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="14"><xs><values href="HDF#/dData" startIndex="13745" count="7"/></xs><pdf><values href="HDF#/dData" startIndex="13752" count="7"/></pdf><cdf><values href="HDF#/dData" startIndex="13759" count="7"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="14.5"><xs><values href="HDF#/dData" startIndex="13766" count="8"/></xs><pdf><values href="HDF#/dData" startIndex="13774" count="8"/></pdf><cdf><values href="HDF#/dData" startIndex="13782" count="8"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="15"><xs><values href="HDF#/dData" startIndex="13790" count="9"/></xs><pdf><values href="HDF#/dData" startIndex="13799" count="9"/></pdf><cdf><values href="HDF#/dData" startIndex="13808" count="9"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="15.5"><xs><values href="HDF#/dData" startIndex="13817" count="9"/></xs><pdf><values href="HDF#/dData" startIndex="13826" count="9"/></pdf><cdf><values href="HDF#/dData" startIndex="13835" count="9"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="16"><xs><values href="HDF#/dData" startIndex="13844" count="9"/></xs><pdf><values href="HDF#/dData" startIndex="13853" count="9"/></pdf><cdf><values href="HDF#/dData" startIndex="13862" count="9"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="16.5"><xs><values href="HDF#/dData" startIndex="13871" count="9"/></xs><pdf><values href="HDF#/dData" startIndex="13880" count="9"/></pdf><cdf><values href="HDF#/dData" startIndex="13889" count="9"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="17"><xs><values href="HDF#/dData" startIndex="13898" count="9"/></xs><pdf><values href="HDF#/dData" startIndex="13907" count="9"/></pdf><cdf><values href="HDF#/dData" startIndex="13916" count="9"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="17.5"><xs><values href="HDF#/dData" startIndex="13925" count="9"/></xs><pdf><values href="HDF#/dData" startIndex="13934" count="9"/></pdf><cdf><values href="HDF#/dData" startIndex="13943" count="9"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="18"><xs><values href="HDF#/dData" startIndex="13952" count="10"/></xs><pdf><values href="HDF#/dData" startIndex="13962" count="10"/></pdf><cdf><values href="HDF#/dData" startIndex="13972" count="10"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="18.5"><xs><values href="HDF#/dData" startIndex="13982" count="11"/></xs><pdf><values href="HDF#/dData" startIndex="13993" count="11"/></pdf><cdf><values href="HDF#/dData" startIndex="14004" count="11"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="19"><xs><values href="HDF#/dData" startIndex="14015" count="12"/></xs><pdf><values href="HDF#/dData" startIndex="14027" count="12"/></pdf><cdf><values href="HDF#/dData" startIndex="14039" count="12"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="19.5"><xs><values href="HDF#/dData" startIndex="14051" count="12"/></xs><pdf><values href="HDF#/dData" startIndex="14063" count="12"/></pdf><cdf><values href="HDF#/dData" startIndex="14075" count="12"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="20"><xs><values href="HDF#/dData" startIndex="14087" count="13"/></xs><pdf><values href="HDF#/dData" startIndex="14100" count="13"/></pdf><cdf><values href="HDF#/dData" startIndex="14113" count="13"/></cdf></xs_pdf_cdf1d></function1ds></XYs2d></angularTwoBody></distribution>
+            <averageProductEnergy>
+              <XYs1d label="apd">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="averageProductEnergy" unit="MeV"/></axes>
+                <values href="HDF#/dData" startIndex="14126" count="310"/></XYs1d></averageProductEnergy>
+            <averageProductMomentum>
+              <XYs1d label="apd">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="averageProductMomentum" unit="MeV/c"/></axes>
+                <values href="HDF#/dData" startIndex="14436" count="586"/></XYs1d></averageProductMomentum></product>
+          <product pid="H1" label="H1">
+            <multiplicity>
+              <constant1d label="eval" value="1" domainMin="1e-11" domainMax="20">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="multiplicity" unit=""/></axes></constant1d></multiplicity>
+            <distribution>
+              <angularTwoBody label="eval" productFrame="centerOfMass">
+                <recoil href="../../../../product[@label='n']/distribution/angularTwoBody[@label='eval']"/></angularTwoBody></distribution>
+            <averageProductEnergy>
+              <XYs1d label="apd">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="averageProductEnergy" unit="MeV"/></axes>
+                <values href="HDF#/dData" startIndex="15022" count="310"/></XYs1d></averageProductEnergy>
+            <averageProductMomentum>
+              <XYs1d label="apd">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="averageProductMomentum" unit="MeV/c"/></axes>
+                <values href="HDF#/dData" startIndex="15332" count="586"/></XYs1d></averageProductMomentum></product></products></outputChannel>
+      <availableEnergy>
+        <XYs1d label="apd">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="energy_available" unit="MeV"/></axes>
+          <values href="HDF#/dData" startIndex="15918" count="4"/></XYs1d></availableEnergy>
+      <availableMomentum>
+        <XYs1d label="apd">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="momentum_available" unit="MeV/c"/></axes>
+          <values href="HDF#/dData" startIndex="15922" count="830"/></XYs1d></availableMomentum></reaction>
+    <reaction label="H2 + photon [inclusive]" ENDF_MT="102">
+      <crossSection>
+        <regions1d label="eval">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <function1ds>
+            <XYs1d index="0" interpolation="log-log">
+              <values href="HDF#/dData" startIndex="16752" count="66"/></XYs1d>
+            <XYs1d index="1">
+              <values href="HDF#/dData" startIndex="16818" count="242"/></XYs1d></function1ds></regions1d>
+        <XYs1d label="heated_000">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="17060" count="1096"/></XYs1d>
+        <Ys1d label="MonteCarlo_000">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_000']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="18156" count="641"/></Ys1d>
+        <XYs1d label="heated_001">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="18797" count="1098"/></XYs1d>
+        <Ys1d label="MonteCarlo_001">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_001']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="19895" count="642"/></Ys1d>
+        <XYs1d label="heated_002">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="20537" count="1114"/></XYs1d>
+        <Ys1d label="MonteCarlo_002">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_002']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="21651" count="648"/></Ys1d>
+        <XYs1d label="heated_003">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="22299" count="1114"/></XYs1d>
+        <Ys1d label="MonteCarlo_003">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_003']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="23413" count="648"/></Ys1d>
+        <XYs1d label="heated_004">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="24061" count="1118"/></XYs1d>
+        <Ys1d label="MonteCarlo_004">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_004']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="25179" count="647"/></Ys1d>
+        <XYs1d label="heated_005">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="25826" count="1140"/></XYs1d>
+        <Ys1d label="MonteCarlo_005">
+          <axes>
+            <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_005']/grid[@index='1']"/>
+            <axis index="0" label="crossSection" unit="b"/></axes>
+          <values href="HDF#/dData" startIndex="26966" count="657"/></Ys1d></crossSection>
+      <outputChannel genre="twoBody" process="inclusive">
+        <Q>
+          <constant1d label="eval" value="2.224648" domainMin="1e-11" domainMax="20">
+            <axes>
+              <axis index="1" label="energy_in" unit="MeV"/>
+              <axis index="0" label="Q" unit="MeV"/></axes></constant1d></Q>
+        <products>
+          <product pid="photon" label="photon">
+            <multiplicity>
+              <constant1d label="eval" value="1" domainMin="1e-11" domainMax="20">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="multiplicity" unit=""/></axes></constant1d></multiplicity>
+            <distribution>
+              <angularTwoBody label="eval" productFrame="centerOfMass">
+                <XYs2d>
+                  <axes>
+                    <axis index="2" label="energy_in" unit="MeV"/>
+                    <axis index="1" label="mu" unit=""/>
+                    <axis index="0" label="P(mu|energy_in)" unit=""/></axes>
+                  <function1ds>
+                    <Legendre outerDomainValue="1e-11"><values href="HDF#/dData" startIndex="27623" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2e-11"><values href="HDF#/dData" startIndex="27626" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5e-11"><values href="HDF#/dData" startIndex="27629" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1e-10"><values href="HDF#/dData" startIndex="27632" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2e-10"><values href="HDF#/dData" startIndex="27635" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5e-10"><values href="HDF#/dData" startIndex="27638" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1e-9"><values href="HDF#/dData" startIndex="27641" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2e-9"><values href="HDF#/dData" startIndex="27644" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5e-9"><values href="HDF#/dData" startIndex="27647" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1e-8"><values href="HDF#/dData" startIndex="27650" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2.53e-8"><values href="HDF#/dData" startIndex="27653" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1e-7"><values href="HDF#/dData" startIndex="27656" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2e-7"><values href="HDF#/dData" startIndex="27659" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5e-7"><values href="HDF#/dData" startIndex="27662" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1e-6"><values href="HDF#/dData" startIndex="27665" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2e-6"><values href="HDF#/dData" startIndex="27668" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5e-6"><values href="HDF#/dData" startIndex="27671" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1e-5"><values href="HDF#/dData" startIndex="27674" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2e-5"><values href="HDF#/dData" startIndex="27677" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5e-5"><values href="HDF#/dData" startIndex="27680" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1e-4"><values href="HDF#/dData" startIndex="27683" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2e-4"><values href="HDF#/dData" startIndex="27686" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5e-4"><values href="HDF#/dData" startIndex="27689" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1e-3"><values href="HDF#/dData" startIndex="27692" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2e-3"><values href="HDF#/dData" startIndex="27695" count="3"/></Legendre>
+                    <Legendre outerDomainValue="3e-3"><values href="HDF#/dData" startIndex="27698" count="3"/></Legendre>
+                    <Legendre outerDomainValue="4e-3"><values href="HDF#/dData" startIndex="27701" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5e-3"><values href="HDF#/dData" startIndex="27704" count="3"/></Legendre>
+                    <Legendre outerDomainValue="6e-3"><values href="HDF#/dData" startIndex="27707" count="3"/></Legendre>
+                    <Legendre outerDomainValue="7e-3"><values href="HDF#/dData" startIndex="27710" count="3"/></Legendre>
+                    <Legendre outerDomainValue="8e-3"><values href="HDF#/dData" startIndex="27713" count="3"/></Legendre>
+                    <Legendre outerDomainValue="9e-3"><values href="HDF#/dData" startIndex="27716" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1e-2"><values href="HDF#/dData" startIndex="27719" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.012"><values href="HDF#/dData" startIndex="27722" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.014"><values href="HDF#/dData" startIndex="27725" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.016"><values href="HDF#/dData" startIndex="27728" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.018"><values href="HDF#/dData" startIndex="27731" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2e-2"><values href="HDF#/dData" startIndex="27734" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.022"><values href="HDF#/dData" startIndex="27737" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.024"><values href="HDF#/dData" startIndex="27740" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.026"><values href="HDF#/dData" startIndex="27743" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.028"><values href="HDF#/dData" startIndex="27746" count="3"/></Legendre>
+                    <Legendre outerDomainValue="3e-2"><values href="HDF#/dData" startIndex="27749" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.035"><values href="HDF#/dData" startIndex="27752" count="3"/></Legendre>
+                    <Legendre outerDomainValue="4e-2"><values href="HDF#/dData" startIndex="27755" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.045"><values href="HDF#/dData" startIndex="27758" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5e-2"><values href="HDF#/dData" startIndex="27761" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.055"><values href="HDF#/dData" startIndex="27764" count="3"/></Legendre>
+                    <Legendre outerDomainValue="6e-2"><values href="HDF#/dData" startIndex="27767" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.065"><values href="HDF#/dData" startIndex="27770" count="3"/></Legendre>
+                    <Legendre outerDomainValue="7e-2"><values href="HDF#/dData" startIndex="27773" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.075"><values href="HDF#/dData" startIndex="27776" count="3"/></Legendre>
+                    <Legendre outerDomainValue="8e-2"><values href="HDF#/dData" startIndex="27779" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.085"><values href="HDF#/dData" startIndex="27782" count="3"/></Legendre>
+                    <Legendre outerDomainValue="9e-2"><values href="HDF#/dData" startIndex="27785" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.095"><values href="HDF#/dData" startIndex="27788" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.1"><values href="HDF#/dData" startIndex="27791" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.11"><values href="HDF#/dData" startIndex="27794" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.12"><values href="HDF#/dData" startIndex="27797" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.13"><values href="HDF#/dData" startIndex="27800" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.14"><values href="HDF#/dData" startIndex="27803" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.15"><values href="HDF#/dData" startIndex="27806" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.16"><values href="HDF#/dData" startIndex="27809" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.17"><values href="HDF#/dData" startIndex="27812" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.18"><values href="HDF#/dData" startIndex="27815" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.19"><values href="HDF#/dData" startIndex="27818" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.2"><values href="HDF#/dData" startIndex="27821" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.22"><values href="HDF#/dData" startIndex="27824" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.24"><values href="HDF#/dData" startIndex="27827" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.26"><values href="HDF#/dData" startIndex="27830" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.28"><values href="HDF#/dData" startIndex="27833" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.3"><values href="HDF#/dData" startIndex="27836" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.32"><values href="HDF#/dData" startIndex="27839" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.34"><values href="HDF#/dData" startIndex="27842" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.36"><values href="HDF#/dData" startIndex="27845" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.38"><values href="HDF#/dData" startIndex="27848" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.4"><values href="HDF#/dData" startIndex="27851" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.42"><values href="HDF#/dData" startIndex="27854" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.44"><values href="HDF#/dData" startIndex="27857" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.46"><values href="HDF#/dData" startIndex="27860" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.48"><values href="HDF#/dData" startIndex="27863" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.5"><values href="HDF#/dData" startIndex="27866" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.55"><values href="HDF#/dData" startIndex="27869" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.6"><values href="HDF#/dData" startIndex="27872" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.65"><values href="HDF#/dData" startIndex="27875" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.7"><values href="HDF#/dData" startIndex="27878" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.75"><values href="HDF#/dData" startIndex="27881" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.8"><values href="HDF#/dData" startIndex="27884" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.85"><values href="HDF#/dData" startIndex="27887" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.9"><values href="HDF#/dData" startIndex="27890" count="3"/></Legendre>
+                    <Legendre outerDomainValue="0.95"><values href="HDF#/dData" startIndex="27893" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1"><values href="HDF#/dData" startIndex="27896" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1.1"><values href="HDF#/dData" startIndex="27899" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1.2"><values href="HDF#/dData" startIndex="27902" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1.3"><values href="HDF#/dData" startIndex="27905" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1.4"><values href="HDF#/dData" startIndex="27908" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1.5"><values href="HDF#/dData" startIndex="27911" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1.6"><values href="HDF#/dData" startIndex="27914" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1.7"><values href="HDF#/dData" startIndex="27917" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1.8"><values href="HDF#/dData" startIndex="27920" count="3"/></Legendre>
+                    <Legendre outerDomainValue="1.9"><values href="HDF#/dData" startIndex="27923" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2"><values href="HDF#/dData" startIndex="27926" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2.2"><values href="HDF#/dData" startIndex="27929" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2.4"><values href="HDF#/dData" startIndex="27932" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2.6"><values href="HDF#/dData" startIndex="27935" count="3"/></Legendre>
+                    <Legendre outerDomainValue="2.8"><values href="HDF#/dData" startIndex="27938" count="3"/></Legendre>
+                    <Legendre outerDomainValue="3"><values href="HDF#/dData" startIndex="27941" count="3"/></Legendre>
+                    <Legendre outerDomainValue="3.2"><values href="HDF#/dData" startIndex="27944" count="3"/></Legendre>
+                    <Legendre outerDomainValue="3.4"><values href="HDF#/dData" startIndex="27947" count="3"/></Legendre>
+                    <Legendre outerDomainValue="3.6"><values href="HDF#/dData" startIndex="27950" count="3"/></Legendre>
+                    <Legendre outerDomainValue="3.8"><values href="HDF#/dData" startIndex="27953" count="3"/></Legendre>
+                    <Legendre outerDomainValue="4"><values href="HDF#/dData" startIndex="27956" count="3"/></Legendre>
+                    <Legendre outerDomainValue="4.2"><values href="HDF#/dData" startIndex="27959" count="3"/></Legendre>
+                    <Legendre outerDomainValue="4.4"><values href="HDF#/dData" startIndex="27962" count="3"/></Legendre>
+                    <Legendre outerDomainValue="4.6"><values href="HDF#/dData" startIndex="27965" count="3"/></Legendre>
+                    <Legendre outerDomainValue="4.8"><values href="HDF#/dData" startIndex="27968" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5"><values href="HDF#/dData" startIndex="27971" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5.2"><values href="HDF#/dData" startIndex="27974" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5.4"><values href="HDF#/dData" startIndex="27977" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5.6"><values href="HDF#/dData" startIndex="27980" count="3"/></Legendre>
+                    <Legendre outerDomainValue="5.8"><values href="HDF#/dData" startIndex="27983" count="3"/></Legendre>
+                    <Legendre outerDomainValue="6"><values href="HDF#/dData" startIndex="27986" count="3"/></Legendre>
+                    <Legendre outerDomainValue="6.2"><values href="HDF#/dData" startIndex="27989" count="3"/></Legendre>
+                    <Legendre outerDomainValue="6.4"><values href="HDF#/dData" startIndex="27992" count="3"/></Legendre>
+                    <Legendre outerDomainValue="6.6"><values href="HDF#/dData" startIndex="27995" count="3"/></Legendre>
+                    <Legendre outerDomainValue="6.8"><values href="HDF#/dData" startIndex="27998" count="3"/></Legendre>
+                    <Legendre outerDomainValue="7"><values href="HDF#/dData" startIndex="28001" count="3"/></Legendre>
+                    <Legendre outerDomainValue="7.5"><values href="HDF#/dData" startIndex="28004" count="3"/></Legendre>
+                    <Legendre outerDomainValue="8"><values href="HDF#/dData" startIndex="28007" count="3"/></Legendre>
+                    <Legendre outerDomainValue="8.5"><values href="HDF#/dData" startIndex="28010" count="3"/></Legendre>
+                    <Legendre outerDomainValue="9"><values href="HDF#/dData" startIndex="28013" count="3"/></Legendre>
+                    <Legendre outerDomainValue="9.5"><values href="HDF#/dData" startIndex="28016" count="3"/></Legendre>
+                    <Legendre outerDomainValue="10"><values href="HDF#/dData" startIndex="28019" count="3"/></Legendre>
+                    <Legendre outerDomainValue="10.5"><values href="HDF#/dData" startIndex="28022" count="3"/></Legendre>
+                    <Legendre outerDomainValue="11"><values href="HDF#/dData" startIndex="28025" count="3"/></Legendre>
+                    <Legendre outerDomainValue="11.5"><values href="HDF#/dData" startIndex="28028" count="3"/></Legendre>
+                    <Legendre outerDomainValue="12"><values href="HDF#/dData" startIndex="28031" count="3"/></Legendre>
+                    <Legendre outerDomainValue="12.5"><values href="HDF#/dData" startIndex="28034" count="3"/></Legendre>
+                    <Legendre outerDomainValue="13"><values href="HDF#/dData" startIndex="28037" count="3"/></Legendre>
+                    <Legendre outerDomainValue="13.5"><values href="HDF#/dData" startIndex="28040" count="3"/></Legendre>
+                    <Legendre outerDomainValue="14"><values href="HDF#/dData" startIndex="28043" count="3"/></Legendre>
+                    <Legendre outerDomainValue="14.5"><values href="HDF#/dData" startIndex="28046" count="3"/></Legendre>
+                    <Legendre outerDomainValue="15"><values href="HDF#/dData" startIndex="28049" count="3"/></Legendre>
+                    <Legendre outerDomainValue="15.5"><values href="HDF#/dData" startIndex="28052" count="3"/></Legendre>
+                    <Legendre outerDomainValue="16"><values href="HDF#/dData" startIndex="28055" count="3"/></Legendre>
+                    <Legendre outerDomainValue="16.5"><values href="HDF#/dData" startIndex="28058" count="3"/></Legendre>
+                    <Legendre outerDomainValue="17"><values href="HDF#/dData" startIndex="28061" count="3"/></Legendre>
+                    <Legendre outerDomainValue="17.5"><values href="HDF#/dData" startIndex="28064" count="3"/></Legendre>
+                    <Legendre outerDomainValue="18"><values href="HDF#/dData" startIndex="28067" count="3"/></Legendre>
+                    <Legendre outerDomainValue="18.5"><values href="HDF#/dData" startIndex="28070" count="3"/></Legendre>
+                    <Legendre outerDomainValue="19"><values href="HDF#/dData" startIndex="28073" count="3"/></Legendre>
+                    <Legendre outerDomainValue="19.5"><values href="HDF#/dData" startIndex="28076" count="3"/></Legendre>
+                    <Legendre outerDomainValue="20"><values href="HDF#/dData" startIndex="28079" count="3"/></Legendre></function1ds></XYs2d></angularTwoBody>
+              <angularTwoBody label="MonteCarlo_cdf" productFrame="centerOfMass">
+                <XYs2d>
+                  <axes>
+                    <axis index="2" label="energy_in" unit="MeV"/>
+                    <axis index="1" label="mu" unit=""/>
+                    <axis index="0" label="P(mu|energy_in)" unit=""/></axes>
+                  <function1ds>
+                    <xs_pdf_cdf1d outerDomainValue="1e-11"><xs><values>-1 1</values></xs><pdf><values>0.500000056557125 0.499999943442875</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-11"><xs><values>-1 1</values></xs><pdf><values>0.500000079983795 0.499999920016205</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-11"><xs><values>-1 1</values></xs><pdf><values>0.500000126465345 0.499999873534655</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-10"><xs><values>-1 1</values></xs><pdf><values>0.50000017884875 0.49999982115125</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-10"><xs><values>-1 1</values></xs><pdf><values>0.50000025292985 0.49999974707015</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-10"><xs><values>-1 1</values></xs><pdf><values>0.5000003999156 0.4999996000844</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-9"><xs><values>-1 1</values></xs><pdf><values>0.5000005655636 0.4999994344364</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-9"><xs><values>-1 1</values></xs><pdf><values>0.500000799822651 0.499999200177349</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-9"><xs><values>-1 1</values></xs><pdf><values>0.500001264615053 0.499998735384947</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-8"><xs><values>-1 1</values></xs><pdf><values>0.500001788411008 0.499998211588992</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2.53e-8"><xs><values>-1 1</values></xs><pdf><values>0.500002844561031 0.499997155438968</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-7"><xs><values>-1 1</values></xs><pdf><values>0.500005654871247 0.499994345128753</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-7"><xs><values>-1 1</values></xs><pdf><values>0.500007996700199 0.499992003299801</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-7"><xs><values>-1 1</values></xs><pdf><values>0.500012642352263 0.499987357647737</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-6"><xs><values>-1 1</values></xs><pdf><values>0.500017876542813 0.499982123457187</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-6"><xs><values>-1 1</values></xs><pdf><values>0.500025276432094 0.499974723567906</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-6"><xs><values>-1 1</values></xs><pdf><values>0.500039950727302 0.499960049272698</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-5"><xs><values>-1 1</values></xs><pdf><values>0.500056475876833 0.499943524123167</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-5"><xs><values>-1 1</values></xs><pdf><values>0.500079824667805 0.499920175332195</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-5"><xs><values>-1 1</values></xs><pdf><values>0.500126084146017 0.499873915853983</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-4"><xs><values>-1 1</values></xs><pdf><values>0.500178123789666 0.499821876210334</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-4"><xs><values>-1 1</values></xs><pdf><values>0.50025158536962 0.49974841463038</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-4"><xs><values>-1 1</values></xs><pdf><values>0.500397073914769 0.499602926085231</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-3"><xs><values>-1 1</values></xs><pdf><values>0.500561039747772 0.499438960252228</values></pdf><cdf><values>0 1</values></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-3"><xs><values href="HDF#/dData" startIndex="28082" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="28085" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="28088" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3e-3"><xs><values href="HDF#/dData" startIndex="28091" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="28094" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="28097" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4e-3"><xs><values href="HDF#/dData" startIndex="28100" count="3"/></xs><pdf><values href="HDF#/dData" startIndex="28103" count="3"/></pdf><cdf><values href="HDF#/dData" startIndex="28106" count="3"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-3"><xs><values href="HDF#/dData" startIndex="28109" count="4"/></xs><pdf><values href="HDF#/dData" startIndex="28113" count="4"/></pdf><cdf><values href="HDF#/dData" startIndex="28117" count="4"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6e-3"><xs><values href="HDF#/dData" startIndex="28121" count="4"/></xs><pdf><values href="HDF#/dData" startIndex="28125" count="4"/></pdf><cdf><values href="HDF#/dData" startIndex="28129" count="4"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="7e-3"><xs><values href="HDF#/dData" startIndex="28133" count="4"/></xs><pdf><values href="HDF#/dData" startIndex="28137" count="4"/></pdf><cdf><values href="HDF#/dData" startIndex="28141" count="4"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="8e-3"><xs><values href="HDF#/dData" startIndex="28145" count="4"/></xs><pdf><values href="HDF#/dData" startIndex="28149" count="4"/></pdf><cdf><values href="HDF#/dData" startIndex="28153" count="4"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="9e-3"><xs><values href="HDF#/dData" startIndex="28157" count="6"/></xs><pdf><values href="HDF#/dData" startIndex="28163" count="6"/></pdf><cdf><values href="HDF#/dData" startIndex="28169" count="6"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1e-2"><xs><values href="HDF#/dData" startIndex="28175" count="6"/></xs><pdf><values href="HDF#/dData" startIndex="28181" count="6"/></pdf><cdf><values href="HDF#/dData" startIndex="28187" count="6"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.012"><xs><values href="HDF#/dData" startIndex="28193" count="6"/></xs><pdf><values href="HDF#/dData" startIndex="28199" count="6"/></pdf><cdf><values href="HDF#/dData" startIndex="28205" count="6"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.014"><xs><values href="HDF#/dData" startIndex="28211" count="6"/></xs><pdf><values href="HDF#/dData" startIndex="28217" count="6"/></pdf><cdf><values href="HDF#/dData" startIndex="28223" count="6"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.016"><xs><values href="HDF#/dData" startIndex="28229" count="6"/></xs><pdf><values href="HDF#/dData" startIndex="28235" count="6"/></pdf><cdf><values href="HDF#/dData" startIndex="28241" count="6"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.018"><xs><values href="HDF#/dData" startIndex="28247" count="6"/></xs><pdf><values href="HDF#/dData" startIndex="28253" count="6"/></pdf><cdf><values href="HDF#/dData" startIndex="28259" count="6"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2e-2"><xs><values href="HDF#/dData" startIndex="28265" count="6"/></xs><pdf><values href="HDF#/dData" startIndex="28271" count="6"/></pdf><cdf><values href="HDF#/dData" startIndex="28277" count="6"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.022"><xs><values href="HDF#/dData" startIndex="28283" count="6"/></xs><pdf><values href="HDF#/dData" startIndex="28289" count="6"/></pdf><cdf><values href="HDF#/dData" startIndex="28295" count="6"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.024"><xs><values href="HDF#/dData" startIndex="28301" count="6"/></xs><pdf><values href="HDF#/dData" startIndex="28307" count="6"/></pdf><cdf><values href="HDF#/dData" startIndex="28313" count="6"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.026"><xs><values href="HDF#/dData" startIndex="28319" count="7"/></xs><pdf><values href="HDF#/dData" startIndex="28326" count="7"/></pdf><cdf><values href="HDF#/dData" startIndex="28333" count="7"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.028"><xs><values href="HDF#/dData" startIndex="28340" count="7"/></xs><pdf><values href="HDF#/dData" startIndex="28347" count="7"/></pdf><cdf><values href="HDF#/dData" startIndex="28354" count="7"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3e-2"><xs><values href="HDF#/dData" startIndex="28361" count="7"/></xs><pdf><values href="HDF#/dData" startIndex="28368" count="7"/></pdf><cdf><values href="HDF#/dData" startIndex="28375" count="7"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.035"><xs><values href="HDF#/dData" startIndex="28382" count="11"/></xs><pdf><values href="HDF#/dData" startIndex="28393" count="11"/></pdf><cdf><values href="HDF#/dData" startIndex="28404" count="11"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4e-2"><xs><values href="HDF#/dData" startIndex="28415" count="11"/></xs><pdf><values href="HDF#/dData" startIndex="28426" count="11"/></pdf><cdf><values href="HDF#/dData" startIndex="28437" count="11"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.045"><xs><values href="HDF#/dData" startIndex="28448" count="11"/></xs><pdf><values href="HDF#/dData" startIndex="28459" count="11"/></pdf><cdf><values href="HDF#/dData" startIndex="28470" count="11"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5e-2"><xs><values href="HDF#/dData" startIndex="28481" count="11"/></xs><pdf><values href="HDF#/dData" startIndex="28492" count="11"/></pdf><cdf><values href="HDF#/dData" startIndex="28503" count="11"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.055"><xs><values href="HDF#/dData" startIndex="28514" count="11"/></xs><pdf><values href="HDF#/dData" startIndex="28525" count="11"/></pdf><cdf><values href="HDF#/dData" startIndex="28536" count="11"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6e-2"><xs><values href="HDF#/dData" startIndex="28547" count="11"/></xs><pdf><values href="HDF#/dData" startIndex="28558" count="11"/></pdf><cdf><values href="HDF#/dData" startIndex="28569" count="11"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.065"><xs><values href="HDF#/dData" startIndex="28580" count="11"/></xs><pdf><values href="HDF#/dData" startIndex="28591" count="11"/></pdf><cdf><values href="HDF#/dData" startIndex="28602" count="11"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="7e-2"><xs><values href="HDF#/dData" startIndex="28613" count="11"/></xs><pdf><values href="HDF#/dData" startIndex="28624" count="11"/></pdf><cdf><values href="HDF#/dData" startIndex="28635" count="11"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.075"><xs><values href="HDF#/dData" startIndex="28646" count="11"/></xs><pdf><values href="HDF#/dData" startIndex="28657" count="11"/></pdf><cdf><values href="HDF#/dData" startIndex="28668" count="11"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="8e-2"><xs><values href="HDF#/dData" startIndex="28679" count="11"/></xs><pdf><values href="HDF#/dData" startIndex="28690" count="11"/></pdf><cdf><values href="HDF#/dData" startIndex="28701" count="11"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.085"><xs><values href="HDF#/dData" startIndex="28712" count="13"/></xs><pdf><values href="HDF#/dData" startIndex="28725" count="13"/></pdf><cdf><values href="HDF#/dData" startIndex="28738" count="13"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="9e-2"><xs><values href="HDF#/dData" startIndex="28751" count="13"/></xs><pdf><values href="HDF#/dData" startIndex="28764" count="13"/></pdf><cdf><values href="HDF#/dData" startIndex="28777" count="13"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.095"><xs><values href="HDF#/dData" startIndex="28790" count="16"/></xs><pdf><values href="HDF#/dData" startIndex="28806" count="16"/></pdf><cdf><values href="HDF#/dData" startIndex="28822" count="16"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.1"><xs><values href="HDF#/dData" startIndex="28838" count="21"/></xs><pdf><values href="HDF#/dData" startIndex="28859" count="21"/></pdf><cdf><values href="HDF#/dData" startIndex="28880" count="21"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.11"><xs><values href="HDF#/dData" startIndex="28901" count="21"/></xs><pdf><values href="HDF#/dData" startIndex="28922" count="21"/></pdf><cdf><values href="HDF#/dData" startIndex="28943" count="21"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.12"><xs><values href="HDF#/dData" startIndex="28964" count="21"/></xs><pdf><values href="HDF#/dData" startIndex="28985" count="21"/></pdf><cdf><values href="HDF#/dData" startIndex="29006" count="21"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.13"><xs><values href="HDF#/dData" startIndex="29027" count="21"/></xs><pdf><values href="HDF#/dData" startIndex="29048" count="21"/></pdf><cdf><values href="HDF#/dData" startIndex="29069" count="21"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.14"><xs><values href="HDF#/dData" startIndex="29090" count="21"/></xs><pdf><values href="HDF#/dData" startIndex="29111" count="21"/></pdf><cdf><values href="HDF#/dData" startIndex="29132" count="21"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.15"><xs><values href="HDF#/dData" startIndex="29153" count="21"/></xs><pdf><values href="HDF#/dData" startIndex="29174" count="21"/></pdf><cdf><values href="HDF#/dData" startIndex="29195" count="21"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.16"><xs><values href="HDF#/dData" startIndex="29216" count="21"/></xs><pdf><values href="HDF#/dData" startIndex="29237" count="21"/></pdf><cdf><values href="HDF#/dData" startIndex="29258" count="21"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.17"><xs><values href="HDF#/dData" startIndex="29279" count="21"/></xs><pdf><values href="HDF#/dData" startIndex="29300" count="21"/></pdf><cdf><values href="HDF#/dData" startIndex="29321" count="21"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.18"><xs><values href="HDF#/dData" startIndex="29342" count="21"/></xs><pdf><values href="HDF#/dData" startIndex="29363" count="21"/></pdf><cdf><values href="HDF#/dData" startIndex="29384" count="21"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.19"><xs><values href="HDF#/dData" startIndex="29405" count="21"/></xs><pdf><values href="HDF#/dData" startIndex="29426" count="21"/></pdf><cdf><values href="HDF#/dData" startIndex="29447" count="21"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.2"><xs><values href="HDF#/dData" startIndex="29468" count="21"/></xs><pdf><values href="HDF#/dData" startIndex="29489" count="21"/></pdf><cdf><values href="HDF#/dData" startIndex="29510" count="21"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.22"><xs><values href="HDF#/dData" startIndex="29531" count="23"/></xs><pdf><values href="HDF#/dData" startIndex="29554" count="23"/></pdf><cdf><values href="HDF#/dData" startIndex="29577" count="23"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.24"><xs><values href="HDF#/dData" startIndex="29600" count="26"/></xs><pdf><values href="HDF#/dData" startIndex="29626" count="26"/></pdf><cdf><values href="HDF#/dData" startIndex="29652" count="26"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.26"><xs><values href="HDF#/dData" startIndex="29678" count="31"/></xs><pdf><values href="HDF#/dData" startIndex="29709" count="31"/></pdf><cdf><values href="HDF#/dData" startIndex="29740" count="31"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.28"><xs><values href="HDF#/dData" startIndex="29771" count="34"/></xs><pdf><values href="HDF#/dData" startIndex="29805" count="34"/></pdf><cdf><values href="HDF#/dData" startIndex="29839" count="34"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.3"><xs><values href="HDF#/dData" startIndex="29873" count="37"/></xs><pdf><values href="HDF#/dData" startIndex="29910" count="37"/></pdf><cdf><values href="HDF#/dData" startIndex="29947" count="37"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.32"><xs><values href="HDF#/dData" startIndex="29984" count="41"/></xs><pdf><values href="HDF#/dData" startIndex="30025" count="41"/></pdf><cdf><values href="HDF#/dData" startIndex="30066" count="41"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.34"><xs><values href="HDF#/dData" startIndex="30107" count="41"/></xs><pdf><values href="HDF#/dData" startIndex="30148" count="41"/></pdf><cdf><values href="HDF#/dData" startIndex="30189" count="41"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.36"><xs><values href="HDF#/dData" startIndex="30230" count="41"/></xs><pdf><values href="HDF#/dData" startIndex="30271" count="41"/></pdf><cdf><values href="HDF#/dData" startIndex="30312" count="41"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.38"><xs><values href="HDF#/dData" startIndex="30353" count="41"/></xs><pdf><values href="HDF#/dData" startIndex="30394" count="41"/></pdf><cdf><values href="HDF#/dData" startIndex="30435" count="41"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.4"><xs><values href="HDF#/dData" startIndex="30476" count="41"/></xs><pdf><values href="HDF#/dData" startIndex="30517" count="41"/></pdf><cdf><values href="HDF#/dData" startIndex="30558" count="41"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.42"><xs><values href="HDF#/dData" startIndex="30599" count="41"/></xs><pdf><values href="HDF#/dData" startIndex="30640" count="41"/></pdf><cdf><values href="HDF#/dData" startIndex="30681" count="41"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.44"><xs><values href="HDF#/dData" startIndex="30722" count="41"/></xs><pdf><values href="HDF#/dData" startIndex="30763" count="41"/></pdf><cdf><values href="HDF#/dData" startIndex="30804" count="41"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.46"><xs><values href="HDF#/dData" startIndex="30845" count="41"/></xs><pdf><values href="HDF#/dData" startIndex="30886" count="41"/></pdf><cdf><values href="HDF#/dData" startIndex="30927" count="41"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.48"><xs><values href="HDF#/dData" startIndex="30968" count="41"/></xs><pdf><values href="HDF#/dData" startIndex="31009" count="41"/></pdf><cdf><values href="HDF#/dData" startIndex="31050" count="41"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.5"><xs><values href="HDF#/dData" startIndex="31091" count="41"/></xs><pdf><values href="HDF#/dData" startIndex="31132" count="41"/></pdf><cdf><values href="HDF#/dData" startIndex="31173" count="41"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.55"><xs><values href="HDF#/dData" startIndex="31214" count="43"/></xs><pdf><values href="HDF#/dData" startIndex="31257" count="43"/></pdf><cdf><values href="HDF#/dData" startIndex="31300" count="43"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.6"><xs><values href="HDF#/dData" startIndex="31343" count="45"/></xs><pdf><values href="HDF#/dData" startIndex="31388" count="45"/></pdf><cdf><values href="HDF#/dData" startIndex="31433" count="45"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.65"><xs><values href="HDF#/dData" startIndex="31478" count="46"/></xs><pdf><values href="HDF#/dData" startIndex="31524" count="46"/></pdf><cdf><values href="HDF#/dData" startIndex="31570" count="46"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.7"><xs><values href="HDF#/dData" startIndex="31616" count="47"/></xs><pdf><values href="HDF#/dData" startIndex="31663" count="47"/></pdf><cdf><values href="HDF#/dData" startIndex="31710" count="47"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.75"><xs><values href="HDF#/dData" startIndex="31757" count="48"/></xs><pdf><values href="HDF#/dData" startIndex="31805" count="48"/></pdf><cdf><values href="HDF#/dData" startIndex="31853" count="48"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.8"><xs><values href="HDF#/dData" startIndex="31901" count="49"/></xs><pdf><values href="HDF#/dData" startIndex="31950" count="49"/></pdf><cdf><values href="HDF#/dData" startIndex="31999" count="49"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.85"><xs><values href="HDF#/dData" startIndex="32048" count="49"/></xs><pdf><values href="HDF#/dData" startIndex="32097" count="49"/></pdf><cdf><values href="HDF#/dData" startIndex="32146" count="49"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.9"><xs><values href="HDF#/dData" startIndex="32195" count="51"/></xs><pdf><values href="HDF#/dData" startIndex="32246" count="51"/></pdf><cdf><values href="HDF#/dData" startIndex="32297" count="51"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="0.95"><xs><values href="HDF#/dData" startIndex="32348" count="51"/></xs><pdf><values href="HDF#/dData" startIndex="32399" count="51"/></pdf><cdf><values href="HDF#/dData" startIndex="32450" count="51"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1"><xs><values href="HDF#/dData" startIndex="32501" count="51"/></xs><pdf><values href="HDF#/dData" startIndex="32552" count="51"/></pdf><cdf><values href="HDF#/dData" startIndex="32603" count="51"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.1"><xs><values href="HDF#/dData" startIndex="32654" count="51"/></xs><pdf><values href="HDF#/dData" startIndex="32705" count="51"/></pdf><cdf><values href="HDF#/dData" startIndex="32756" count="51"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.2"><xs><values href="HDF#/dData" startIndex="32807" count="53"/></xs><pdf><values href="HDF#/dData" startIndex="32860" count="53"/></pdf><cdf><values href="HDF#/dData" startIndex="32913" count="53"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.3"><xs><values href="HDF#/dData" startIndex="32966" count="54"/></xs><pdf><values href="HDF#/dData" startIndex="33020" count="54"/></pdf><cdf><values href="HDF#/dData" startIndex="33074" count="54"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.4"><xs><values href="HDF#/dData" startIndex="33128" count="55"/></xs><pdf><values href="HDF#/dData" startIndex="33183" count="55"/></pdf><cdf><values href="HDF#/dData" startIndex="33238" count="55"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.5"><xs><values href="HDF#/dData" startIndex="33293" count="54"/></xs><pdf><values href="HDF#/dData" startIndex="33347" count="54"/></pdf><cdf><values href="HDF#/dData" startIndex="33401" count="54"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.6"><xs><values href="HDF#/dData" startIndex="33455" count="55"/></xs><pdf><values href="HDF#/dData" startIndex="33510" count="55"/></pdf><cdf><values href="HDF#/dData" startIndex="33565" count="55"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.7"><xs><values href="HDF#/dData" startIndex="33620" count="56"/></xs><pdf><values href="HDF#/dData" startIndex="33676" count="56"/></pdf><cdf><values href="HDF#/dData" startIndex="33732" count="56"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.8"><xs><values href="HDF#/dData" startIndex="33788" count="56"/></xs><pdf><values href="HDF#/dData" startIndex="33844" count="56"/></pdf><cdf><values href="HDF#/dData" startIndex="33900" count="56"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="1.9"><xs><values href="HDF#/dData" startIndex="33956" count="58"/></xs><pdf><values href="HDF#/dData" startIndex="34014" count="58"/></pdf><cdf><values href="HDF#/dData" startIndex="34072" count="58"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2"><xs><values href="HDF#/dData" startIndex="34130" count="58"/></xs><pdf><values href="HDF#/dData" startIndex="34188" count="58"/></pdf><cdf><values href="HDF#/dData" startIndex="34246" count="58"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2.2"><xs><values href="HDF#/dData" startIndex="34304" count="58"/></xs><pdf><values href="HDF#/dData" startIndex="34362" count="58"/></pdf><cdf><values href="HDF#/dData" startIndex="34420" count="58"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2.4"><xs><values href="HDF#/dData" startIndex="34478" count="57"/></xs><pdf><values href="HDF#/dData" startIndex="34535" count="57"/></pdf><cdf><values href="HDF#/dData" startIndex="34592" count="57"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2.6"><xs><values href="HDF#/dData" startIndex="34649" count="58"/></xs><pdf><values href="HDF#/dData" startIndex="34707" count="58"/></pdf><cdf><values href="HDF#/dData" startIndex="34765" count="58"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="2.8"><xs><values href="HDF#/dData" startIndex="34823" count="57"/></xs><pdf><values href="HDF#/dData" startIndex="34880" count="57"/></pdf><cdf><values href="HDF#/dData" startIndex="34937" count="57"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3"><xs><values href="HDF#/dData" startIndex="34994" count="57"/></xs><pdf><values href="HDF#/dData" startIndex="35051" count="57"/></pdf><cdf><values href="HDF#/dData" startIndex="35108" count="57"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3.2"><xs><values href="HDF#/dData" startIndex="35165" count="58"/></xs><pdf><values href="HDF#/dData" startIndex="35223" count="58"/></pdf><cdf><values href="HDF#/dData" startIndex="35281" count="58"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3.4"><xs><values href="HDF#/dData" startIndex="35339" count="59"/></xs><pdf><values href="HDF#/dData" startIndex="35398" count="59"/></pdf><cdf><values href="HDF#/dData" startIndex="35457" count="59"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3.6"><xs><values href="HDF#/dData" startIndex="35516" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="35576" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="35636" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="3.8"><xs><values href="HDF#/dData" startIndex="35696" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="35758" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="35820" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4"><xs><values href="HDF#/dData" startIndex="35882" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="35944" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="36006" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4.2"><xs><values href="HDF#/dData" startIndex="36068" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="36130" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="36192" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4.4"><xs><values href="HDF#/dData" startIndex="36254" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="36316" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="36378" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4.6"><xs><values href="HDF#/dData" startIndex="36440" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="36502" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="36564" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="4.8"><xs><values href="HDF#/dData" startIndex="36626" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="36688" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="36750" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5"><xs><values href="HDF#/dData" startIndex="36812" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="36874" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="36936" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5.2"><xs><values href="HDF#/dData" startIndex="36998" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="37060" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="37122" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5.4"><xs><values href="HDF#/dData" startIndex="37184" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="37246" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="37308" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5.6"><xs><values href="HDF#/dData" startIndex="37370" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="37432" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="37494" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="5.8"><xs><values href="HDF#/dData" startIndex="37556" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="37618" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="37680" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6"><xs><values href="HDF#/dData" startIndex="37742" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="37804" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="37866" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6.2"><xs><values href="HDF#/dData" startIndex="37928" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="37990" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="38052" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6.4"><xs><values href="HDF#/dData" startIndex="38114" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="38176" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="38238" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6.6"><xs><values href="HDF#/dData" startIndex="38300" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="38362" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="38424" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="6.8"><xs><values href="HDF#/dData" startIndex="38486" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="38548" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="38610" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="7"><xs><values href="HDF#/dData" startIndex="38672" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="38734" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="38796" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="7.5"><xs><values href="HDF#/dData" startIndex="38858" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="38920" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="38982" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="8"><xs><values href="HDF#/dData" startIndex="39044" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="39106" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="39168" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="8.5"><xs><values href="HDF#/dData" startIndex="39230" count="61"/></xs><pdf><values href="HDF#/dData" startIndex="39291" count="61"/></pdf><cdf><values href="HDF#/dData" startIndex="39352" count="61"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="9"><xs><values href="HDF#/dData" startIndex="39413" count="61"/></xs><pdf><values href="HDF#/dData" startIndex="39474" count="61"/></pdf><cdf><values href="HDF#/dData" startIndex="39535" count="61"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="9.5"><xs><values href="HDF#/dData" startIndex="39596" count="61"/></xs><pdf><values href="HDF#/dData" startIndex="39657" count="61"/></pdf><cdf><values href="HDF#/dData" startIndex="39718" count="61"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="10"><xs><values href="HDF#/dData" startIndex="39779" count="61"/></xs><pdf><values href="HDF#/dData" startIndex="39840" count="61"/></pdf><cdf><values href="HDF#/dData" startIndex="39901" count="61"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="10.5"><xs><values href="HDF#/dData" startIndex="39962" count="61"/></xs><pdf><values href="HDF#/dData" startIndex="40023" count="61"/></pdf><cdf><values href="HDF#/dData" startIndex="40084" count="61"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="11"><xs><values href="HDF#/dData" startIndex="40145" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="40207" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="40269" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="11.5"><xs><values href="HDF#/dData" startIndex="40331" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="40391" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="40451" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="12"><xs><values href="HDF#/dData" startIndex="40511" count="61"/></xs><pdf><values href="HDF#/dData" startIndex="40572" count="61"/></pdf><cdf><values href="HDF#/dData" startIndex="40633" count="61"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="12.5"><xs><values href="HDF#/dData" startIndex="40694" count="62"/></xs><pdf><values href="HDF#/dData" startIndex="40756" count="62"/></pdf><cdf><values href="HDF#/dData" startIndex="40818" count="62"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="13"><xs><values href="HDF#/dData" startIndex="40880" count="61"/></xs><pdf><values href="HDF#/dData" startIndex="40941" count="61"/></pdf><cdf><values href="HDF#/dData" startIndex="41002" count="61"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="13.5"><xs><values href="HDF#/dData" startIndex="41063" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="41123" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="41183" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="14"><xs><values href="HDF#/dData" startIndex="41243" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="41303" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="41363" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="14.5"><xs><values href="HDF#/dData" startIndex="41423" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="41483" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="41543" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="15"><xs><values href="HDF#/dData" startIndex="41603" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="41663" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="41723" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="15.5"><xs><values href="HDF#/dData" startIndex="41783" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="41843" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="41903" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="16"><xs><values href="HDF#/dData" startIndex="41963" count="61"/></xs><pdf><values href="HDF#/dData" startIndex="42024" count="61"/></pdf><cdf><values href="HDF#/dData" startIndex="42085" count="61"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="16.5"><xs><values href="HDF#/dData" startIndex="42146" count="61"/></xs><pdf><values href="HDF#/dData" startIndex="42207" count="61"/></pdf><cdf><values href="HDF#/dData" startIndex="42268" count="61"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="17"><xs><values href="HDF#/dData" startIndex="42329" count="61"/></xs><pdf><values href="HDF#/dData" startIndex="42390" count="61"/></pdf><cdf><values href="HDF#/dData" startIndex="42451" count="61"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="17.5"><xs><values href="HDF#/dData" startIndex="42512" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="42572" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="42632" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="18"><xs><values href="HDF#/dData" startIndex="42692" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="42752" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="42812" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="18.5"><xs><values href="HDF#/dData" startIndex="42872" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="42932" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="42992" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="19"><xs><values href="HDF#/dData" startIndex="43052" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="43112" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="43172" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="19.5"><xs><values href="HDF#/dData" startIndex="43232" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="43292" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="43352" count="60"/></cdf></xs_pdf_cdf1d>
+                    <xs_pdf_cdf1d outerDomainValue="20"><xs><values href="HDF#/dData" startIndex="43412" count="60"/></xs><pdf><values href="HDF#/dData" startIndex="43472" count="60"/></pdf><cdf><values href="HDF#/dData" startIndex="43532" count="60"/></cdf></xs_pdf_cdf1d></function1ds></XYs2d></angularTwoBody></distribution>
+            <averageProductEnergy>
+              <XYs1d label="apd">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="averageProductEnergy" unit="MeV"/></axes>
+                <values href="HDF#/dData" startIndex="43592" count="306"/></XYs1d></averageProductEnergy>
+            <averageProductMomentum>
+              <XYs1d label="apd">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="averageProductMomentum" unit="MeV/c"/></axes>
+                <values href="HDF#/dData" startIndex="43898" count="306"/></XYs1d></averageProductMomentum></product>
+          <product pid="H2" label="H2">
+            <multiplicity>
+              <constant1d label="eval" value="1" domainMin="1e-11" domainMax="20">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="multiplicity" unit=""/></axes></constant1d></multiplicity>
+            <distribution>
+              <angularTwoBody label="eval" productFrame="centerOfMass">
+                <recoil href="../../../../product[@label='photon']/distribution/angularTwoBody[@label='eval']"/></angularTwoBody></distribution>
+            <averageProductEnergy>
+              <XYs1d label="apd">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="averageProductEnergy" unit="MeV"/></axes>
+                <values href="HDF#/dData" startIndex="44204" count="306"/></XYs1d></averageProductEnergy>
+            <averageProductMomentum>
+              <XYs1d label="apd">
+                <axes>
+                  <axis index="1" label="energy_in" unit="MeV"/>
+                  <axis index="0" label="averageProductMomentum" unit="MeV/c"/></axes>
+                <values href="HDF#/dData" startIndex="44510" count="586"/></XYs1d></averageProductMomentum></product></products></outputChannel>
+      <availableEnergy>
+        <XYs1d label="apd">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="energy_available" unit="MeV"/></axes>
+          <values href="HDF#/dData" startIndex="45096" count="4"/></XYs1d></availableEnergy>
+      <availableMomentum>
+        <XYs1d label="apd">
+          <axes>
+            <axis index="1" label="energy_in" unit="MeV"/>
+            <axis index="0" label="momentum_available" unit="MeV/c"/></axes>
+          <values href="HDF#/dData" startIndex="45100" count="830"/></XYs1d></availableMomentum></reaction></reactions>
+  <sums>
+    <crossSectionSums>
+      <crossSectionSum label="total" ENDF_MT="1">
+        <summands>
+          <add href="/reactionSuite/reactions/reaction[@label='n + H1']/crossSection"/>
+          <add href="/reactionSuite/reactions/reaction[@label='H2 + photon [inclusive]']/crossSection"/></summands>
+        <Q>
+          <constant1d label="eval" value="0" domainMin="1e-11" domainMax="20">
+            <axes>
+              <axis index="1" label="energy_in" unit="MeV"/>
+              <axis index="0" label="Q" unit="MeV"/></axes></constant1d></Q>
+        <crossSection>
+          <regions1d label="eval">
+            <axes>
+              <axis index="1" label="energy_in" unit="MeV"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <function1ds>
+              <XYs1d index="0" interpolation="log-log">
+                <values href="HDF#/dData" startIndex="45930" count="18"/></XYs1d>
+              <XYs1d index="1">
+                <values href="HDF#/dData" startIndex="45948" count="290"/></XYs1d></function1ds></regions1d>
+          <XYs1d label="heated_000">
+            <axes>
+              <axis index="1" label="energy_in" unit="MeV"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="46238" count="662"/></XYs1d>
+          <Ys1d label="MonteCarlo_000">
+            <axes>
+              <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_000']/grid[@index='1']"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="46900" count="641"/></Ys1d>
+          <XYs1d label="heated_001">
+            <axes>
+              <axis index="1" label="energy_in" unit="MeV"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="47541" count="664"/></XYs1d>
+          <Ys1d label="MonteCarlo_001">
+            <axes>
+              <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_001']/grid[@index='1']"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="48205" count="642"/></Ys1d>
+          <XYs1d label="heated_002">
+            <axes>
+              <axis index="1" label="energy_in" unit="MeV"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="48847" count="708"/></XYs1d>
+          <Ys1d label="MonteCarlo_002">
+            <axes>
+              <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_002']/grid[@index='1']"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="49555" count="648"/></Ys1d>
+          <XYs1d label="heated_003">
+            <axes>
+              <axis index="1" label="energy_in" unit="MeV"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="50203" count="726"/></XYs1d>
+          <Ys1d label="MonteCarlo_003">
+            <axes>
+              <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_003']/grid[@index='1']"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="50929" count="648"/></Ys1d>
+          <XYs1d label="heated_004">
+            <axes>
+              <axis index="1" label="energy_in" unit="MeV"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="51577" count="738"/></XYs1d>
+          <Ys1d label="MonteCarlo_004">
+            <axes>
+              <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_004']/grid[@index='1']"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="52315" count="647"/></Ys1d>
+          <XYs1d label="heated_005">
+            <axes>
+              <axis index="1" label="energy_in" unit="MeV"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="52962" count="784"/></XYs1d>
+          <Ys1d label="MonteCarlo_005">
+            <axes>
+              <grid index="1" href="/reactionSuite/styles/griddedCrossSection[@label='MonteCarlo_005']/grid[@index='1']"/>
+              <axis index="0" label="crossSection" unit="b"/></axes>
+            <values href="HDF#/dData" startIndex="53746" count="657"/></Ys1d></crossSection></crossSectionSum></crossSectionSums></sums>
+  <applicationData>
+    <institution label="LLNL">
+      <ENDFconversionFlags>
+        <conversion flags="MF6" href="/reactionSuite/reactions/reaction[@label='H2 + photon [inclusive]']/outputChannel/products/product[@label='photon']" />
+        <conversion flags="MF6" href="/reactionSuite/reactions/reaction[@label='H2 + photon [inclusive]']/outputChannel/products/product[@label='H2']" /></ENDFconversionFlags></institution></applicationData>
+</reactionSuite>
