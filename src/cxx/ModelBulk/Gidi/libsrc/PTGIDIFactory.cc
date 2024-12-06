@@ -203,6 +203,7 @@ double temperature, double bias, double elasticThreshold, double minEKin, double
       mcprotare->setUserParticleIndex(mcprotare->neutronIndex(), const_neutron_pgd);
       if(m_ctrdata.getGammaTransport())
         mcprotare->setUserParticleIndex(mcprotare->photonIndex(), const_photon_pgd);
+
       gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, "n_"+name+"_elas", mcprotare, selectedTemp_K, bias, frac, elasticThreshold, maxEKin));
 
       
@@ -219,6 +220,9 @@ double temperature, double bias, double elasticThreshold, double minEKin, double
       std::set<int> excludeNone;
       auto mcprotare = std::make_shared<MCGIDI::ProtareSingle>(*m_smr1, static_cast<GIDI::ProtareSingle const &>( *gidiprotare), *m_pops, MC, 
                                                                   *m_particles, *m_domainHash, selectedTempinfo, excludeNone );
+      mcprotare->setUserParticleIndex(mcprotare->neutronIndex(), const_neutron_pgd);
+      if(m_ctrdata.getGammaTransport())
+        mcprotare->setUserParticleIndex(mcprotare->photonIndex(), const_photon_pgd);
       gidimodels.emplace_back(std::make_shared<GIDIModel>(const_neutron_pgd, "n_"+name+"_all", mcprotare, selectedTemp_K, bias, frac, elasticThreshold>0. ? elasticThreshold: minEKin, maxEKin));
 
     }
