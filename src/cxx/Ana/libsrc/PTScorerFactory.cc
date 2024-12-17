@@ -630,11 +630,6 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         ptstate = getPTS (ptstateInStr);
       }
 
-      if(parCount!=cfg.size())
-      {
-        PROMPT_THROW2(BadInput, "Scorer type WlAngle is missing or with extra config parameters " << cfg.size() << " " << parCount );
-      }
-
       std::string msname="";
       if(cfg.find("msname")=="") 
         parCount--;
@@ -649,6 +644,11 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
       else
       {
         scatnum = ptstoi(cfg.find("scatnum"));
+      }
+
+      if(parCount!=cfg.size())
+      {
+        PROMPT_THROW2(BadInput, "Scorer type WlAngle is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
       auto wlscorer = new ScorerWlAngle(name, samplePos, beamDir, moderator2SampleDist, wl_min, wl_max, numbin_wl, angle_min, angle_max, numbin_angle, 2112, ptstate, method);
