@@ -493,7 +493,9 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         PROMPT_THROW2(BadInput, "Scorer type MultiScat is missing or with extra config parameters" << cfg.size() << " " << parCount );
       }
 
-      return new ScorerMultiScat(name, minNumber-0.5, maxNumber+0.5, numBin, 2112, linear);
+      auto multiscat = new ScorerMultiScat(name, minNumber-0.5, maxNumber+0.5, numBin, 2112, linear);
+      m_multiScatcorers.insert({name, multiscat});
+      return multiscat;
     }
     else if(ScorDef == "VolFluence")
     {
@@ -574,7 +576,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
       // "Scorer=WlAngle; name=wl_angle;sample_pos=0,0,0;beam_dir=0,0,1;dist=1000;
       // ptstate=ENTRY;wl_min=0.5;wl_max=5;numbin_wl=1000;angle_min=-3;angle_max=3;numbin_angle=1000;method=0"
 
-      int parCount = 13;
+      int parCount = 15;
 
       // The mandatory parameters
       bool force = true;
@@ -633,7 +635,31 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         PROMPT_THROW2(BadInput, "Scorer type WlAngle is missing or with extra config parameters " << cfg.size() << " " << parCount );
       }
 
-      return new ScorerWlAngle(name, samplePos, beamDir, moderator2SampleDist, wl_min, wl_max, numbin_wl, angle_min, angle_max, numbin_angle, 2112, ptstate, method);
+      std::string msname="";
+      if(cfg.find("msname")=="") 
+        parCount--;
+      else
+      {
+        msname = cfg.find("msname");
+      }
+
+      int scatnum = -2;
+      if(cfg.find("scatnum")=="") 
+        parCount--;
+      else
+      {
+        scatnum = ptstoi(cfg.find("scatnum"));
+      }
+
+      auto wlscorer = new ScorerWlAngle(name, samplePos, beamDir, moderator2SampleDist, wl_min, wl_max, numbin_wl, angle_min, angle_max, numbin_angle, 2112, ptstate, method);
+      if(!msname.empty())
+      {
+        auto it=m_multiScatcorers.find(msname);
+        if(it==m_multiScatcorers.end())
+          PROMPT_THROW2(BadInput, "MultiScat Scorer " << msname << " is not defined. ")
+        wlscorer->addMultiScatter(it->second, scatnum);
+      }
+      return wlscorer;
     }
     else
       PROMPT_THROW2(BadInput, "Scorer type " << ScorDef << " is not supported. ")

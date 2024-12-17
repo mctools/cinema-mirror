@@ -40,7 +40,7 @@ namespace Prompt {
     //used in GeoManager::initFromGDML
     Scorer * createScorer(const std::string &cfg, double v);
   private:
-  
+    std::map<const std::string, Scorer*> m_multiScatcorers;
     friend class Singleton<ScorerFactory>;
     ScorerFactory();
     ~ScorerFactory() = default;
