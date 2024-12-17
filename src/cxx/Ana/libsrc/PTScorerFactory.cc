@@ -657,7 +657,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         auto it=m_multiScatcorers.find(msname);
         if(it==m_multiScatcorers.end())
           PROMPT_THROW2(BadInput, "MultiScat Scorer " << msname << " is not defined. ")
-        wlscorer->addMultiScatter(it->second, scatnum);
+        wlscorer->addMultiScatter(dynamic_cast<Prompt::ScorerMultiScat*>(it->second), scatnum);
       }
       return wlscorer;
     }
