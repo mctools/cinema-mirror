@@ -19,6 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTScorerWlAngle.hh"
+#include <algorithm>
 
 Prompt::ScorerWlAngle::ScorerWlAngle(const std::string &name, const Vector &samplePos, const Vector &refDir, double sourceSampleDist,
       double wl_min, double wl_max, unsigned wl_nbins, double angle_min, double angle_max, unsigned angle_nbins, unsigned int pdg, ScorerType stype, int method)
@@ -27,7 +28,12 @@ m_samplePos(samplePos),
 m_refDir(refDir), 
 m_sourceSampleDist(sourceSampleDist), 
 m_method(method)
-{}
+{
+    if(angle_max>180 || angle_min<0 || angle_min>=angle_max)
+    PROMPT_THROW2(BadInput, "angular range should be within 0 to 180 degrees and and min<max, " <<
+                  "the given min is " << angle_min
+                  << ", the given max is " << angle_max )
+}
 
 Prompt::ScorerWlAngle::~ScorerWlAngle() {}
 
@@ -36,8 +42,8 @@ void Prompt::ScorerWlAngle::score(Prompt::Particle &particle)
   if(!rightScorer(particle))
     return;
     
-  double angle_cos = (particle.getPosition()-m_samplePos).angleCos(m_refDir);
-  double angle = std::acos(angle_cos);
+  double angle_cos = std::clamp((particle.getPosition()-m_samplePos).angleCos(m_refDir), -1., 1.);
+  double angle = std::acos(angle_cos)*const_rad2deg;
   
   if(m_method==0)
   {

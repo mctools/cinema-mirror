@@ -30,12 +30,16 @@ min, max, numbin, linear), pdg), m_refDir(refDir.unit()), m_inDegree(inDegree)
   if(inDegree)
   {
     if(max>180 || min<0 || min>=max)
-      PROMPT_THROW2(BadInput, "angular range should be within 0 to 180 degrees and and min<max" )
+      PROMPT_THROW2(BadInput, "angular range should be within 0 to 180 degrees and and min<max" 
+                  << "the given min is " << min
+                  << ", the given max is " << max )
   }
   else
   {
     if(max>1 || min<-1 || min>=max)
-      PROMPT_THROW2(BadInput, "mu range should be within -1 to 1 and min<max" )
+      PROMPT_THROW2(BadInput, "mu range should be within -1 to 1 and min<max"
+                  << "the given min is " << min
+                  << ", the given max is " << max  )
   }
 }
 
