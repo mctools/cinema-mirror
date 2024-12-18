@@ -28,14 +28,15 @@ namespace Prompt {
 
   class ScorerAngular  : public Scorer1D {
   public:
-    ScorerAngular(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double mu_min, double mu_max, unsigned numbin, unsigned int pdg,
-      ScorerType stype=Scorer::ScorerType::ENTRY, bool linear=true);
+    ScorerAngular(const std::string &name, 
+      double mu_min, double mu_max, unsigned numbin, unsigned int pdg,
+      Vector refDir={0.,0.,1.},
+      ScorerType stype=Scorer::ScorerType::ENTRY, bool inDegree=false, bool linear=true);
     virtual ~ScorerAngular();
     virtual void score(Particle &particle) override;
   protected:
-    const Vector m_samplePos, m_refDir;
-    const double m_sourceSampleDist;
+    const Vector m_refDir;
+    bool m_inDegree;
   };
 }
 #endif

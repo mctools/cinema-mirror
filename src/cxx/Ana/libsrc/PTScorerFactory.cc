@@ -144,10 +144,10 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type DeltaMomentum is missing or with extra config parameters " << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type DeltaMomentum is missing or with extra config parameters " << ", " << cfg.size() << " are given, but there is " <<   parCount <<" known parameters"  );
       }
 
-      return new ScorerDeltaMomentum(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, 2112, ptstate, method, scatnum, linear);
+      return new ScorerDeltaMomentum(name, samplePos, beamDir, moderator2SampleDist, minQ, maxQ, numBin, const_neutron_pgd, ptstate, method, scatnum, linear);
     }
     if(ScorDef == "Angular")
     {
@@ -156,14 +156,12 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
       //  dist=3650.;min=10.0;max=160;numbin=6000;ptstate=ENTRY;linear=yes"
 
 
-      int parCount = 10;
+      int parCount = 9;
 
       // The mandatory parameters
       bool force = true;
       std::string name = cfg.find("name", force);
-      auto samplePos = string2vec(cfg.find("sample_pos", force));
       auto beamDir = string2vec(cfg.find("beam_dir", force));
-      double moderator2SampleDist = ptstod(cfg.find("dist", force));
       double angle_min = ptstod(cfg.find("min", force));
       double angle_max = ptstod(cfg.find("max", force));
 
@@ -187,6 +185,25 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
        ptstate = getPTS (ptstateInStr);
       }
 
+      bool inDegree = true;
+      std::string inDegreeStr = cfg.find("inDegree");
+      if(inDegreeStr.empty())
+        parCount--;
+      else
+      {
+        if(inDegreeStr=="yes")
+        {
+          inDegree = true;
+        }
+        else if(inDegreeStr=="no")
+          inDegree = false;
+        else {
+          PROMPT_THROW2(BadInput, "The value for \"inDegree\" should either be \"yes\" or \"no\"");
+        }
+
+      }
+
+
       bool linear = true;
       std::string linearInStr = cfg.find("linear");
       if(linearInStr.empty())
@@ -207,9 +224,10 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type Angular is missing or with extra config parameters " << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type Angular is missing or with extra config parameters " << ", " << cfg.size() << " are given, but there is " <<   parCount <<" known parameters"  );
       }
-      return new ScorerAngular(name, samplePos, beamDir, moderator2SampleDist, angle_min, angle_max, numBin, 2112, ptstate);
+
+      return new ScorerAngular(name, angle_min, angle_max, numBin, const_neutron_pgd, beamDir, ptstate, inDegree);
     }
 
     else if(ScorDef == "PSD")
@@ -276,10 +294,10 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type PSD is missing or with extra config parameters" << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type PSD is missing or with extra config parameters" << ", " << cfg.size() << " are given, but there is " <<   parCount <<" known parameters"  );
       }
 
-      return new ScorerPSD(name, xmin, xmax, nxbins, ymin, ymax, nybins, 2112, ptstate,type);
+      return new ScorerPSD(name, xmin, xmax, nxbins, ymin, ymax, nybins, const_neutron_pgd, ptstate,type);
     }
 
     else if(ScorDef == "ESpectrum")
@@ -316,7 +334,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
         numBin = ptstoi(cfg.find("numbin"));
       }
 
-      int pdg = 2112;
+      int pdg = const_neutron_pgd;
       if(cfg.find("particle")=="") 
         parCount--;
       else
@@ -345,7 +363,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type ESpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type ESpectrum is missing or with extra config parameters" << ", " << cfg.size() << " are given, but there is " <<   parCount <<" known parameters"  );
       }
 
       return new ScorerESpectrum(name, scoreTransfer, minE, maxE, numBin, pdg, ptstate);
@@ -383,10 +401,10 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type WlSpectrum is missing or with extra config parameters" << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type WlSpectrum is missing or with extra config parameters" << ", " << cfg.size() << " are given, but there is " <<   parCount <<" known parameters"  );
       }
 
-      return new ScorerWlSpectrum(name, minWl, maxWl, numBin, 2112, ptstate);
+      return new ScorerWlSpectrum(name, minWl, maxWl, numBin, const_neutron_pgd, ptstate);
     }
     else if(ScorDef == "TOF")
     {
@@ -421,10 +439,10 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type TOF is missing or with extra config parameters" << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type TOF is missing or with extra config parameters" << ", " << cfg.size() << " are given, but there is " <<   parCount <<" known parameters"  );
       }
 
-      return new ScorerTOF(name, minT, maxT, numBin, 2112, ptstate);
+      return new ScorerTOF(name, minT, maxT, numBin, const_neutron_pgd, ptstate);
     }
     else if(ScorDef == "MultiScat")
     {
@@ -490,10 +508,10 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type MultiScat is missing or with extra config parameters" << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type MultiScat is missing or with extra config parameters" << ", " << cfg.size() << " are given, but there is " <<   parCount <<" known parameters"  );
       }
 
-      auto multiscat = new ScorerMultiScat(name, minNumber-0.5, maxNumber+0.5, numBin, 2112, linear);
+      auto multiscat = new ScorerMultiScat(name, minNumber-0.5, maxNumber+0.5, numBin, const_neutron_pgd, linear);
       m_multiScatcorers.insert({name, multiscat});
       return multiscat;
     }
@@ -545,17 +563,17 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type VolFluence is missing or with extra config parameters" << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type VolFluence is missing or with extra config parameters" << ", " << cfg.size() << " are given, but there is " <<   parCount <<" known parameters"  );
       }
 
-      return new ScorerVolFluence(name, xmin, xmax, nxbins, vol, 2112, ptstate, linear);
+      return new ScorerVolFluence(name, xmin, xmax, nxbins, vol, const_neutron_pgd, ptstate, linear);
 
     }
     else if(ScorDef == "Split")
     {
       std::string name = cfg.find("name", true);
       int split = ptstoi(cfg.find("split", true));
-      return new ScorerSplit(name, split, 2112);
+      return new ScorerSplit(name, split, const_neutron_pgd);
     }
     else if(ScorDef == "RotatingObj")
     {
@@ -568,7 +586,7 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
       auto rotAxis = string2vec(cfg.find("rotation_axis", force));
       auto pointAxis = string2vec(cfg.find("point_on_axis", force));
       double rotFreq = ptstod(cfg.find("rot_fre", force));
-      return new ScorerRotatingObj(name, rotAxis, pointAxis, rotFreq, 2112);
+      return new ScorerRotatingObj(name, rotAxis, pointAxis, rotFreq, const_neutron_pgd);
     }
     else if(ScorDef == "WlAngle")
     {
@@ -648,10 +666,10 @@ Prompt::Scorer* Prompt::ScorerFactory::createScorer(const std::string &cfgstr, d
 
       if(parCount!=cfg.size())
       {
-        PROMPT_THROW2(BadInput, "Scorer type WlAngle is missing or with extra config parameters " << cfg.size() << " " << parCount );
+        PROMPT_THROW2(BadInput, "Scorer type WlAngle is missing or with extra config parameters " << ", " << cfg.size() << " are given, but there is " <<   parCount <<" known parameters"  );
       }
 
-      auto wlscorer = new ScorerWlAngle(name, samplePos, beamDir, moderator2SampleDist, wl_min, wl_max, numbin_wl, angle_min, angle_max, numbin_angle, 2112, ptstate, method);
+      auto wlscorer = new ScorerWlAngle(name, samplePos, beamDir, moderator2SampleDist, wl_min, wl_max, numbin_wl, angle_min, angle_max, numbin_angle, const_neutron_pgd, ptstate, method);
       if(!msname.empty())
       {
         auto it=m_multiScatcorers.find(msname);

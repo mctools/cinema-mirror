@@ -19,44 +19,35 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PTScorerAngular.hh"
+#include <algorithm>
 
-Prompt::ScorerAngular::ScorerAngular(const std::string &name, const Vector &samplePos, const Vector &refDir,
-      double sourceSampleDist, double mu_min, double mu_max, unsigned numbin, unsigned int pdg, ScorerType stype, bool linear)
+Prompt::ScorerAngular::ScorerAngular(const std::string &name, 
+      double min, double max, unsigned numbin, unsigned int pdg,
+      Vector refDir,  ScorerType stype, bool inDegree, bool linear)
 :Scorer1D("ScorerAngular_" + name, stype, std::make_unique<Hist1D>("ScorerAngular_" + name, 
-mu_min==-1?mu_min-1e-14:mu_min, 
-mu_max==1?mu_max+1e-14:mu_max, 
-numbin, linear), pdg), m_samplePos(samplePos), m_refDir(refDir.unit()), 
-m_sourceSampleDist(sourceSampleDist)
+min, max, numbin, linear), pdg), m_refDir(refDir.unit()), m_inDegree(inDegree)
 {
-  // if(mu_max>1 || mu_min<-1 || mu_min>=mu_max)
-  //   PROMPT_THROW2(BadInput, "angular range should be within 0 to 180 degrees" )
+  if(inDegree)
+  {
+    if(max>180 || min<0 || min>=max)
+      PROMPT_THROW2(BadInput, "angular range should be within 0 to 180 degrees and and min<max" )
+  }
+  else
+  {
+    if(max>1 || min<-1 || min>=max)
+      PROMPT_THROW2(BadInput, "mu range should be within -1 to 1 and min<max" )
+  }
 }
 
 Prompt::ScorerAngular::~ScorerAngular()
 {
 }
 
-
 void Prompt::ScorerAngular::score(Prompt::Particle &particle)
 {
   if(!rightScorer(particle))
     return;
 
-  double angle_cos = m_refDir.angleCos(particle.getDirection());
-  if(std::abs(angle_cos)>1)
-  {
-    std::cout << "wrong mu " << angle_cos << std::endl;
-
-  }
-  m_hist->fill(angle_cos, particle.getWeight());  
-  
-  // fixme:
-  // Prompt::Vector vec = {0,0,0};
-  // std::cout << "Dir 1: " << particle.getDirection() << ". Dir 2: " << (particle.getPosition() - vec) / std::sqrt((particle.getPosition() - vec).mag2()) << std::endl;
-
-  // The following and above particle outgoing dir neglects beam direction variations.
-  // The following particle outgoing direction neglects sample size and scattering by environments.
-  // double angle_cos = (m_samplePos-particle.getPosition()).angleCos(m_refDir);
-  // m_hist->fill(180-std::acos(angle_cos)*const_rad2deg, particle.getWeight());
-
+  double angle_cos = std::clamp(m_refDir.angleCos(particle.getDirection()), -1., 1.);
+  m_hist->fill(m_inDegree ? std::acos(angle_cos)*const_rad2deg: angle_cos, particle.getWeight());  
 }
