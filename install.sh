@@ -50,6 +50,7 @@ function findSetEnv(){
   fi
 }
 
+export CINEMA_LOCAL_BUILD=1
 export CINEMAPATH="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #install ncrystal
 export response='y'
