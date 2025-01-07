@@ -1,12 +1,12 @@
 #!/bin/bash
 # --set options
-PREFIX="https://gitlab.com/cinema-developers"
+PREFIX="https://code.ihep.ac.cn/cinema-developers/"
 while getopts ":f" option
   do
     case "${option}"
      in
       f) echo "Running: "${PREFIX};;
-      *) PREFIX="https://gitlab.com/cinema-developers";;
+      *) PREFIX="https://code.ihep.ac.cn/cinema-developers/";;
     esac
 done
 if (( $OPTIND == 1 )); then
