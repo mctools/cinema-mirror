@@ -283,7 +283,8 @@ void Prompt::ParticleProcess::cfgPhysicsModel(const std::string &cfgstr)
     else
     #endif
     {
-      m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0));
+      if(scatter_bias)
+        m_discretModels->addPhysicsModel(std::make_shared<NCrystalScat>(nccfg, scatter_bias, 0));
       if(abs_bias)
         m_discretModels->addPhysicsModel(std::make_shared<NCrystalAbs>(nccfg, abs_bias, 0));
     }
