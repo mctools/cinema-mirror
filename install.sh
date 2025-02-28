@@ -10,7 +10,7 @@ while getopts ":f" option
     esac
 done
 if (( $OPTIND == 1 )); then
-  PREFIX="https://gitlab.com/cinema-developers"
+  PREFIX="https://code.ihep.ac.cn/cinema-developers/"
 fi 
 NUMCPU=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
 
