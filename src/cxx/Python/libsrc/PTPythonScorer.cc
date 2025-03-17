@@ -94,7 +94,7 @@ int method, bool linear)
   pt::Vector mean_incident_dir(mean_incident_dir_x, mean_incident_dir_y, mean_incident_dir_z);
   pt::Vector sample_position(sample_position_x, sample_position_y, sample_position_z);
   return static_cast<void *>(new pt::ScorerDeltaMomentum(name, sample_position, mean_incident_dir,
-    sourceSampleDist, qmin, qmax, numbin, pdg, t, method, linear=linear));
+    sourceSampleDist, qmin, qmax, numbin, pdg, t, method, -1, linear));
 }
 
 void* pt_ScorerPSD_new(const char* name, double xmin, double xmax, unsigned nxbins, 
