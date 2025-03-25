@@ -2,6 +2,7 @@
 # numba==0.55.1
 
 #required packages for Prompt visualisation
+ncrystal
 mpi4py
 pyvista
 matplotlib

@@ -50,53 +50,53 @@ function findSetEnv(){
   fi
 }
 
-export CINEMA_LOCAL_BUILD=1
-export CINEMAPATH="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#install ncrystal
-export response='y'
-if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
-  # read -r -p "Do you want to install NCrystal into $CINEMAPATH/external? [y/N] " response
-  if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-      if [ ! -d $CINEMAPATH/external ]; then
-        mkdir $CINEMAPATH/external
-      fi
-      cd $CINEMAPATH/external
-      if [ -d ncrystal ]; then
-        rm -rf ncrystal
-      fi
-      git clone ${PREFIX}/ncrystal.git ncrystal
-      cd -
-      mkdir $CINEMAPATH/external/ncrystal/build && cd $CINEMAPATH/external/ncrystal/build
-      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/ncrystal/install ..
-      make -j ${NUMCPU} && make install
-      cd -
-      echo "installed  ncrystal"
-    else
-      echo "Found ncrystal"
-    fi
-    eval $( $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup)  
-    export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
-  else
-    eval $( $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config --setup)  
-    export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
-    echo "NCrystal config done"
-fi
+# export CINEMA_LOCAL_BUILD=1
+# export CINEMAPATH="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# #install ncrystal
+# export response='y'
+# if [ ! -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
+#   # read -r -p "Do you want to install NCrystal into $CINEMAPATH/external? [y/N] " response
+#   if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+#       if [ ! -d $CINEMAPATH/external ]; then
+#         mkdir $CINEMAPATH/external
+#       fi
+#       cd $CINEMAPATH/external
+#       if [ -d ncrystal ]; then
+#         rm -rf ncrystal
+#       fi
+#       git clone ${PREFIX}/ncrystal.git ncrystal
+#       cd -
+#       mkdir $CINEMAPATH/external/ncrystal/build && cd $CINEMAPATH/external/ncrystal/build
+#       cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/ncrystal/install ..
+#       make -j ${NUMCPU} && make install
+#       cd -
+#       echo "installed  ncrystal"
+#     else
+#       echo "Found ncrystal"
+#     fi
+#     # eval $( $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config -s)  
+#     # export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
+#   else
+#     # eval $( $CINEMAPATH/external/ncrystal/install/bin/ncrystal-config -s)  
+#     # export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat:$CINEMAPATH/external/ncystal/install/share/Ncrystal/data"
+#     echo "NCrystal config done"
+# fi
 
-if [ -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
-  if [ ! -f $CINEMAPATH/external/ncplugin-BzScope/testcode/utils/cache/bld/libNCPlugin_PiXiu.so ]; then
-    echo "Installing ncplugin-BzScope"
-    cd $CINEMAPATH/external
-    git clone ${PREFIX}/ncplugin-BzScope.git
-    cd -
-    cd $CINEMAPATH/external/ncplugin-BzScope
-    . testcode/utils/bootstrap.sh 
-    ncpluginbuild
-    cd -
-  fi
-  echo "Found ncplugin-BzScope"
-  . $CINEMAPATH/external/ncplugin-BzScope/testcode/utils/bootstrap.sh 
-  export NCRYSTAL_PLUGIN_LIST="$CINEMAPATH/external/ncplugin-BzScope/testcode/utils/cache/bld/libNCPlugin_BzScope.so:$NCRYSTAL_PLUGIN_LIST"
-fi
+# if [ -f $CINEMAPATH/external/ncrystal/install/lib/libNCrystal.so ]; then
+#   if [ ! -f $CINEMAPATH/external/ncplugin-BzScope/testcode/utils/cache/bld/libNCPlugin_PiXiu.so ]; then
+#     echo "Installing ncplugin-BzScope"
+#     cd $CINEMAPATH/external
+#     git clone ${PREFIX}/ncplugin-BzScope.git
+#     cd -
+#     cd $CINEMAPATH/external/ncplugin-BzScope
+#     . testcode/utils/bootstrap.sh 
+#     ncpluginbuild
+#     cd -
+#   fi
+#   echo "Found ncplugin-BzScope"
+#   . $CINEMAPATH/external/ncplugin-BzScope/testcode/utils/bootstrap.sh 
+#   export NCRYSTAL_PLUGIN_LIST="$CINEMAPATH/external/ncplugin-BzScope/testcode/utils/cache/bld/libNCPlugin_BzScope.so:$NCRYSTAL_PLUGIN_LIST"
+# fi
 
 #MCPL
 if [ ! -f $CINEMAPATH/external/mcpl/install/lib/libmcpl.so ]; then

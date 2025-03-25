@@ -24,13 +24,26 @@ if(NOT TARGET VecGeom::vgdml)
 endif()
 
 # NCrystal
-if($ENV{CINEMA_LOCAL_BUILD})
-  set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/ncrystal/install/")
-  message(STATUS "NCrystal_DIR=$ENV{NCrystal_ext}/lib/cmake")
-  set(NCrystal_DIR  "$ENV{NCrystal_ext}/lib/cmake")
-endif()
-find_package(NCrystal 3.0.0 REQUIRED)
-message(STATUS "FOUND NCrystal: ${NCrystal_FOUND} ${NCrystal_DIR}")
+#Find NCrystal:
+# if( NOT DEFINED "NCrystal_DIR" )
+  #Need to invoke "ncrystal-config --show cmakedir" if we want to be able to
+  #work with ncrystal-core installed via python wheels:
+  execute_process(
+    COMMAND ncrystal-config --show cmakedir
+    OUTPUT_VARIABLE "NCrystal_DIR" OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+# endif()
+message(STATUS "NCrystal_DIR:  ${NCrystal_DIR}")
+
+find_package( NCrystal 4.0.0 REQUIRED )
+
+# if($ENV{CINEMA_LOCAL_BUILD})
+#   set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/ncrystal/install/")
+#   message(STATUS "NCrystal_DIR=$ENV{NCrystal_ext}/lib/cmake")
+#   set(NCrystal_DIR  "$ENV{NCrystal_ext}/lib/cmake")
+# endif()
+# find_package(NCrystal 3.0.0 REQUIRED)
+# message(STATUS "FOUND NCrystal: ${NCrystal_FOUND} ${NCrystal_DIR}")
 
 # MCPL
 if($ENV{CINEMA_LOCAL_BUILD})
