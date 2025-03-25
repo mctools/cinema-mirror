@@ -25,17 +25,17 @@ endif()
 
 # NCrystal
 #Find NCrystal:
-# if( NOT DEFINED "NCrystal_DIR" )
+if( NOT DEFINED "NCrystal_DIR" )
   #Need to invoke "ncrystal-config --show cmakedir" if we want to be able to
   #work with ncrystal-core installed via python wheels:
   execute_process(
     COMMAND ncrystal-config --show cmakedir
     OUTPUT_VARIABLE "NCrystal_DIR" OUTPUT_STRIP_TRAILING_WHITESPACE
   )
-# endif()
-message(STATUS "NCrystal_DIR:  ${NCrystal_DIR}")
-
+endif()
 find_package( NCrystal 4.0.0 REQUIRED )
+message(STATUS "FOUND NCrystal_DIR: ${NCrystal_DIR}")
+message(STATUS "Using NCrystal version ${NCrystal_VERSION}")
 
 # if($ENV{CINEMA_LOCAL_BUILD})
 #   set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/external/ncrystal/install/")
