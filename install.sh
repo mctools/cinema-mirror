@@ -159,8 +159,8 @@ if [ $? -eq 0 ]; then
 elif [ -n "$CONDA_DEFAULT_ENV" ]; then  
   pullFromConda libxml2 "2.9.3"
   export PROMPT_LIBXML2_LIB="$(dirname $(find $CONDA_PREFIX/lib -name libxml2.so -print -quit))"
-elif [ -f $CINEMAPATH/external/libxml2-2.9.3/local/libxml2.so ]; then
-  export PROMPT_LIBXML2_LIB=$CINEMAPATH/external/libxml2-2.9.3/local
+elif [ -f $CINEMAPATH/external/libxml2-2.9.3/local/lib/libxml2.so ]; then
+  export PROMPT_LIBXML2_LIB=$CINEMAPATH/external/libxml2-2.9.3/local/lib
 else
   echo "libxml2 missing! Installing to "${CINEMAPATH}"/external"
   cd $CINEMAPATH/external
@@ -275,7 +275,7 @@ elif [ -n "$CONDA_DEFAULT_ENV" ]; then
     export PROMPT_HDF5_LIB="$CONDA_PREFIX/lib"
     export PROMPT_HDF5_HEADER="$CONDA_PREFIX/include"
     export PROMPT_HDF5_PATH="$CONDA_PREFIX"
-elif [ ! -f  $CINEMAPATH/external/hdf5-1.12.2/local/lib/libhdf5.so ]; then
+elif [ -f  $CINEMAPATH/external/hdf5-1.12.2/local/lib/libhdf5.so ]; then
   export PROMPT_HDF5_LIB=$CINEMAPATH/external/hdf5-1.12.2/local/lib
   export PROMPT_HDF5_HEADER=$CINEMAPATH/external/hdf5-1.12.2/local/include
   export PROMPT_HDF5_PATH=$CINEMAPATH/external/hdf5-1.12.2/local/
