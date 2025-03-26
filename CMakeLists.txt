@@ -88,7 +88,7 @@ find_package(Python REQUIRED COMPONENTS Interpreter)
 
 file(GLOB_RECURSE TESTFILES "${CMAKE_CURRENT_SOURCE_DIR}/src/pythontests/test_*.py")
 foreach(TS ${TESTFILES})
-	message(STATUS "Running ${Python_EXECUTABLE} ${TS}")
+	# message(STATUS "Running ${Python_EXECUTABLE} ${TS}")
 	get_filename_component(EXCNAME  ${TS}  NAME_WE)
 	add_test (NAME python-${EXCNAME}
 	  COMMAND ${Python_EXECUTABLE} ${TS}
