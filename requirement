@@ -3,6 +3,8 @@
 
 #required packages for Prompt visualisation
 ncrystal
+ncrystal-pypluginmgr
+git+https://code.ihep.ac.cn/cinema-developers/ncplugin-bzscope
 mpi4py
 pyvista
 matplotlib
