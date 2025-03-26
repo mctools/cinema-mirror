@@ -25,7 +25,8 @@ endif()
 
 # NCrystal
 #Find NCrystal:
-if( NOT DEFINED "NCrystal_DIR" )
+
+if(NOT DEFINED NCrystal_DIR OR NCrystal_DIR MATCHES "-NOTFOUND")
   #Need to invoke "ncrystal-config --show cmakedir" if we want to be able to
   #work with ncrystal-core installed via python wheels:
   execute_process(
