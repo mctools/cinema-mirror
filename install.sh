@@ -407,6 +407,6 @@ if [ ! -f $CINEMAPATH/src/python/ptgeo/__init__.py ]; then
   cd -
 fi
 
-
+export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat"
 export PATH="$CINEMAPATH/src/python/ptgeo/examples:$PATH"
 echo "Added the ptgeo example directory into environment"
