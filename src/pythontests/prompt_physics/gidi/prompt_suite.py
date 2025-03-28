@@ -13,21 +13,26 @@ import matplotlib.pyplot as plt
 from Cinema.Interface import plotStyle
 import numpy as np
 
-import os
+import unittest
 
+CDATA=GidiSetting()
+isCompiled = CDATA.isCompiled
+print("Testing...", CDATA.isCompiled)
+reasonNotCompiled = "Gidi is NOT compiled. Tests related skipped. Run 'cimbuild -t --enablegidi' to enable testing with Gidi."
+    
 # plotStyle()
+@unittest.skipIf(not isCompiled, reasonNotCompiled)
 def promptRun(cfg, energy, gidiThreshold = -5, popsPath = None,
               numbin_en=100, loweredge=1e-5, upperedge=30e6,
               isGammaTransport=False, partnum = 1e5, setGidi= True,
               plot=False):
-
-    cdata=GidiSetting()
-    cdata.setEnableGidi(True)
-    cdata.setGidiThreshold(gidiThreshold)
-    cdata.setEnableGidiPowerIteration(False)
-    cdata.setGammaTransport(isGammaTransport)
+    
+    CDATA.setEnableGidi(True)
+    CDATA.setGidiThreshold(gidiThreshold)
+    CDATA.setEnableGidiPowerIteration(False)
+    CDATA.setGammaTransport(isGammaTransport)
     if not popsPath:
-        cdata.setGidiPops(popsPath)
+        CDATA.setGidiPops(popsPath)
 
     numbin_mu=10
 

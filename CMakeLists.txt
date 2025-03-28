@@ -94,4 +94,7 @@ foreach(TS ${TESTFILES})
 	  COMMAND ${Python_EXECUTABLE} ${TS}
 	  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/cinemabin #fixme find a temp dir defined in the enviroment
 	)
+  set_tests_properties(
+    python-${EXCNAME} PROPERTIES SKIP_REGULAR_EXPRESSION "raise SkipTest"
+  )
 endforeach(TS ${TESTFILES})
