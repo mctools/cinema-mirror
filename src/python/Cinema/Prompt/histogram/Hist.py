@@ -200,7 +200,7 @@ class Hist1D(HistBase):
         
         _pt_Hist1D_fill_many(self.cobj, x.size, np.ascontiguousarray(x), np.ascontiguousarray(weight) )
 
-    def plot(self, show=False, label=None, title=None, log=False, sigma=2):
+    def plot(self, show=False, label=None, title=None, log=False, sigma=1):
         try:
             import matplotlib.pyplot as plt
             from Cinema.Interface import plotStyle

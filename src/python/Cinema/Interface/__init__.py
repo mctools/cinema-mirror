@@ -109,56 +109,115 @@ except ImportError:
     print("The 'gvar' library is not installed. You can install it using pip or conda.")
     print("To install using pip, run: pip install gvar")
     print("To install using conda, run: conda install -c conda-forge gvar")
+from scipy.interpolate import interp1d  # CinemaXY
 
-class CinemaArray(np.ndarray):
+
+import numpy as np
+import gvar as gv
+import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
+
+class ArrayCoreMixin:
+    """Core array functionality mixin"""
     def __new__(cls, input_array):
-        # Convert input to ndarray, then view as CinemaArray
         obj = np.asarray(input_array).view(cls)
         return obj
-
+        
     def __array_finalize__(self, obj):
         if obj is None: return
-        # Copy attributes from the original object
         self.gvar = getattr(obj, 'gvar', None)
-
+        
     def __array_wrap__(self, out_arr, context=None):
-        # Wrap the output array as CinemaArray
-        return np.ndarray.__array_wrap__(self, out_arr, context)
+        """Ensure mathematical operations preserve attributes"""
+        if isinstance(out_arr, np.ndarray) and not isinstance(out_arr, type(self)):
+            out_arr = out_arr.view(type(self))
+            # Copy all custom attributes
+            for name in getattr(self, '_custom_attrs', []):
+                setattr(out_arr, name, getattr(self, name, None))
+        return out_arr
 
-    def __getitem__(self, item):
-        result = super(CinemaArray, self).__getitem__(item)
-        if isinstance(result, np.ndarray):
-            return result.view(CinemaArray)
-        else:
-            return result
-
+class ArrayStatsMixin:
+    """Statistical operations mixin"""
     @property
     def mean(self):
-        if self.gvar is not None:
+        if getattr(self, 'gvar', None):
             return np.vectorize(lambda x: x.mean if isinstance(x, gv.GVar) else x)(self)
         return self
-
-    @property
+        
+    @property 
     def sdev(self):
-        if self.gvar is not None:
+        if getattr(self, 'gvar', None):
             return np.vectorize(lambda x: x.sdev if isinstance(x, gv.GVar) else 0)(self)
         return np.zeros_like(self)
-
-    @staticmethod
-    def from_sdev(mean, sdev=None):
-        if sdev is None:
-            return CinemaArray(mean)
-        else:
-            gvars = gv.gvar(mean, sdev)
-            obj = np.asarray(gvars).view(CinemaArray)
-            obj.gvar = True
-            return obj
-
-    @staticmethod
-    def from_counts(counts):
-        gvars = gv.gvar(counts, counts/np.sqrt(counts))
-        obj = np.asarray(gvars).view(CinemaArray)
+        
+    @classmethod
+    def from_sdev(cls, mean, sdev=None, **kwargs):
+        obj = cls(gv.gvar(mean, sdev) if sdev is not None else mean)
         obj.gvar = True
+        for k, v in kwargs.items():
+            setattr(obj, k, v)
+        return obj
+        
+    @classmethod
+    def from_counts(cls, counts, **kwargs):
+        obj = cls(gv.gvar(counts, np.sqrt(counts)))
+        obj.gvar = True
+        for k, v in kwargs.items():
+            setattr(obj, k, v)
         return obj
 
+class ArrayCoordinateMixin:
+    """Coordinate system mixin"""
+    def __init__(self, *args, x=None, **kwargs):
+        self.x = np.asarray(x) if x is not None else np.arange(len(self))
+        if len(self.x) != len(self):
+            raise ValueError("x coordinates must match array length")
+        # Register x as a custom attribute to be preserved
+        if not hasattr(self, '_custom_attrs'):
+            self._custom_attrs = []
+        self._custom_attrs.append('x')
+            
+    def __array_finalize__(self, obj):
+        super().__array_finalize__(obj)
+        self.x = getattr(obj, 'x', None)
+        
+    def __getitem__(self, item):
+        result = super().__getitem__(item)
+        if isinstance(result, type(self)) and hasattr(self, 'x'):
+            result.x = self.x[item] if isinstance(item, (int, slice)) else self.x[np.asarray(item)]
+        return result
 
+class ArrayPlotMixin:
+    """Plotting functionality mixin"""
+    def plot(self, ax=None, plot_errors=True, **kwargs):
+        ax = ax or plt.gca()
+        x = getattr(self, 'x', np.arange(len(self)))
+        y = getattr(self, 'mean', np.asarray(self))
+        
+        plot_kwargs = {
+            'marker': kwargs.pop('marker', 'o'),
+            'linestyle': kwargs.pop('linestyle', 'none'),
+            'capsize': kwargs.pop('capsize', 3),
+            **kwargs
+        }
+        
+        if plot_errors and hasattr(self, 'sdev'):
+            yerr = getattr(self, 'sdev')
+            ax.errorbar(x, y, yerr=yerr,**plot_kwargs)
+        else:
+            ax.plot(x, y, **plot_kwargs)
+        return ax
+
+# Base array class
+class CinemaArray(ArrayCoreMixin, ArrayStatsMixin, np.ndarray):
+    pass
+
+# Extended class with coordinates and plotting
+class CinemaXY(ArrayCoordinateMixin, ArrayPlotMixin, CinemaArray):
+    def interpolate(self, new_x, kind='linear'):
+        new_x = np.asarray(new_x)
+        if getattr(self, 'gvar', None):
+            interp_mean = interp1d(self.x, self.mean, kind=kind)(new_x)
+            interp_sdev = interp1d(self.x, self.sdev, kind=kind)(new_x)
+            return type(self).from_sdev(interp_mean, interp_sdev, x=new_x)
+        return type(self)(interp1d(self.x, self, kind=kind)(new_x), x=new_x)
