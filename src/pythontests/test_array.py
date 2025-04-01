@@ -15,7 +15,7 @@ for i in range(10):
 
 # ca = CinemaXY.from_sdev(histcpp.getWeight(), histcpp.getSdev(), histcpp.getCentre()) 
 
-data = CinemaXY.from_sdev(mean=histcpp.getWeight(), sdev=histcpp.getSdev(), x=histcpp.getCentre())
+data = CinemaXY.from_hist1d(histcpp)
 
 data = data*2
 np.testing.assert_allclose(data.mean , histcpp.getWeight()*2, rtol=1e-13, atol=1e-13)

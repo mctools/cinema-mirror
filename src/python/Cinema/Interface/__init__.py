@@ -221,3 +221,22 @@ class CinemaXY(ArrayCoordinateMixin, ArrayPlotMixin, CinemaArray):
             interp_sdev = interp1d(self.x, self.sdev, kind=kind)(new_x)
             return type(self).from_sdev(interp_mean, interp_sdev, x=new_x)
         return type(self)(interp1d(self.x, self, kind=kind)(new_x), x=new_x)
+    
+    @classmethod
+    def from_hist1d(cls, hist1d):
+        """Initialize from a C++ histogram object with statistical data.
+        
+        Args:
+            hist1d: histogram object with methods:
+                    - getWeight() -> mean values
+                    - getSdev() -> standard deviations
+                    - getCentre() -> bin centers
+        
+        Returns:
+            CinemaXY instance with statistical data and coordinates
+        """
+        return cls.from_sdev(
+            mean=hist1d.getWeight(),
+            sdev=hist1d.getSdev(),
+            x=hist1d.getCentre()
+        )
