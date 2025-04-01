@@ -384,11 +384,12 @@ class CinemaXYZ(Array2DCoordinateMixin, Array2DPlotMixin, CinemaArray):
         Returns:
             CinemaXYZ instance with statistical data and coordinates
         """
+        c = hist2d.getCentre()
         return cls.from_sdev(
             mean=hist2d.getWeight(),
             sdev=hist2d.getSdev(),
-            x=hist2d.getCentreX(),
-            y=hist2d.getCentreY()
+            x=c[0],
+            y=c[1]
         )
     
     @classmethod
