@@ -409,4 +409,5 @@ fi
 
 export NCRYSTAL_DATA_PATH="$CINEMAPATH/ncmat"
 export PATH="$CINEMAPATH/src/python/ptgeo/examples:$PATH"
+export PYTHONPATH="$CINEMAPATH:$PYTHONPATH"
 echo "Added the ptgeo example directory into environment"
