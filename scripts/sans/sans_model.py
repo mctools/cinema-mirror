@@ -60,7 +60,7 @@ beam_stop_diameter = 8 # todo: check
 beam_stop_thickness = 10  # todo: beamstop thickness
 
 # mod_sam_dist = 12000
-gun_pos = np.array([0,0,-dict_distance.get("sample_changer")])
+gun_pos = -dict_distance.get("sample_changer")
 sam_pos = np.array([0,0,0])
 # det_radius_mm = 400.
 # beamstop_radius_mm = .001
@@ -123,7 +123,7 @@ class MySim(PromptMPI):
 
     def makeWorld(self,wl):
         
-        world = Volume("world", Box(2000, 2000, 25000))
+        world = Volume("world", Box(600, 600, 14000))
        
         world.placeChild("sample", self.sample, Transformation3D(0., 0., dist2sample.get("dist2sample_sample_changer")))
         world.placeChild("det", self.make_simple_main_detector(wl), Transformation3D(0., 0., dist2sample.get("dist2sample_main_detector")))
@@ -181,7 +181,7 @@ def sans_run(wl, n, t, det_pos, divergence, pyGun=True):
     return sim, sqw_s, sq
 
 
-if __name__ == "__main__":
+def main():
     wl = 1
     sim = MySim(seed=1010, sample_thickness=1, wl=wl)
     class MyGun(PythonGun):
@@ -194,7 +194,9 @@ if __name__ == "__main__":
             return wl2ekin(wl)
 
         def samplePosition(self):
-            return np.array(gun_pos)
+            x = (np.random.random() - 0.5) * 10 # todo: check source
+            y = (np.random.random() - 0.5) * 10
+            return np.array([x, y, gun_pos])
         
         def sampleDirection(self):
             return np.array([0, 0, 1])
@@ -237,7 +239,6 @@ if __name__ == "__main__":
         fig.savefig('sq.pdf')
         sqw.savefig('sqw.pdf', log=True)
 
-
         psd.plot(show=False)
         sqw.plot(show=False, dynrange=1e-10)
         sqw_s.plot(show=False, dynrange=1e-10, logx=True)
@@ -246,4 +247,7 @@ if __name__ == "__main__":
         plt.figure()
         wlspec.plot(show=False,  log=[False, True])
         plt.figure()
-        tof.plot(show=True)
+        tof.plot(show=False)
+
+if __name__ == "__main__":
+    main()
