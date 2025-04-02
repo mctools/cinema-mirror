@@ -133,19 +133,47 @@ class ArrayCoreMixin:
                 self.__init__(**self._init_kwargs)
             return
             
-        self.gvar = getattr(obj, 'gvar', None)
-        # Copy other attributes if they exist
+        # Copy all attributes from obj to new array
         for name in getattr(obj, '_custom_attrs', []):
             setattr(self, name, getattr(obj, name, None))
         
+        # Explicitly copy gvar attribute if it exists
+        if hasattr(obj, 'gvar'):
+            self.gvar = obj.gvar
+            
     def __array_wrap__(self, out_arr, context=None):
         """Ensure mathematical operations preserve attributes"""
-        if isinstance(out_arr, np.ndarray) and not isinstance(out_arr, type(self)):
-            out_arr = out_arr.view(type(self))
+        if isinstance(out_arr, np.ndarray):
+            # Convert back to our class if needed
+            if not isinstance(out_arr, type(self)):
+                out_arr = out_arr.view(type(self))
+            
             # Copy all custom attributes
             for name in getattr(self, '_custom_attrs', []):
                 setattr(out_arr, name, getattr(self, name, None))
+            
+            # Preserve gvar status
+            if hasattr(self, 'gvar'):
+                out_arr.gvar = self.gvar
+                
         return out_arr
+    
+    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
+        """Handle NumPy ufuncs properly"""
+        args = [i.view(np.ndarray) if isinstance(i, type(self)) else i 
+               for i in inputs]
+        result = getattr(ufunc, method)(*args, **kwargs)
+        
+        if method == '__call__' and ufunc.__name__ in ['multiply', 'add', 'subtract', 'divide']:
+            if isinstance(result, np.ndarray):
+                result = result.view(type(self))
+                # Copy attributes from first input array
+                first_input = next(i for i in inputs if isinstance(i, type(self)))
+                for name in getattr(first_input, '_custom_attrs', []):
+                    setattr(result, name, getattr(first_input, name, None))
+                if hasattr(first_input, 'gvar'):
+                    result.gvar = first_input.gvar
+        return result
 
 class ArrayStatsMixin:
     """Statistical operations mixin"""
