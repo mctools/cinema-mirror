@@ -21,6 +21,7 @@
 ################################################################################
 import warnings
 
+from . import solid
 from . import launcher
 from .launcher import *
 
@@ -290,7 +291,7 @@ class PromptMPI(Prompt):
         weight = hist.getWeight()
         hit = hist.getHit()
         ww = hist.getWW()
-        print(f'rank {self.rank} hist info: weight {hist.getWeight().sum()}, hit {hist.getHit().sum()}')
+        print(f'Scorer {cfg} rank {self.rank}: weight {hist.getWeight().sum()}, hit {hist.getHit().sum()}')
 
         recvw = None
         recvh = None
