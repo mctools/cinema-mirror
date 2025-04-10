@@ -28,12 +28,7 @@ class MySim(cpt.PromptMPI):
 
     def makeWorld(self):
         world = cpt.geo.Volume('world', cpt.solid.Box(50, 50, 200))
-
-        hx = 2
-        hy = 2
-        hz = 0.5
-
-        sample = cpt.geo.Volume('sample', cpt.solid.Box(hx, hy, hz), self.sample)
+        sample = cpt.geo.Volume('sample', cpt.solid.Box(2, 2, 0.5), self.sample)
         world.placeChild('entity', sample)
 
         dttx = 40
