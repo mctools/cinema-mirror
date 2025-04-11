@@ -20,6 +20,8 @@
 ##                                                                            ##
 ################################################################################
 
+from .Utils import *
+
 import ctypes
 import numpy as np
 import glob

@@ -21,6 +21,11 @@
 ################################################################################
 
 import os
+from functools import wraps
+import importlib.util
+
+def has_package_in_env(package_name):
+    return importlib.util.find_spec(package_name) is not None
 
 def findData(fn, dir='data'):
     fs=fn.split('/')
@@ -36,5 +41,14 @@ def findData(fn, dir='data'):
         raise RuntimeError(f'{len(fnlist)} {fn} files found')
     return fnlist[0]
 
-
 #example findData('Al/cell.json')
+
+def cinema_require_pkg(package_name):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if not has_package_in_env(package_name):
+                raise ImportError(f"'{package_name}' not install in current environment")
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator

@@ -22,11 +22,15 @@
 
 from ..Interface import *
 
-import pyvista as pv
 import random
 import matplotlib.colors as mcolors
 from .Mesh import Mesh
 
+# try:
+#     import pyvista as pv
+#     PYVISTA_ON = True
+# except ImportError:
+#     PYVISTA_ON = False
 
 # from https://stackoverflow.com/questions/57173235/how-to-detect-whether-in-jupyter-notebook-or-lab 
 def is_jupyterlab_session() -> bool:
@@ -58,9 +62,11 @@ def is_jupyterlab_session() -> bool:
 
 
 
-
+@cinema_require_pkg('pyvista')
 class Visualiser():
-    def __init__(self, blacklist, printWorld=False, nSegments=30, mergeMesh=False, dumpMesh=False, window_size=[1920, 1080], byMat=False, addLegend=False, geoClip=False):
+    # if not PYVISTA_ON:
+    #     raise RuntimeError("pyvista is required to visualize.")
+    def __init__(self, blacklist, printWorld=False, nSegments=30, mergeMesh=False, dumpMesh=False, window_size=[1920, 1080], byMat=False, addLegend=False, geoClip=False):       
         if is_jupyterlab_session():
             pv.set_jupyter_backend('trame')  
 
@@ -236,6 +242,9 @@ class Visualiser():
 
 class PtPlotter(pv.Plotter):
     def __init__(self, window_size=None):
+        if not PYVISTA_ON:
+            raise RuntimeError("pyvista is required to visualize.")
+        
         super().__init__(window_size=window_size)
         self.clippers = []
         self.clipFunction = None
