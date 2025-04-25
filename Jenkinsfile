@@ -12,7 +12,7 @@ pipeline {
                 sh 'which conda'  
                 sh 'conda create -n ${ENV_NAME} python=3.8'
             }
-        // }
+        }
         // stage('Dependency Control') {
         //     steps {
         //         script {
