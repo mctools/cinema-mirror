@@ -8,35 +8,43 @@ authors=[
     {name="Ni Yang"},
     {email="cinema-users@outlook.com"},
     ]
+maintainers = [
+    { name = "Zi-Yi Pan", email = "zypan@ihep.ac.cn" },
+]
 description="China Spallation Neutron Source Monte Carlo System"
+license = "Apache-2.0"
 readme = "README.md"
 keywords = ["NCyrstal", "Neutron Scattering", "Spectroscopy"]
-requires-python = ">=3.7"
-classifiers = [
-    'Intended Audience :: Science/Research',
-
-    'Topic :: Scientific/Engineering :: Physics',
-
-    'License :: OSI Approved',
-
-    'Programming Language :: Python :: 3.7',
-    'Programming Language :: Python :: 3.8',
-    'Programming Language :: Python :: 3.9',
-    'Programming Language :: Python :: 3.10',
-
-    'Operating System :: POSIX :: Linux',
-]
+requires-python = ">=3.8"
 dependencies = [
-    "pyvista",
-    "matplotlib",
-    "mcpl",
-    "scipy",
-    "h5py",
-    "optuna",
-    "mpi4py",
-    "psutil",
+    "ncrystal",
+    "ncrystal-pypluginmgr",
+    "git+https://code.ihep.ac.cn/cinema-developers/ncplugin-bzscope",
+    "scipy", "h5py", "mpi4py", "psutil", "tqdm", "gvar"
 ]
 
+[project.optional-dependencies]
+viz = [ "pyvista", "matplotlib"]
+
+# [project.scripts]
+# my_package_cli = 'my_package.console:run'
 
 [project.urls]
-repository = "https://gitlab.com/cinema-developers/prompt.git"
+repository = "https://code.ihep.ac.cn/cinema-developers/cinema"
+"Bug Tracker" = "https://code.ihep.ac.cn/cinema-developers/cinema/-/issues"
+"Paper" = "https://doi.org/10.1016/j.cpc.2023.109004"
+
+[tool.poetry]
+requires-poetry = ">=2.0"
+classifiers = [
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: Physics',
+    'Operating System :: POSIX :: Linux',
+]
+
+[tool.poetry.build]
+script = "build-extension.py"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
