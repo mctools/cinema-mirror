@@ -1,0 +1,75 @@
+// Jenkinsfile (Declarative Pipeline)
+pipeline {
+    agent any
+    environment {
+        ENV_NAME = 'test-env'
+        LOCK_FILE = 'conda-lock.yml'
+    }
+    stages {
+        stage('Check base env') {
+            steps {
+                // git branch: 'main', url: 'https://github.com/your/repo.git'  // 拉取最新代码
+                sh 'which conda'  
+                sh 'conda create -n ${ENV_NAME} python=3.8'
+            }
+        }
+        // stage('Dependency Control') {
+        //     steps {
+        //         script {
+        //             if (fileExists(LOCK_FILE)) {
+        //                 // 存在锁文件时使用锁定版本
+        //                 sh "conda-lock install --name ${ENV_NAME} ${LOCK_FILE}"
+        //             } else {
+        //                 // 无锁文件时创建新环境并生成锁文件
+        //                 sh "conda env create -n ${ENV_NAME} -f environment.yml"
+        //                 sh "conda-lock -f environment.yml -p linux-64 --lockfile ${LOCK_FILE}"
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Test Matrix') {
+        //     parallel {
+        //         stage('Python 3.8') {
+        //             steps {
+        //                 runTests('3.8')
+        //             }
+        //         }
+        //         stage('Python 3.9') {
+        //             steps {
+        //                 runTests('3.9')
+        //             }
+        //         }
+        //         stage('Security Scan') {
+        //             steps {
+        //                 sh 'trivy fs --severity HIGH,CRITICAL .'  // 安全扫描
+        //             }
+        //         }
+        //     }
+        // }
+    }
+    post {
+        always {
+            sh "conda env remove -n ${ENV_NAME}"  // 清理环境
+            // junit '**/test-results/*.xml'         // 归档测试报告
+        }
+        failure {
+            slackSend channel: '#ci-alerts', message: "构建失败: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+        }
+    }
+}
+
+// 自定义函数封装测试逻辑
+// def runTests(pythonVersion) {
+//     withEnv(["PYTHON_VERSION=${pythonVersion}"]) {
+//         script {
+//             // 动态创建隔离环境
+//             def envName = "${ENV_NAME}-py${pythonVersion}"
+//             sh """
+//                 conda create --clone ${ENV_NAME} --name ${envName}
+//                 conda activate ${envName}
+//                 conda install -y python=${pythonVersion}
+//                 pytest --junitxml=test-results/py${pythonVersion}.xml
+//             """
+//         }
+//     }
+// }
