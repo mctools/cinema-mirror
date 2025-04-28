@@ -18,6 +18,7 @@ vecgeom_branch = "cinema"
 cpu_count = os.cpu_count()
 
 src_root = Path(__file__).parent.parent.parent.parent
+src_build_path = src_root/"build"
 externalpath = src_root/"external"
 external_src_parent = externalpath/"src"
 external_build_path = externalpath/"build"
@@ -26,7 +27,7 @@ install_root = externalpath/"install"
 def init_external_dir():
     if platform.system() == 'Linux':
         print("Running in", platform.system())
-        result_git = subprocess.run(["rm","-rf", "external"], cwd=str(src_root),
+        result_git = subprocess.run(["rm","-rf", "build", "external"], cwd=str(src_root),
                                         capture_output=True, text=True)
 
 def create_folder(path : Path):
@@ -97,12 +98,8 @@ def install(name, cmakeargs=None, makeargs=None, url=None, git_url=None, git_bra
         raise NotImplementedError("Not Implemented.")
     print(result_install.stdout)
     print(result_install.stderr)
-    
 
-
-    
-if __name__ == "__main__":
-    init_external_dir()
+def prepare_dependencies():
     vecgeom_cmakeargs = [f"-DCMAKE_INSTALL_PREFIX={install_root}" ,"-DVECGEOM_BUILTIN_VECCORE=ON" ,
         "-DVECGEOM_FAST_MATH=OFF" , "-DBUILD_TESTING=OFF" ,"-DVECGEOM_GDML=ON" ,
         "-DVECGEOM_USE_NAVINDEX=ON"]
@@ -111,7 +108,32 @@ if __name__ == "__main__":
     kds_cmakeargs = [f"-DCMAKE_INSTALL_PREFIX={install_root}", "-DCMAKE_POLICY_VERSION_MINIMUM=3.24" ]
     install("KDSource", cmakeargs=kds_cmakeargs, url=kds_url)
 
-    gidiplus_makeargs = ["-s", "install4prompt", f"-j{cpu_count//2}", 'SHELL=bash', 'CXXFLAGS=-std=c++11 -fPIC', 'CFLAGS=-fPIC', 
+    gidiplus_makeargs = ["-s", "install4prompt", f"-j{cpu_count//2}", 'SHELL=bash', 'CXXFLAGS=-std=c++11 -fPIC', 'CFLAGS=-fPIC', # fixme: dynamic SHELL
                          f"INSTALL_PREFIX={install_root}"]
     install("gidiplus", makeargs=gidiplus_makeargs, url=gidiplus_url)
 
+def main_build():
+    create_folder(src_build_path)
+    lib_path = install_root/"lib"
+    veccore_dir = install_root/"lib"/"cmake"/"VecCore"
+    cinema_cmakeargs = [f"-DCMAKE_PREFIX_PATH={install_root}", f"-DVecCore_DIR={veccore_dir}", f"-DKDS_LIB={lib_path}",
+                        f"-DGIDIPLUS_LIB={lib_path}", f"-DGIDIPLUS_INCDIR={lib_path}", ]
+    result = subprocess.run(["cmake"]+cinema_cmakeargs+[".."], cwd=str(src_build_path), capture_output=True,  text=True)
+    print(result.stdout)
+    print(result.stderr)
+    result = subprocess.run(["make", f"-j{cpu_count}"], cwd=str(src_build_path), capture_output=True,  text=True)
+    print(result.stdout)
+    print(result.stderr)
+
+    sharedlib_from = src_build_path/"src"/"cxx"/"libprompt_core.so"
+    sharedlib_from = sharedlib_from.resolve()
+    sharedlib_to = Path("src/python/Cinema")
+    sharedlib_to = sharedlib_to.resolve()
+
+    shutil.copy2(str(sharedlib_from), str(sharedlib_to))
+
+    
+if __name__ == "__main__":
+    init_external_dir()
+    prepare_dependencies()
+    main_build()
