@@ -9,6 +9,7 @@ from pathlib import Path
 import wget
 import shutil
 import platform
+import contextlib
 
 git_domain = "https://code.ihep.ac.cn/cinema-developers/"
 kds_url = "kdsource/-/archive/v0.1.0_prompt/kdsource-v0.1.0_prompt.tar.gz"
@@ -61,10 +62,11 @@ def download(name, url=None, git_url=None, git_branch="main"):
 
     if git_url:
         print("Using git repo: ", git_url)
-        result_git = subprocess.run(["git", "clone", "-b", git_branch, git_url, name], cwd=str(external_src_parent),
-                                    capture_output=True,  text=True)
-        print(result_git.stdout)
-        print(result_git.stderr)
+        try:
+            result_git = subprocess.run(["git", "clone", "-b", git_branch, git_url, name], cwd=str(external_src_parent),
+                                        capture_output=True,  text=True)
+        finally:
+            print(f"Error captured: {result_git.stderr}")
         src_path = external_src_parent/name
     else:
         print("Using url (released pkg): ", url)
@@ -72,32 +74,31 @@ def download(name, url=None, git_url=None, git_branch="main"):
     return src_path
 
 def install(name, cmakeargs=None, makeargs=None, url=None, git_url=None, git_branch="main"):
+
     dep_root = download(name, url, git_url, git_branch)
 
     buildpath = create_folder(external_build_path/name)
-    if not makeargs:
-        print("project uses cmake. ")
-        result_cmake = subprocess.run(["cmake"] + cmakeargs + [str(dep_root)], cwd=str(buildpath) ,
-                                    capture_output=True,  text=True)
-        print(result_cmake.stdout)
-        print(result_cmake.stderr)
+    try:
+        if not makeargs:
+            print("project uses cmake. ")
+            result = subprocess.run(["cmake"] + cmakeargs + [str(dep_root)], cwd=str(buildpath) ,
+                                        check=True, capture_output=True,  text=True)
 
-        result_build = subprocess.run(["make", f"-j{cpu_count}"], cwd=str(buildpath) ,
-                                    capture_output=True,  text=True)
-        print(result_build.stdout)
-        print(result_build.stderr)
-        result_install = subprocess.run(["make", "install"], cwd=str(buildpath) ,
-                                    capture_output=True,  text=True)
-    elif makeargs and cmakeargs:
-        raise TypeError("Only one of cmakeargs and makeargs should be provided.")
-    elif makeargs and not cmakeargs:
-        print("project uses make. ", "cwd=", str(dep_root))
-        # print(["make"]+makeargs, sep=',')
-        result_install = subprocess.run(["make"]+makeargs, cwd=str(dep_root) , capture_output=True,  text=True)
-    else:
-        raise NotImplementedError("Not Implemented.")
-    print(result_install.stdout)
-    print(result_install.stderr)
+            result = subprocess.run(["make", f"-j{cpu_count}"], cwd=str(buildpath) ,
+                                        check=True, capture_output=True,  text=True)
+            result = subprocess.run(["make", "install"], cwd=str(buildpath) ,
+                                        check=True, capture_output=True,  text=True)
+        elif makeargs and cmakeargs:
+            raise TypeError("Only one of cmakeargs and makeargs should be provided.")
+        elif makeargs and not cmakeargs:
+            print("project uses make. ", "cwd=", str(dep_root))
+            # print(["make"]+makeargs, sep=',')
+            result = subprocess.run(["make"]+makeargs, cwd=str(dep_root) , capture_output=True,  text=True)
+        else:
+            raise NotImplementedError("Not Implemented.")
+    except Exception as e:
+        print(f"Error messages: ")
+        print(e.stderr)
 
 def prepare_dependencies():
     vecgeom_cmakeargs = [f"-DCMAKE_INSTALL_PREFIX={install_root}" ,"-DVECGEOM_BUILTIN_VECCORE=ON" ,
@@ -132,8 +133,15 @@ def main_build():
 
     shutil.copy2(str(sharedlib_from), str(sharedlib_to))
 
-    
-if __name__ == "__main__":
+
+def main():
+    print("Show nc")
+    subprocess.run(["ncrystal-config", "--show", "cmakedir"])
+    subprocess.run(["mcpl-config", "--show", "cmakedir"])
     init_external_dir()
     prepare_dependencies()
     main_build()
+
+    
+if __name__ == "__main__":
+    main()

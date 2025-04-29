@@ -35,7 +35,7 @@ repository = "https://code.ihep.ac.cn/cinema-developers/cinema"
 "Paper" = "https://doi.org/10.1016/j.cpc.2023.109004"
 
 [build-system]
-requires = ["poetry-core", "wget"]
+requires = ["poetry-core", "wget", "ncrystal-core", "mcpl-core"] # todo: we need ncrystal and mcpl here for now. Should be removed once dynamic dlopen is ready.
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
