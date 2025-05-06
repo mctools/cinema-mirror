@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# !! Note: moved to src/python/Cinema/Prompt/cli/promptcli.py
+
 from Cinema.Prompt import Launcher, Visualiser
 import matplotlib.pyplot as plt
 import numpy as np
