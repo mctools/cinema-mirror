@@ -16,11 +16,16 @@ license = "Apache-2.0"
 readme = "README.md"
 keywords = ["NCyrstal", "Neutron Scattering", "Spectroscopy"]
 requires-python = ">=3.8"
+classifiers = [
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: Physics',
+    'Operating System :: POSIX :: Linux',
+]
 dependencies = [
     "ncrystal",
     "ncrystal-pypluginmgr",
     "ncrystal-plugin-bzscope @ git+https://code.ihep.ac.cn/cinema-developers/ncplugin-bzscope",
-    "scipy", "h5py", "mpi4py", "psutil", "tqdm", "gvar"
+    "scipy", "h5py", "mpi4py", "psutil", "tqdm", "gvar", "mcpl-core"
 ]
 
 [project.optional-dependencies]
@@ -35,24 +40,36 @@ repository = "https://code.ihep.ac.cn/cinema-developers/cinema"
 "Paper" = "https://doi.org/10.1016/j.cpc.2023.109004"
 
 [build-system]
-requires = ["poetry-core", "wget", "ncrystal-core", "mcpl-core"] # todo: we need ncrystal and mcpl here for now. Should be removed once dynamic dlopen is ready.
-build-backend = "poetry.core.masonry.api"
+requires = [
+    "hatchling", 
+    "hatch-build-scripts", 
+    "requests",
+    "ncrystal-core",
+    "mcpl-core"
+]
+build-backend = "hatchling.build"
 
-[tool.poetry]
-requires-poetry = ">=2.0"
-classifiers = [
-    'Intended Audience :: Science/Research',
-    'Topic :: Scientific/Engineering :: Physics',
-    'Operating System :: POSIX :: Linux',
+[project.scripts]
+prompt = "Cinema.Prompt.cli.promptcli:main"
+
+[tool.hatch.metadata]
+allow-direct-references = true # To make git + magic happen
+
+[[tool.hatch.build.hooks.build-scripts.scripts]]
+out_dir = "build"
+commands = [
+    "python tools/scripts/build_tool/install_cdeps.py > output.txt",
 ]
-packages = [
-    { include = "Cinema", from = "src/python", to="./" },
+artifacts = [
+    "output.txt"
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/python/Cinema"]
 exclude = ["src/python/Cinema/PiXiu", "src/python/Cinema/Tak"]
-include = [
-    # { path = "external/install/lib/*.so", format = ["sdist", "wheel"] },
-    { path = "src/python/Cinema/*.so",  format = ["sdist", "wheel"] }
+artifacts = [
+    "src/python/Cinema/*.so"
 ]
 
-[tool.poetry.build]
-script = "tools/scripts/build_tool/install_cdeps.py"
+[tool.hatch.build.targets.wheel.force-include]
+"scripts/guide.py" = "Cinema/examples/guide.py"
