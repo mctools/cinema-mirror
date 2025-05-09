@@ -26,7 +26,7 @@ cimbuild
 
 Use `conda` cml to manage prerequisites:
 ```
-conda create -n tmp python=3.10 cxx-compiler cmake make=4.3 fftw unzip openmp
+conda create -n tmp python=3.10 cxx-compiler cmake make=4.3 fftw unzip openmpi libxml2
 ```
 
 Then source `env.sh`
