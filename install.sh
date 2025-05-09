@@ -201,7 +201,7 @@ if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libkdsource.so ]; then
       mkdir  $CINEMAPATH/external/KDSource/build $CINEMAPATH/external/KDSource/install && cd $CINEMAPATH/external/KDSource/build
       # rm -rf $CINEMAPATH/external/KDSource/mcpl
       # ln -s $CINEMAPATH/external/mcpl $CINEMAPATH/external/KDSource/
-      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/KDSource/install -DCMAKE_PREFIX_PATH=$PROMPT_LIBXML2_LIB -DCMAKE_BUILD_TYPE=RELEASE ..
+      cmake  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/KDSource/install -DCMAKE_PREFIX_PATH=$PROMPT_LIBXML2_LIB -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_POLICY_VERSION_MINIMUM=3.24 ..
       make -j ${NUMCPU} && make install
       cd -
       cd $CINEMAPATH/external/KDSource/python
