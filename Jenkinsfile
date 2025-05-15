@@ -45,7 +45,16 @@ pipeline {
                 }
             }
         }
-
+    }
+    // post {
+    //     always {
+    //         sh "conda env remove -n ${ENV_NAME}"  // 清理环境
+    //         // junit '**/test-results/*.xml'         // 归档测试报告
+    //     }
+    //     failure {
+    //         slackSend channel: '#ci-alerts', message: "构建失败: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+    //     }
+    // }
         post {
         success {
             updateGitlabCommitStatus name: 'build', state: 'success'
@@ -54,8 +63,8 @@ pipeline {
             updateGitlabCommitStatus name: 'build', state: 'failed'
         }
         }
-    }
 }
+
 // 自定义函数封装测试逻辑
 // def runTests(pythonVersion) {
 //     withEnv(["PYTHON_VERSION=${pythonVersion}"]) {
