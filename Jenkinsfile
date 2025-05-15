@@ -45,7 +45,7 @@ pipeline {
                 }
             }
         }
-        
+
         post {
         success {
             updateGitlabCommitStatus name: 'build', state: 'success'
@@ -54,8 +54,8 @@ pipeline {
             updateGitlabCommitStatus name: 'build', state: 'failed'
         }
         }
+    }
 }
-
 // 自定义函数封装测试逻辑
 // def runTests(pythonVersion) {
 //     withEnv(["PYTHON_VERSION=${pythonVersion}"]) {
