@@ -15,11 +15,6 @@ pipeline {
             }
         }
 */
-        stage('Git'){
-            sh 'git clone -b dev https://code.ihep.ac.cn/cinema-developers/cinema.git'
-            sh 'cd cinema'
-        }
-        
         stage('Build linux') {
             parallel {
 
@@ -34,7 +29,8 @@ pipeline {
                     }
                     steps {
                         echo 'Building Cinema in linux x86'
-                        sh 'conda build .'
+                        sh 'git clone -b dev https://code.ihep.ac.cn/cinema-developers/cinema.git'
+                        sh 'conda build cinema'
                     }
                 }
 
