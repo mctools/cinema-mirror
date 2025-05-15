@@ -186,16 +186,20 @@ def main_build():
     create_folder(src_build_path)
     lib_path = install_root/"lib"
     veccore_dir = install_root/"lib"/"cmake"/"VecCore"
+    veccore_dir_option = install_root/"lib64"/"cmake"/"VecCore"
     cinema_cmakeargs = [
         f"-DCMAKE_PREFIX_PATH={install_root};{prefix}", 
-        f"-DVecCore_DIR={veccore_dir}", 
         f"-DKDS_LIB={lib_path}",
         f"-DGIDIPLUS_LIB={lib_path}", 
         f"-DGIDIPLUS_INCDIR={lib_path}", 
         f"-DMCPL_DIR={mcpldir}"
         ]
-    result = subprocess.run(["cmake"]+cinema_cmakeargs+[".."], cwd=str(src_build_path), capture_output=True,  text=True)
-    result = subprocess.run(["make", f"-j{cpu_count}"], cwd=str(src_build_path), capture_output=True,  text=True)
+    try:
+        result = subprocess.run(["cmake"]+cinema_cmakeargs+[".."], cwd=str(src_build_path),check=True, capture_output=True,  text=True)
+        result = subprocess.run(["make", f"-j{cpu_count}"], cwd=str(src_build_path),check=True, capture_output=True,  text=True)
+    except Exception as e:
+        print(f"Error messages: ")
+        print(e.stderr)
 
     sharedlib_from = src_build_path/"src"/"cxx"/"libprompt_core.so"
     sharedlib_to = Path("src/python/Cinema")
