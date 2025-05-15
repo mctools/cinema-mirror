@@ -205,7 +205,7 @@ if [ ! -f $CINEMAPATH/external/KDSource/install/lib/libkdsource.so ]; then
       make -j ${NUMCPU} && make install
       cd -
       cd $CINEMAPATH/external/KDSource/python
-      pip install .
+      # pip install .
       cd -
       echo "installed  KDSource"
   fi
@@ -229,7 +229,7 @@ if [ ! -f $CINEMAPATH/external/xerces-c/install/lib/libxerces-c.so ]; then
       git clone -b v3.2.3 --single-branch ${PREFIX}/xerces-c.git
       cd -
       mkdir $CINEMAPATH/external/xerces-c/build && cd $CINEMAPATH/external/xerces-c/build
-      cmake -DBUILD_SHARED_LIBS=ON -Dnetwork=OFF -Dextra-warnings=OFF  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/xerces-c/install ..
+      cmake -DBUILD_SHARED_LIBS=ON -Dnetwork=OFF -Dextra-warnings=OFF  -DCMAKE_INSTALL_PREFIX=$CINEMAPATH/external/xerces-c/install -DCMAKE_POLICY_VERSION_MINIMUM=3.24 ..
       make -j ${NUMCPU} && make install
       cd -
       echo "installed  libxerces"
