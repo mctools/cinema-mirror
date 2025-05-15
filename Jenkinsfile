@@ -24,8 +24,7 @@ pipeline {
                     }
                     steps {
                         echo 'Building Cinema in linux x86'
-                        sh 
-                        '''
+                        sh '''
                             source ~/.bashrc
                             which conda
                             git clone https://code.ihep.ac.cn/cinema-developers/cinema-prompt-feedstock.git ccbuild
@@ -41,8 +40,7 @@ pipeline {
                     }
                     steps {
                         echo 'Building Cinema in linux arm64'
-                        sh 
-                        '''
+                        sh '''
                             source ~/.bashrc
                             which conda
                             git clone https://code.ihep.ac.cn/cinema-developers/cinema-prompt-feedstock.git ccbuild
