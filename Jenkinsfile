@@ -24,9 +24,9 @@ pipeline {
                     }
                     steps {
                         echo 'Building Cinema in linux x86'
-                        sh 'find / -name conda'
-                        sh 'source ~/.bashrc'
                         sh 'which conda'
+                        sh 'find / -name *conda*'
+                        sh 'source ~/.bashrc'
                         sh 'git clone https://code.ihep.ac.cn/cinema-developers/cinema-prompt-feedstock.git ccbuild'
                         sh 'cd ccbuild'
                         sh 'conda build . -c conda-forge'
@@ -39,13 +39,12 @@ pipeline {
                     }
                     steps {
                         echo 'Building Cinema in linux arm64'
-                        sh '''
-                            source ~/.bashrc
-                            which conda
-                            git clone https://code.ihep.ac.cn/cinema-developers/cinema-prompt-feedstock.git ccbuild
-                            cd ccbuild
-                            conda build . -c conda-forge
-                        '''
+                        sh 'which conda'
+                        sh 'find / -name *conda*'
+                        sh 'source ~/.bashrc'
+                        sh 'git clone https://code.ihep.ac.cn/cinema-developers/cinema-prompt-feedstock.git ccbuild'
+                        sh 'cd ccbuild'
+                        sh 'conda build . -c conda-forge'
                     }
                 }
             }
