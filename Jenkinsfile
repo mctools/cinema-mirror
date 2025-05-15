@@ -20,7 +20,7 @@ pipeline {
 
                 stage('Build linux x86') {
                     agent{
-                        node{label 'cvmfs'}
+                        node{label 'master'}
                         // kubernetes {
                         //     cloud 'Kubernetes'
                         //     nodeSelector 'kubernetes.io/hostname=cicd1.heps.ihep.ac.cn'
