@@ -15,6 +15,11 @@ pipeline {
             }
         }
 */
+        stage('Git'){
+            sh 'git clone -b dev https://code.ihep.ac.cn/cinema-developers/cinema.git'
+            sh 'cd cinema'
+        }
+        
         stage('Build linux') {
             parallel {
 
