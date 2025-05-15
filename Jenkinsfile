@@ -30,6 +30,8 @@ pipeline {
                     }
                     steps {
                         echo 'Building Cinema in linux x86'
+                        sh 'which conda'
+                        sh 'conda info'
                         sh 'conda build . -c conda-forge'
                     }
                 }
@@ -40,6 +42,8 @@ pipeline {
                     }
                     steps {
                         echo 'Building Cinema in linux arm64'
+                        sh 'which conda'
+                        sh 'conda info'
                         sh 'conda build . -c conda-forge'
                     }
                 }
