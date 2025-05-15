@@ -20,12 +20,13 @@ pipeline {
 
                 stage('Build linux x86') {
                     agent{
-                        kubernetes {
-                            cloud 'Kubernetes'
-                            nodeSelector 'kubernetes.io/hostname=cicd1.heps.ihep.ac.cn'
-                            defaultContainer 'daisy-pre'
-                            inheritFrom "Daisy-PRE"
-                        }
+                        node{label 'cvmfs'}
+                        // kubernetes {
+                        //     cloud 'Kubernetes'
+                        //     nodeSelector 'kubernetes.io/hostname=cicd1.heps.ihep.ac.cn'
+                        //     defaultContainer 'daisy-pre'
+                        //     inheritFrom "Daisy-PRE"
+                        // }
                     }
                     steps {
                         echo 'Building Cinema in linux x86'
@@ -40,6 +41,8 @@ pipeline {
                     }
                     steps {
                         echo 'Building Cinema in linux arm64'
+                        sh 'pwd'
+                        sh 'ls'
                     }
                 }
             }
@@ -87,6 +90,14 @@ pipeline {
     //         slackSend channel: '#ci-alerts', message: "构建失败: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
     //     }
     // }
+        post {
+        success {
+            updateGitlabCommitStatus name: 'build', state: 'success'
+        }
+        failure {
+            updateGitlabCommitStatus name: 'build', state: 'failed'
+        }
+        }
 }
 
 // 自定义函数封装测试逻辑
