@@ -21,18 +21,17 @@ pipeline {
                 stage('Build linux x86') {
                     agent{
                         node{label 'Jenkins_Local'}
-                        // kubernetes {
-                        //     cloud 'Kubernetes'
-                        //     nodeSelector 'kubernetes.io/hostname=cicd1.heps.ihep.ac.cn'
-                        //     defaultContainer 'daisy-pre'
-                        //     inheritFrom "Daisy-PRE"
-                        // }
                     }
                     steps {
                         echo 'Building Cinema in linux x86'
-                        sh 'which conda'
-                        sh 'conda info'
-                        sh 'conda build . -c conda-forge'
+                        sh 
+                        '''
+                            source ~/.bashrc
+                            which conda
+                            git clone https://code.ihep.ac.cn/cinema-developers/cinema-prompt-feedstock.git ccbuild
+                            cd ccbuild
+                            conda build . -c conda-forge
+                        '''
                     }
                 }
 
@@ -42,9 +41,14 @@ pipeline {
                     }
                     steps {
                         echo 'Building Cinema in linux arm64'
-                        sh 'which conda'
-                        sh 'conda info'
-                        sh 'conda build . -c conda-forge'
+                        sh 
+                        '''
+                            source ~/.bashrc
+                            which conda
+                            git clone https://code.ihep.ac.cn/cinema-developers/cinema-prompt-feedstock.git ccbuild
+                            cd ccbuild
+                            conda build . -c conda-forge
+                        '''
                     }
                 }
             }
