@@ -1,16 +1,46 @@
 // Jenkinsfile (Declarative Pipeline)
 pipeline {
     agent any
+    /*
     environment {
         ENV_NAME = 'test-env'
         LOCK_FILE = 'conda-lock.yml'
     }
+    */
     stages {
-        stage('Check base env') {
+/*
+        stage('Check conda installation') {
             steps {
-                // git branch: 'main', url: 'https://github.com/your/repo.git'  // 拉取最新代码
-                sh 'which conda'  
-                sh 'conda create -n ${ENV_NAME} python=3.8'
+                sh 'conda info'  
+            }
+        }
+*/
+        stage('Build linux') {
+            parallel {
+
+                stage('Build linux x86') {
+                    agent{
+                        kubernetes {
+                            cloud 'Kubernetes'
+                            nodeSelector 'kubernetes.io/hostname=cicd1.heps.ihep.ac.cn'
+                            defaultContainer 'daisy-pre'
+                            inheritFrom "Daisy-PRE"
+                        }
+                    }
+                    steps {
+                        echo 'Building Cinema in linux x86'
+                        sh 'conda build .'
+                    }
+                }
+
+                stage('Build linux arm') {
+                    agent {
+                        node{label 'ncbuilder'}
+                    }
+                    steps {
+                        echo 'Building Cinema in linux arm64'
+                    }
+                }
             }
         }
         // stage('Dependency Control') {
@@ -47,15 +77,15 @@ pipeline {
         //     }
         // }
     }
-    post {
-        always {
-            sh "conda env remove -n ${ENV_NAME}"  // 清理环境
-            // junit '**/test-results/*.xml'         // 归档测试报告
-        }
-        failure {
-            slackSend channel: '#ci-alerts', message: "构建失败: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
-        }
-    }
+    // post {
+    //     always {
+    //         sh "conda env remove -n ${ENV_NAME}"  // 清理环境
+    //         // junit '**/test-results/*.xml'         // 归档测试报告
+    //     }
+    //     failure {
+    //         slackSend channel: '#ci-alerts', message: "构建失败: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+    //     }
+    // }
 }
 
 // 自定义函数封装测试逻辑
