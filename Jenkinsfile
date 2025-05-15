@@ -20,7 +20,7 @@ pipeline {
 
                 stage('Build linux x86') {
                     agent{
-                        node{label 'master'}
+                        node{label 'Jenkins_Local'}
                         // kubernetes {
                         //     cloud 'Kubernetes'
                         //     nodeSelector 'kubernetes.io/hostname=cicd1.heps.ihep.ac.cn'
@@ -30,8 +30,7 @@ pipeline {
                     }
                     steps {
                         echo 'Building Cinema in linux x86'
-                        sh 'git clone -b dev https://code.ihep.ac.cn/cinema-developers/cinema.git'
-                        sh 'conda build cinema'
+                        sh 'conda build . -c conda-forge'
                     }
                 }
 
@@ -41,55 +40,12 @@ pipeline {
                     }
                     steps {
                         echo 'Building Cinema in linux arm64'
-                        sh 'pwd'
-                        sh 'ls'
+                        sh 'conda build . -c conda-forge'
                     }
                 }
             }
         }
-        // stage('Dependency Control') {
-        //     steps {
-        //         script {
-        //             if (fileExists(LOCK_FILE)) {
-        //                 // 存在锁文件时使用锁定版本
-        //                 sh "conda-lock install --name ${ENV_NAME} ${LOCK_FILE}"
-        //             } else {
-        //                 // 无锁文件时创建新环境并生成锁文件
-        //                 sh "conda env create -n ${ENV_NAME} -f environment.yml"
-        //                 sh "conda-lock -f environment.yml -p linux-64 --lockfile ${LOCK_FILE}"
-        //             }
-        //         }
-        //     }
-        // }
-        // stage('Test Matrix') {
-        //     parallel {
-        //         stage('Python 3.8') {
-        //             steps {
-        //                 runTests('3.8')
-        //             }
-        //         }
-        //         stage('Python 3.9') {
-        //             steps {
-        //                 runTests('3.9')
-        //             }
-        //         }
-        //         stage('Security Scan') {
-        //             steps {
-        //                 sh 'trivy fs --severity HIGH,CRITICAL .'  // 安全扫描
-        //             }
-        //         }
-        //     }
-        // }
-    }
-    // post {
-    //     always {
-    //         sh "conda env remove -n ${ENV_NAME}"  // 清理环境
-    //         // junit '**/test-results/*.xml'         // 归档测试报告
-    //     }
-    //     failure {
-    //         slackSend channel: '#ci-alerts', message: "构建失败: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
-    //     }
-    // }
+        
         post {
         success {
             updateGitlabCommitStatus name: 'build', state: 'success'
