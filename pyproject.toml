@@ -58,11 +58,9 @@ allow-direct-references = true # To make git + magic happen
 [[tool.hatch.build.hooks.build-scripts.scripts]]
 out_dir = "build"
 commands = [
-    "python tools/scripts/build_tool/install_cdeps.py > output.txt",
+    "python tools/scripts/build_tool/install_cdeps.py",
 ]
-artifacts = [
-    "output.txt"
-]
+artifacts = []
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/python/Cinema"]
