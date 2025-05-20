@@ -139,8 +139,8 @@ def install(name, cmakeargs=None, makeargs=None, url=None, git_url=None, git_bra
         elif makeargs and cmakeargs:
             raise TypeError("Only one of cmakeargs and makeargs should be provided.")
         elif makeargs and not cmakeargs:
-            # print("project uses make. ", "cwd=", str(dep_root))
-            # print(["make"]+makeargs, sep=',')
+            cmd = ["make"]+makeargs+[str(dep_root)]
+            cmd = " ".join(cmd)
             result = subprocess.run(["make"]+makeargs, cwd=str(dep_root) , capture_output=True,  text=True)
         else:
             raise NotImplementedError("Not Implemented.")
@@ -184,6 +184,7 @@ def copy_sharedlib(pathfrom: Path, pathto: Path):
     shutil.copy2(str(pathfrom), str(pathto))
 
 def main_build():
+    print(f"----------Processing cinema ------------")
     create_folder(src_build_path)
     lib_path = install_root/"lib"
     veccore_dir = install_root/"lib"/"cmake"/"VecCore"
