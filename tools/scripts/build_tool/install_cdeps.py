@@ -141,7 +141,7 @@ def install(name, cmakeargs=None, makeargs=None, url=None, git_url=None, git_bra
         elif makeargs and not cmakeargs:
             cmd = ["make"]+makeargs+[str(dep_root)]
             cmd = " ".join(cmd)
-            result = subprocess.run(["make"]+makeargs, cwd=str(dep_root) , capture_output=True,  text=True)
+            result = subprocess.run(["make"]+makeargs, cwd=str(dep_root) , check=True,capture_output=True,  text=True)
         else:
             raise NotImplementedError("Not Implemented.")
     except Exception as e:
