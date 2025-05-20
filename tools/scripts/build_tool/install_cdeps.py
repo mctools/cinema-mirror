@@ -68,7 +68,7 @@ def config_deps_dir():
         return result_nc.stdout, result_mcpl_lib.stdout, result_mcpl_incdir.stdout, prefix
     except Exception as e:
         print(f"Error messages: ")
-        print(e.stderr)        
+        print(e.stderr)
 
 ncdir, mcpldir, mcpl_incdir, prefix = config_deps_dir()
 
@@ -86,7 +86,6 @@ def create_folder(path : Path):
         print(f"Permission error when create '{str(path)}'")
     except Exception as e:
         print(f"Not known error: {e}")
-    print("")
     return path
 
 def download_from_url(git_domain, url, root: Path):
@@ -127,7 +126,9 @@ def install(name, cmakeargs=None, makeargs=None, url=None, git_url=None, git_bra
     try:
         if not makeargs:
             # print("project uses cmake. ")
-            print(["cmake"] + cmakeargs + [str(dep_root)], sep=" ")
+            cmd = ["cmake"] + cmakeargs + [str(dep_root)]
+            cmd = " ".join(cmd)
+            print(f"Running command: {cmd}")
             result = subprocess.run(["cmake"] + cmakeargs + [str(dep_root)], cwd=str(buildpath) ,
                                         check=True, capture_output=True,  text=True)
 
